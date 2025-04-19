@@ -1,12 +1,7 @@
-Terminais sem uso na gramática
-
-    LOWER_THAN_ELSE
+State 32 conflicts: 2 shift/reduce
 
 
-Estado 98 conflitos: 1 de deslocamento/redução
-
-
-Gramática
+Grammar
 
     0 $accept: programa $end
 
@@ -36,1221 +31,1292 @@ Gramática
    16      | tipo_especificador ID LBRACK RBRACK
 
    17 composto_decl: LBRACE local_declaracoes statement_lista RBRACE
+   18              | SEMICOLON
+   19              | LBRACE local_declaracoes statement_lista fun_declaracao RBRACE
+   20              | LBRACE local_declaracoes fun_declaracao statement_lista RBRACE
 
-   18 local_declaracoes: local_declaracoes var_declaracao
-   19                  | %empty
+   21 local_declaracoes: local_declaracoes var_declaracao
+   22                  | ε
 
-   20 statement_lista: statement_lista statement
-   21                | %empty
+   23 statement_lista: statement_lista statement
+   24                | ε
 
-   22 statement: expressao_decl
-   23          | composto_decl
-   24          | selecao_decl
-   25          | iteracao_decl
-   26          | retorno_decl
+   25 statement: expressao_decl
+   26          | composto_decl
+   27          | selecao_decl
+   28          | iteracao_decl
+   29          | retorno_decl
 
-   27 expressao_decl: expressao SEMICOLON
-   28               | SEMICOLON
+   30 expressao_decl: expressao SEMICOLON
 
-   29 selecao_decl: IF LPAREN expressao RPAREN statement
-   30             | IF LPAREN expressao RPAREN statement ELSE statement
+   31 selecao_decl: IF LPAREN expressao RPAREN statement
+   32             | IF LPAREN expressao RPAREN statement ELSE statement
 
-   31 iteracao_decl: WHILE LPAREN expressao RPAREN statement
+   33 iteracao_decl: WHILE LPAREN expressao RPAREN statement
 
-   32 retorno_decl: RETURN SEMICOLON
-   33             | RETURN expressao SEMICOLON
+   34 retorno_decl: RETURN SEMICOLON
+   35             | RETURN expressao SEMICOLON
 
-   34 expressao: var ASSIGN expressao
-   35          | simples_expressao
+   36 expressao: var ASSIGN expressao
+   37          | simples_expressao
 
-   36 var: ID
-   37    | ID LBRACK expressao RBRACK
+   38 var: ID
+   39    | ID LBRACK expressao RBRACK
 
-   38 simples_expressao: soma_expressao relacional soma_expressao
-   39                  | soma_expressao
+   40 simples_expressao: soma_expressao relacional soma_expressao
+   41                  | soma_expressao
 
-   40 relacional: LT
-   41           | LTE
-   42           | GT
-   43           | GTE
-   44           | EQ
-   45           | NEQ
+   42 relacional: LT
+   43           | LTE
+   44           | GT
+   45           | GTE
+   46           | EQ
+   47           | NEQ
 
-   46 soma_expressao: soma_expressao soma termo
-   47               | termo
+   48 soma_expressao: soma_expressao soma termo
+   49               | termo
 
-   48 soma: PLUS
-   49     | MINUS
+   50 soma: PLUS
+   51     | MINUS
 
-   50 termo: termo mult fator
-   51      | fator
+   52 termo: termo mult fator
+   53      | fator
 
-   52 mult: TIMES
-   53     | DIV
+   54 mult: TIMES
+   55     | DIV
 
-   54 fator: LPAREN expressao RPAREN
-   55      | var
-   56      | ativacao
-   57      | NUM
+   56 fator: LPAREN expressao RPAREN
+   57      | var
+   58      | ativacao
+   59      | NUM
 
-   58 ativacao: ID LPAREN args RPAREN
+   60 ativacao: ID LPAREN args RPAREN
 
-   59 args: arg_lista
-   60     | %empty
+   61 args: arg_lista
+   62     | ε
 
-   61 arg_lista: arg_lista COMMA expressao
-   62          | expressao
-   63          | param
+   63 arg_lista: arg_lista COMMA expressao
+   64          | expressao
+   65          | param
 
 
-Terminais, com as regras onde eles aparecem
+Terminals, with rules where they appear
 
     $end (0) 0
+    IF (1) 31 32
+    WHILE (2) 33
+    RETURN (3) 34 35
+    INT (4) 8
+    VOID (5) 9 12
+    NUM (6) 7 59
+    ID (7) 6 7 10 15 16 38 39 60
+    EQ (8) 46
+    NEQ (9) 47
+    LT (10) 42
+    LTE (11) 43
+    GT (12) 44
+    GTE (13) 45
+    PLUS (14) 50
+    MINUS (15) 51
+    TIMES (16) 54
+    DIV (17) 55
+    ASSIGN (18) 36
+    SEMICOLON (19) 6 7 18 30 34 35
+    COMMA (20) 13 63
+    LPAREN (21) 10 31 32 33 56 60
+    RPAREN (22) 10 31 32 33 56 60
+    LBRACE (23) 17 19 20
+    RBRACE (24) 17 19 20
+    LBRACK (25) 7 16 39
+    RBRACK (26) 7 16 39
     error (256)
-    IF (258) 29 30
-    WHILE (259) 31
-    RETURN (260) 32 33
-    INT (261) 8
-    VOID (262) 9 12
-    NUM (263) 7 57
-    ID (264) 6 7 10 15 16 36 37 58
-    EQ (265) 44
-    NEQ (266) 45
-    LT (267) 40
-    LTE (268) 41
-    GT (269) 42
-    GTE (270) 43
-    PLUS (271) 48
-    MINUS (272) 49
-    TIMES (273) 52
-    DIV (274) 53
-    ASSIGN (275) 34
-    SEMICOLON (276) 6 7 27 28 32 33
-    COMMA (277) 13 61
-    LPAREN (278) 10 29 30 31 54 58
-    RPAREN (279) 10 29 30 31 54 58
-    LBRACE (280) 17
-    RBRACE (281) 17
-    LBRACK (282) 7 16 37
-    RBRACK (283) 7 16 37
-    LOWER_THAN_ELSE (284)
-    ELSE (285) 30
+    LOWER_THAN_ELSE (258)
+    ELSE (259) 32
 
 
-Não terminais com as regras onde eles aparecem
+Nonterminals, with rules where they appear
 
     $accept (31)
-        à esquerda: 0
+        on left: 0
     programa (32)
-        à esquerda: 1
-        à direita: 0
+        on left: 1
+        on right: 0
     declaracao_lista (33)
-        à esquerda: 2 3
-        à direita: 1 2
+        on left: 2 3
+        on right: 1 2
     declaracao (34)
-        à esquerda: 4 5
-        à direita: 2 3
+        on left: 4 5
+        on right: 2 3
     var_declaracao (35)
-        à esquerda: 6 7
-        à direita: 4 18
+        on left: 6 7
+        on right: 4 21
     tipo_especificador (36)
-        à esquerda: 8 9
-        à direita: 6 7 10 15 16
+        on left: 8 9
+        on right: 6 7 10 15 16
     fun_declaracao (37)
-        à esquerda: 10
-        à direita: 5
+        on left: 10
+        on right: 5 19 20
     params (38)
-        à esquerda: 11 12
-        à direita: 10
+        on left: 11 12
+        on right: 10
     param_lista (39)
-        à esquerda: 13 14
-        à direita: 11 13
+        on left: 13 14
+        on right: 11 13
     param (40)
-        à esquerda: 15 16
-        à direita: 13 14 63
+        on left: 15 16
+        on right: 13 14 65
     composto_decl (41)
-        à esquerda: 17
-        à direita: 10 23
+        on left: 17 18 19 20
+        on right: 10 26
     local_declaracoes (42)
-        à esquerda: 18 19
-        à direita: 17 18
+        on left: 21 22
+        on right: 17 19 20 21
     statement_lista (43)
-        à esquerda: 20 21
-        à direita: 17 20
+        on left: 23 24
+        on right: 17 19 20 23
     statement (44)
-        à esquerda: 22 23 24 25 26
-        à direita: 20 29 30 31
+        on left: 25 26 27 28 29
+        on right: 23 31 32 33
     expressao_decl (45)
-        à esquerda: 27 28
-        à direita: 22
+        on left: 30
+        on right: 25
     selecao_decl (46)
-        à esquerda: 29 30
-        à direita: 24
+        on left: 31 32
+        on right: 27
     iteracao_decl (47)
-        à esquerda: 31
-        à direita: 25
+        on left: 33
+        on right: 28
     retorno_decl (48)
-        à esquerda: 32 33
-        à direita: 26
+        on left: 34 35
+        on right: 29
     expressao (49)
-        à esquerda: 34 35
-        à direita: 27 29 30 31 33 34 37 54 61 62
+        on left: 36 37
+        on right: 30 31 32 33 35 36 39 56 63 64
     var (50)
-        à esquerda: 36 37
-        à direita: 34 55
+        on left: 38 39
+        on right: 36 57
     simples_expressao (51)
-        à esquerda: 38 39
-        à direita: 35
+        on left: 40 41
+        on right: 37
     relacional (52)
-        à esquerda: 40 41 42 43 44 45
-        à direita: 38
+        on left: 42 43 44 45 46 47
+        on right: 40
     soma_expressao (53)
-        à esquerda: 46 47
-        à direita: 38 39 46
+        on left: 48 49
+        on right: 40 41 48
     soma (54)
-        à esquerda: 48 49
-        à direita: 46
+        on left: 50 51
+        on right: 48
     termo (55)
-        à esquerda: 50 51
-        à direita: 46 47 50
+        on left: 52 53
+        on right: 48 49 52
     mult (56)
-        à esquerda: 52 53
-        à direita: 50
+        on left: 54 55
+        on right: 52
     fator (57)
-        à esquerda: 54 55 56 57
-        à direita: 50 51
+        on left: 56 57 58 59
+        on right: 52 53
     ativacao (58)
-        à esquerda: 58
-        à direita: 56
+        on left: 60
+        on right: 58
     args (59)
-        à esquerda: 59 60
-        à direita: 58
+        on left: 61 62
+        on right: 60
     arg_lista (60)
-        à esquerda: 61 62 63
-        à direita: 59 61
+        on left: 63 64 65
+        on right: 61 63
 
 
-Estado 0
+State 0
 
     0 $accept: • programa $end
 
-    INT   deslocar, e ir ao estado 1
-    VOID  deslocar, e ir ao estado 2
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
 
-    programa            ir ao estado 3
-    declaracao_lista    ir ao estado 4
-    declaracao          ir ao estado 5
-    var_declaracao      ir ao estado 6
-    tipo_especificador  ir ao estado 7
-    fun_declaracao      ir ao estado 8
+    programa            go to state 3
+    declaracao_lista    go to state 4
+    declaracao          go to state 5
+    var_declaracao      go to state 6
+    tipo_especificador  go to state 7
+    fun_declaracao      go to state 8
 
 
-Estado 1
+State 1
 
     8 tipo_especificador: INT •
 
-    $padrão  reduzir usando a regra 8 (tipo_especificador)
+    $default  reduce using rule 8 (tipo_especificador)
 
 
-Estado 2
+State 2
 
     9 tipo_especificador: VOID •
 
-    $padrão  reduzir usando a regra 9 (tipo_especificador)
+    $default  reduce using rule 9 (tipo_especificador)
 
 
-Estado 3
+State 3
 
     0 $accept: programa • $end
 
-    $end  deslocar, e ir ao estado 9
+    $end  shift, and go to state 9
 
 
-Estado 4
+State 4
 
     1 programa: declaracao_lista •
     2 declaracao_lista: declaracao_lista • declaracao
 
-    INT   deslocar, e ir ao estado 1
-    VOID  deslocar, e ir ao estado 2
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
 
-    $padrão  reduzir usando a regra 1 (programa)
+    $default  reduce using rule 1 (programa)
 
-    declaracao          ir ao estado 10
-    var_declaracao      ir ao estado 6
-    tipo_especificador  ir ao estado 7
-    fun_declaracao      ir ao estado 8
+    declaracao          go to state 10
+    var_declaracao      go to state 6
+    tipo_especificador  go to state 7
+    fun_declaracao      go to state 8
 
 
-Estado 5
+State 5
 
     3 declaracao_lista: declaracao •
 
-    $padrão  reduzir usando a regra 3 (declaracao_lista)
+    $default  reduce using rule 3 (declaracao_lista)
 
 
-Estado 6
+State 6
 
     4 declaracao: var_declaracao •
 
-    $padrão  reduzir usando a regra 4 (declaracao)
+    $default  reduce using rule 4 (declaracao)
 
 
-Estado 7
+State 7
 
     6 var_declaracao: tipo_especificador • ID SEMICOLON
     7               | tipo_especificador • ID LBRACK NUM RBRACK SEMICOLON
    10 fun_declaracao: tipo_especificador • ID LPAREN params RPAREN composto_decl
 
-    ID  deslocar, e ir ao estado 11
+    ID  shift, and go to state 11
 
 
-Estado 8
+State 8
 
     5 declaracao: fun_declaracao •
 
-    $padrão  reduzir usando a regra 5 (declaracao)
+    $default  reduce using rule 5 (declaracao)
 
 
-Estado 9
+State 9
 
     0 $accept: programa $end •
 
-    $padrão  aceitar
+    $default  accept
 
 
-Estado 10
+State 10
 
     2 declaracao_lista: declaracao_lista declaracao •
 
-    $padrão  reduzir usando a regra 2 (declaracao_lista)
+    $default  reduce using rule 2 (declaracao_lista)
 
 
-Estado 11
+State 11
 
     6 var_declaracao: tipo_especificador ID • SEMICOLON
     7               | tipo_especificador ID • LBRACK NUM RBRACK SEMICOLON
    10 fun_declaracao: tipo_especificador ID • LPAREN params RPAREN composto_decl
 
-    SEMICOLON  deslocar, e ir ao estado 12
-    LPAREN     deslocar, e ir ao estado 13
-    LBRACK     deslocar, e ir ao estado 14
+    SEMICOLON  shift, and go to state 12
+    LPAREN     shift, and go to state 13
+    LBRACK     shift, and go to state 14
 
 
-Estado 12
+State 12
 
     6 var_declaracao: tipo_especificador ID SEMICOLON •
 
-    $padrão  reduzir usando a regra 6 (var_declaracao)
+    $default  reduce using rule 6 (var_declaracao)
 
 
-Estado 13
+State 13
 
    10 fun_declaracao: tipo_especificador ID LPAREN • params RPAREN composto_decl
 
-    INT   deslocar, e ir ao estado 1
-    VOID  deslocar, e ir ao estado 15
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 15
 
-    tipo_especificador  ir ao estado 16
-    params              ir ao estado 17
-    param_lista         ir ao estado 18
-    param               ir ao estado 19
+    tipo_especificador  go to state 16
+    params              go to state 17
+    param_lista         go to state 18
+    param               go to state 19
 
 
-Estado 14
+State 14
 
     7 var_declaracao: tipo_especificador ID LBRACK • NUM RBRACK SEMICOLON
 
-    NUM  deslocar, e ir ao estado 20
+    NUM  shift, and go to state 20
 
 
-Estado 15
+State 15
 
     9 tipo_especificador: VOID •
    12 params: VOID •
 
-    RPAREN   reduzir usando a regra 12 (params)
-    $padrão  reduzir usando a regra 9 (tipo_especificador)
+    RPAREN    reduce using rule 12 (params)
+    $default  reduce using rule 9 (tipo_especificador)
 
 
-Estado 16
+State 16
 
    15 param: tipo_especificador • ID
    16      | tipo_especificador • ID LBRACK RBRACK
 
-    ID  deslocar, e ir ao estado 21
+    ID  shift, and go to state 21
 
 
-Estado 17
+State 17
 
    10 fun_declaracao: tipo_especificador ID LPAREN params • RPAREN composto_decl
 
-    RPAREN  deslocar, e ir ao estado 22
+    RPAREN  shift, and go to state 22
 
 
-Estado 18
+State 18
 
    11 params: param_lista •
    13 param_lista: param_lista • COMMA param
 
-    COMMA  deslocar, e ir ao estado 23
+    COMMA  shift, and go to state 23
 
-    $padrão  reduzir usando a regra 11 (params)
+    $default  reduce using rule 11 (params)
 
 
-Estado 19
+State 19
 
    14 param_lista: param •
 
-    $padrão  reduzir usando a regra 14 (param_lista)
+    $default  reduce using rule 14 (param_lista)
 
 
-Estado 20
+State 20
 
     7 var_declaracao: tipo_especificador ID LBRACK NUM • RBRACK SEMICOLON
 
-    RBRACK  deslocar, e ir ao estado 24
+    RBRACK  shift, and go to state 24
 
 
-Estado 21
+State 21
 
    15 param: tipo_especificador ID •
    16      | tipo_especificador ID • LBRACK RBRACK
 
-    LBRACK  deslocar, e ir ao estado 25
+    LBRACK  shift, and go to state 25
 
-    $padrão  reduzir usando a regra 15 (param)
+    $default  reduce using rule 15 (param)
 
 
-Estado 22
+State 22
 
    10 fun_declaracao: tipo_especificador ID LPAREN params RPAREN • composto_decl
 
-    LBRACE  deslocar, e ir ao estado 26
+    SEMICOLON  shift, and go to state 26
+    LBRACE     shift, and go to state 27
 
-    composto_decl  ir ao estado 27
+    composto_decl  go to state 28
 
 
-Estado 23
+State 23
 
    13 param_lista: param_lista COMMA • param
 
-    INT   deslocar, e ir ao estado 1
-    VOID  deslocar, e ir ao estado 2
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
 
-    tipo_especificador  ir ao estado 16
-    param               ir ao estado 28
+    tipo_especificador  go to state 16
+    param               go to state 29
 
 
-Estado 24
+State 24
 
     7 var_declaracao: tipo_especificador ID LBRACK NUM RBRACK • SEMICOLON
 
-    SEMICOLON  deslocar, e ir ao estado 29
+    SEMICOLON  shift, and go to state 30
 
 
-Estado 25
+State 25
 
    16 param: tipo_especificador ID LBRACK • RBRACK
 
-    RBRACK  deslocar, e ir ao estado 30
+    RBRACK  shift, and go to state 31
 
 
-Estado 26
+State 26
+
+   18 composto_decl: SEMICOLON •
+
+    $default  reduce using rule 18 (composto_decl)
+
+
+State 27
 
    17 composto_decl: LBRACE • local_declaracoes statement_lista RBRACE
+   19              | LBRACE • local_declaracoes statement_lista fun_declaracao RBRACE
+   20              | LBRACE • local_declaracoes fun_declaracao statement_lista RBRACE
 
-    $padrão  reduzir usando a regra 19 (local_declaracoes)
+    $default  reduce using rule 22 (local_declaracoes)
 
-    local_declaracoes  ir ao estado 31
+    local_declaracoes  go to state 32
 
 
-Estado 27
+State 28
 
    10 fun_declaracao: tipo_especificador ID LPAREN params RPAREN composto_decl •
 
-    $padrão  reduzir usando a regra 10 (fun_declaracao)
+    $default  reduce using rule 10 (fun_declaracao)
 
 
-Estado 28
+State 29
 
    13 param_lista: param_lista COMMA param •
 
-    $padrão  reduzir usando a regra 13 (param_lista)
+    $default  reduce using rule 13 (param_lista)
 
 
-Estado 29
+State 30
 
     7 var_declaracao: tipo_especificador ID LBRACK NUM RBRACK SEMICOLON •
 
-    $padrão  reduzir usando a regra 7 (var_declaracao)
+    $default  reduce using rule 7 (var_declaracao)
 
 
-Estado 30
+State 31
 
    16 param: tipo_especificador ID LBRACK RBRACK •
 
-    $padrão  reduzir usando a regra 16 (param)
+    $default  reduce using rule 16 (param)
 
 
-Estado 31
+State 32
 
    17 composto_decl: LBRACE local_declaracoes • statement_lista RBRACE
-   18 local_declaracoes: local_declaracoes • var_declaracao
+   19              | LBRACE local_declaracoes • statement_lista fun_declaracao RBRACE
+   20              | LBRACE local_declaracoes • fun_declaracao statement_lista RBRACE
+   21 local_declaracoes: local_declaracoes • var_declaracao
 
-    INT   deslocar, e ir ao estado 1
-    VOID  deslocar, e ir ao estado 2
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
 
-    $padrão  reduzir usando a regra 21 (statement_lista)
+    INT       [reduce using rule 24 (statement_lista)]
+    VOID      [reduce using rule 24 (statement_lista)]
+    $default  reduce using rule 24 (statement_lista)
 
-    var_declaracao      ir ao estado 32
-    tipo_especificador  ir ao estado 33
-    statement_lista     ir ao estado 34
-
-
-Estado 32
-
-   18 local_declaracoes: local_declaracoes var_declaracao •
-
-    $padrão  reduzir usando a regra 18 (local_declaracoes)
+    var_declaracao      go to state 33
+    tipo_especificador  go to state 7
+    fun_declaracao      go to state 34
+    statement_lista     go to state 35
 
 
-Estado 33
+State 33
 
-    6 var_declaracao: tipo_especificador • ID SEMICOLON
-    7               | tipo_especificador • ID LBRACK NUM RBRACK SEMICOLON
+   21 local_declaracoes: local_declaracoes var_declaracao •
 
-    ID  deslocar, e ir ao estado 35
+    $default  reduce using rule 21 (local_declaracoes)
 
 
-Estado 34
+State 34
+
+   20 composto_decl: LBRACE local_declaracoes fun_declaracao • statement_lista RBRACE
+
+    $default  reduce using rule 24 (statement_lista)
+
+    statement_lista  go to state 36
+
+
+State 35
 
    17 composto_decl: LBRACE local_declaracoes statement_lista • RBRACE
-   20 statement_lista: statement_lista • statement
+   19              | LBRACE local_declaracoes statement_lista • fun_declaracao RBRACE
+   23 statement_lista: statement_lista • statement
 
-    IF         deslocar, e ir ao estado 36
-    WHILE      deslocar, e ir ao estado 37
-    RETURN     deslocar, e ir ao estado 38
-    NUM        deslocar, e ir ao estado 39
-    ID         deslocar, e ir ao estado 40
-    SEMICOLON  deslocar, e ir ao estado 41
-    LPAREN     deslocar, e ir ao estado 42
-    LBRACE     deslocar, e ir ao estado 26
-    RBRACE     deslocar, e ir ao estado 43
+    IF         shift, and go to state 37
+    WHILE      shift, and go to state 38
+    RETURN     shift, and go to state 39
+    INT        shift, and go to state 1
+    VOID       shift, and go to state 2
+    NUM        shift, and go to state 40
+    ID         shift, and go to state 41
+    SEMICOLON  shift, and go to state 26
+    LPAREN     shift, and go to state 42
+    LBRACE     shift, and go to state 27
+    RBRACE     shift, and go to state 43
 
-    composto_decl      ir ao estado 44
-    statement          ir ao estado 45
-    expressao_decl     ir ao estado 46
-    selecao_decl       ir ao estado 47
-    iteracao_decl      ir ao estado 48
-    retorno_decl       ir ao estado 49
-    expressao          ir ao estado 50
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
-
-
-Estado 35
-
-    6 var_declaracao: tipo_especificador ID • SEMICOLON
-    7               | tipo_especificador ID • LBRACK NUM RBRACK SEMICOLON
-
-    SEMICOLON  deslocar, e ir ao estado 12
-    LBRACK     deslocar, e ir ao estado 14
+    tipo_especificador  go to state 44
+    fun_declaracao      go to state 45
+    composto_decl       go to state 46
+    statement           go to state 47
+    expressao_decl      go to state 48
+    selecao_decl        go to state 49
+    iteracao_decl       go to state 50
+    retorno_decl        go to state 51
+    expressao           go to state 52
+    var                 go to state 53
+    simples_expressao   go to state 54
+    soma_expressao      go to state 55
+    termo               go to state 56
+    fator               go to state 57
+    ativacao            go to state 58
 
 
-Estado 36
+State 36
 
-   29 selecao_decl: IF • LPAREN expressao RPAREN statement
-   30             | IF • LPAREN expressao RPAREN statement ELSE statement
+   20 composto_decl: LBRACE local_declaracoes fun_declaracao statement_lista • RBRACE
+   23 statement_lista: statement_lista • statement
 
-    LPAREN  deslocar, e ir ao estado 57
+    IF         shift, and go to state 37
+    WHILE      shift, and go to state 38
+    RETURN     shift, and go to state 39
+    NUM        shift, and go to state 40
+    ID         shift, and go to state 41
+    SEMICOLON  shift, and go to state 26
+    LPAREN     shift, and go to state 42
+    LBRACE     shift, and go to state 27
+    RBRACE     shift, and go to state 59
 
-
-Estado 37
-
-   31 iteracao_decl: WHILE • LPAREN expressao RPAREN statement
-
-    LPAREN  deslocar, e ir ao estado 58
-
-
-Estado 38
-
-   32 retorno_decl: RETURN • SEMICOLON
-   33             | RETURN • expressao SEMICOLON
-
-    NUM        deslocar, e ir ao estado 39
-    ID         deslocar, e ir ao estado 40
-    SEMICOLON  deslocar, e ir ao estado 59
-    LPAREN     deslocar, e ir ao estado 42
-
-    expressao          ir ao estado 60
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
+    composto_decl      go to state 46
+    statement          go to state 47
+    expressao_decl     go to state 48
+    selecao_decl       go to state 49
+    iteracao_decl      go to state 50
+    retorno_decl       go to state 51
+    expressao          go to state 52
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
 
-Estado 39
+State 37
 
-   57 fator: NUM •
+   31 selecao_decl: IF • LPAREN expressao RPAREN statement
+   32             | IF • LPAREN expressao RPAREN statement ELSE statement
 
-    $padrão  reduzir usando a regra 57 (fator)
-
-
-Estado 40
-
-   36 var: ID •
-   37    | ID • LBRACK expressao RBRACK
-   58 ativacao: ID • LPAREN args RPAREN
-
-    LPAREN  deslocar, e ir ao estado 61
-    LBRACK  deslocar, e ir ao estado 62
-
-    $padrão  reduzir usando a regra 36 (var)
+    LPAREN  shift, and go to state 60
 
 
-Estado 41
+State 38
 
-   28 expressao_decl: SEMICOLON •
+   33 iteracao_decl: WHILE • LPAREN expressao RPAREN statement
 
-    $padrão  reduzir usando a regra 28 (expressao_decl)
-
-
-Estado 42
-
-   54 fator: LPAREN • expressao RPAREN
-
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
-
-    expressao          ir ao estado 63
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
+    LPAREN  shift, and go to state 61
 
 
-Estado 43
+State 39
+
+   34 retorno_decl: RETURN • SEMICOLON
+   35             | RETURN • expressao SEMICOLON
+
+    NUM        shift, and go to state 40
+    ID         shift, and go to state 41
+    SEMICOLON  shift, and go to state 62
+    LPAREN     shift, and go to state 42
+
+    expressao          go to state 63
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
+
+
+State 40
+
+   59 fator: NUM •
+
+    $default  reduce using rule 59 (fator)
+
+
+State 41
+
+   38 var: ID •
+   39    | ID • LBRACK expressao RBRACK
+   60 ativacao: ID • LPAREN args RPAREN
+
+    LPAREN  shift, and go to state 64
+    LBRACK  shift, and go to state 65
+
+    $default  reduce using rule 38 (var)
+
+
+State 42
+
+   56 fator: LPAREN • expressao RPAREN
+
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+
+    expressao          go to state 66
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
+
+
+State 43
 
    17 composto_decl: LBRACE local_declaracoes statement_lista RBRACE •
 
-    $padrão  reduzir usando a regra 17 (composto_decl)
+    $default  reduce using rule 17 (composto_decl)
 
 
-Estado 44
+State 44
 
-   23 statement: composto_decl •
+   10 fun_declaracao: tipo_especificador • ID LPAREN params RPAREN composto_decl
 
-    $padrão  reduzir usando a regra 23 (statement)
+    ID  shift, and go to state 67
 
 
-Estado 45
+State 45
 
-   20 statement_lista: statement_lista statement •
+   19 composto_decl: LBRACE local_declaracoes statement_lista fun_declaracao • RBRACE
 
-    $padrão  reduzir usando a regra 20 (statement_lista)
+    RBRACE  shift, and go to state 68
 
 
-Estado 46
+State 46
 
-   22 statement: expressao_decl •
+   26 statement: composto_decl •
 
-    $padrão  reduzir usando a regra 22 (statement)
+    $default  reduce using rule 26 (statement)
 
 
-Estado 47
+State 47
 
-   24 statement: selecao_decl •
+   23 statement_lista: statement_lista statement •
 
-    $padrão  reduzir usando a regra 24 (statement)
+    $default  reduce using rule 23 (statement_lista)
 
 
-Estado 48
+State 48
 
-   25 statement: iteracao_decl •
+   25 statement: expressao_decl •
 
-    $padrão  reduzir usando a regra 25 (statement)
+    $default  reduce using rule 25 (statement)
 
 
-Estado 49
+State 49
 
-   26 statement: retorno_decl •
+   27 statement: selecao_decl •
 
-    $padrão  reduzir usando a regra 26 (statement)
+    $default  reduce using rule 27 (statement)
 
 
-Estado 50
+State 50
 
-   27 expressao_decl: expressao • SEMICOLON
+   28 statement: iteracao_decl •
 
-    SEMICOLON  deslocar, e ir ao estado 64
+    $default  reduce using rule 28 (statement)
 
 
-Estado 51
+State 51
 
-   34 expressao: var • ASSIGN expressao
-   55 fator: var •
+   29 statement: retorno_decl •
 
-    ASSIGN  deslocar, e ir ao estado 65
+    $default  reduce using rule 29 (statement)
 
-    $padrão  reduzir usando a regra 55 (fator)
 
+State 52
 
-Estado 52
+   30 expressao_decl: expressao • SEMICOLON
 
-   35 expressao: simples_expressao •
+    SEMICOLON  shift, and go to state 69
 
-    $padrão  reduzir usando a regra 35 (expressao)
 
+State 53
 
-Estado 53
+   36 expressao: var • ASSIGN expressao
+   57 fator: var •
 
-   38 simples_expressao: soma_expressao • relacional soma_expressao
-   39                  | soma_expressao •
-   46 soma_expressao: soma_expressao • soma termo
+    ASSIGN  shift, and go to state 70
 
-    EQ     deslocar, e ir ao estado 66
-    NEQ    deslocar, e ir ao estado 67
-    LT     deslocar, e ir ao estado 68
-    LTE    deslocar, e ir ao estado 69
-    GT     deslocar, e ir ao estado 70
-    GTE    deslocar, e ir ao estado 71
-    PLUS   deslocar, e ir ao estado 72
-    MINUS  deslocar, e ir ao estado 73
+    $default  reduce using rule 57 (fator)
 
-    $padrão  reduzir usando a regra 39 (simples_expressao)
 
-    relacional  ir ao estado 74
-    soma        ir ao estado 75
+State 54
 
+   37 expressao: simples_expressao •
 
-Estado 54
+    $default  reduce using rule 37 (expressao)
 
-   47 soma_expressao: termo •
-   50 termo: termo • mult fator
 
-    TIMES  deslocar, e ir ao estado 76
-    DIV    deslocar, e ir ao estado 77
+State 55
 
-    $padrão  reduzir usando a regra 47 (soma_expressao)
+   40 simples_expressao: soma_expressao • relacional soma_expressao
+   41                  | soma_expressao •
+   48 soma_expressao: soma_expressao • soma termo
 
-    mult  ir ao estado 78
+    EQ     shift, and go to state 71
+    NEQ    shift, and go to state 72
+    LT     shift, and go to state 73
+    LTE    shift, and go to state 74
+    GT     shift, and go to state 75
+    GTE    shift, and go to state 76
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
 
+    $default  reduce using rule 41 (simples_expressao)
 
-Estado 55
+    relacional  go to state 79
+    soma        go to state 80
 
-   51 termo: fator •
 
-    $padrão  reduzir usando a regra 51 (termo)
+State 56
 
+   49 soma_expressao: termo •
+   52 termo: termo • mult fator
 
-Estado 56
+    TIMES  shift, and go to state 81
+    DIV    shift, and go to state 82
 
-   56 fator: ativacao •
+    $default  reduce using rule 49 (soma_expressao)
 
-    $padrão  reduzir usando a regra 56 (fator)
+    mult  go to state 83
 
 
-Estado 57
+State 57
 
-   29 selecao_decl: IF LPAREN • expressao RPAREN statement
-   30             | IF LPAREN • expressao RPAREN statement ELSE statement
+   53 termo: fator •
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
+    $default  reduce using rule 53 (termo)
 
-    expressao          ir ao estado 79
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
 
+State 58
 
-Estado 58
+   58 fator: ativacao •
 
-   31 iteracao_decl: WHILE LPAREN • expressao RPAREN statement
+    $default  reduce using rule 58 (fator)
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
 
-    expressao          ir ao estado 80
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
+State 59
 
+   20 composto_decl: LBRACE local_declaracoes fun_declaracao statement_lista RBRACE •
 
-Estado 59
+    $default  reduce using rule 20 (composto_decl)
 
-   32 retorno_decl: RETURN SEMICOLON •
 
-    $padrão  reduzir usando a regra 32 (retorno_decl)
+State 60
 
+   31 selecao_decl: IF LPAREN • expressao RPAREN statement
+   32             | IF LPAREN • expressao RPAREN statement ELSE statement
 
-Estado 60
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-   33 retorno_decl: RETURN expressao • SEMICOLON
+    expressao          go to state 84
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
-    SEMICOLON  deslocar, e ir ao estado 81
 
+State 61
 
-Estado 61
+   33 iteracao_decl: WHILE LPAREN • expressao RPAREN statement
 
-   58 ativacao: ID LPAREN • args RPAREN
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-    INT     deslocar, e ir ao estado 1
-    VOID    deslocar, e ir ao estado 2
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
+    expressao          go to state 85
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
-    $padrão  reduzir usando a regra 60 (args)
 
-    tipo_especificador  ir ao estado 16
-    param               ir ao estado 82
-    expressao           ir ao estado 83
-    var                 ir ao estado 51
-    simples_expressao   ir ao estado 52
-    soma_expressao      ir ao estado 53
-    termo               ir ao estado 54
-    fator               ir ao estado 55
-    ativacao            ir ao estado 56
-    args                ir ao estado 84
-    arg_lista           ir ao estado 85
+State 62
 
+   34 retorno_decl: RETURN SEMICOLON •
 
-Estado 62
+    $default  reduce using rule 34 (retorno_decl)
 
-   37 var: ID LBRACK • expressao RBRACK
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
+State 63
 
-    expressao          ir ao estado 86
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
+   35 retorno_decl: RETURN expressao • SEMICOLON
 
+    SEMICOLON  shift, and go to state 86
 
-Estado 63
 
-   54 fator: LPAREN expressao • RPAREN
+State 64
 
-    RPAREN  deslocar, e ir ao estado 87
+   60 ativacao: ID LPAREN • args RPAREN
 
+    INT     shift, and go to state 1
+    VOID    shift, and go to state 2
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-Estado 64
+    $default  reduce using rule 62 (args)
 
-   27 expressao_decl: expressao SEMICOLON •
+    tipo_especificador  go to state 16
+    param               go to state 87
+    expressao           go to state 88
+    var                 go to state 53
+    simples_expressao   go to state 54
+    soma_expressao      go to state 55
+    termo               go to state 56
+    fator               go to state 57
+    ativacao            go to state 58
+    args                go to state 89
+    arg_lista           go to state 90
 
-    $padrão  reduzir usando a regra 27 (expressao_decl)
 
+State 65
 
-Estado 65
+   39 var: ID LBRACK • expressao RBRACK
 
-   34 expressao: var ASSIGN • expressao
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
+    expressao          go to state 91
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
-    expressao          ir ao estado 88
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
 
+State 66
 
-Estado 66
+   56 fator: LPAREN expressao • RPAREN
 
-   44 relacional: EQ •
+    RPAREN  shift, and go to state 92
 
-    $padrão  reduzir usando a regra 44 (relacional)
 
+State 67
 
-Estado 67
+   10 fun_declaracao: tipo_especificador ID • LPAREN params RPAREN composto_decl
 
-   45 relacional: NEQ •
+    LPAREN  shift, and go to state 13
 
-    $padrão  reduzir usando a regra 45 (relacional)
 
+State 68
 
-Estado 68
+   19 composto_decl: LBRACE local_declaracoes statement_lista fun_declaracao RBRACE •
 
-   40 relacional: LT •
+    $default  reduce using rule 19 (composto_decl)
 
-    $padrão  reduzir usando a regra 40 (relacional)
 
+State 69
 
-Estado 69
+   30 expressao_decl: expressao SEMICOLON •
 
-   41 relacional: LTE •
+    $default  reduce using rule 30 (expressao_decl)
 
-    $padrão  reduzir usando a regra 41 (relacional)
 
+State 70
 
-Estado 70
+   36 expressao: var ASSIGN • expressao
 
-   42 relacional: GT •
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-    $padrão  reduzir usando a regra 42 (relacional)
+    expressao          go to state 93
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
 
-Estado 71
+State 71
 
-   43 relacional: GTE •
+   46 relacional: EQ •
 
-    $padrão  reduzir usando a regra 43 (relacional)
+    $default  reduce using rule 46 (relacional)
 
 
-Estado 72
+State 72
 
-   48 soma: PLUS •
+   47 relacional: NEQ •
 
-    $padrão  reduzir usando a regra 48 (soma)
+    $default  reduce using rule 47 (relacional)
 
 
-Estado 73
+State 73
 
-   49 soma: MINUS •
+   42 relacional: LT •
 
-    $padrão  reduzir usando a regra 49 (soma)
+    $default  reduce using rule 42 (relacional)
 
 
-Estado 74
+State 74
 
-   38 simples_expressao: soma_expressao relacional • soma_expressao
+   43 relacional: LTE •
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
+    $default  reduce using rule 43 (relacional)
 
-    var             ir ao estado 89
-    soma_expressao  ir ao estado 90
-    termo           ir ao estado 54
-    fator           ir ao estado 55
-    ativacao        ir ao estado 56
 
+State 75
 
-Estado 75
+   44 relacional: GT •
 
-   46 soma_expressao: soma_expressao soma • termo
+    $default  reduce using rule 44 (relacional)
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
 
-    var       ir ao estado 89
-    termo     ir ao estado 91
-    fator     ir ao estado 55
-    ativacao  ir ao estado 56
+State 76
 
+   45 relacional: GTE •
 
-Estado 76
+    $default  reduce using rule 45 (relacional)
 
-   52 mult: TIMES •
 
-    $padrão  reduzir usando a regra 52 (mult)
+State 77
 
+   50 soma: PLUS •
 
-Estado 77
+    $default  reduce using rule 50 (soma)
 
-   53 mult: DIV •
 
-    $padrão  reduzir usando a regra 53 (mult)
+State 78
 
+   51 soma: MINUS •
 
-Estado 78
+    $default  reduce using rule 51 (soma)
 
-   50 termo: termo mult • fator
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
+State 79
 
-    var       ir ao estado 89
-    fator     ir ao estado 92
-    ativacao  ir ao estado 56
+   40 simples_expressao: soma_expressao relacional • soma_expressao
 
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-Estado 79
+    var             go to state 94
+    soma_expressao  go to state 95
+    termo           go to state 56
+    fator           go to state 57
+    ativacao        go to state 58
 
-   29 selecao_decl: IF LPAREN expressao • RPAREN statement
-   30             | IF LPAREN expressao • RPAREN statement ELSE statement
 
-    RPAREN  deslocar, e ir ao estado 93
+State 80
 
+   48 soma_expressao: soma_expressao soma • termo
 
-Estado 80
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-   31 iteracao_decl: WHILE LPAREN expressao • RPAREN statement
+    var       go to state 94
+    termo     go to state 96
+    fator     go to state 57
+    ativacao  go to state 58
 
-    RPAREN  deslocar, e ir ao estado 94
 
+State 81
 
-Estado 81
+   54 mult: TIMES •
 
-   33 retorno_decl: RETURN expressao SEMICOLON •
+    $default  reduce using rule 54 (mult)
 
-    $padrão  reduzir usando a regra 33 (retorno_decl)
 
+State 82
 
-Estado 82
+   55 mult: DIV •
 
-   63 arg_lista: param •
+    $default  reduce using rule 55 (mult)
 
-    $padrão  reduzir usando a regra 63 (arg_lista)
 
+State 83
 
-Estado 83
+   52 termo: termo mult • fator
 
-   62 arg_lista: expressao •
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-    $padrão  reduzir usando a regra 62 (arg_lista)
+    var       go to state 94
+    fator     go to state 97
+    ativacao  go to state 58
 
 
-Estado 84
+State 84
 
-   58 ativacao: ID LPAREN args • RPAREN
+   31 selecao_decl: IF LPAREN expressao • RPAREN statement
+   32             | IF LPAREN expressao • RPAREN statement ELSE statement
 
-    RPAREN  deslocar, e ir ao estado 95
+    RPAREN  shift, and go to state 98
 
 
-Estado 85
+State 85
 
-   59 args: arg_lista •
-   61 arg_lista: arg_lista • COMMA expressao
+   33 iteracao_decl: WHILE LPAREN expressao • RPAREN statement
 
-    COMMA  deslocar, e ir ao estado 96
+    RPAREN  shift, and go to state 99
 
-    $padrão  reduzir usando a regra 59 (args)
 
+State 86
 
-Estado 86
+   35 retorno_decl: RETURN expressao SEMICOLON •
 
-   37 var: ID LBRACK expressao • RBRACK
+    $default  reduce using rule 35 (retorno_decl)
 
-    RBRACK  deslocar, e ir ao estado 97
 
+State 87
 
-Estado 87
+   65 arg_lista: param •
 
-   54 fator: LPAREN expressao RPAREN •
+    $default  reduce using rule 65 (arg_lista)
 
-    $padrão  reduzir usando a regra 54 (fator)
 
+State 88
 
-Estado 88
+   64 arg_lista: expressao •
 
-   34 expressao: var ASSIGN expressao •
+    $default  reduce using rule 64 (arg_lista)
 
-    $padrão  reduzir usando a regra 34 (expressao)
 
+State 89
 
-Estado 89
+   60 ativacao: ID LPAREN args • RPAREN
 
-   55 fator: var •
+    RPAREN  shift, and go to state 100
 
-    $padrão  reduzir usando a regra 55 (fator)
 
+State 90
 
-Estado 90
+   61 args: arg_lista •
+   63 arg_lista: arg_lista • COMMA expressao
 
-   38 simples_expressao: soma_expressao relacional soma_expressao •
-   46 soma_expressao: soma_expressao • soma termo
+    COMMA  shift, and go to state 101
 
-    PLUS   deslocar, e ir ao estado 72
-    MINUS  deslocar, e ir ao estado 73
+    $default  reduce using rule 61 (args)
 
-    $padrão  reduzir usando a regra 38 (simples_expressao)
 
-    soma  ir ao estado 75
+State 91
 
+   39 var: ID LBRACK expressao • RBRACK
 
-Estado 91
+    RBRACK  shift, and go to state 102
 
-   46 soma_expressao: soma_expressao soma termo •
-   50 termo: termo • mult fator
 
-    TIMES  deslocar, e ir ao estado 76
-    DIV    deslocar, e ir ao estado 77
+State 92
 
-    $padrão  reduzir usando a regra 46 (soma_expressao)
+   56 fator: LPAREN expressao RPAREN •
 
-    mult  ir ao estado 78
+    $default  reduce using rule 56 (fator)
 
 
-Estado 92
+State 93
 
-   50 termo: termo mult fator •
+   36 expressao: var ASSIGN expressao •
 
-    $padrão  reduzir usando a regra 50 (termo)
+    $default  reduce using rule 36 (expressao)
 
 
-Estado 93
+State 94
 
-   29 selecao_decl: IF LPAREN expressao RPAREN • statement
-   30             | IF LPAREN expressao RPAREN • statement ELSE statement
+   57 fator: var •
 
-    IF         deslocar, e ir ao estado 36
-    WHILE      deslocar, e ir ao estado 37
-    RETURN     deslocar, e ir ao estado 38
-    NUM        deslocar, e ir ao estado 39
-    ID         deslocar, e ir ao estado 40
-    SEMICOLON  deslocar, e ir ao estado 41
-    LPAREN     deslocar, e ir ao estado 42
-    LBRACE     deslocar, e ir ao estado 26
+    $default  reduce using rule 57 (fator)
 
-    composto_decl      ir ao estado 44
-    statement          ir ao estado 98
-    expressao_decl     ir ao estado 46
-    selecao_decl       ir ao estado 47
-    iteracao_decl      ir ao estado 48
-    retorno_decl       ir ao estado 49
-    expressao          ir ao estado 50
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
 
+State 95
 
-Estado 94
+   40 simples_expressao: soma_expressao relacional soma_expressao •
+   48 soma_expressao: soma_expressao • soma termo
 
-   31 iteracao_decl: WHILE LPAREN expressao RPAREN • statement
+    PLUS   shift, and go to state 77
+    MINUS  shift, and go to state 78
 
-    IF         deslocar, e ir ao estado 36
-    WHILE      deslocar, e ir ao estado 37
-    RETURN     deslocar, e ir ao estado 38
-    NUM        deslocar, e ir ao estado 39
-    ID         deslocar, e ir ao estado 40
-    SEMICOLON  deslocar, e ir ao estado 41
-    LPAREN     deslocar, e ir ao estado 42
-    LBRACE     deslocar, e ir ao estado 26
+    $default  reduce using rule 40 (simples_expressao)
 
-    composto_decl      ir ao estado 44
-    statement          ir ao estado 99
-    expressao_decl     ir ao estado 46
-    selecao_decl       ir ao estado 47
-    iteracao_decl      ir ao estado 48
-    retorno_decl       ir ao estado 49
-    expressao          ir ao estado 50
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
+    soma  go to state 80
 
 
-Estado 95
+State 96
 
-   58 ativacao: ID LPAREN args RPAREN •
+   48 soma_expressao: soma_expressao soma termo •
+   52 termo: termo • mult fator
 
-    $padrão  reduzir usando a regra 58 (ativacao)
+    TIMES  shift, and go to state 81
+    DIV    shift, and go to state 82
 
+    $default  reduce using rule 48 (soma_expressao)
 
-Estado 96
+    mult  go to state 83
 
-   61 arg_lista: arg_lista COMMA • expressao
 
-    NUM     deslocar, e ir ao estado 39
-    ID      deslocar, e ir ao estado 40
-    LPAREN  deslocar, e ir ao estado 42
+State 97
 
-    expressao          ir ao estado 100
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
+   52 termo: termo mult fator •
 
+    $default  reduce using rule 52 (termo)
 
-Estado 97
 
-   37 var: ID LBRACK expressao RBRACK •
+State 98
 
-    $padrão  reduzir usando a regra 37 (var)
+   31 selecao_decl: IF LPAREN expressao RPAREN • statement
+   32             | IF LPAREN expressao RPAREN • statement ELSE statement
 
+    IF         shift, and go to state 37
+    WHILE      shift, and go to state 38
+    RETURN     shift, and go to state 39
+    NUM        shift, and go to state 40
+    ID         shift, and go to state 41
+    SEMICOLON  shift, and go to state 26
+    LPAREN     shift, and go to state 42
+    LBRACE     shift, and go to state 27
 
-Estado 98
+    composto_decl      go to state 46
+    statement          go to state 103
+    expressao_decl     go to state 48
+    selecao_decl       go to state 49
+    iteracao_decl      go to state 50
+    retorno_decl       go to state 51
+    expressao          go to state 52
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
-   29 selecao_decl: IF LPAREN expressao RPAREN statement •
-   30             | IF LPAREN expressao RPAREN statement • ELSE statement
 
-    ELSE  deslocar, e ir ao estado 101
+State 99
 
-    ELSE     [reduzir usando a regra 29 (selecao_decl)]
-    $padrão  reduzir usando a regra 29 (selecao_decl)
+   33 iteracao_decl: WHILE LPAREN expressao RPAREN • statement
 
+    IF         shift, and go to state 37
+    WHILE      shift, and go to state 38
+    RETURN     shift, and go to state 39
+    NUM        shift, and go to state 40
+    ID         shift, and go to state 41
+    SEMICOLON  shift, and go to state 26
+    LPAREN     shift, and go to state 42
+    LBRACE     shift, and go to state 27
 
-Estado 99
+    composto_decl      go to state 46
+    statement          go to state 104
+    expressao_decl     go to state 48
+    selecao_decl       go to state 49
+    iteracao_decl      go to state 50
+    retorno_decl       go to state 51
+    expressao          go to state 52
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
-   31 iteracao_decl: WHILE LPAREN expressao RPAREN statement •
 
-    $padrão  reduzir usando a regra 31 (iteracao_decl)
+State 100
 
+   60 ativacao: ID LPAREN args RPAREN •
 
-Estado 100
+    $default  reduce using rule 60 (ativacao)
 
-   61 arg_lista: arg_lista COMMA expressao •
 
-    $padrão  reduzir usando a regra 61 (arg_lista)
+State 101
 
+   63 arg_lista: arg_lista COMMA • expressao
 
-Estado 101
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-   30 selecao_decl: IF LPAREN expressao RPAREN statement ELSE • statement
+    expressao          go to state 105
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
 
-    IF         deslocar, e ir ao estado 36
-    WHILE      deslocar, e ir ao estado 37
-    RETURN     deslocar, e ir ao estado 38
-    NUM        deslocar, e ir ao estado 39
-    ID         deslocar, e ir ao estado 40
-    SEMICOLON  deslocar, e ir ao estado 41
-    LPAREN     deslocar, e ir ao estado 42
-    LBRACE     deslocar, e ir ao estado 26
 
-    composto_decl      ir ao estado 44
-    statement          ir ao estado 102
-    expressao_decl     ir ao estado 46
-    selecao_decl       ir ao estado 47
-    iteracao_decl      ir ao estado 48
-    retorno_decl       ir ao estado 49
-    expressao          ir ao estado 50
-    var                ir ao estado 51
-    simples_expressao  ir ao estado 52
-    soma_expressao     ir ao estado 53
-    termo              ir ao estado 54
-    fator              ir ao estado 55
-    ativacao           ir ao estado 56
+State 102
 
+   39 var: ID LBRACK expressao RBRACK •
 
-Estado 102
+    $default  reduce using rule 39 (var)
 
-   30 selecao_decl: IF LPAREN expressao RPAREN statement ELSE statement •
 
-    $padrão  reduzir usando a regra 30 (selecao_decl)
+State 103
+
+   31 selecao_decl: IF LPAREN expressao RPAREN statement •
+   32             | IF LPAREN expressao RPAREN statement • ELSE statement
+
+    ELSE  shift, and go to state 106
+
+    $default  reduce using rule 31 (selecao_decl)
+
+
+State 104
+
+   33 iteracao_decl: WHILE LPAREN expressao RPAREN statement •
+
+    $default  reduce using rule 33 (iteracao_decl)
+
+
+State 105
+
+   63 arg_lista: arg_lista COMMA expressao •
+
+    $default  reduce using rule 63 (arg_lista)
+
+
+State 106
+
+   32 selecao_decl: IF LPAREN expressao RPAREN statement ELSE • statement
+
+    IF         shift, and go to state 37
+    WHILE      shift, and go to state 38
+    RETURN     shift, and go to state 39
+    NUM        shift, and go to state 40
+    ID         shift, and go to state 41
+    SEMICOLON  shift, and go to state 26
+    LPAREN     shift, and go to state 42
+    LBRACE     shift, and go to state 27
+
+    composto_decl      go to state 46
+    statement          go to state 107
+    expressao_decl     go to state 48
+    selecao_decl       go to state 49
+    iteracao_decl      go to state 50
+    retorno_decl       go to state 51
+    expressao          go to state 52
+    var                go to state 53
+    simples_expressao  go to state 54
+    soma_expressao     go to state 55
+    termo              go to state 56
+    fator              go to state 57
+    ativacao           go to state 58
+
+
+State 107
+
+   32 selecao_decl: IF LPAREN expressao RPAREN statement ELSE statement •
+
+    $default  reduce using rule 32 (selecao_decl)

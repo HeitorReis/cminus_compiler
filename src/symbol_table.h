@@ -24,13 +24,16 @@ typedef struct Symbol {
 
 typedef struct {
     Symbol *table[SIZE];
+    int count; // número de símbolos inseridos
 } SymbolTable;
+
 
 void initSymbolTable(SymbolTable *table);
 int insertSymbol(SymbolTable *table, char *name, char *scope, SymbolType type, int line, primitiveType dataType);
 Symbol *findSymbol(SymbolTable *table, char *name, char *scope);
 void addLine(Symbol *symbol, int line);
 void printSymbolTable(SymbolTable *table);
+void freeSymbolTable(SymbolTable *table);
 int hash(char *key);
 
 #endif // SYMBOL_TABLE_H

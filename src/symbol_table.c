@@ -4,20 +4,48 @@
 #include "symbol_table.h"
 
 int hash(char *key) {
+    return internalHash(key, SIZE);
+}
+
+int internalHash(char *key, int modulo) {
     int temp = 0;
     int i = 0;
     while (key[i] != '\0') {
-        temp = ((temp << SHIFT) + key[i]) % SIZE;
+        temp = ((temp << SHIFT) + key[i]) % modulo;
         ++i;
     }
     return temp;
 }
+
 
 void initSymbolTable(SymbolTable *table) {
     for (int i = 0; i < SIZE; i++) {
         table->table[i] = NULL;
     }
 }
+
+void freeSymbolTable(SymbolTable *table) {
+    for (int i = 0; i < SIZE; i++) {
+        Symbol *symbol = table->table[i];
+        while (symbol) {
+            Symbol *temp = symbol;
+            symbol = symbol->next;
+
+            LineList *line = temp->lines;
+            while (line) {
+                LineList *tempLine = line;
+                line = line->next;
+                free(tempLine);
+            }
+
+            free(temp->name);
+            free(temp->scope);
+            free(temp);
+        }
+        table->table[i] = NULL;
+    }
+}
+
 
 int insertSymbol(SymbolTable *table, char *name, char *scope, SymbolType type, int line, primitiveType dataType) {
     int index = hash(name);
@@ -35,6 +63,7 @@ int insertSymbol(SymbolTable *table, char *name, char *scope, SymbolType type, i
     newSymbol->dataType = dataType;
     newSymbol->next = table->table[index];
     table->table[index] = newSymbol;
+    table->count++;
     return 0;
 }
 
@@ -51,6 +80,7 @@ Symbol *findSymbol(SymbolTable *table, char *name, char *scope) {
 }
 
 void addLine(Symbol *symbol, int line) {
+    if (!symbol) return;
     LineList *newLine = (LineList *)malloc(sizeof(LineList));
     newLine->line = line;
     newLine->next = symbol->lines;

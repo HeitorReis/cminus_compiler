@@ -10,7 +10,7 @@ extern int yyparse();
 extern FILE *yyin;
 
 // Raiz da árvore sintática gerada pelo parser
-extern treeNode *syntax_tree;
+extern treeNode *syntaxTree;
 
 //Raiz da tabela de simbolos
 extern SymbolTable tabela;
@@ -33,11 +33,11 @@ int main(int argc, char **argv) {
 
     // Executar o parser
     printf("Analisando o arquivo: %s\n", argv[1]);
-    syntax_tree = parse();
+    syntaxTree = parse();
     if(parseResult == 0 && erro_lexico == 0){
         printf("Análise sintática concluída com sucesso.\n");
         printf("Árvore sintática gerada:\n");
-        printSyntaxTree(syntax_tree); // Imprime a árvore sintática
+        printSyntaxTree(syntaxTree); // Imprime a árvore sintática
     } else {
         return EXIT_SUCCESS;
     }

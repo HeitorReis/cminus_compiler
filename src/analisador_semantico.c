@@ -10,6 +10,15 @@
 extern SymbolTable tabela;
 extern treeNode *syntaxTree;
 
+// Função para inicializar funções built-in
+void inicializaFuncoesBuiltIn() {
+    // Inserir a função input: retorna Integer e sem parâmetros (linha 0 indica símbolo interno)
+    insertSymbol(&tabela, "input", "global", FUNC, 0, Integer);
+    
+    // Inserir a função output: retorna Void e recebe um parâmetro do tipo Integer
+    insertSymbol(&tabela, "output", "global", FUNC, 0, Void);
+}
+
 void checkUndeclaredVariable(char *name, char *scope, int line) {
     if (!findSymbol(&tabela, name, scope)) {
         printf("Erro semântico: Variável '%s' não declarada na linha %d\n", name, line);
@@ -111,6 +120,12 @@ void traverseTree(treeNode *node, char *scope) {
 }
 
 void semanticAnalysis() {
+    // Insere os símbolos das funções built-in na Tabela de Símbolos
+    inicializaFuncoesBuiltIn();
+    
+    // Verifica se a função main foi declarada
     checkMainFunctionDeclared();
+    
+    // Percorre a árvore sintática para inserir os símbolos declarados pelo usuário
     traverseTree(syntaxTree, "global");
 }
