@@ -21,6 +21,7 @@ int internalHash(char *key, int modulo) {
 void initSymbolTable(SymbolTable *table) {
     for (int i = 0; i < SIZE; i++) {
         table->table[i] = NULL;
+        table->count = 0;
     }
 }
 
@@ -54,6 +55,12 @@ int insertSymbol(SymbolTable *table, char *name, char *scope, SymbolType type, i
         fprintf(stderr, "Memory allocation error\n");
         return -1;
     }
+    Symbol *existing = findSymbol(table, name, scope);
+    if (existing) {
+        // Just record the new line number
+        addLine(existing, line);
+        return 0;  // no new symbol allocated
+    }
     newSymbol->name = strdup(name);
     newSymbol->scope = strdup(scope);
     newSymbol->type = type;
@@ -83,6 +90,11 @@ void addLine(Symbol *symbol, int line) {
     if (!symbol) return;
     LineList *newLine = (LineList *)malloc(sizeof(LineList));
     newLine->line = line;
+    LineList *aux = symbol->lines;
+    while(aux->next){
+        if(aux->line == line) return;
+        aux = aux->next;
+    }
     newLine->next = symbol->lines;
     symbol->lines = newLine;
 }

@@ -1,4 +1,4 @@
-// Exemplo: em analisador_semantico.h
+// Exemplo: em semantic.h
 #ifndef SEMANTIC_ANALYSIS_H
 #define SEMANTIC_ANALYSIS_H
 
