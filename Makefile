@@ -17,7 +17,7 @@ LEX_C := $(BUILD_DIR)/lex.yy.c
 OBJECTS := $(BUILD_DIR)/main.o \
            $(BUILD_DIR)/parser.tab.o \
            $(BUILD_DIR)/lex.yy.o \
-           $(BUILD_DIR)/analisador_semantico.o \
+           $(BUILD_DIR)/semantic.o \
            $(BUILD_DIR)/symbol_table.o \
            $(BUILD_DIR)/syntax_tree.o \
            $(BUILD_DIR)/node.o \

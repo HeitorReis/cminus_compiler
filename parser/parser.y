@@ -6,6 +6,7 @@
   #include "node.h"
   #include "utils.h"
   #include "symbol_table.h"
+  #include "semantic.h"
   
   treeNode *syntax_tree;
   SymbolTable tabela;
