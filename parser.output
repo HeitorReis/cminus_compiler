@@ -519,6 +519,37 @@ State 32
     fun_declaracao      go to state 34
     statement_lista     go to state 35
 
+    shift/reduce conflict on token INT:
+       24 statement_lista: ε •
+        8 tipo_especificador: • INT
+      Example: LBRACE local_declaracoes • INT ID LPAREN params RPAREN composto_decl RBRACE
+      Shift derivation
+        composto_decl
+        ↳ 20: LBRACE local_declaracoes fun_declaracao                                                 statement_lista RBRACE
+                                       ↳ 10: tipo_especificador ID LPAREN params RPAREN composto_decl ↳ 20: ε
+                                             ↳ 8: • INT
+      Reduce derivation
+        composto_decl
+        ↳ 19: LBRACE local_declaracoes statement_lista fun_declaracao                                                 RBRACE
+                                       ↳ 24: ε •       ↳ 10: tipo_especificador ID LPAREN params RPAREN composto_decl
+                                                             ↳ 8: INT
+
+    shift/reduce conflict on token VOID:
+       24 statement_lista: ε •
+        9 tipo_especificador: • VOID
+      Example: LBRACE local_declaracoes • VOID ID LPAREN params RPAREN composto_decl RBRACE
+      Shift derivation
+        composto_decl
+        ↳ 20: LBRACE local_declaracoes fun_declaracao                                                 statement_lista RBRACE
+                                       ↳ 10: tipo_especificador ID LPAREN params RPAREN composto_decl ↳ 20: ε
+                                             ↳ 9: • VOID
+      Reduce derivation
+        composto_decl
+        ↳ 19: LBRACE local_declaracoes statement_lista fun_declaracao                                                 RBRACE
+                                       ↳ 24: ε •       ↳ 10: tipo_especificador ID LPAREN params RPAREN composto_decl
+                                                             ↳ 9: VOID
+
+
 
 State 33
 

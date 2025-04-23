@@ -1,3 +1,4 @@
+// symbol_table.h
 #ifndef SYMBOL_TABLE_H
 #define SYMBOL_TABLE_H
 
@@ -19,21 +20,29 @@ typedef struct Symbol {
     SymbolType type;
     LineList *lines;
     primitiveType dataType;
-    struct Symbol *next; // Para resolver colisões na tabela hash
+    struct Symbol *next;
 } Symbol;
 
 typedef struct {
     Symbol *table[SIZE];
-    int count; // número de símbolos inseridos
+    int count;
 } SymbolTable;
 
-
 void initSymbolTable(SymbolTable *table);
-int insertSymbol(SymbolTable *table, char *name, char *scope, SymbolType type, int line, primitiveType dataType);
-Symbol *findSymbol(SymbolTable *table, char *name, char *scope);
+int insertSymbol(SymbolTable *table,
+                const char *name,
+                const char *scope,
+                SymbolType type,
+                int line,
+                primitiveType dataType);
+Symbol *findSymbol(SymbolTable *table,
+                   const char *name,
+                   const char *scope);
 void addLine(Symbol *symbol, int line);
 void printSymbolTable(SymbolTable *table);
 void freeSymbolTable(SymbolTable *table);
-int hash(char *key);
+int hash(const char *key);
+const char* primitiveTypeToString(primitiveType type);
+const char* symbolTypeToString(SymbolType type);
 
 #endif // SYMBOL_TABLE_H

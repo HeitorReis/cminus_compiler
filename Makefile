@@ -47,7 +47,7 @@ $(BUILD_DIR) $(BIN_DIR):
 
 # Generate parser using bison with flags -d -v -g
 $(YACC_C) $(YACC_H): $(YACC_FILE) | $(BUILD_DIR)
-	bison -d -v -g $(YACC_FILE)
+	bison -d -v -g -Wcounterexamples $(YACC_FILE)
 	mv -f parser.tab.c $(BUILD_DIR)/
 	mv -f parser.tab.h $(BUILD_DIR)/
 

@@ -11,10 +11,11 @@ extern FILE *yyin;
 
 extern treeNode *syntaxTree;
 extern SymbolTable tabela;
-extern int parseResult;
-extern int erro_lexico;
+int parseResult = 0;
+int erro_lexico = 0;
 
 int main(int argc, char **argv) {
+    printf("Início do main\n");
     if (argc < 2) {
         fprintf(stderr, "Uso: %s <arquivo_de_entrada>\n", argv[0]);
         return EXIT_FAILURE;
