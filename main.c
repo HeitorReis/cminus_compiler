@@ -44,8 +44,6 @@ int main(int argc, char **argv) {
 
    // === RUN SEMANTIC ANALYSIS ===
     semanticAnalysis(syntaxTree);
-   // If there are errors, semanticAnalysis will print them and exit.
-   // Otherwise it prints success and we continue.
 
     fclose(yyin);
     return EXIT_SUCCESS;

@@ -90,14 +90,16 @@ Grammar
    58      | ativacao
    59      | NUM
 
-   60 ativacao: ID LPAREN args RPAREN
+   60 @1: ε
 
-   61 args: arg_lista
-   62     | ε
+   61 ativacao: ID LPAREN args RPAREN @1 ID LPAREN args RPAREN
 
-   63 arg_lista: arg_lista COMMA expressao
-   64          | expressao
-   65          | param
+   62 args: arg_lista
+   63     | ε
+
+   64 arg_lista: arg_lista COMMA expressao
+   65          | expressao
+   66          | param
 
 
 Terminals, with rules where they appear
@@ -109,7 +111,7 @@ Terminals, with rules where they appear
     INT (4) 8
     VOID (5) 9 12
     NUM (6) 7 59
-    ID (7) 6 7 10 15 16 38 39 60
+    ID (7) 6 7 10 15 16 38 39 61
     EQ (8) 46
     NEQ (9) 47
     LT (10) 42
@@ -122,9 +124,9 @@ Terminals, with rules where they appear
     DIV (17) 55
     ASSIGN (18) 36
     SEMICOLON (19) 6 7 18 30 34 35
-    COMMA (20) 13 63
-    LPAREN (21) 10 31 32 33 56 60
-    RPAREN (22) 10 31 32 33 56 60
+    COMMA (20) 13 64
+    LPAREN (21) 10 31 32 33 56 61
+    RPAREN (22) 10 31 32 33 56 61
     LBRACE (23) 17 19 20
     RBRACE (24) 17 19 20
     LBRACK (25) 7 16 39
@@ -164,7 +166,7 @@ Nonterminals, with rules where they appear
         on right: 11 13
     param (40)
         on left: 15 16
-        on right: 13 14 65
+        on right: 13 14 66
     composto_decl (41)
         on left: 17 18 19 20
         on right: 10 26
@@ -191,7 +193,7 @@ Nonterminals, with rules where they appear
         on right: 29
     expressao (49)
         on left: 36 37
-        on right: 30 31 32 33 35 36 39 56 63 64
+        on right: 30 31 32 33 35 36 39 56 64 65
     var (50)
         on left: 38 39
         on right: 36 57
@@ -217,14 +219,17 @@ Nonterminals, with rules where they appear
         on left: 56 57 58 59
         on right: 52 53
     ativacao (58)
-        on left: 60
+        on left: 61
         on right: 58
-    args (59)
-        on left: 61 62
-        on right: 60
-    arg_lista (60)
-        on left: 63 64 65
-        on right: 61 63
+    @1 (59)
+        on left: 60
+        on right: 61
+    args (60)
+        on left: 62 63
+        on right: 61
+    arg_lista (61)
+        on left: 64 65 66
+        on right: 62 64
 
 
 State 0
@@ -677,7 +682,7 @@ State 41
 
    38 var: ID •
    39    | ID • LBRACK expressao RBRACK
-   60 ativacao: ID • LPAREN args RPAREN
+   61 ativacao: ID • LPAREN args RPAREN @1 ID LPAREN args RPAREN
 
     LPAREN  shift, and go to state 64
     LBRACK  shift, and go to state 65
@@ -895,7 +900,7 @@ State 63
 
 State 64
 
-   60 ativacao: ID LPAREN • args RPAREN
+   61 ativacao: ID LPAREN • args RPAREN @1 ID LPAREN args RPAREN
 
     INT     shift, and go to state 1
     VOID    shift, and go to state 2
@@ -903,7 +908,7 @@ State 64
     ID      shift, and go to state 41
     LPAREN  shift, and go to state 42
 
-    $default  reduce using rule 62 (args)
+    $default  reduce using rule 63 (args)
 
     tipo_especificador  go to state 16
     param               go to state 87
@@ -1116,33 +1121,33 @@ State 86
 
 State 87
 
-   65 arg_lista: param •
+   66 arg_lista: param •
 
-    $default  reduce using rule 65 (arg_lista)
+    $default  reduce using rule 66 (arg_lista)
 
 
 State 88
 
-   64 arg_lista: expressao •
+   65 arg_lista: expressao •
 
-    $default  reduce using rule 64 (arg_lista)
+    $default  reduce using rule 65 (arg_lista)
 
 
 State 89
 
-   60 ativacao: ID LPAREN args • RPAREN
+   61 ativacao: ID LPAREN args • RPAREN @1 ID LPAREN args RPAREN
 
     RPAREN  shift, and go to state 100
 
 
 State 90
 
-   61 args: arg_lista •
-   63 arg_lista: arg_lista • COMMA expressao
+   62 args: arg_lista •
+   64 arg_lista: arg_lista • COMMA expressao
 
     COMMA  shift, and go to state 101
 
-    $default  reduce using rule 61 (args)
+    $default  reduce using rule 62 (args)
 
 
 State 91
@@ -1265,20 +1270,22 @@ State 99
 
 State 100
 
-   60 ativacao: ID LPAREN args RPAREN •
+   61 ativacao: ID LPAREN args RPAREN • @1 ID LPAREN args RPAREN
 
-    $default  reduce using rule 60 (ativacao)
+    $default  reduce using rule 60 (@1)
+
+    @1  go to state 105
 
 
 State 101
 
-   63 arg_lista: arg_lista COMMA • expressao
+   64 arg_lista: arg_lista COMMA • expressao
 
     NUM     shift, and go to state 40
     ID      shift, and go to state 41
     LPAREN  shift, and go to state 42
 
-    expressao          go to state 105
+    expressao          go to state 106
     var                go to state 53
     simples_expressao  go to state 54
     soma_expressao     go to state 55
@@ -1299,7 +1306,7 @@ State 103
    31 selecao_decl: IF LPAREN expressao RPAREN statement •
    32             | IF LPAREN expressao RPAREN statement • ELSE statement
 
-    ELSE  shift, and go to state 106
+    ELSE  shift, and go to state 107
 
     $default  reduce using rule 31 (selecao_decl)
 
@@ -1313,12 +1320,19 @@ State 104
 
 State 105
 
-   63 arg_lista: arg_lista COMMA expressao •
+   61 ativacao: ID LPAREN args RPAREN @1 • ID LPAREN args RPAREN
 
-    $default  reduce using rule 63 (arg_lista)
+    ID  shift, and go to state 108
 
 
 State 106
+
+   64 arg_lista: arg_lista COMMA expressao •
+
+    $default  reduce using rule 64 (arg_lista)
+
+
+State 107
 
    32 selecao_decl: IF LPAREN expressao RPAREN statement ELSE • statement
 
@@ -1332,7 +1346,7 @@ State 106
     LBRACE     shift, and go to state 27
 
     composto_decl      go to state 46
-    statement          go to state 107
+    statement          go to state 109
     expressao_decl     go to state 48
     selecao_decl       go to state 49
     iteracao_decl      go to state 50
@@ -1346,8 +1360,54 @@ State 106
     ativacao           go to state 58
 
 
-State 107
+State 108
+
+   61 ativacao: ID LPAREN args RPAREN @1 ID • LPAREN args RPAREN
+
+    LPAREN  shift, and go to state 110
+
+
+State 109
 
    32 selecao_decl: IF LPAREN expressao RPAREN statement ELSE statement •
 
     $default  reduce using rule 32 (selecao_decl)
+
+
+State 110
+
+   61 ativacao: ID LPAREN args RPAREN @1 ID LPAREN • args RPAREN
+
+    INT     shift, and go to state 1
+    VOID    shift, and go to state 2
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+
+    $default  reduce using rule 63 (args)
+
+    tipo_especificador  go to state 16
+    param               go to state 87
+    expressao           go to state 88
+    var                 go to state 53
+    simples_expressao   go to state 54
+    soma_expressao      go to state 55
+    termo               go to state 56
+    fator               go to state 57
+    ativacao            go to state 58
+    args                go to state 111
+    arg_lista           go to state 90
+
+
+State 111
+
+   61 ativacao: ID LPAREN args RPAREN @1 ID LPAREN args • RPAREN
+
+    RPAREN  shift, and go to state 112
+
+
+State 112
+
+   61 ativacao: ID LPAREN args RPAREN @1 ID LPAREN args RPAREN •
+
+    $default  reduce using rule 61 (ativacao)

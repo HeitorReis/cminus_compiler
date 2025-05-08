@@ -1,10 +1,9 @@
-// symbol_table.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "symbol_table.h"
 
-// Forward‐declare internalHash so hash() can use it
+// forward‐declare
 static int internalHash(const char *key, int modulo);
 
 int hash(const char *key) {
@@ -27,35 +26,12 @@ void initSymbolTable(SymbolTable *table) {
     }
 }
 
-void freeSymbolTable(SymbolTable *table) {
-    for (int i = 0; i < SIZE; i++) {
-        Symbol *symbol = table->table[i];
-        while (symbol) {
-            Symbol *temp = symbol;
-            symbol = symbol->next;
-
-            LineList *line = temp->lines;
-            while (line) {
-                LineList *tempLine = line;
-                line = line->next;
-                free(tempLine);
-            }
-
-            free(temp->name);
-            free(temp->scope);
-            free(temp);
-        }
-        table->table[i] = NULL;
-    }
-    table->count = 0;
-}
-
 int insertSymbol(SymbolTable *table,
-                 const char *name,
-                 const char *scope,
-                 SymbolType type,
-                 int line,
-                 primitiveType dataType) {
+                const char *name,
+                const char *scope,
+                SymbolType type,
+                int line,
+                primitiveType dataType) {
     int index = hash(name);
     Symbol *existing = findSymbol(table, name, scope);
     if (existing) {
@@ -68,10 +44,14 @@ int insertSymbol(SymbolTable *table,
         fprintf(stderr, "Memory allocation error\n");
         return -1;
     }
-    newSymbol->name     = strdup(name);
-    newSymbol->scope    = strdup(scope);
-    newSymbol->type     = type;
-    newSymbol->dataType = dataType;
+    newSymbol->name       = strdup(name);
+    newSymbol->scope      = strdup(scope);
+    newSymbol->type       = type;
+    newSymbol->dataType   = dataType;
+
+    /* inicializa os campos de parâmetros */
+    newSymbol->paramCount = 0;
+    newSymbol->paramTypes = NULL;
 
     newSymbol->lines = malloc(sizeof(LineList));
     newSymbol->lines->line = line;
@@ -81,6 +61,32 @@ int insertSymbol(SymbolTable *table,
     table->table[index] = newSymbol;
     table->count++;
     return 0;
+}
+
+void freeSymbolTable(SymbolTable *table) {
+    for (int i = 0; i < SIZE; i++) {
+        Symbol *symbol = table->table[i];
+        while (symbol) {
+            Symbol *tmp = symbol;
+            symbol = symbol->next;
+
+            /* libera lista de linhas */
+            LineList *line = tmp->lines;
+            while (line) {
+                LineList *nextLine = line->next;
+                free(line);
+                line = nextLine;
+            }
+
+            /* libera array de parâmetros, se houver */
+            free(tmp->paramTypes);
+
+            free(tmp->name);
+            free(tmp->scope);
+            free(tmp);
+        }
+    }
+    table->count = 0;
 }
 
 Symbol *findSymbol(SymbolTable *table,
@@ -103,13 +109,13 @@ void addLine(Symbol *symbol, int line) {
 
     LineList *aux = symbol->lines;
     while (aux) {
-        if (aux->line == line) return;  // already recorded
+        if (aux->line == line) return;  // já gravado
         aux = aux->next;
     }
     LineList *newLine = malloc(sizeof(LineList));
     newLine->line = line;
     newLine->next = symbol->lines;
-    symbol->lines = newLine;
+    symbol->lines  = newLine;
 }
 
 const char* symbolTypeToString(SymbolType type) {
@@ -136,10 +142,10 @@ void printSymbolTable(SymbolTable *table) {
         Symbol *current = table->table[i];
         while (current) {
             printf("%-8s | %-12s | %-12s | %-8s | ",
-                    current->name,
-                    current->scope,
-                    symbolTypeToString(current->type),
-                    primitiveTypeToString(current->dataType));
+                   current->name,
+                   current->scope,
+                   symbolTypeToString(current->type),
+                   primitiveTypeToString(current->dataType));
             LineList *line = current->lines;
             while (line) {
                 printf("%d ", line->line);

@@ -84,8 +84,10 @@ else ifeq ($(TEST),2)
 	$(EXEC) $(DOCS_DIR)/teste2.txt
 else ifeq ($(TEST),3)
 	$(EXEC) $(DOCS_DIR)/teste3.txt
+else ifeq ($(TEST),4)
+	$(EXEC) $(DOCS_DIR)/teste4.txt
 else
-	$(EXEC)
+	$(EXEC) $(DOCS_DIR)/teste.txt
 endif
 
 # Cleanup intermediate files and binary

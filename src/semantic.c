@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <string.h>
 
+/* — reportError — */
 void reportError(SemanticContext *ctx, const char *fmt, ...) {
     char buf[256];
     va_list ap;
@@ -14,139 +15,182 @@ void reportError(SemanticContext *ctx, const char *fmt, ...) {
 
     ErrorNode *e = malloc(sizeof(*e));
     e->message = strdup(buf);
-    e->next = ctx->errors;
+    e->next    = ctx->errors;
     ctx->errors = e;
 }
 
+/* — initSemanticContext — */
 void initSemanticContext(SemanticContext *ctx) {
     initSymbolTable(&ctx->symbols);
     ctx->errors = NULL;
 }
 
+/* — prepareBuiltInsAndMain — */
 void prepareBuiltInsAndMain(SemanticContext *ctx) {
+    Symbol *s;
+    /* input():int */
     insertSymbol(&ctx->symbols, "input",  "global", FUNC, 0, Integer);
+    s = findSymbol(&ctx->symbols, "input", "global");
+    s->paramCount = 0;
+    s->paramTypes = NULL;
+    /* output(int):void */
     insertSymbol(&ctx->symbols, "output", "global", FUNC, 0, Void);
+    s = findSymbol(&ctx->symbols, "output", "global");
+    s->paramCount = 1;
+    s->paramTypes = malloc(sizeof(primitiveType));
+    s->paramTypes[0] = Integer;
 }
 
+/* — analyzeNode — */
 void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
     if (!n) return;
 
-    switch (n->node) {
-        case decl:
-            if (n->nodeSubType.decl == declVar) {
-                if (n->type == Void) {
-                    reportError(ctx,
-                        "Declaração inválida na linha %d: variável '%s' não pode ser void",
-                        n->line, n->key.name);
-                }
-                if (findSymbol(&ctx->symbols, n->key.name, scope)) {
-                    reportError(ctx,
-                        "Redeclaração na linha %d: '%s' já declarado em escopo '%s'",
-                        n->line, n->key.name, scope);
-                } else {
-                    insertSymbol(&ctx->symbols,
-                                n->key.name, scope,
-                                VAR, n->line, n->type);
-                }
+    /* --- Pré-ordem: declarações (como antes) --- */
+    if (n->node == decl) {
+        if (n->nodeSubType.decl == declVar) {
+            if (n->type == Void) {
+                reportError(ctx,
+                    "Linha %d: variável '%s' não pode ser void",
+                    n->line, n->key.name);
             }
-            else if (n->nodeSubType.decl == declFunc) {
-                if (findSymbol(&ctx->symbols, n->key.name, "global")) {
-                    reportError(ctx,
-                        "Função '%s' redeclarada na linha %d",
-                        n->key.name, n->line);
-                } else {
-                    insertSymbol(&ctx->symbols,
-                                n->key.name, "global",
-                                FUNC, n->line, n->type);
-                }
-                analyzeNode(n->child[0], ctx, n->key.name);
-                analyzeNode(n->child[1], ctx, n->key.name);
+            if (findSymbol(&ctx->symbols, n->key.name, scope)) {
+                reportError(ctx,
+                    "Linha %d: '%s' já declarado em '%s'",
+                    n->line, n->key.name, scope);
+            } else {
+                insertSymbol(&ctx->symbols,
+                             n->key.name, scope,
+                             VAR, n->line, n->type);
+            }
+        }
+        else if (n->nodeSubType.decl == declFunc) {
+            if (findSymbol(&ctx->symbols, n->key.name, "global")) {
+                reportError(ctx,
+                    "Linha %d: função '%s' redeclarada",
+                    n->line, n->key.name);
+            } else {
+                insertSymbol(&ctx->symbols,
+                             n->key.name, "global",
+                             FUNC, n->line, n->type);
+            }
+        }
+    }
+
+    /* --- Recurse filhos/siblings --- */
+    const char *nextScope = (n->node == decl &&
+                             n->nodeSubType.decl == declFunc)
+                            ? n->key.name
+                            : scope;
+    for (int i = 0; i < CHILD_MAX_NODES; i++)
+        if (n->child[i])
+            analyzeNode(n->child[i], ctx, nextScope);
+    if (n->sibling)
+        analyzeNode(n->sibling, ctx, scope);
+
+    /* --- Pós-ordem: checagem de expressões e statements --- */
+
+    if (n->node == exp) {
+        switch (n->nodeSubType.exp) {
+          case expId:
+            if (!findSymbol(&ctx->symbols, n->key.name, scope)) {
+                reportError(ctx,
+                    "Linha %d: '%s' não declarado em '%s'",
+                    n->line, n->key.name, scope);
             }
             break;
 
-    case exp:
-        if (n->nodeSubType.exp == expId) {
-            if (!findSymbol(&ctx->symbols, n->key.name, scope)) {
+          case expCall: {
+            /* Chamada em expressão */
+            Symbol *sym = findSymbol(&ctx->symbols,
+                                     n->key.name, "global");
+            if (!sym || sym->type != FUNC) {
                 reportError(ctx,
-                    "Símbolo '%s' não declarado no escopo '%s' (linha %d)",
-                    n->key.name, scope, n->line);
-            }
-        }
-        break;
-
-    case stmt:
-        switch (n->nodeSubType.stmt) {
-            case stmtAttrib: {
-                char *varName = n->child[0]->key.name;
-                Symbol *sym = findSymbol(&ctx->symbols, varName, scope);
-                if (!sym) {
+                    "Linha %d: '%s' não é função",
+                    n->line, n->key.name);
+                n->type = Void;
+            } else {
+                n->type = sym->dataType;
+                int given = 0;
+                for (int i = 0; i < CHILD_MAX_NODES; i++)
+                    if (n->child[i]) given++;
+                /* child[0] aridade variável, mas anticipate children */
+                /* Ajuste: se só child[0] guarda args-list,
+                   use childCount se migrado para dynamic */
+                if (given != (int)sym->paramCount) {
                     reportError(ctx,
-                        "Atribuição a '%s' não declarada (linha %d)",
-                        varName, n->line);
-                } else {
-                    primitiveType rhsType = n->child[1]->type;
-                    if (sym->dataType != rhsType) {
+                        "Linha %d: '%s' espera %zu args, recebeu %d",
+                        n->line, n->key.name,
+                        sym->paramCount, given);
+                }
+                for (int i = 0; i < (int)sym->paramCount && i < given; i++) {
+                    primitiveType got = n->child[i]->type;
+                    if (got != sym->paramTypes[i]) {
                         reportError(ctx,
-                            "Tipo inválido em atribuição a '%s' (esperado %s, obtido %s) na linha %d",
-                            varName,
-                            primitiveTypeToString(sym->dataType),
-                            primitiveTypeToString(rhsType),
-                            n->line);
+                            "Linha %d: arg %d de '%s' é %s, esperava %s",
+                            n->line, i+1, n->key.name,
+                            primitiveTypeToString(got),
+                            primitiveTypeToString(sym->paramTypes[i]));
                     }
                 }
-                break;
             }
-            case stmtReturn: {
-                Symbol *fn = findSymbol(&ctx->symbols, scope, "global");
-                primitiveType retT = n->child[0] ? n->child[0]->type : Void;
-                if (fn && fn->dataType != retT) {
-                    reportError(ctx,
-                        "Return em '%s' retorna %s mas declarado como %s (linha %d)",
-                        scope,
-                        primitiveTypeToString(retT),
-                        primitiveTypeToString(fn->dataType),
-                        n->line);
-                }
-                break;
-            }
-            case stmtFunc: {
-                if (!findSymbol(&ctx->symbols, n->key.name, "global")) {
-                    reportError(ctx,
-                        "Chamada de função '%s' não declarada (linha %d)",
-                        n->key.name, n->line);
-                }
-                break;
-            }
-            default:
-                break;
-        }
-        break;
-    
-    default:
-        break;
-    }
-    
-    for (int i = 0; i < CHILD_MAX_NODES; i++) {
-        if (n->child[i]) {
-            analyzeNode(n->child[i], ctx, scope);
+            break;
+          }
+
+          default:
+            break;
         }
     }
-    if (n->sibling) {
-        analyzeNode(n->sibling, ctx, scope);
+    else if (n->node == stmt) {
+        switch (n->nodeSubType.stmt) {
+          case stmtAttrib: {
+            char *v = n->child[0]->key.name;
+            Symbol *sym = findSymbol(&ctx->symbols, v, scope);
+            primitiveType rhs = n->child[1]->type;
+            if (!sym) {
+                reportError(ctx,
+                    "Linha %d: '%s' não declarado",
+                    n->line, v);
+            } else if (sym->dataType != rhs) {
+                reportError(ctx,
+                    "Linha %d: atribuição a '%s' espera %s, obtido %s",
+                    n->line, v,
+                    primitiveTypeToString(sym->dataType),
+                    primitiveTypeToString(rhs));
+            }
+            break;
+          }
+          case stmtReturn: {
+            Symbol *fn = findSymbol(&ctx->symbols, scope, "global");
+            primitiveType ret = n->child[0] ? n->child[0]->type : Void;
+            if (fn && fn->dataType != ret) {
+                reportError(ctx,
+                    "Linha %d: return em '%s' retorna %s, declarou %s",
+                    n->line, scope,
+                    primitiveTypeToString(ret),
+                    primitiveTypeToString(fn->dataType));
+            }
+            break;
+          }
+          default:
+            break;
+        }
     }
 }
 
+/* — semanticAnalysis — */
 void semanticAnalysis(treeNode *root) {
     SemanticContext ctx;
     initSemanticContext(&ctx);
     prepareBuiltInsAndMain(&ctx);
     analyzeNode(root, &ctx, "global");
     if (!findSymbol(&ctx.symbols, "main", "global")) {
-        reportError(&ctx, "Função 'main' não declarada");
+        reportError(&ctx,
+            "Função 'main' não declarada");
     }
     printSemanticResults(&ctx);
 }
 
+/* — printSemanticResults — */
 void printSemanticResults(SemanticContext *ctx) {
     if (!ctx->errors) {
         printf("Análise semântica concluída com sucesso.\n");

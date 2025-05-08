@@ -78,16 +78,16 @@ declaracao_lista:
         $$ = traversal($1, $2);
     }
     | declaracao {
-        $$ = $1;;
+        $$ = $1;
     }
     ;
 
 declaracao:
     var_declaracao {
-        $$ = $1;;
+        $$ = $1;
     }
     | fun_declaracao {
-        $$ = $1;;
+        $$ = $1;
     }
     ;
 
@@ -102,8 +102,9 @@ var_declaracao:
         $$ = createArrayDeclVarNode(expNum, declVar, $1);
         $$->key.name = strdup(yytext);
         $$->line = yylineno;
-        insertSymbolInTable(expName , currentScope, ARRAY, yylineno, $1->type);
+        insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
     }
+    ;
 
 tipo_especificador:
     INT {
@@ -118,11 +119,10 @@ fun_declaracao:
     tipo_especificador ID LPAREN params RPAREN composto_decl {
         $$ = createDeclFuncNode(declFunc, $1, $4, $6); paramsCount = 0;
         int funcLine = functionCurrentLine;
-        currentScope = strdup(yytext); // Atualiza o escopo para o nome da função
-        insertSymbolInTable(functionName, "global", FUNC, funcLine - 1, $1->type); // Insere a função na tabela de símbolos
+        currentScope = strdup(yytext); /* atualiza escopo para nome da função */
+        insertSymbolInTable(functionName, "global", FUNC, funcLine - 1, $1->type);
     }
     ;
-
 
 params:
     param_lista {
@@ -145,11 +145,11 @@ param_lista:
 param:
     tipo_especificador ID {
         $$ = createDeclVarNode(declVar, $1);
-        insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type); // Insere o parâmetro na tabela de símbolos
+        insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
     }
     | tipo_especificador ID LBRACK RBRACK {
         $$ = createArrayArg(declVar, $1);
-        insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type); // Insere o parâmetro array na tabela de símbolos
+        insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
     }
     ;
 
@@ -254,6 +254,7 @@ var:
         $$->line = yylineno;
         insertSymbolInTable(variableName, currentScope, ARRAY, yylineno, Integer);
     }
+    ;
 
 simples_expressao:
     soma_expressao relacional soma_expressao {
@@ -265,11 +266,11 @@ simples_expressao:
     ;
 
 relacional:
-    LT { $$ = createExpNode(expId); $$->key.op = LT; $$->line = yylineno; }
+    LT  { $$ = createExpNode(expId); $$->key.op = LT;  $$->line = yylineno; }
     | LTE { $$ = createExpNode(expId); $$->key.op = LTE; $$->line = yylineno; }
-    | GT { $$ = createExpNode(expId); $$->key.op = GT; $$->line = yylineno; }
+    | GT  { $$ = createExpNode(expId); $$->key.op = GT;  $$->line = yylineno; }
     | GTE { $$ = createExpNode(expId); $$->key.op = GTE; $$->line = yylineno; }
-    | EQ { $$ = createExpNode(expId); $$->key.op = EQ; $$->line = yylineno; }
+    | EQ  { $$ = createExpNode(expId); $$->key.op = EQ;  $$->line = yylineno; }
     | NEQ { $$ = createExpNode(expId); $$->key.op = NEQ; $$->line = yylineno; }
     ;
 
@@ -283,7 +284,7 @@ soma_expressao:
     ;
 
 soma:
-    PLUS { $$ = createExpNode(expId); $$->key.op = PLUS; }
+    PLUS  { $$ = createExpNode(expId); $$->key.op = PLUS; }
     | MINUS { $$ = createExpNode(expId); $$->key.op = MINUS; }
     ;
 
@@ -298,7 +299,7 @@ termo:
 
 mult:
     TIMES { $$ = createExpNode(expId); $$->key.op = TIMES; }
-    | DIV { $$ = createExpNode(expId); $$->key.op = DIV; }
+    | DIV   { $$ = createExpNode(expId); $$->key.op = DIV;   }
     ;
 
 fator:
@@ -318,9 +319,14 @@ fator:
 
 ativacao:
     ID LPAREN args RPAREN {
-        $$ = createActivationFunc(stmtFunc, $4);
+        /* chamada em expressão agora */
+        $$ = createExpCallNode(strdup(yytext), $4);
         $$->line = yylineno;
-        insertSymbolInTable(functionName, "global", FUNC, yylineno, Integer);
+    }
+    ID LPAREN args RPAREN {
+        /* use $1, que é a string do ID, não yytext após o RPAREN */
+        $$ = createExpCallNode(strdup($1), $4);
+        $$->line = yylineno;
     }
     ;
 
@@ -347,14 +353,12 @@ arg_lista:
 
 %%
 
-
 int yyerror(char *errorMsg) {
   printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", yylineno, yytext);
   return 1;
 }
 
 treeNode *parse() {
-
     parseResult = yyparse(); 
     return syntax_tree; 
 }

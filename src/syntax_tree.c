@@ -8,8 +8,7 @@
 extern char *yytext;
 extern int tokenNUM;
 
-
-// Função para criar um nó genérico
+// Variáveis auxiliares...
 char *expName;
 char *variableName;
 char *functionName;
@@ -24,8 +23,7 @@ int paramsCount = 0;
 
 treeNode *createNode() {
     treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
-    int i;
-    for (i = 0; i < CHILD_MAX_NODES; i++) {
+    for (int i = 0; i < CHILD_MAX_NODES; i++) {
         newNode->child[i] = NULL;
     }
     newNode->sibling = NULL;
@@ -72,7 +70,6 @@ treeNode *createDeclVarNode(declType declVar, treeNode *expType) {
     treeNode *declVarNode = createDeclNode(declVar);
     declVarNode->key.name = expName;
     declVarNode->type = expType->type;
-
     expType->child[0] = declVarNode;
     return expType;
 }
@@ -86,12 +83,7 @@ treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *exp
     declVarNode->key.name = expName; 
     declVarNode->child[0] = expNumNode;
 
-    if (expType->type == Integer) {
-        declVarNode->type = Array;
-    } else {
-        declVarNode->type = Void;    
-    }
-
+    declVarNode->type = (expType->type == Integer) ? Array : Void;
     expType->child[0] = declVarNode;
     return expType;
 }
@@ -104,7 +96,6 @@ treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *par
     declFuncNode->line = functionCurrentLine;
     declFuncNode->type = expType->type;
     declFuncNode->params = paramsCount;
-
     expType->child[0] = declFuncNode;
     return expType;
 }
@@ -119,14 +110,7 @@ treeNode *createEmptyParams(expType expId) {
 treeNode *createArrayArg(declType declVar, treeNode *expType) {
     treeNode *declVarNode = createDeclNode(declVar);
     declVarNode->key.name = expName;
-            
-    if (expType->type == Integer) {
-        declVarNode->type = Array;
-    }
-    else {
-        declVarNode->type = expType->type;
-    }
-
+    declVarNode->type = (expType->type == Integer) ? Array : expType->type;
     expType->child[0] = declVarNode;
     return expType;
 }
@@ -135,9 +119,7 @@ treeNode *createIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode
     treeNode *stmtIfNode = createStmtNode(stmtIf);
     stmtIfNode->child[0] = exp;
     stmtIfNode->child[1] = stmt1;
-    if (stmt2 != NULL) {
-        stmtIfNode->child[2] = stmt2;
-    }
+    if (stmt2 != NULL) stmtIfNode->child[2] = stmt2;
     return stmtIfNode;
 }
 
@@ -193,4 +175,13 @@ treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments) {
     activationFuncNode->line = functionCurrentLine;
     activationFuncNode->args = argsCount;
     return activationFuncNode;
+}
+
+/* === Novo construtor para chamada em expressão === */
+treeNode *createExpCallNode(const char *funcName, treeNode *args) {
+    treeNode *node = createExpNode(expCall);
+    node->key.name = strdup(funcName);
+    node->child[0] = args;  /* lista de argumentos */
+    node->type = Void;      /* será ajustado na semântica */
+    return node;
 }

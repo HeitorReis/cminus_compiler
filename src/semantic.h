@@ -5,34 +5,45 @@
 #include "symbol_table.h"
 #include "node.h"
 
-// A linked list of error messages
+/* Um nó na lista encadeada de mensagens de erro */
 typedef struct ErrorNode {
     char *message;
     struct ErrorNode *next;
 } ErrorNode;
 
-// Carries the symbol table and collected errors
+/* Contexto da análise semântica:
+ * - symbols: tabela de símbolos
+ * - errors: lista de erros coletados
+ */
 typedef struct {
     SymbolTable symbols;
-    ErrorNode *errors;
+    ErrorNode  *errors;
 } SemanticContext;
 
-// Initialize symbol table & error list
+/* Inicializa o contexto semântico (tabela e lista de erros) */
 void initSemanticContext(SemanticContext *ctx);
 
-// Install built-in functions and check for main()
+/* Insere na tabela as funções built-in (input e output)
+ * e prepara qualquer declaração especial (como main)
+ */
 void prepareBuiltInsAndMain(SemanticContext *ctx);
 
-// Entry point: performs full semantic analysis (calls below)
+/* Ponto de entrada da análise semântica:
+ *   percorre a AST inteira, coleta erros e imprime o resultado
+ */
 void semanticAnalysis(treeNode *root);
 
-// Recursively walk the AST from a given node & scope
+/* Caminha recursivamente pela árvore sintática,
+ * usando `scope` como o escopo atual (nome da função ou "global")
+ */
 void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope);
 
-// Report (collect) an error (printf-style)
+/* Coleta um erro (estilo printf) sem interromper a análise */
 void reportError(SemanticContext *ctx, const char *fmt, ...);
 
-// After analysis, print all errors (or success)
+/* Ao final, imprime todos os erros encontrados
+ * ou mensagem de sucesso, e encerra se houver falha
+ */
 void printSemanticResults(SemanticContext *ctx);
 
 #endif // SEMANTIC_ANALYSIS_H
