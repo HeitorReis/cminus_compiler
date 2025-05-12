@@ -16,163 +16,168 @@ Grammar
     8 var_declaracao: tipo_especificador ID SEMICOLON
     9               | tipo_especificador ID LBRACK NUM RBRACK SEMICOLON
 
-   10 fun_declaracao: tipo_especificador ID LPAREN params RPAREN composto_decl
+   10 $@1: ε
 
-   11 params: param_lista
-   12       | VOID
-   13       | ε
+   11 fun_declaracao: tipo_especificador ID LPAREN $@1 params RPAREN composto_decl
 
-   14 param_lista: param_lista COMMA param
-   15            | param
+   12 params: param_lista
+   13       | VOID
+   14       | ε
 
-   16 param: tipo_especificador ID
-   17      | tipo_especificador ID LBRACK RBRACK
+   15 param_lista: param_lista COMMA param
+   16            | param
 
-   18 composto_decl: LBRACE local_declaracoes statement_lista RBRACE
+   17 param: tipo_especificador ID
+   18      | tipo_especificador ID LBRACK RBRACK
 
-   19 local_declaracoes: local_declaracoes var_declaracao
-   20                  | ε
+   19 composto_decl: LBRACE local_declaracoes statement_lista RBRACE
 
-   21 statement_lista: statement_lista statement
-   22                | ε
+   20 local_declaracoes: local_declaracoes var_declaracao
+   21                  | ε
 
-   23 statement: expressao_decl
-   24          | composto_decl
-   25          | selecao_decl
-   26          | iteracao_decl
-   27          | retorno_decl
+   22 statement_lista: statement_lista statement
+   23                | ε
 
-   28 expressao_decl: expressao SEMICOLON
+   24 statement: expressao_decl
+   25          | composto_decl
+   26          | selecao_decl
+   27          | iteracao_decl
+   28          | retorno_decl
 
-   29 selecao_decl: IF LPAREN expressao RPAREN statement
-   30             | IF LPAREN expressao RPAREN statement ELSE statement
+   29 expressao_decl: expressao SEMICOLON
 
-   31 iteracao_decl: WHILE LPAREN expressao RPAREN statement
+   30 selecao_decl: IF LPAREN expressao RPAREN statement
+   31             | IF LPAREN expressao RPAREN statement ELSE statement
 
-   32 retorno_decl: RETURN SEMICOLON
-   33             | RETURN expressao SEMICOLON
+   32 iteracao_decl: WHILE LPAREN expressao RPAREN statement
 
-   34 expressao: ID LPAREN args RPAREN
-   35          | ID
-   36          | NUM
-   37          | LPAREN expressao RPAREN
-   38          | expressao ASSIGN expressao
-   39          | expressao PLUS expressao
-   40          | expressao MINUS expressao
-   41          | expressao TIMES expressao
-   42          | expressao DIV expressao
-   43          | expressao EQ expressao
-   44          | expressao NEQ expressao
-   45          | expressao LT expressao
-   46          | expressao LTE expressao
-   47          | expressao GT expressao
-   48          | expressao GTE expressao
+   33 retorno_decl: RETURN SEMICOLON
+   34             | RETURN expressao SEMICOLON
 
-   49 args: arg_lista
-   50     | ε
+   35 expressao: ID LPAREN args RPAREN
+   36          | ID
+   37          | NUM
+   38          | LPAREN expressao RPAREN
+   39          | expressao ASSIGN expressao
+   40          | expressao PLUS expressao
+   41          | expressao MINUS expressao
+   42          | expressao TIMES expressao
+   43          | expressao DIV expressao
+   44          | expressao EQ expressao
+   45          | expressao NEQ expressao
+   46          | expressao LT expressao
+   47          | expressao LTE expressao
+   48          | expressao GT expressao
+   49          | expressao GTE expressao
 
-   51 arg_lista: arg_lista COMMA expressao
-   52          | expressao
+   50 args: arg_lista
+   51     | ε
+
+   52 arg_lista: arg_lista COMMA expressao
+   53          | expressao
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    IF (258) 29 30
-    WHILE (259) 31
-    RETURN (260) 32 33
+    IF (258) 30 31
+    WHILE (259) 32
+    RETURN (260) 33 34
     INT (261) 6
-    VOID (262) 7 12
-    NUM (263) 9 36
-    ID (264) 8 9 10 16 17 34 35
-    PLUS (265) 39
-    MINUS (266) 40
-    TIMES (267) 41
-    DIV (268) 42
-    ASSIGN (269) 38
-    EQ (270) 43
-    NEQ (271) 44
-    LT (272) 45
-    LTE (273) 46
-    GT (274) 47
-    GTE (275) 48
-    SEMICOLON (276) 8 9 28 32 33
-    COMMA (277) 14 51
-    LPAREN (278) 10 29 30 31 34 37
-    RPAREN (279) 10 29 30 31 34 37
-    LBRACE (280) 18
-    RBRACE (281) 18
-    LBRACK (282) 9 17
-    RBRACK (283) 9 17
+    VOID (262) 7 13
+    NUM <num> (263) 9 37
+    ID <string> (264) 8 9 11 17 18 35 36
+    PLUS (265) 40
+    MINUS (266) 41
+    TIMES (267) 42
+    DIV (268) 43
+    ASSIGN (269) 39
+    EQ (270) 44
+    NEQ (271) 45
+    LT (272) 46
+    LTE (273) 47
+    GT (274) 48
+    GTE (275) 49
+    SEMICOLON (276) 8 9 29 33 34
+    COMMA (277) 15 52
+    LPAREN (278) 11 30 31 32 35 38
+    RPAREN (279) 11 30 31 32 35 38
+    LBRACE (280) 19
+    RBRACE (281) 19
+    LBRACK (282) 9 18
+    RBRACK (283) 9 18
     LOWER_THAN_ELSE (284)
-    ELSE (285) 30
+    ELSE (285) 31
 
 
 Nonterminals, with rules where they appear
 
     $accept (31)
         on left: 0
-    programa (32)
+    programa <node> (32)
         on left: 1
         on right: 0
-    declaracao_lista (33)
+    declaracao_lista <node> (33)
         on left: 2 3
         on right: 1 2
-    declaracao (34)
+    declaracao <node> (34)
         on left: 4 5
         on right: 2 3
-    tipo_especificador (35)
+    tipo_especificador <node> (35)
         on left: 6 7
-        on right: 8 9 10 16 17
-    var_declaracao (36)
+        on right: 8 9 11 17 18
+    var_declaracao <node> (36)
         on left: 8 9
-        on right: 4 19
-    fun_declaracao (37)
-        on left: 10
+        on right: 4 20
+    fun_declaracao <node> (37)
+        on left: 11
         on right: 5
-    params (38)
-        on left: 11 12 13
-        on right: 10
-    param_lista (39)
-        on left: 14 15
-        on right: 11 14
-    param (40)
-        on left: 16 17
-        on right: 14 15
-    composto_decl (41)
-        on left: 18
-        on right: 10 24
-    local_declaracoes (42)
-        on left: 19 20
-        on right: 18 19
-    statement_lista (43)
-        on left: 21 22
-        on right: 18 21
-    statement (44)
-        on left: 23 24 25 26 27
-        on right: 21 29 30 31
-    expressao_decl (45)
-        on left: 28
-        on right: 23
-    selecao_decl (46)
-        on left: 29 30
-        on right: 25
-    iteracao_decl (47)
-        on left: 31
+    $@1 (38)
+        on left: 10
+        on right: 11
+    params <node> (39)
+        on left: 12 13 14
+        on right: 11
+    param_lista <node> (40)
+        on left: 15 16
+        on right: 12 15
+    param <node> (41)
+        on left: 17 18
+        on right: 15 16
+    composto_decl <node> (42)
+        on left: 19
+        on right: 11 25
+    local_declaracoes <node> (43)
+        on left: 20 21
+        on right: 19 20
+    statement_lista <node> (44)
+        on left: 22 23
+        on right: 19 22
+    statement <node> (45)
+        on left: 24 25 26 27 28
+        on right: 22 30 31 32
+    expressao_decl <node> (46)
+        on left: 29
+        on right: 24
+    selecao_decl <node> (47)
+        on left: 30 31
         on right: 26
-    retorno_decl (48)
-        on left: 32 33
+    iteracao_decl <node> (48)
+        on left: 32
         on right: 27
-    expressao (49)
-        on left: 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48
-        on right: 28 29 30 31 33 37 38 39 40 41 42 43 44 45 46 47 48 51 52
-    args (50)
-        on left: 49 50
-        on right: 34
-    arg_lista (51)
-        on left: 51 52
-        on right: 49 51
+    retorno_decl <node> (49)
+        on left: 33 34
+        on right: 28
+    expressao <node> (50)
+        on left: 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49
+        on right: 29 30 31 32 34 38 39 40 41 42 43 44 45 46 47 48 49 52 53
+    args <node> (51)
+        on left: 50 51
+        on right: 35
+    arg_lista <node> (52)
+        on left: 52 53
+        on right: 50 52
 
 
 State 0
@@ -238,7 +243,7 @@ State 6
 
     8 var_declaracao: tipo_especificador • ID SEMICOLON
     9               | tipo_especificador • ID LBRACK NUM RBRACK SEMICOLON
-   10 fun_declaracao: tipo_especificador • ID LPAREN params RPAREN composto_decl
+   11 fun_declaracao: tipo_especificador • ID LPAREN $@1 params RPAREN composto_decl
 
     ID  shift, and go to state 11
 
@@ -275,7 +280,7 @@ State 11
 
     8 var_declaracao: tipo_especificador ID • SEMICOLON
     9               | tipo_especificador ID • LBRACK NUM RBRACK SEMICOLON
-   10 fun_declaracao: tipo_especificador ID • LPAREN params RPAREN composto_decl
+   11 fun_declaracao: tipo_especificador ID • LPAREN $@1 params RPAREN composto_decl
 
     SEMICOLON  shift, and go to state 12
     LPAREN     shift, and go to state 13
@@ -291,209 +296,218 @@ State 12
 
 State 13
 
-   10 fun_declaracao: tipo_especificador ID LPAREN • params RPAREN composto_decl
+   11 fun_declaracao: tipo_especificador ID LPAREN • $@1 params RPAREN composto_decl
 
-    INT   shift, and go to state 1
-    VOID  shift, and go to state 15
+    $default  reduce using rule 10 ($@1)
 
-    $default  reduce using rule 13 (params)
-
-    tipo_especificador  go to state 16
-    params              go to state 17
-    param_lista         go to state 18
-    param               go to state 19
+    $@1  go to state 15
 
 
 State 14
 
     9 var_declaracao: tipo_especificador ID LBRACK • NUM RBRACK SEMICOLON
 
-    NUM  shift, and go to state 20
+    NUM  shift, and go to state 16
 
 
 State 15
 
-    7 tipo_especificador: VOID •
-   12 params: VOID •
+   11 fun_declaracao: tipo_especificador ID LPAREN $@1 • params RPAREN composto_decl
 
-    RPAREN    reduce using rule 12 (params)
-    $default  reduce using rule 7 (tipo_especificador)
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 17
+
+    $default  reduce using rule 14 (params)
+
+    tipo_especificador  go to state 18
+    params              go to state 19
+    param_lista         go to state 20
+    param               go to state 21
 
 
 State 16
 
-   16 param: tipo_especificador • ID
-   17      | tipo_especificador • ID LBRACK RBRACK
+    9 var_declaracao: tipo_especificador ID LBRACK NUM • RBRACK SEMICOLON
 
-    ID  shift, and go to state 21
+    RBRACK  shift, and go to state 22
 
 
 State 17
 
-   10 fun_declaracao: tipo_especificador ID LPAREN params • RPAREN composto_decl
+    7 tipo_especificador: VOID •
+   13 params: VOID •
 
-    RPAREN  shift, and go to state 22
+    RPAREN    reduce using rule 13 (params)
+    $default  reduce using rule 7 (tipo_especificador)
 
 
 State 18
 
-   11 params: param_lista •
-   14 param_lista: param_lista • COMMA param
+   17 param: tipo_especificador • ID
+   18      | tipo_especificador • ID LBRACK RBRACK
 
-    COMMA  shift, and go to state 23
-
-    $default  reduce using rule 11 (params)
+    ID  shift, and go to state 23
 
 
 State 19
 
-   15 param_lista: param •
+   11 fun_declaracao: tipo_especificador ID LPAREN $@1 params • RPAREN composto_decl
 
-    $default  reduce using rule 15 (param_lista)
+    RPAREN  shift, and go to state 24
 
 
 State 20
 
-    9 var_declaracao: tipo_especificador ID LBRACK NUM • RBRACK SEMICOLON
+   12 params: param_lista •
+   15 param_lista: param_lista • COMMA param
 
-    RBRACK  shift, and go to state 24
+    COMMA  shift, and go to state 25
+
+    $default  reduce using rule 12 (params)
 
 
 State 21
 
-   16 param: tipo_especificador ID •
-   17      | tipo_especificador ID • LBRACK RBRACK
+   16 param_lista: param •
 
-    LBRACK  shift, and go to state 25
-
-    $default  reduce using rule 16 (param)
+    $default  reduce using rule 16 (param_lista)
 
 
 State 22
 
-   10 fun_declaracao: tipo_especificador ID LPAREN params RPAREN • composto_decl
+    9 var_declaracao: tipo_especificador ID LBRACK NUM RBRACK • SEMICOLON
 
-    LBRACE  shift, and go to state 26
-
-    composto_decl  go to state 27
+    SEMICOLON  shift, and go to state 26
 
 
 State 23
 
-   14 param_lista: param_lista COMMA • param
+   17 param: tipo_especificador ID •
+   18      | tipo_especificador ID • LBRACK RBRACK
 
-    INT   shift, and go to state 1
-    VOID  shift, and go to state 2
+    LBRACK  shift, and go to state 27
 
-    tipo_especificador  go to state 16
-    param               go to state 28
+    $default  reduce using rule 17 (param)
 
 
 State 24
 
-    9 var_declaracao: tipo_especificador ID LBRACK NUM RBRACK • SEMICOLON
+   11 fun_declaracao: tipo_especificador ID LPAREN $@1 params RPAREN • composto_decl
 
-    SEMICOLON  shift, and go to state 29
+    LBRACE  shift, and go to state 28
+
+    composto_decl  go to state 29
 
 
 State 25
 
-   17 param: tipo_especificador ID LBRACK • RBRACK
+   15 param_lista: param_lista COMMA • param
 
-    RBRACK  shift, and go to state 30
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    tipo_especificador  go to state 18
+    param               go to state 30
 
 
 State 26
-
-   18 composto_decl: LBRACE • local_declaracoes statement_lista RBRACE
-
-    $default  reduce using rule 20 (local_declaracoes)
-
-    local_declaracoes  go to state 31
-
-
-State 27
-
-   10 fun_declaracao: tipo_especificador ID LPAREN params RPAREN composto_decl •
-
-    $default  reduce using rule 10 (fun_declaracao)
-
-
-State 28
-
-   14 param_lista: param_lista COMMA param •
-
-    $default  reduce using rule 14 (param_lista)
-
-
-State 29
 
     9 var_declaracao: tipo_especificador ID LBRACK NUM RBRACK SEMICOLON •
 
     $default  reduce using rule 9 (var_declaracao)
 
 
+State 27
+
+   18 param: tipo_especificador ID LBRACK • RBRACK
+
+    RBRACK  shift, and go to state 31
+
+
+State 28
+
+   19 composto_decl: LBRACE • local_declaracoes statement_lista RBRACE
+
+    $default  reduce using rule 21 (local_declaracoes)
+
+    local_declaracoes  go to state 32
+
+
+State 29
+
+   11 fun_declaracao: tipo_especificador ID LPAREN $@1 params RPAREN composto_decl •
+
+    $default  reduce using rule 11 (fun_declaracao)
+
+
 State 30
 
-   17 param: tipo_especificador ID LBRACK RBRACK •
+   15 param_lista: param_lista COMMA param •
 
-    $default  reduce using rule 17 (param)
+    $default  reduce using rule 15 (param_lista)
 
 
 State 31
 
-   18 composto_decl: LBRACE local_declaracoes • statement_lista RBRACE
-   19 local_declaracoes: local_declaracoes • var_declaracao
+   18 param: tipo_especificador ID LBRACK RBRACK •
 
-    INT   shift, and go to state 1
-    VOID  shift, and go to state 2
-
-    $default  reduce using rule 22 (statement_lista)
-
-    tipo_especificador  go to state 32
-    var_declaracao      go to state 33
-    statement_lista     go to state 34
+    $default  reduce using rule 18 (param)
 
 
 State 32
 
-    8 var_declaracao: tipo_especificador • ID SEMICOLON
-    9               | tipo_especificador • ID LBRACK NUM RBRACK SEMICOLON
+   19 composto_decl: LBRACE local_declaracoes • statement_lista RBRACE
+   20 local_declaracoes: local_declaracoes • var_declaracao
 
-    ID  shift, and go to state 35
+    INT   shift, and go to state 1
+    VOID  shift, and go to state 2
+
+    $default  reduce using rule 23 (statement_lista)
+
+    tipo_especificador  go to state 33
+    var_declaracao      go to state 34
+    statement_lista     go to state 35
 
 
 State 33
 
-   19 local_declaracoes: local_declaracoes var_declaracao •
+    8 var_declaracao: tipo_especificador • ID SEMICOLON
+    9               | tipo_especificador • ID LBRACK NUM RBRACK SEMICOLON
 
-    $default  reduce using rule 19 (local_declaracoes)
+    ID  shift, and go to state 36
 
 
 State 34
 
-   18 composto_decl: LBRACE local_declaracoes statement_lista • RBRACE
-   21 statement_lista: statement_lista • statement
+   20 local_declaracoes: local_declaracoes var_declaracao •
 
-    IF      shift, and go to state 36
-    WHILE   shift, and go to state 37
-    RETURN  shift, and go to state 38
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-    LBRACE  shift, and go to state 26
-    RBRACE  shift, and go to state 42
-
-    composto_decl   go to state 43
-    statement       go to state 44
-    expressao_decl  go to state 45
-    selecao_decl    go to state 46
-    iteracao_decl   go to state 47
-    retorno_decl    go to state 48
-    expressao       go to state 49
+    $default  reduce using rule 20 (local_declaracoes)
 
 
 State 35
+
+   19 composto_decl: LBRACE local_declaracoes statement_lista • RBRACE
+   22 statement_lista: statement_lista • statement
+
+    IF      shift, and go to state 37
+    WHILE   shift, and go to state 38
+    RETURN  shift, and go to state 39
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+    LBRACE  shift, and go to state 28
+    RBRACE  shift, and go to state 43
+
+    composto_decl   go to state 44
+    statement       go to state 45
+    expressao_decl  go to state 46
+    selecao_decl    go to state 47
+    iteracao_decl   go to state 48
+    retorno_decl    go to state 49
+    expressao       go to state 50
+
+
+State 36
 
     8 var_declaracao: tipo_especificador ID • SEMICOLON
     9               | tipo_especificador ID • LBRACK NUM RBRACK SEMICOLON
@@ -502,876 +516,876 @@ State 35
     LBRACK     shift, and go to state 14
 
 
-State 36
-
-   29 selecao_decl: IF • LPAREN expressao RPAREN statement
-   30             | IF • LPAREN expressao RPAREN statement ELSE statement
-
-    LPAREN  shift, and go to state 50
-
-
 State 37
 
-   31 iteracao_decl: WHILE • LPAREN expressao RPAREN statement
+   30 selecao_decl: IF • LPAREN expressao RPAREN statement
+   31             | IF • LPAREN expressao RPAREN statement ELSE statement
 
     LPAREN  shift, and go to state 51
 
 
 State 38
 
-   32 retorno_decl: RETURN • SEMICOLON
-   33             | RETURN • expressao SEMICOLON
+   32 iteracao_decl: WHILE • LPAREN expressao RPAREN statement
 
-    NUM        shift, and go to state 39
-    ID         shift, and go to state 40
-    SEMICOLON  shift, and go to state 52
-    LPAREN     shift, and go to state 41
-
-    expressao  go to state 53
+    LPAREN  shift, and go to state 52
 
 
 State 39
 
-   36 expressao: NUM •
+   33 retorno_decl: RETURN • SEMICOLON
+   34             | RETURN • expressao SEMICOLON
 
-    $default  reduce using rule 36 (expressao)
+    NUM        shift, and go to state 40
+    ID         shift, and go to state 41
+    SEMICOLON  shift, and go to state 53
+    LPAREN     shift, and go to state 42
+
+    expressao  go to state 54
 
 
 State 40
 
-   34 expressao: ID • LPAREN args RPAREN
-   35          | ID •
+   37 expressao: NUM •
 
-    LPAREN  shift, and go to state 54
-
-    $default  reduce using rule 35 (expressao)
+    $default  reduce using rule 37 (expressao)
 
 
 State 41
 
-   37 expressao: LPAREN • expressao RPAREN
+   35 expressao: ID • LPAREN args RPAREN
+   36          | ID •
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    LPAREN  shift, and go to state 55
 
-    expressao  go to state 55
+    $default  reduce using rule 36 (expressao)
 
 
 State 42
 
-   18 composto_decl: LBRACE local_declaracoes statement_lista RBRACE •
+   38 expressao: LPAREN • expressao RPAREN
 
-    $default  reduce using rule 18 (composto_decl)
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+
+    expressao  go to state 56
 
 
 State 43
 
-   24 statement: composto_decl •
+   19 composto_decl: LBRACE local_declaracoes statement_lista RBRACE •
 
-    $default  reduce using rule 24 (statement)
+    $default  reduce using rule 19 (composto_decl)
 
 
 State 44
 
-   21 statement_lista: statement_lista statement •
-
-    $default  reduce using rule 21 (statement_lista)
-
-
-State 45
-
-   23 statement: expressao_decl •
-
-    $default  reduce using rule 23 (statement)
-
-
-State 46
-
-   25 statement: selecao_decl •
+   25 statement: composto_decl •
 
     $default  reduce using rule 25 (statement)
 
 
+State 45
+
+   22 statement_lista: statement_lista statement •
+
+    $default  reduce using rule 22 (statement_lista)
+
+
+State 46
+
+   24 statement: expressao_decl •
+
+    $default  reduce using rule 24 (statement)
+
+
 State 47
 
-   26 statement: iteracao_decl •
+   26 statement: selecao_decl •
 
     $default  reduce using rule 26 (statement)
 
 
 State 48
 
-   27 statement: retorno_decl •
+   27 statement: iteracao_decl •
 
     $default  reduce using rule 27 (statement)
 
 
 State 49
 
-   28 expressao_decl: expressao • SEMICOLON
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   28 statement: retorno_decl •
 
-    PLUS       shift, and go to state 56
-    MINUS      shift, and go to state 57
-    TIMES      shift, and go to state 58
-    DIV        shift, and go to state 59
-    ASSIGN     shift, and go to state 60
-    EQ         shift, and go to state 61
-    NEQ        shift, and go to state 62
-    LT         shift, and go to state 63
-    LTE        shift, and go to state 64
-    GT         shift, and go to state 65
-    GTE        shift, and go to state 66
-    SEMICOLON  shift, and go to state 67
+    $default  reduce using rule 28 (statement)
 
 
 State 50
 
-   29 selecao_decl: IF LPAREN • expressao RPAREN statement
-   30             | IF LPAREN • expressao RPAREN statement ELSE statement
+   29 expressao_decl: expressao • SEMICOLON
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-
-    expressao  go to state 68
+    PLUS       shift, and go to state 57
+    MINUS      shift, and go to state 58
+    TIMES      shift, and go to state 59
+    DIV        shift, and go to state 60
+    ASSIGN     shift, and go to state 61
+    EQ         shift, and go to state 62
+    NEQ        shift, and go to state 63
+    LT         shift, and go to state 64
+    LTE        shift, and go to state 65
+    GT         shift, and go to state 66
+    GTE        shift, and go to state 67
+    SEMICOLON  shift, and go to state 68
 
 
 State 51
 
-   31 iteracao_decl: WHILE LPAREN • expressao RPAREN statement
+   30 selecao_decl: IF LPAREN • expressao RPAREN statement
+   31             | IF LPAREN • expressao RPAREN statement ELSE statement
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 69
 
 
 State 52
 
-   32 retorno_decl: RETURN SEMICOLON •
+   32 iteracao_decl: WHILE LPAREN • expressao RPAREN statement
 
-    $default  reduce using rule 32 (retorno_decl)
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+
+    expressao  go to state 70
 
 
 State 53
 
-   33 retorno_decl: RETURN expressao • SEMICOLON
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   33 retorno_decl: RETURN SEMICOLON •
 
-    PLUS       shift, and go to state 56
-    MINUS      shift, and go to state 57
-    TIMES      shift, and go to state 58
-    DIV        shift, and go to state 59
-    ASSIGN     shift, and go to state 60
-    EQ         shift, and go to state 61
-    NEQ        shift, and go to state 62
-    LT         shift, and go to state 63
-    LTE        shift, and go to state 64
-    GT         shift, and go to state 65
-    GTE        shift, and go to state 66
-    SEMICOLON  shift, and go to state 70
+    $default  reduce using rule 33 (retorno_decl)
 
 
 State 54
 
-   34 expressao: ID LPAREN • args RPAREN
+   34 retorno_decl: RETURN expressao • SEMICOLON
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-
-    $default  reduce using rule 50 (args)
-
-    expressao  go to state 71
-    args       go to state 72
-    arg_lista  go to state 73
+    PLUS       shift, and go to state 57
+    MINUS      shift, and go to state 58
+    TIMES      shift, and go to state 59
+    DIV        shift, and go to state 60
+    ASSIGN     shift, and go to state 61
+    EQ         shift, and go to state 62
+    NEQ        shift, and go to state 63
+    LT         shift, and go to state 64
+    LTE        shift, and go to state 65
+    GT         shift, and go to state 66
+    GTE        shift, and go to state 67
+    SEMICOLON  shift, and go to state 71
 
 
 State 55
 
-   37 expressao: LPAREN expressao • RPAREN
-   38          | expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   35 expressao: ID LPAREN • args RPAREN
 
-    PLUS    shift, and go to state 56
-    MINUS   shift, and go to state 57
-    TIMES   shift, and go to state 58
-    DIV     shift, and go to state 59
-    ASSIGN  shift, and go to state 60
-    EQ      shift, and go to state 61
-    NEQ     shift, and go to state 62
-    LT      shift, and go to state 63
-    LTE     shift, and go to state 64
-    GT      shift, and go to state 65
-    GTE     shift, and go to state 66
-    RPAREN  shift, and go to state 74
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+
+    $default  reduce using rule 51 (args)
+
+    expressao  go to state 72
+    args       go to state 73
+    arg_lista  go to state 74
 
 
 State 56
 
-   39 expressao: expressao PLUS • expressao
+   38 expressao: LPAREN expressao • RPAREN
+   39          | expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-
-    expressao  go to state 75
+    PLUS    shift, and go to state 57
+    MINUS   shift, and go to state 58
+    TIMES   shift, and go to state 59
+    DIV     shift, and go to state 60
+    ASSIGN  shift, and go to state 61
+    EQ      shift, and go to state 62
+    NEQ     shift, and go to state 63
+    LT      shift, and go to state 64
+    LTE     shift, and go to state 65
+    GT      shift, and go to state 66
+    GTE     shift, and go to state 67
+    RPAREN  shift, and go to state 75
 
 
 State 57
 
-   40 expressao: expressao MINUS • expressao
+   40 expressao: expressao PLUS • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 76
 
 
 State 58
 
-   41 expressao: expressao TIMES • expressao
+   41 expressao: expressao MINUS • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 77
 
 
 State 59
 
-   42 expressao: expressao DIV • expressao
+   42 expressao: expressao TIMES • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 78
 
 
 State 60
 
-   38 expressao: expressao ASSIGN • expressao
+   43 expressao: expressao DIV • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 79
 
 
 State 61
 
-   43 expressao: expressao EQ • expressao
+   39 expressao: expressao ASSIGN • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 80
 
 
 State 62
 
-   44 expressao: expressao NEQ • expressao
+   44 expressao: expressao EQ • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 81
 
 
 State 63
 
-   45 expressao: expressao LT • expressao
+   45 expressao: expressao NEQ • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 82
 
 
 State 64
 
-   46 expressao: expressao LTE • expressao
+   46 expressao: expressao LT • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 83
 
 
 State 65
 
-   47 expressao: expressao GT • expressao
+   47 expressao: expressao LTE • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 84
 
 
 State 66
 
-   48 expressao: expressao GTE • expressao
+   48 expressao: expressao GT • expressao
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
     expressao  go to state 85
 
 
 State 67
 
-   28 expressao_decl: expressao SEMICOLON •
+   49 expressao: expressao GTE • expressao
 
-    $default  reduce using rule 28 (expressao_decl)
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+
+    expressao  go to state 86
 
 
 State 68
 
-   29 selecao_decl: IF LPAREN expressao • RPAREN statement
-   30             | IF LPAREN expressao • RPAREN statement ELSE statement
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   29 expressao_decl: expressao SEMICOLON •
 
-    PLUS    shift, and go to state 56
-    MINUS   shift, and go to state 57
-    TIMES   shift, and go to state 58
-    DIV     shift, and go to state 59
-    ASSIGN  shift, and go to state 60
-    EQ      shift, and go to state 61
-    NEQ     shift, and go to state 62
-    LT      shift, and go to state 63
-    LTE     shift, and go to state 64
-    GT      shift, and go to state 65
-    GTE     shift, and go to state 66
-    RPAREN  shift, and go to state 86
+    $default  reduce using rule 29 (expressao_decl)
 
 
 State 69
 
-   31 iteracao_decl: WHILE LPAREN expressao • RPAREN statement
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   30 selecao_decl: IF LPAREN expressao • RPAREN statement
+   31             | IF LPAREN expressao • RPAREN statement ELSE statement
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    PLUS    shift, and go to state 56
-    MINUS   shift, and go to state 57
-    TIMES   shift, and go to state 58
-    DIV     shift, and go to state 59
-    ASSIGN  shift, and go to state 60
-    EQ      shift, and go to state 61
-    NEQ     shift, and go to state 62
-    LT      shift, and go to state 63
-    LTE     shift, and go to state 64
-    GT      shift, and go to state 65
-    GTE     shift, and go to state 66
+    PLUS    shift, and go to state 57
+    MINUS   shift, and go to state 58
+    TIMES   shift, and go to state 59
+    DIV     shift, and go to state 60
+    ASSIGN  shift, and go to state 61
+    EQ      shift, and go to state 62
+    NEQ     shift, and go to state 63
+    LT      shift, and go to state 64
+    LTE     shift, and go to state 65
+    GT      shift, and go to state 66
+    GTE     shift, and go to state 67
     RPAREN  shift, and go to state 87
 
 
 State 70
 
-   33 retorno_decl: RETURN expressao SEMICOLON •
+   32 iteracao_decl: WHILE LPAREN expressao • RPAREN statement
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    $default  reduce using rule 33 (retorno_decl)
+    PLUS    shift, and go to state 57
+    MINUS   shift, and go to state 58
+    TIMES   shift, and go to state 59
+    DIV     shift, and go to state 60
+    ASSIGN  shift, and go to state 61
+    EQ      shift, and go to state 62
+    NEQ     shift, and go to state 63
+    LT      shift, and go to state 64
+    LTE     shift, and go to state 65
+    GT      shift, and go to state 66
+    GTE     shift, and go to state 67
+    RPAREN  shift, and go to state 88
 
 
 State 71
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
-   52 arg_lista: expressao •
+   34 retorno_decl: RETURN expressao SEMICOLON •
 
-    PLUS    shift, and go to state 56
-    MINUS   shift, and go to state 57
-    TIMES   shift, and go to state 58
-    DIV     shift, and go to state 59
-    ASSIGN  shift, and go to state 60
-    EQ      shift, and go to state 61
-    NEQ     shift, and go to state 62
-    LT      shift, and go to state 63
-    LTE     shift, and go to state 64
-    GT      shift, and go to state 65
-    GTE     shift, and go to state 66
-
-    $default  reduce using rule 52 (arg_lista)
+    $default  reduce using rule 34 (retorno_decl)
 
 
 State 72
 
-   34 expressao: ID LPAREN args • RPAREN
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
+   53 arg_lista: expressao •
 
-    RPAREN  shift, and go to state 88
+    PLUS    shift, and go to state 57
+    MINUS   shift, and go to state 58
+    TIMES   shift, and go to state 59
+    DIV     shift, and go to state 60
+    ASSIGN  shift, and go to state 61
+    EQ      shift, and go to state 62
+    NEQ     shift, and go to state 63
+    LT      shift, and go to state 64
+    LTE     shift, and go to state 65
+    GT      shift, and go to state 66
+    GTE     shift, and go to state 67
+
+    $default  reduce using rule 53 (arg_lista)
 
 
 State 73
 
-   49 args: arg_lista •
-   51 arg_lista: arg_lista • COMMA expressao
+   35 expressao: ID LPAREN args • RPAREN
 
-    COMMA  shift, and go to state 89
-
-    $default  reduce using rule 49 (args)
+    RPAREN  shift, and go to state 89
 
 
 State 74
 
-   37 expressao: LPAREN expressao RPAREN •
+   50 args: arg_lista •
+   52 arg_lista: arg_lista • COMMA expressao
 
-    $default  reduce using rule 37 (expressao)
+    COMMA  shift, and go to state 90
+
+    $default  reduce using rule 50 (args)
 
 
 State 75
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   39          | expressao PLUS expressao •
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   38 expressao: LPAREN expressao RPAREN •
 
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
-
-    $default  reduce using rule 39 (expressao)
+    $default  reduce using rule 38 (expressao)
 
 
 State 76
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   40          | expressao MINUS expressao •
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   40          | expressao PLUS expressao •
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
 
     $default  reduce using rule 40 (expressao)
 
 
 State 77
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   41          | expressao TIMES expressao •
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   41          | expressao MINUS expressao •
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
+
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
 
     $default  reduce using rule 41 (expressao)
 
 
 State 78
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   42          | expressao DIV expressao •
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   42          | expressao TIMES expressao •
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
     $default  reduce using rule 42 (expressao)
 
 
 State 79
 
-   38 expressao: expressao • ASSIGN expressao
-   38          | expressao ASSIGN expressao •
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
-
-    PLUS    shift, and go to state 56
-    MINUS   shift, and go to state 57
-    TIMES   shift, and go to state 58
-    DIV     shift, and go to state 59
-    ASSIGN  shift, and go to state 60
-    EQ      shift, and go to state 61
-    NEQ     shift, and go to state 62
-    LT      shift, and go to state 63
-    LTE     shift, and go to state 64
-    GT      shift, and go to state 65
-    GTE     shift, and go to state 66
-
-    $default  reduce using rule 38 (expressao)
-
-
-State 80
-
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   43          | expressao EQ expressao •
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
-
-    PLUS   shift, and go to state 56
-    MINUS  shift, and go to state 57
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
-    LT     shift, and go to state 63
-    LTE    shift, and go to state 64
-    GT     shift, and go to state 65
-    GTE    shift, and go to state 66
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   43          | expressao DIV expressao •
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
     $default  reduce using rule 43 (expressao)
 
 
+State 80
+
+   39 expressao: expressao • ASSIGN expressao
+   39          | expressao ASSIGN expressao •
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
+
+    PLUS    shift, and go to state 57
+    MINUS   shift, and go to state 58
+    TIMES   shift, and go to state 59
+    DIV     shift, and go to state 60
+    ASSIGN  shift, and go to state 61
+    EQ      shift, and go to state 62
+    NEQ     shift, and go to state 63
+    LT      shift, and go to state 64
+    LTE     shift, and go to state 65
+    GT      shift, and go to state 66
+    GTE     shift, and go to state 67
+
+    $default  reduce using rule 39 (expressao)
+
+
 State 81
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   44          | expressao NEQ expressao •
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   44          | expressao EQ expressao •
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    PLUS   shift, and go to state 56
-    MINUS  shift, and go to state 57
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
-    LT     shift, and go to state 63
-    LTE    shift, and go to state 64
-    GT     shift, and go to state 65
-    GTE    shift, and go to state 66
+    PLUS   shift, and go to state 57
+    MINUS  shift, and go to state 58
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
+    LT     shift, and go to state 64
+    LTE    shift, and go to state 65
+    GT     shift, and go to state 66
+    GTE    shift, and go to state 67
 
     $default  reduce using rule 44 (expressao)
 
 
 State 82
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   45          | expressao LT expressao •
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   45          | expressao NEQ expressao •
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    PLUS   shift, and go to state 56
-    MINUS  shift, and go to state 57
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
+    PLUS   shift, and go to state 57
+    MINUS  shift, and go to state 58
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
+    LT     shift, and go to state 64
+    LTE    shift, and go to state 65
+    GT     shift, and go to state 66
+    GTE    shift, and go to state 67
 
     $default  reduce using rule 45 (expressao)
 
 
 State 83
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   46          | expressao LTE expressao •
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   46          | expressao LT expressao •
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    PLUS   shift, and go to state 56
-    MINUS  shift, and go to state 57
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
+    PLUS   shift, and go to state 57
+    MINUS  shift, and go to state 58
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
 
     $default  reduce using rule 46 (expressao)
 
 
 State 84
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   47          | expressao GT expressao •
-   48          | expressao • GTE expressao
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   47          | expressao LTE expressao •
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
 
-    PLUS   shift, and go to state 56
-    MINUS  shift, and go to state 57
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
+    PLUS   shift, and go to state 57
+    MINUS  shift, and go to state 58
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
 
     $default  reduce using rule 47 (expressao)
 
 
 State 85
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
-   48          | expressao GTE expressao •
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   48          | expressao GT expressao •
+   49          | expressao • GTE expressao
 
-    PLUS   shift, and go to state 56
-    MINUS  shift, and go to state 57
-    TIMES  shift, and go to state 58
-    DIV    shift, and go to state 59
+    PLUS   shift, and go to state 57
+    MINUS  shift, and go to state 58
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
 
     $default  reduce using rule 48 (expressao)
 
 
 State 86
 
-   29 selecao_decl: IF LPAREN expressao RPAREN • statement
-   30             | IF LPAREN expressao RPAREN • statement ELSE statement
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
+   49          | expressao GTE expressao •
 
-    IF      shift, and go to state 36
-    WHILE   shift, and go to state 37
-    RETURN  shift, and go to state 38
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-    LBRACE  shift, and go to state 26
+    PLUS   shift, and go to state 57
+    MINUS  shift, and go to state 58
+    TIMES  shift, and go to state 59
+    DIV    shift, and go to state 60
 
-    composto_decl   go to state 43
-    statement       go to state 90
-    expressao_decl  go to state 45
-    selecao_decl    go to state 46
-    iteracao_decl   go to state 47
-    retorno_decl    go to state 48
-    expressao       go to state 49
+    $default  reduce using rule 49 (expressao)
 
 
 State 87
 
-   31 iteracao_decl: WHILE LPAREN expressao RPAREN • statement
+   30 selecao_decl: IF LPAREN expressao RPAREN • statement
+   31             | IF LPAREN expressao RPAREN • statement ELSE statement
 
-    IF      shift, and go to state 36
-    WHILE   shift, and go to state 37
-    RETURN  shift, and go to state 38
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-    LBRACE  shift, and go to state 26
+    IF      shift, and go to state 37
+    WHILE   shift, and go to state 38
+    RETURN  shift, and go to state 39
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+    LBRACE  shift, and go to state 28
 
-    composto_decl   go to state 43
+    composto_decl   go to state 44
     statement       go to state 91
-    expressao_decl  go to state 45
-    selecao_decl    go to state 46
-    iteracao_decl   go to state 47
-    retorno_decl    go to state 48
-    expressao       go to state 49
+    expressao_decl  go to state 46
+    selecao_decl    go to state 47
+    iteracao_decl   go to state 48
+    retorno_decl    go to state 49
+    expressao       go to state 50
 
 
 State 88
 
-   34 expressao: ID LPAREN args RPAREN •
+   32 iteracao_decl: WHILE LPAREN expressao RPAREN • statement
 
-    $default  reduce using rule 34 (expressao)
+    IF      shift, and go to state 37
+    WHILE   shift, and go to state 38
+    RETURN  shift, and go to state 39
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+    LBRACE  shift, and go to state 28
+
+    composto_decl   go to state 44
+    statement       go to state 92
+    expressao_decl  go to state 46
+    selecao_decl    go to state 47
+    iteracao_decl   go to state 48
+    retorno_decl    go to state 49
+    expressao       go to state 50
 
 
 State 89
 
-   51 arg_lista: arg_lista COMMA • expressao
+   35 expressao: ID LPAREN args RPAREN •
 
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-
-    expressao  go to state 92
+    $default  reduce using rule 35 (expressao)
 
 
 State 90
 
-   29 selecao_decl: IF LPAREN expressao RPAREN statement •
-   30             | IF LPAREN expressao RPAREN statement • ELSE statement
+   52 arg_lista: arg_lista COMMA • expressao
 
-    ELSE  shift, and go to state 93
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
 
-    $default  reduce using rule 29 (selecao_decl)
+    expressao  go to state 93
 
 
 State 91
 
-   31 iteracao_decl: WHILE LPAREN expressao RPAREN statement •
+   30 selecao_decl: IF LPAREN expressao RPAREN statement •
+   31             | IF LPAREN expressao RPAREN statement • ELSE statement
 
-    $default  reduce using rule 31 (iteracao_decl)
+    ELSE  shift, and go to state 94
+
+    $default  reduce using rule 30 (selecao_decl)
 
 
 State 92
 
-   38 expressao: expressao • ASSIGN expressao
-   39          | expressao • PLUS expressao
-   40          | expressao • MINUS expressao
-   41          | expressao • TIMES expressao
-   42          | expressao • DIV expressao
-   43          | expressao • EQ expressao
-   44          | expressao • NEQ expressao
-   45          | expressao • LT expressao
-   46          | expressao • LTE expressao
-   47          | expressao • GT expressao
-   48          | expressao • GTE expressao
-   51 arg_lista: arg_lista COMMA expressao •
+   32 iteracao_decl: WHILE LPAREN expressao RPAREN statement •
 
-    PLUS    shift, and go to state 56
-    MINUS   shift, and go to state 57
-    TIMES   shift, and go to state 58
-    DIV     shift, and go to state 59
-    ASSIGN  shift, and go to state 60
-    EQ      shift, and go to state 61
-    NEQ     shift, and go to state 62
-    LT      shift, and go to state 63
-    LTE     shift, and go to state 64
-    GT      shift, and go to state 65
-    GTE     shift, and go to state 66
-
-    $default  reduce using rule 51 (arg_lista)
+    $default  reduce using rule 32 (iteracao_decl)
 
 
 State 93
 
-   30 selecao_decl: IF LPAREN expressao RPAREN statement ELSE • statement
+   39 expressao: expressao • ASSIGN expressao
+   40          | expressao • PLUS expressao
+   41          | expressao • MINUS expressao
+   42          | expressao • TIMES expressao
+   43          | expressao • DIV expressao
+   44          | expressao • EQ expressao
+   45          | expressao • NEQ expressao
+   46          | expressao • LT expressao
+   47          | expressao • LTE expressao
+   48          | expressao • GT expressao
+   49          | expressao • GTE expressao
+   52 arg_lista: arg_lista COMMA expressao •
 
-    IF      shift, and go to state 36
-    WHILE   shift, and go to state 37
-    RETURN  shift, and go to state 38
-    NUM     shift, and go to state 39
-    ID      shift, and go to state 40
-    LPAREN  shift, and go to state 41
-    LBRACE  shift, and go to state 26
+    PLUS    shift, and go to state 57
+    MINUS   shift, and go to state 58
+    TIMES   shift, and go to state 59
+    DIV     shift, and go to state 60
+    ASSIGN  shift, and go to state 61
+    EQ      shift, and go to state 62
+    NEQ     shift, and go to state 63
+    LT      shift, and go to state 64
+    LTE     shift, and go to state 65
+    GT      shift, and go to state 66
+    GTE     shift, and go to state 67
 
-    composto_decl   go to state 43
-    statement       go to state 94
-    expressao_decl  go to state 45
-    selecao_decl    go to state 46
-    iteracao_decl   go to state 47
-    retorno_decl    go to state 48
-    expressao       go to state 49
+    $default  reduce using rule 52 (arg_lista)
 
 
 State 94
 
-   30 selecao_decl: IF LPAREN expressao RPAREN statement ELSE statement •
+   31 selecao_decl: IF LPAREN expressao RPAREN statement ELSE • statement
 
-    $default  reduce using rule 30 (selecao_decl)
+    IF      shift, and go to state 37
+    WHILE   shift, and go to state 38
+    RETURN  shift, and go to state 39
+    NUM     shift, and go to state 40
+    ID      shift, and go to state 41
+    LPAREN  shift, and go to state 42
+    LBRACE  shift, and go to state 28
+
+    composto_decl   go to state 44
+    statement       go to state 95
+    expressao_decl  go to state 46
+    selecao_decl    go to state 47
+    iteracao_decl   go to state 48
+    retorno_decl    go to state 49
+    expressao       go to state 50
+
+
+State 95
+
+   31 selecao_decl: IF LPAREN expressao RPAREN statement ELSE statement •
+
+    $default  reduce using rule 31 (selecao_decl)

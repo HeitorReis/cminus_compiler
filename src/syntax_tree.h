@@ -3,9 +3,6 @@
 
 #include "node.h"
 
-#define YYPARSER
-#define YYSTYPE treeNode*
-
 extern char *expName;
 extern char *variableName;
 extern char *functionName;
@@ -19,7 +16,7 @@ extern int paramsCount;
 extern char *argName;
 
 int yylex();
-int yyerror(char *errorMsg);
+int yyerror(const char *errorMsg);
 
 // Funções para manipulação de nós
 treeNode *createDeclNode(declType node);
