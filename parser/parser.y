@@ -62,51 +62,52 @@
 %token RBRACE 24
 %token LBRACK 25
 %token RBRACK 26
+%token ELSE 27
+%left ELSE
 %nonassoc LOWER_THAN_ELSE
-%nonassoc ELSE
 
 %%
 
-programa:
-    declaracao_lista {
+program:
+    declaration_list {
         syntax_tree = $1;
     }
     ;
 
-declaracao_lista:
-    declaracao_lista declaracao {
+declaration_list:
+    declaration_list declaration {
         $$ = traversal($1, $2);
     }
-    | declaracao {
+    | declaration {
         $$ = $1;
     }
     ;
 
-declaracao:
-    var_declaracao {
+declaration:
+    var_declaration {
         $$ = $1;
     }
-    | fun_declaracao {
+    | fun_declaration {
         $$ = $1;
     }
     ;
 
-var_declaracao:
-    tipo_especificador ID SEMICOLON {
+var_declaration:
+    type_specifier ID SEMICOLON {
         $$ = createDeclVarNode(declVar, $1);
-        $$->key.name = strdup(yytext);
+        $$->name = strdup(yytext);
         $$->line = yylineno;
         insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
     }
-    | tipo_especificador ID LBRACK NUM RBRACK SEMICOLON {
+    | type_specifier ID LBRACK NUM RBRACK SEMICOLON {
         $$ = createArrayDeclVarNode(expNum, declVar, $1);
-        $$->key.name = strdup(yytext);
+        $$->name = strdup(yytext);
         $$->line = yylineno;
         insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
     }
     ;
 
-tipo_especificador:
+type_specifier:
     INT {
         $$ = createDeclNode(declIdType); $$->type = Integer;
     }
@@ -115,17 +116,17 @@ tipo_especificador:
     }
     ;
 
-fun_declaracao:
-    tipo_especificador ID LPAREN params RPAREN composto_decl {
+fun_declaration:
+    type_specifier ID LPAREN params RPAREN compound_decl {
         $$ = createDeclFuncNode(declFunc, $1, $4, $6); paramsCount = 0;
         int funcLine = functionCurrentLine;
-        currentScope = strdup(yytext); /* atualiza escopo para nome da função */
+        currentScope = strdup(yytext); /* update scope to function name */
         insertSymbolInTable(functionName, "global", FUNC, funcLine - 1, $1->type);
     }
     ;
 
 params:
-    param_lista {
+    param_list {
         $$ = $1;
     }
     | VOID {
@@ -133,8 +134,8 @@ params:
     }
     ;
 
-param_lista:
-    param_lista COMMA param {
+param_list:
+    param_list COMMA param {
         $$ = traversal($1, $3);
     }
     | param {
@@ -143,102 +144,93 @@ param_lista:
     ;
 
 param:
-    tipo_especificador ID {
+    type_specifier ID {
         $$ = createDeclVarNode(declVar, $1);
         insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
     }
-    | tipo_especificador ID LBRACK RBRACK {
+    | type_specifier ID LBRACK RBRACK {
         $$ = createArrayArg(declVar, $1);
         insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
     }
     ;
 
-composto_decl:
-    LBRACE local_declaracoes statement_lista RBRACE {
+compound_decl:
+    LBRACE local_declarations statement_list RBRACE {
         $$ = traversal($2, $3);
     }
-    | SEMICOLON {
-        $$ = NULL;
-    }
-    | LBRACE local_declaracoes statement_lista fun_declaracao RBRACE {
-        $$ = traversal(traversal($2, $3), $4);
-    }
-    | LBRACE local_declaracoes fun_declaracao statement_lista RBRACE {
-        $$ = traversal(traversal($2, $3), $4);
-    }
-    ;
+;
 
-local_declaracoes:
-    local_declaracoes var_declaracao {
+local_declarations:
+    local_declarations var_declaration {
         $$ = traversal($1, $2);
     }
-    | /* vazio */ {
+    | /* empty */ {
         $$ = NULL;
     }
     ;
 
-statement_lista:
-    statement_lista statement {
+statement_list:
+    statement_list statement {
         $$ = traversal($1, $2);
     }
-    | /* vazio */ {
+    | /* empty */ {
         $$ = NULL;
     }
     ;
 
 statement:
-    expressao_decl {
+    expression_decl {
         $$ = $1;
     }
-    | composto_decl {
+    | compound_decl {
         $$ = $1;
     }
-    | selecao_decl {
+    | selection_decl {
         $$ = $1;
     }
-    | iteracao_decl {
+    | iteration_decl {
         $$ = $1;
     }
-    | retorno_decl {
-        $$ = $1;
-    }
-    ;
-
-expressao_decl:
-    expressao SEMICOLON {
+    | return_decl {
         $$ = $1;
     }
     ;
 
-selecao_decl:
-    IF LPAREN expressao RPAREN statement %prec LOWER_THAN_ELSE {
+expression_decl:
+    expression SEMICOLON {
+        $$ = $1;
+    }
+    ;
+
+selection_decl:
+    IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE {
         $$ = createIfStmt(stmtIf, $3, $5, NULL);
     }
-    | IF LPAREN expressao RPAREN statement ELSE statement {
+    | IF LPAREN expression RPAREN statement ELSE statement {
         $$ = createIfStmt(stmtIf, $3, $5, $7);
     }
     ;
 
-iteracao_decl:
-    WHILE LPAREN expressao RPAREN statement {
+iteration_decl:
+    WHILE LPAREN expression RPAREN statement {
         $$ = createWhileStmt(stmtWhile, $3, $5);
     }
     ;
 
-retorno_decl:
+return_decl:
     RETURN SEMICOLON {
         $$ = createStmtNode(stmtReturn);
     }
-    | RETURN expressao SEMICOLON {
+    | RETURN expression SEMICOLON {
         $$ = createStmtNode(stmtReturn); $$->child[0] = $2;
     }
     ;
 
-expressao:
-    var ASSIGN expressao {
-        $$ = createAssignStmt(stmtAttrib, $1, $3); $$->key.op = ASSIGN;
+expression:
+    var ASSIGN expression {
+        $$ = createAssignStmt(stmtAttrib, $1, $3); $$->op = ASSIGN;
     }
-    | simples_expressao {
+    | simple_expression {
         $$ = $1;
     }
     ;
@@ -249,67 +241,67 @@ var:
         $$->line = yylineno;
         insertSymbolInTable(expName, currentScope, VAR, yylineno, Integer);
     }
-    | ID LBRACK expressao RBRACK {
+    | ID LBRACK expression RBRACK {
         $$ = createArrayExpVar(expId, $3);
         $$->line = yylineno;
         insertSymbolInTable(variableName, currentScope, ARRAY, yylineno, Integer);
     }
     ;
 
-simples_expressao:
-    soma_expressao relacional soma_expressao {
-        $$ = createExpOp(expOp, $1, $3); $$->key.op = $2->key.op;
+simple_expression:
+    sum_expression relational sum_expression {
+        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
     }
-    | soma_expressao {
+    | sum_expression {
         $$ = $1;
     }
     ;
 
-relacional:
-    LT  { $$ = createExpNode(expId); $$->key.op = LT;  $$->line = yylineno; }
-    | LTE { $$ = createExpNode(expId); $$->key.op = LTE; $$->line = yylineno; }
-    | GT  { $$ = createExpNode(expId); $$->key.op = GT;  $$->line = yylineno; }
-    | GTE { $$ = createExpNode(expId); $$->key.op = GTE; $$->line = yylineno; }
-    | EQ  { $$ = createExpNode(expId); $$->key.op = EQ;  $$->line = yylineno; }
-    | NEQ { $$ = createExpNode(expId); $$->key.op = NEQ; $$->line = yylineno; }
+relational:
+    LT  { $$ = createExpNode(expId); $$->op = LT;  $$->line = yylineno; }
+    | LTE { $$ = createExpNode(expId); $$->op = LTE; $$->line = yylineno; }
+    | GT  { $$ = createExpNode(expId); $$->op = GT;  $$->line = yylineno; }
+    | GTE { $$ = createExpNode(expId); $$->op = GTE; $$->line = yylineno; }
+    | EQ  { $$ = createExpNode(expId); $$->op = EQ;  $$->line = yylineno; }
+    | NEQ { $$ = createExpNode(expId); $$->op = NEQ; $$->line = yylineno; }
     ;
 
-soma_expressao:
-    soma_expressao soma termo {
-        $$ = createExpOp(expOp, $1, $3); $$->key.op = $2->key.op;
+sum_expression:
+    sum_expression sum term {
+        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
     }
-    | termo {
+    | term {
         $$ = $1;
     }
     ;
 
-soma:
-    PLUS  { $$ = createExpNode(expId); $$->key.op = PLUS; }
-    | MINUS { $$ = createExpNode(expId); $$->key.op = MINUS; }
+sum:
+    PLUS  { $$ = createExpNode(expId); $$->op = PLUS; }
+    | MINUS { $$ = createExpNode(expId); $$->op = MINUS; }
     ;
 
-termo:
-    termo mult fator {
-        $$ = createExpOp(expOp, $1, $3); $$->key.op = $2->key.op;
+term:
+    term mult factor {
+        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
     }
-    | fator {
+    | factor {
         $$ = $1;
     }
     ;
 
 mult:
-    TIMES { $$ = createExpNode(expId); $$->key.op = TIMES; }
-    | DIV   { $$ = createExpNode(expId); $$->key.op = DIV;   }
+    TIMES { $$ = createExpNode(expId); $$->op = TIMES; }
+    | DIV   { $$ = createExpNode(expId); $$->op = DIV;   }
     ;
 
-fator:
-    LPAREN expressao RPAREN {
+factor:
+    LPAREN expression RPAREN {
         $$ = $1;
     }
     | var {
         $$ = $1;
     }
-    | ativacao {
+    | call {
         $$ = $1;
     }
     | NUM {
@@ -317,33 +309,27 @@ fator:
     }
     ;
 
-ativacao:
+call:
     ID LPAREN args RPAREN {
-        /* chamada em expressão agora */
-        $$ = createExpCallNode(strdup(yytext), $4);
-        $$->line = yylineno;
-    }
-    ID LPAREN args RPAREN {
-        /* use $1, que é a string do ID, não yytext após o RPAREN */
-        $$ = createExpCallNode(strdup($1), $4);
+        $$ = createExpCallNode(strdup($1->name), $3);
         $$->line = yylineno;
     }
     ;
 
 args:
-    arg_lista {
+    arg_list {
         $$ = $1;
     }
-    | /* vazio */ {
+    | /* empty */ {
         $$ = NULL;
     }
     ;
 
-arg_lista:
-    arg_lista COMMA expressao {
+arg_list:
+    arg_list COMMA expression {
         $$ = traversal($1, $3); argsCount++;
     }
-    | expressao {
+    | expression {
         $$ = $1; argsCount++;
     }
     | param { 
@@ -352,6 +338,7 @@ arg_lista:
     ;
 
 %%
+
 
 int yyerror(char *errorMsg) {
   printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", yylineno, yytext);

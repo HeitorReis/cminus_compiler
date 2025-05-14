@@ -35,21 +35,21 @@ treeNode *createNode() {
 treeNode *createDeclNode(declType node) {
     treeNode *newNode = createNode();
     newNode->node = decl;
-    newNode->nodeSubType.decl = node;
+    newNode->declSubType = node;
     return newNode;
 }
 
 treeNode *createStmtNode(stmtType node) {
     treeNode *newNode = createNode();
     newNode->node = stmt;
-    newNode->nodeSubType.stmt = node;
+    newNode->stmtSubType = node;
     return newNode;
 }
 
 treeNode *createExpNode(expType node) {
     treeNode *newNode = createNode();
     newNode->node = exp;
-    newNode->nodeSubType.exp = node;
+    newNode->expSubType = node;
     return newNode;
 }
 
@@ -68,7 +68,7 @@ treeNode *traversal(treeNode *node1, treeNode *node2) {
 
 treeNode *createDeclVarNode(declType declVar, treeNode *expType) {
     treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->key.name = expName;
+    declVarNode->name = expName;
     declVarNode->type = expType->type;
     expType->child[0] = declVarNode;
     return expType;
@@ -76,11 +76,11 @@ treeNode *createDeclVarNode(declType declVar, treeNode *expType) {
 
 treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *expType) {
     treeNode *expNumNode = createExpNode(expNum);
-    expNumNode->key.value = tokenNUM;  
+    expNumNode->value = tokenNUM;  
     expNumNode->type = Integer;
 
     treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->key.name = expName; 
+    declVarNode->name = expName; 
     declVarNode->child[0] = expNumNode;
 
     declVarNode->type = (expType->type == Integer) ? Array : Void;
@@ -92,7 +92,7 @@ treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *par
     treeNode* declFuncNode = createDeclNode(declFunc);
     declFuncNode->child[0] = params;
     declFuncNode->child[1] = blocDecl;
-    declFuncNode->key.name = functionName;
+    declFuncNode->name = functionName;
     declFuncNode->line = functionCurrentLine;
     declFuncNode->type = expType->type;
     declFuncNode->params = paramsCount;
@@ -102,14 +102,14 @@ treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *par
 
 treeNode *createEmptyParams(expType expId) {
     treeNode *node = createExpNode(expId);
-    node->key.name = "void";
+    node->name = "void";
     node->type = Void;
     return node;
 }
 
 treeNode *createArrayArg(declType declVar, treeNode *expType) {
     treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->key.name = expName;
+    declVarNode->name = expName;
     declVarNode->type = (expType->type == Integer) ? Array : expType->type;
     expType->child[0] = declVarNode;
     return expType;
@@ -141,14 +141,14 @@ treeNode *createAssignStmt(stmtType stmtAttrib, treeNode *var, treeNode *exp) {
 
 treeNode *createExpVar(expType expId) {
     treeNode *expVarNode = createExpNode(expId);
-    expVarNode->key.name = expName;
+    expVarNode->name = expName;
     expVarNode->type = Void;
     return expVarNode;
 }
 
 treeNode *createArrayExpVar(expType expId, treeNode *exp) {
     treeNode *expVarNode = createExpNode(expId);
-    expVarNode->key.name = variableName;
+    expVarNode->name = variableName;
     expVarNode->child[0] = exp;
     expVarNode->type = Integer;
     return expVarNode;
@@ -163,7 +163,7 @@ treeNode *createExpOp(expType expOp, treeNode *exp1, treeNode *exp2) {
 
 treeNode *createExpNum(expType expNum) {
     treeNode *expNumNode = createExpNode(expNum);
-    expNumNode->key.value = atoi(yytext);   
+    expNumNode->value = atoi(yytext);   
     expNumNode->type = Integer;
     return expNumNode;
 }
@@ -171,7 +171,7 @@ treeNode *createExpNum(expType expNum) {
 treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments) {
     treeNode *activationFuncNode = createStmtNode(stmtFunc);
     activationFuncNode->child[1] = arguments; 
-    activationFuncNode->key.name = functionName;
+    activationFuncNode->name = functionName;
     activationFuncNode->line = functionCurrentLine;
     activationFuncNode->args = argsCount;
     return activationFuncNode;
@@ -180,7 +180,7 @@ treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments) {
 /* === Novo construtor para chamada em expressão === */
 treeNode *createExpCallNode(const char *funcName, treeNode *args) {
     treeNode *node = createExpNode(expCall);
-    node->key.name = strdup(funcName);
+    node->name = strdup(funcName);
     node->child[0] = args;  /* lista de argumentos */
     node->type = Void;      /* será ajustado na semântica */
     return node;

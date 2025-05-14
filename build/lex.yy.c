@@ -2031,9 +2031,11 @@ void ignorar_comentario() {
     int c;
     while (1) {
         c = input();
-        if (c =='*'){
+        if (c == '*') {
             c = input();
-            if (c=='/') break;
+            if (c == '/') break;
         }
+        if (c == 0 || c == EOF) break;  // prevent infinite loop at EOF
     }
 }
+

@@ -47,30 +47,30 @@ void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
 
     /* --- Pré-ordem: declarações (como antes) --- */
     if (n->node == decl) {
-        if (n->nodeSubType.decl == declVar) {
+        if (n->declSubType == declVar) {
             if (n->type == Void) {
                 reportError(ctx,
                     "Linha %d: variável '%s' não pode ser void",
-                    n->line, n->key.name);
+                    n->line, n->name);
             }
-            if (findSymbol(&ctx->symbols, n->key.name, scope)) {
+            if (findSymbol(&ctx->symbols, n->name, scope)) {
                 reportError(ctx,
                     "Linha %d: '%s' já declarado em '%s'",
-                    n->line, n->key.name, scope);
+                    n->line, n->name, scope);
             } else {
                 insertSymbol(&ctx->symbols,
-                             n->key.name, scope,
+                             n->name, scope,
                              VAR, n->line, n->type);
             }
         }
-        else if (n->nodeSubType.decl == declFunc) {
-            if (findSymbol(&ctx->symbols, n->key.name, "global")) {
+        else if (n->declSubType == declFunc) {
+            if (findSymbol(&ctx->symbols, n->name, "global")) {
                 reportError(ctx,
                     "Linha %d: função '%s' redeclarada",
-                    n->line, n->key.name);
+                    n->line, n->name);
             } else {
                 insertSymbol(&ctx->symbols,
-                             n->key.name, "global",
+                             n->name, "global",
                              FUNC, n->line, n->type);
             }
         }
@@ -78,8 +78,8 @@ void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
 
     /* --- Recurse filhos/siblings --- */
     const char *nextScope = (n->node == decl &&
-                             n->nodeSubType.decl == declFunc)
-                            ? n->key.name
+                             n->declSubType == declFunc)
+                            ? n->name
                             : scope;
     for (int i = 0; i < CHILD_MAX_NODES; i++)
         if (n->child[i])
@@ -90,23 +90,23 @@ void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
     /* --- Pós-ordem: checagem de expressões e statements --- */
 
     if (n->node == exp) {
-        switch (n->nodeSubType.exp) {
+        switch (n->expSubType) {
           case expId:
-            if (!findSymbol(&ctx->symbols, n->key.name, scope)) {
+            if (!findSymbol(&ctx->symbols, n->name, scope)) {
                 reportError(ctx,
                     "Linha %d: '%s' não declarado em '%s'",
-                    n->line, n->key.name, scope);
+                    n->line, n->name, scope);
             }
             break;
 
           case expCall: {
             /* Chamada em expressão */
             Symbol *sym = findSymbol(&ctx->symbols,
-                                     n->key.name, "global");
+                                     n->name, "global");
             if (!sym || sym->type != FUNC) {
                 reportError(ctx,
                     "Linha %d: '%s' não é função",
-                    n->line, n->key.name);
+                    n->line, n->name);
                 n->type = Void;
             } else {
                 n->type = sym->dataType;
@@ -119,7 +119,7 @@ void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
                 if (given != (int)sym->paramCount) {
                     reportError(ctx,
                         "Linha %d: '%s' espera %zu args, recebeu %d",
-                        n->line, n->key.name,
+                        n->line, n->name,
                         sym->paramCount, given);
                 }
                 for (int i = 0; i < (int)sym->paramCount && i < given; i++) {
@@ -127,7 +127,7 @@ void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
                     if (got != sym->paramTypes[i]) {
                         reportError(ctx,
                             "Linha %d: arg %d de '%s' é %s, esperava %s",
-                            n->line, i+1, n->key.name,
+                            n->line, i+1, n->name,
                             primitiveTypeToString(got),
                             primitiveTypeToString(sym->paramTypes[i]));
                     }
@@ -141,9 +141,9 @@ void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
         }
     }
     else if (n->node == stmt) {
-        switch (n->nodeSubType.stmt) {
+        switch (n->stmtSubType) {
           case stmtAttrib: {
-            char *v = n->child[0]->key.name;
+            char *v = n->child[0]->name;
             Symbol *sym = findSymbol(&ctx->symbols, v, scope);
             primitiveType rhs = n->child[1]->type;
             if (!sym) {

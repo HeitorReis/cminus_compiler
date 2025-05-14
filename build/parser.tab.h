@@ -80,8 +80,8 @@ extern int yydebug;
     RBRACE = 24,                   /* RBRACE  */
     LBRACK = 25,                   /* LBRACK  */
     RBRACK = 26,                   /* RBRACK  */
-    LOWER_THAN_ELSE = 258,         /* LOWER_THAN_ELSE  */
-    ELSE = 259                     /* ELSE  */
+    ELSE = 27,                     /* ELSE  */
+    LOWER_THAN_ELSE = 258          /* LOWER_THAN_ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
