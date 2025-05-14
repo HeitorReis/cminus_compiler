@@ -45,7 +45,6 @@ void prepareBuiltInsAndMain(SemanticContext *ctx) {
 void analyzeNode(treeNode *n, SemanticContext *ctx, const char *scope) {
     if (!n) return;
 
-    /* --- Pré-ordem: declarações (como antes) --- */
     if (n->node == decl) {
         if (n->nodeSubType.decl == declVar) {
             if (n->type == Void) {

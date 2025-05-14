@@ -54,13 +54,13 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    IF = 258,                      /* IF  */
-    WHILE = 259,                   /* WHILE  */
-    RETURN = 260,                  /* RETURN  */
-    INT = 261,                     /* INT  */
-    VOID = 262,                    /* VOID  */
-    NUM = 263,                     /* NUM  */
-    ID = 264,                      /* ID  */
+    ID = 258,                      /* ID  */
+    NUM = 259,                     /* NUM  */
+    IF = 260,                      /* IF  */
+    WHILE = 261,                   /* WHILE  */
+    RETURN = 262,                  /* RETURN  */
+    INT = 263,                     /* INT  */
+    VOID = 264,                    /* VOID  */
     PLUS = 265,                    /* PLUS  */
     MINUS = 266,                   /* MINUS  */
     TIMES = 267,                   /* TIMES  */
@@ -90,11 +90,11 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 34 "parser/parser.y"
+#line 38 "parser/parser.y"
 
-  struct treeNode *node;
-  int             num;
-  char           *string;
+    struct treeNode *node;
+    char     *string;
+    int       num;
 
 #line 100 "parser.tab.h"
 
