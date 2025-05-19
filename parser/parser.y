@@ -327,7 +327,7 @@ factor:
 
 call:
     ID LPAREN args RPAREN {
-        $$ = createExpCallNode(strdup($1->name), $3);
+        $$ = createExpCallNode(strdup(expName), $3);
         $$->line = yylineno;
     }
     ;

@@ -1673,7 +1673,7 @@ yyreduce:
   case 61: /* call: ID LPAREN args RPAREN  */
 #line 329 "parser/parser.y"
                           {
-        yyval = createExpCallNode(strdup(yyvsp[-3]->name), yyvsp[-1]);
+        yyval = createExpCallNode(strdup(expName), yyvsp[-1]);
         yyval->line = yylineno;
     }
 #line 1680 "parser.tab.c"
