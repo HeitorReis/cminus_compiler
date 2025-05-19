@@ -63,13 +63,14 @@
 %token LBRACK 25
 %token RBRACK 26
 %token ELSE 27
-%left ELSE
-%nonassoc LOWER_THAN_ELSE
+
+%debug
 
 %%
 
 program:
     declaration_list {
+        printf("Program parsed successfully.\n");
         syntax_tree = $1;
     }
     ;
@@ -179,22 +180,45 @@ statement_list:
     ;
 
 statement:
+    matched_stmt
+  | unmatched_stmt
+;
+
+/* Safely matched IF with ELSE or non-IF statements */
+matched_stmt:
+    IF LPAREN expression RPAREN matched_stmt ELSE matched_stmt {
+        $$ = createIfStmt(stmtIf, $3, $5, $7);
+    }
+  | other_stmt {
+        $$ = $1;
+    }
+;
+
+/* Potentially dangling IFs */
+unmatched_stmt:
+    IF LPAREN expression RPAREN statement {
+        $$ = createIfStmt(stmtIf, $3, $5, NULL);
+    }
+  | IF LPAREN expression RPAREN matched_stmt ELSE unmatched_stmt {
+        $$ = createIfStmt(stmtIf, $3, $5, $7);
+    }
+;
+
+/* All other kinds of statements */
+other_stmt:
     expression_decl {
         $$ = $1;
     }
-    | compound_decl {
+  | compound_decl {
         $$ = $1;
     }
-    | selection_decl {
+  | iteration_decl {
         $$ = $1;
     }
-    | iteration_decl {
+  | return_decl {
         $$ = $1;
     }
-    | return_decl {
-        $$ = $1;
-    }
-    ;
+;
 
 expression_decl:
     expression SEMICOLON {
@@ -202,14 +226,6 @@ expression_decl:
     }
     ;
 
-selection_decl:
-    IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE {
-        $$ = createIfStmt(stmtIf, $3, $5, NULL);
-    }
-    | IF LPAREN expression RPAREN statement ELSE statement {
-        $$ = createIfStmt(stmtIf, $3, $5, $7);
-    }
-    ;
 
 iteration_decl:
     WHILE LPAREN expression RPAREN statement {
@@ -346,6 +362,16 @@ int yyerror(char *errorMsg) {
 }
 
 treeNode *parse() {
-    parseResult = yyparse(); 
+    extern int yydebug;
+    yydebug = 1; // ✅ Ativa impressão detalhada das reduções
+
+    printf("Parsing...\n");
+    parseResult = yyparse();
+    if (parseResult == 0) {
+        printf("Parsing completed successfully.\n");
+    } else {
+        printf("Parsing failed.\n");
+    } 
     return syntax_tree; 
 }
+

@@ -39,7 +39,7 @@
 # define YY_YY_PARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -80,8 +80,7 @@ extern int yydebug;
     RBRACE = 24,                   /* RBRACE  */
     LBRACK = 25,                   /* LBRACK  */
     RBRACK = 26,                   /* RBRACK  */
-    ELSE = 27,                     /* ELSE  */
-    LOWER_THAN_ELSE = 258          /* LOWER_THAN_ELSE  */
+    ELSE = 27                      /* ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
