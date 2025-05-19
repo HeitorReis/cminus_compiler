@@ -1,392 +1,377 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "syntax_tree.h"
-#include "node.h"
-#include "utils.h"
-#include "symbol_table.h"
-#include "semantic.h"
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  #include "syntax_tree.h"
+  #include "node.h"
+  #include "utils.h"
+  #include "symbol_table.h"
+  #include "semantic.h"
+  
+  treeNode *syntax_tree;
+  SymbolTable tabela;
 
-treeNode    *syntax_tree;
-SymbolTable  tabela;
+  extern int tokenNUM;
+  extern int parseResult;
 
-extern int   tokenNUM;
-extern int   parseResult;
-extern int   yylineno;
-extern char *yytext;
+  extern char *functionName;
+  extern char *currentScope;
+  extern char *expName;
+  extern int functionCurrentLine;
+  extern char *variableName;
 
-/* variáveis vindas de syntax_tree.c */
-extern char *expName;
-extern char *variableName;
-extern char *currentScope;
-extern int   functionCurrentLine;
+  extern char *argName;
 
-/* armazenamento temporário do lexema de ID */
-char *savedId;
+  extern int yylineno;
+  extern char *yytext;
 
-void insertSymbolInTable(char *name, char *scope,
-                         SymbolType type, int line,
-                         primitiveType dataType) {
-    Symbol *s = findSymbol(&tabela, name, scope);
-    if (s) addLine(s, line);
-    else  insertSymbol(&tabela, name, scope, type, line, dataType);
-}
+  void insertSymbolInTable(char *name, char *scope, SymbolType type, int line, primitiveType dataType) {
+    Symbol *symbol = findSymbol(&tabela, name, scope);
+    if (symbol) {
+        addLine(symbol, line);
+    } else {
+        insertSymbol(&tabela, name, scope, type, line, dataType);
+    }
+  }
 %}
 
-/* — Valor-semântico: nó da AST, lexema de ID, ou número — */
-%union {
-    struct treeNode *node;
-    char     *string;
-    int       num;
-}
+/* Tokens */
+%token IF 1 
+%token WHILE 2 
+%token RETURN 3
+%token INT 4 
+%token VOID 5 
+%token NUM 6 
+%token ID 7
+%token EQ 8
+%token NEQ 9 
+%token LT 10
+%token LTE 11
+%token GT 12
+%token GTE 13
+%token PLUS 14 
+%token MINUS 15 
+%token TIMES 16
+%token DIV 17
+%token ASSIGN 18 
+%token SEMICOLON 19
+%token COMMA 20
+%token LPAREN 21
+%token RPAREN 22
+%token LBRACE 23
+%token RBRACE 24
+%token LBRACK 25
+%token RBRACK 26
+%token ELSE 27
 
-/* — Tokens com seus tipos — */
-%token <string> ID
-%token <num>    NUM
-%token          IF WHILE RETURN INT VOID
-%token          PLUS MINUS TIMES DIV ASSIGN
-%token          EQ NEQ LT LTE GT GTE
-%token          SEMICOLON COMMA LPAREN RPAREN
-%token          LBRACE RBRACE LBRACK RBRACK
-
-/* — Não-terminais que produzem nós da AST — */
-%type <node>
-    programa declaracao_lista declaracao
-    tipo_especificador var_declaracao fun_declaracao
-    params param_lista param
-    composto_decl local_declaracoes statement_lista statement
-    expressao_decl selecao_decl iteracao_decl retorno_decl
-    expressao args arg_lista
-
-/* — Precedência e associatividade — */
-%right    ASSIGN
-%left     EQ NEQ
-%left     LT LTE GT GTE
-%left     PLUS MINUS
-%left     TIMES DIV
-%nonassoc LOWER_THAN_ELSE
-%nonassoc ELSE
+%debug
 
 %%
 
-programa
-  : declaracao_lista
-      { syntax_tree = $1; }
-  ;
+program:
+    declaration_list {
+        printf("Program parsed successfully.\n");
+        syntax_tree = $1;
+    }
+    ;
 
-declaracao_lista
-  : declaracao_lista declaracao
-      { $$ = traversal($1, $2); }
-  | declaracao
-      { $$ = $1; }
-  ;
+declaration_list:
+    declaration_list declaration {
+        $$ = traversal($1, $2);
+    }
+    | declaration {
+        $$ = $1;
+    }
+    ;
 
-declaracao
-  : var_declaracao
-      { $$ = $1; }
-  | fun_declaracao
-      { $$ = $1; }
-  ;
+declaration:
+    var_declaration {
+        $$ = $1;
+    }
+    | fun_declaration {
+        $$ = $1;
+    }
+    ;
 
-/* — tipo int ou void — */
-tipo_especificador
-  : INT
-      { $$ = createDeclNode(declIdType);
-        $$->type = Integer; }
-  | VOID
-      { $$ = createDeclNode(declIdType);
-        $$->type = Void; }
-  ;
-
-/* — declaração de variável — */
-var_declaracao
-  : tipo_especificador ID SEMICOLON
-      {
-        /* só lexemas verdadeiros de ID em savedId */
-        savedId = strdup($2);
+var_declaration:
+    type_specifier ID SEMICOLON {
         $$ = createDeclVarNode(declVar, $1);
-        $$->key.name = savedId;
-        $$->line     = yylineno;
-        insertSymbolInTable(savedId,
-                            currentScope,
-                            VAR,
-                            yylineno,
-                            $1->type);
-      }
-  | tipo_especificador ID LBRACK NUM RBRACK SEMICOLON
-      {
-        savedId = strdup($2);
-        $$ = createArrayDeclVarNode(expNum, declVar, $1);
-        $$->key.name = savedId;
-        $$->line     = yylineno;
-        insertSymbolInTable(savedId,
-                            currentScope,
-                            ARRAY,
-                            yylineno,
-                            $1->type);
-      }
-  ;
-
-/* — declaração de função — */
-fun_declaracao
-  : tipo_especificador ID LPAREN params RPAREN composto_decl
-      {
-        savedId = strdup($2);
-        $$ = createDeclFuncNode(declFunc,
-                                     $1,
-                                     $4,
-                                     $6);
-        functionCurrentLine = yylineno;
-        currentScope        = strdup(savedId);
-        insertSymbolInTable(savedId,
-                            "global",
-                            FUNC,
-                            functionCurrentLine - 1,
-                            $1->type);
-      }
-  ;
-
-/* — parâmetros — */
-params
-  : param_lista
-      { $$ = $1; }
-  | VOID
-      { $$ = createEmptyParams(expId); }
-  | /* empty */
-      { $$ = NULL; }
-  ;
-
-param_lista
-  : param_lista COMMA param
-      { $$ = traversal($1, $3); }
-  | param
-      { $$ = $1; }
-  ;
-
-param
-  : tipo_especificador ID
-      {
-        savedId = strdup($2);
-        $$ = createDeclVarNode(declVar, $1);
-        insertSymbolInTable(savedId,
-                            currentScope,
-                            VAR,
-                            yylineno,
-                            $1->type);
-      }
-  | tipo_especificador ID LBRACK RBRACK
-      {
-        savedId = strdup($2);
-        $$ = createArrayArg(declVar, $1);
-        insertSymbolInTable(savedId,
-                            currentScope,
-                            ARRAY,
-                            yylineno,
-                            $1->type);
-      }
-  ;
-
-/* — bloco — */
-composto_decl
-  : LBRACE local_declaracoes statement_lista RBRACE
-      { $$ = traversal($2, $3); }
-  ;
-
-/* — declarações locais — */
-local_declaracoes
-  : local_declaracoes var_declaracao
-      { $$ = traversal($1, $2); }
-  | /* empty */
-      { $$ = NULL; }
-  ;
-
-/* — lista de statements — */
-statement_lista
-  : statement_lista statement
-      { $$ = traversal($1, $2); }
-  | /* empty */
-      { $$ = NULL; }
-  ;
-
-/* — statements — */
-statement
-  : expressao_decl
-      { $$ = $1; }
-  | composto_decl
-      { $$ = $1; }
-  | selecao_decl
-      { $$ = $1; }
-  | iteracao_decl
-      { $$ = $1; }
-  | retorno_decl
-      { $$ = $1; }
-  ;
-
-/* — expressão seguida de ponto‐e‐vírgula — */
-expressao_decl
-  : expressao SEMICOLON
-      { $$ = $1; }
-  ;
-
-/* — if / if-else — */
-selecao_decl
-  : IF LPAREN expressao RPAREN statement %prec LOWER_THAN_ELSE
-      { $$ = createIfStmt(stmtIf,
-                                $3,
-                                $5,
-                                NULL); }
-  | IF LPAREN expressao RPAREN statement ELSE statement
-      { $$ = createIfStmt(stmtIf,
-                                $3,
-                                $5,
-                                $7); }
-  ;
-
-/* — while — */
-iteracao_decl
-  : WHILE LPAREN expressao RPAREN statement
-      { $$ = createWhileStmt(stmtWhile,
-                                   $3,
-                                   $5); }
-  ;
-
-/* — return — */
-retorno_decl
-  : RETURN SEMICOLON
-      { $$ = createStmtNode(stmtReturn); }
-  | RETURN expressao SEMICOLON
-      {
-        $$ = createStmtNode(stmtReturn);
-        $$->child[0] = $2;
-      }
-  ;
-
-/* — expressões — */
-expressao
-  : ID LPAREN args RPAREN
-      {
-        $$ = createExpCallNode($1,
-                                    $3);
+        $$->name = strdup(yytext);
         $$->line = yylineno;
-      }
-  | ID
-      {
+        insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
+    }
+    | type_specifier ID LBRACK NUM RBRACK SEMICOLON {
+        $$ = createArrayDeclVarNode(expNum, declVar, $1);
+        $$->name = strdup(yytext);
+        $$->line = yylineno;
+        insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
+    }
+    ;
+
+type_specifier:
+    INT {
+        $$ = createDeclNode(declIdType); $$->type = Integer;
+    }
+    | VOID {
+        $$ = createDeclNode(declIdType); $$->type = Void;
+    }
+    ;
+
+fun_declaration:
+    type_specifier ID LPAREN params RPAREN compound_decl {
+        $$ = createDeclFuncNode(declFunc, $1, $4, $6); paramsCount = 0;
+        int funcLine = functionCurrentLine;
+        currentScope = strdup(yytext); /* update scope to function name */
+        insertSymbolInTable(functionName, "global", FUNC, funcLine - 1, $1->type);
+    }
+    ;
+
+params:
+    param_list {
+        $$ = $1;
+    }
+    | VOID {
+        $$ = createEmptyParams(expId);
+    }
+    ;
+
+param_list:
+    param_list COMMA param {
+        $$ = traversal($1, $3);
+    }
+    | param {
+        $$ = $1;
+    }
+    ;
+
+param:
+    type_specifier ID {
+        $$ = createDeclVarNode(declVar, $1);
+        insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
+    }
+    | type_specifier ID LBRACK RBRACK {
+        $$ = createArrayArg(declVar, $1);
+        insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
+    }
+    ;
+
+compound_decl:
+    LBRACE local_declarations statement_list RBRACE {
+        $$ = traversal($2, $3);
+    }
+;
+
+local_declarations:
+    local_declarations var_declaration {
+        $$ = traversal($1, $2);
+    }
+    | /* empty */ {
+        $$ = NULL;
+    }
+    ;
+
+statement_list:
+    statement_list statement {
+        $$ = traversal($1, $2);
+    }
+    | /* empty */ {
+        $$ = NULL;
+    }
+    ;
+
+statement:
+    matched_stmt
+  | unmatched_stmt
+;
+
+/* Safely matched IF with ELSE or non-IF statements */
+matched_stmt:
+    IF LPAREN expression RPAREN matched_stmt ELSE matched_stmt {
+        $$ = createIfStmt(stmtIf, $3, $5, $7);
+    }
+  | other_stmt {
+        $$ = $1;
+    }
+;
+
+/* Potentially dangling IFs */
+unmatched_stmt:
+    IF LPAREN expression RPAREN statement {
+        $$ = createIfStmt(stmtIf, $3, $5, NULL);
+    }
+  | IF LPAREN expression RPAREN matched_stmt ELSE unmatched_stmt {
+        $$ = createIfStmt(stmtIf, $3, $5, $7);
+    }
+;
+
+/* All other kinds of statements */
+other_stmt:
+    expression_decl {
+        $$ = $1;
+    }
+  | compound_decl {
+        $$ = $1;
+    }
+  | iteration_decl {
+        $$ = $1;
+    }
+  | return_decl {
+        $$ = $1;
+    }
+;
+
+expression_decl:
+    expression SEMICOLON {
+        $$ = $1;
+    }
+    ;
+
+
+iteration_decl:
+    WHILE LPAREN expression RPAREN statement {
+        $$ = createWhileStmt(stmtWhile, $3, $5);
+    }
+    ;
+
+return_decl:
+    RETURN SEMICOLON {
+        $$ = createStmtNode(stmtReturn);
+    }
+    | RETURN expression SEMICOLON {
+        $$ = createStmtNode(stmtReturn); $$->child[0] = $2;
+    }
+    ;
+
+expression:
+    var ASSIGN expression {
+        $$ = createAssignStmt(stmtAttrib, $1, $3); $$->op = ASSIGN;
+    }
+    | simple_expression {
+        $$ = $1;
+    }
+    ;
+
+var:
+    ID {
         $$ = createExpVar(expId);
-        $$->key.name = $1;
-        $$->line     = yylineno;
-      }
-  | NUM
-      {
+        $$->line = yylineno;
+        insertSymbolInTable(expName, currentScope, VAR, yylineno, Integer);
+    }
+    | ID LBRACK expression RBRACK {
+        $$ = createArrayExpVar(expId, $3);
+        $$->line = yylineno;
+        insertSymbolInTable(variableName, currentScope, ARRAY, yylineno, Integer);
+    }
+    ;
+
+simple_expression:
+    sum_expression relational sum_expression {
+        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
+    }
+    | sum_expression {
+        $$ = $1;
+    }
+    ;
+
+relational:
+    LT  { $$ = createExpNode(expId); $$->op = LT;  $$->line = yylineno; }
+    | LTE { $$ = createExpNode(expId); $$->op = LTE; $$->line = yylineno; }
+    | GT  { $$ = createExpNode(expId); $$->op = GT;  $$->line = yylineno; }
+    | GTE { $$ = createExpNode(expId); $$->op = GTE; $$->line = yylineno; }
+    | EQ  { $$ = createExpNode(expId); $$->op = EQ;  $$->line = yylineno; }
+    | NEQ { $$ = createExpNode(expId); $$->op = NEQ; $$->line = yylineno; }
+    ;
+
+sum_expression:
+    sum_expression sum term {
+        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
+    }
+    | term {
+        $$ = $1;
+    }
+    ;
+
+sum:
+    PLUS  { $$ = createExpNode(expId); $$->op = PLUS; }
+    | MINUS { $$ = createExpNode(expId); $$->op = MINUS; }
+    ;
+
+term:
+    term mult factor {
+        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
+    }
+    | factor {
+        $$ = $1;
+    }
+    ;
+
+mult:
+    TIMES { $$ = createExpNode(expId); $$->op = TIMES; }
+    | DIV   { $$ = createExpNode(expId); $$->op = DIV;   }
+    ;
+
+factor:
+    LPAREN expression RPAREN {
+        $$ = $1;
+    }
+    | var {
+        $$ = $1;
+    }
+    | call {
+        $$ = $1;
+    }
+    | NUM {
         $$ = createExpNum(expNum);
-        $$->key.value = $1;
-        $$->line      = yylineno;
-      }
-  | LPAREN expressao RPAREN
-      { $$ = $2; }
-  | expressao ASSIGN expressao
-      {
-        $$ = createAssignStmt(stmtAttrib,
-                                   $1,
-                                   $3);
-        $$->key.op = ASSIGN;
-      }
-  | expressao PLUS expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = PLUS;
-      }
-  | expressao MINUS expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = MINUS;
-      }
-  | expressao TIMES expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = TIMES;
-      }
-  | expressao DIV expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = DIV;
-      }
-  | expressao EQ expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = EQ;
-      }
-  | expressao NEQ expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = NEQ;
-      }
-  | expressao LT expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = LT;
-      }
-  | expressao LTE expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = LTE;
-      }
-  | expressao GT expressao
-      { 
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = GT;
-      }
-  | expressao GTE expressao
-      {
-        $$ = createExpOp(expOp,
-                              $1,
-                              $3);
-        $$->key.op = GTE;
-      }
-  ;
+    }
+    ;
 
-/* — lista de argumentos — */
-args
-  : arg_lista
-      { $$ = $1; }
-  | /* empty */
-      { $$ = NULL; }
-  ;
+call:
+    ID LPAREN args RPAREN {
+        $$ = createExpCallNode(strdup(expName), $3);
+        $$->line = yylineno;
+    }
+    ;
 
-arg_lista
-  : arg_lista COMMA expressao
-      { $$ = traversal($1, $3); }
-  | expressao
-      { $$ = $1; }
-  ;
+args:
+    arg_list {
+        $$ = $1;
+    }
+    | /* empty */ {
+        $$ = NULL;
+    }
+    ;
+
+arg_list:
+    arg_list COMMA expression {
+        $$ = traversal($1, $3); argsCount++;
+    }
+    | expression {
+        $$ = $1; argsCount++;
+    }
+    | param { 
+        $$ = $1; argsCount++;
+    }
+    ;
 
 %%
 
-int yyerror(const char *msg) {
-    fprintf(stderr, "(!) ERRO SINTÁTICO: Linha %d, Token `%s`\n",
-            yylineno, yytext);
-    return 1;
+
+int yyerror(char *errorMsg) {
+  printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", yylineno, yytext);
+  return 1;
 }
 
-treeNode *parse(void) {
+treeNode *parse() {
+    extern int yydebug;
+    yydebug = 1; // ✅ Ativa impressão detalhada das reduções
+
+    printf("Parsing...\n");
     parseResult = yyparse();
-    return syntax_tree;
+    if (parseResult == 0) {
+        printf("Parsing completed successfully.\n");
+    } else {
+        printf("Parsing failed.\n");
+    } 
+    return syntax_tree; 
 }
+

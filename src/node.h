@@ -13,7 +13,6 @@ typedef enum { declFunc, declVar, declIdType } declType;
 typedef enum { expId, expNum, expOp, expCall } expType;
 typedef enum { stmtAttrib, stmtFunc, stmtIf, stmtReturn, stmtWhile } stmtType;
 typedef enum { Array, Boolean, Integer, Void } primitiveType;
-
 typedef struct treeNode {
     struct treeNode *child[CHILD_MAX_NODES];
     struct treeNode *sibling;
@@ -25,8 +24,13 @@ typedef struct treeNode {
     nodeType       node;
     primitiveType  type;
 
-    union { declType decl; expType exp; stmtType stmt; } nodeSubType;
-    union { char *name; int value; int op; } key;
+    declType       declSubType;
+    expType        expSubType;
+    stmtType       stmtSubType;
+
+    char          *name;
+    int            value;
+    int            op;
 } treeNode;
 
 extern treeNode *syntaxTree;

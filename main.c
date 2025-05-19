@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
     printf("Analisando o arquivo: %s\n", argv[1]);
     syntaxTree = parse();
     if (parseResult != 0 || erro_lexico != 0) {
+        printf(stderr, "Erro na análise sintática.\n");
         fclose(yyin);
         return EXIT_FAILURE;
     }

@@ -39,7 +39,7 @@
 # define YY_YY_PARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -54,52 +54,40 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    ID = 258,                      /* ID  */
-    NUM = 259,                     /* NUM  */
-    IF = 260,                      /* IF  */
-    WHILE = 261,                   /* WHILE  */
-    RETURN = 262,                  /* RETURN  */
-    INT = 263,                     /* INT  */
-    VOID = 264,                    /* VOID  */
-    PLUS = 265,                    /* PLUS  */
-    MINUS = 266,                   /* MINUS  */
-    TIMES = 267,                   /* TIMES  */
-    DIV = 268,                     /* DIV  */
-    ASSIGN = 269,                  /* ASSIGN  */
-    EQ = 270,                      /* EQ  */
-    NEQ = 271,                     /* NEQ  */
-    LT = 272,                      /* LT  */
-    LTE = 273,                     /* LTE  */
-    GT = 274,                      /* GT  */
-    GTE = 275,                     /* GTE  */
-    SEMICOLON = 276,               /* SEMICOLON  */
-    COMMA = 277,                   /* COMMA  */
-    LPAREN = 278,                  /* LPAREN  */
-    RPAREN = 279,                  /* RPAREN  */
-    LBRACE = 280,                  /* LBRACE  */
-    RBRACE = 281,                  /* RBRACE  */
-    LBRACK = 282,                  /* LBRACK  */
-    RBRACK = 283,                  /* RBRACK  */
-    LOWER_THAN_ELSE = 284,         /* LOWER_THAN_ELSE  */
-    ELSE = 285                     /* ELSE  */
+    IF = 1,                        /* IF  */
+    WHILE = 2,                     /* WHILE  */
+    RETURN = 3,                    /* RETURN  */
+    INT = 4,                       /* INT  */
+    VOID = 5,                      /* VOID  */
+    NUM = 6,                       /* NUM  */
+    ID = 7,                        /* ID  */
+    EQ = 8,                        /* EQ  */
+    NEQ = 9,                       /* NEQ  */
+    LT = 10,                       /* LT  */
+    LTE = 11,                      /* LTE  */
+    GT = 12,                       /* GT  */
+    GTE = 13,                      /* GTE  */
+    PLUS = 14,                     /* PLUS  */
+    MINUS = 15,                    /* MINUS  */
+    TIMES = 16,                    /* TIMES  */
+    DIV = 17,                      /* DIV  */
+    ASSIGN = 18,                   /* ASSIGN  */
+    SEMICOLON = 19,                /* SEMICOLON  */
+    COMMA = 20,                    /* COMMA  */
+    LPAREN = 21,                   /* LPAREN  */
+    RPAREN = 22,                   /* RPAREN  */
+    LBRACE = 23,                   /* LBRACE  */
+    RBRACE = 24,                   /* RBRACE  */
+    LBRACK = 25,                   /* LBRACK  */
+    RBRACK = 26,                   /* RBRACK  */
+    ELSE = 27                      /* ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 38 "parser/parser.y"
-
-    struct treeNode *node;
-    char     *string;
-    int       num;
-
-#line 100 "parser.tab.h"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
