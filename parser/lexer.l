@@ -3,18 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include "parser.tab.h"
+#include "syntax_tree.h"
 #include "node.h"
 
 void ignorar_comentario();
 extern int yylineno; // Variável global de linha
 extern FILE *input_file; // Adicione esta linha para declarar input_file
 extern char *expName; // Variável global para armazenar o nome do identificador
-extern char *functionName; // Variável global para armazenar o nome da função
 extern char *variableName; // Variável global para armazenar o nome do array
 extern int functionCurrentLine;
 extern char *currentScope;
-extern char *argName;
 extern int erro_lexico;
+extern functionStack *functionStackHead;
 char expLine;
 int tokenNUM;
 int openBraces = 0;
@@ -44,22 +44,32 @@ int openBraces = 0;
 "/"           { return DIV; }
 ";"           { return SEMICOLON; }
 ","           { return COMMA; }
-"("           { 
-    if (openBraces == 0) {
-        functionCurrentLine = yylineno; 
-        functionName = strdup(expName);
-        if (openBraces == 0) {
-            currentScope = strdup(functionName);
-        }
+"("           {  
+    if(expName) {
+        printf("-----------> opening Funnction name: %s\n", expName);
+        printf("-----------> opening Funnction line: %i\n", yylineno);
+        pushFunctionStack(&functionStackHead, expName, yylineno);
+    } else {
+        printf("-----------> opening Funnction name: %s\n", "global");
+        printf("-----------> opening Funnction line: %i\n", yylineno);
+        pushFunctionStack(&functionStackHead, "global", yylineno);
     }
-    argName = strdup(functionName);
+    if (openBraces == 0) {
+        functionCurrentLine = yylineno;
+        currentScope = strdup(expName);
+    }
     return LPAREN; }
-")"           { return RPAREN; }
+")"           {
+    printf("-----------> closing Funnction name: %s\n", getFunctionName(functionStackHead));
+    printf("-----------> closing Funnction line: %i\n", yylineno);
+    popFunctionStack(&functionStackHead);
+    return RPAREN;
+    }
 "{"           { 
     openBraces++;
     if (openBraces == 1) {
         functionCurrentLine = yylineno;
-        currentScope = strdup(functionName);
+        currentScope = strdup(getFunctionName(functionStackHead));
         // printf("Scope: %s\n", currentScope);
         // printf("Function name: %s\n", functionName);
     }

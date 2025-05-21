@@ -11,16 +11,15 @@
   treeNode *syntax_tree;
   SymbolTable tabela;
 
+  extern functionStack *functionStackHead;
+
   extern int tokenNUM;
   extern int parseResult;
 
-  extern char *functionName;
   extern char *currentScope;
   extern char *expName;
   extern int functionCurrentLine;
   extern char *variableName;
-
-  extern char *argName;
 
   extern int yylineno;
   extern char *yytext;
@@ -63,8 +62,6 @@
 %token LBRACK 25
 %token RBRACK 26
 %token ELSE 27
-
-%debug
 
 %%
 
@@ -119,10 +116,10 @@ type_specifier:
 
 fun_declaration:
     type_specifier ID LPAREN params RPAREN compound_decl {
-        $$ = createDeclFuncNode(declFunc, $1, $4, $6); paramsCount = 0;
+        $$ = createDeclFuncNode(functionStackHead, declFunc, $1, $4, $6); paramsCount = 0;
         int funcLine = functionCurrentLine;
-        currentScope = strdup(yytext); /* update scope to function name */
-        insertSymbolInTable(functionName, "global", FUNC, funcLine - 1, $1->type);
+        currentScope = strdup(yytext);
+        insertSymbolInTable(getFunctionName(functionStackHead), "global", FUNC, funcLine - 1, $1->type);
     }
     ;
 
@@ -363,7 +360,7 @@ int yyerror(char *errorMsg) {
 
 treeNode *parse() {
     extern int yydebug;
-    yydebug = 1; // ✅ Ativa impressão detalhada das reduções
+    // yydebug = 1;
 
     printf("Parsing...\n");
     parseResult = yyparse();

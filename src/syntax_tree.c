@@ -11,10 +11,54 @@ extern int tokenNUM;
 // Variáveis auxiliares...
 char *expName;
 char *variableName;
-char *functionName;
 char *currentToken;
 char *currentScope = "global";
-char *argName;
+
+functionStack *functionStackHead = NULL;
+
+void popFunctionStack(functionStack **headRef) {
+    if (*headRef != NULL) {
+        functionStack *temp = *headRef;
+        *headRef = (*headRef)->next;
+        free(temp->name);
+        free(temp);
+    }
+}
+
+
+void pushFunctionStack(functionStack **headRef, char *name, int line) {
+    functionStack *newNode = (functionStack *)malloc(sizeof(functionStack));
+    newNode->name = strdup(name);
+    newNode->line = line;
+    newNode->next = *headRef;
+    *headRef = newNode;
+
+    printFunctionStack(*headRef);
+}
+
+
+void printFunctionStack(functionStack *functionStackHead) {
+    functionStack *temp = functionStackHead;
+    while (temp != NULL) {
+        printf("Function: %s\n", temp->name);
+        printf("Line: %d\n", temp->line);
+        temp = temp->next;
+    }
+}
+
+char *getFunctionName(functionStack *functionStackHead) {
+    if (functionStackHead != NULL) {
+        return functionStackHead->name;
+    }
+    return NULL;
+}
+
+int getFunctionLine(functionStack *functionStackHead) {
+    if (functionStackHead != NULL) {
+        return functionStackHead->line;
+    }
+    return 0;
+}
 
 int currentLine = 1;
 int functionCurrentLine = 1;
@@ -88,11 +132,11 @@ treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *exp
     return expType;
 }
 
-treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl) {
+treeNode *createDeclFuncNode(functionStack *functionStackHead,declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl) {
     treeNode* declFuncNode = createDeclNode(declFunc);
     declFuncNode->child[0] = params;
     declFuncNode->child[1] = blocDecl;
-    declFuncNode->name = functionName;
+    declFuncNode->name = getFunctionName(functionStackHead);
     declFuncNode->line = functionCurrentLine;
     declFuncNode->type = expType->type;
     declFuncNode->params = paramsCount;
@@ -168,10 +212,10 @@ treeNode *createExpNum(expType expNum) {
     return expNumNode;
 }
 
-treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments) {
+treeNode *createActivationFunc(functionStack *functionStackHead, stmtType stmtFunc, treeNode *arguments) {
     treeNode *activationFuncNode = createStmtNode(stmtFunc);
     activationFuncNode->child[1] = arguments; 
-    activationFuncNode->name = functionName;
+    activationFuncNode->name = getFunctionName(functionStackHead);
     activationFuncNode->line = functionCurrentLine;
     activationFuncNode->args = argsCount;
     return activationFuncNode;
