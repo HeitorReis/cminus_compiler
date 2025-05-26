@@ -25,15 +25,6 @@
   extern int yylineno;
   extern char *yytext;
 
-  void insertSymbolInTable(char *name, char *scope, SymbolType type, int line, primitiveType dataType) {
-    Symbol *symbol = findSymbol(&tabela, name, scope);
-    if (symbol) {
-        addLine(symbol, line);
-    } else {
-        insertSymbol(&tabela, name, scope, type, line, dataType);
-    }
-  }
-
 //   yydebug = 1;
 //   %debug
 %}
