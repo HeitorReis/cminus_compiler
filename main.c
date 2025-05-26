@@ -9,7 +9,7 @@
 extern int yyparse();
 extern FILE *yyin;
 
-extern treeNode *syntaxTree;
+extern treeNode *syntax_tree;
 extern SymbolTable tabela;
 int parseResult = 0;
 int erro_lexico = 0;
@@ -28,23 +28,23 @@ int main(int argc, char **argv) {
     }
 
     printf("Analisando o arquivo: %s\n", argv[1]);
-    syntaxTree = parse();
+    syntax_tree = parse();
     if (parseResult != 0 || erro_lexico != 0) {
-        printf(stderr, "Erro na análise sintática.\n");
+        fprintf(stderr, "Erro na análise sintática.\n");
         fclose(yyin);
         return EXIT_FAILURE;
     }
 
     printf("Análise sintática concluída com sucesso.\n");
     printf("Árvore sintática gerada:\n");
-    printSyntaxTree(syntaxTree);
+    printSyntaxTree(syntax_tree);
 
     // Build and print the symbol table
     printf("Tabela de Símbolos:\n");
     printSymbolTable(&tabela);
 
    // === RUN SEMANTIC ANALYSIS ===
-    semanticAnalysis(syntaxTree);
+    semanticAnalysis(syntax_tree);
 
     fclose(yyin);
     return EXIT_SUCCESS;

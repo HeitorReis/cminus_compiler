@@ -33,7 +33,8 @@ typedef struct treeNode {
     int            op;
 } treeNode;
 
-extern treeNode *syntaxTree;
+
+extern treeNode *syntax_tree;
 
 /* Protótipos existentes */
 void printSyntaxTree(treeNode *tree);

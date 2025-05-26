@@ -11,7 +11,8 @@
   treeNode *syntax_tree;
   SymbolTable tabela;
 
-  extern functionStack *functionStackHead;
+  extern functionStack **functionStackRef;
+  extern FunctionDeclStack **functionDeclStackRef;
 
   extern int tokenNUM;
   extern int parseResult;
@@ -115,13 +116,17 @@ type_specifier:
     ;
 
 fun_declaration:
-    type_specifier ID LPAREN params RPAREN compound_decl {
-        $$ = createDeclFuncNode(functionStackHead, declFunc, $1, $4, $6); paramsCount = 0;
-        int funcLine = functionCurrentLine;
-        currentScope = strdup(yytext);
-        insertSymbolInTable(getFunctionName(functionStackHead), "global", FUNC, funcLine - 1, $1->type);
+    type_specifier ID {
+        pushFunctionDecl(functionDeclStackRef, $2->name, $2->line);
+        currentScope = $2->name;
     }
-    ;
+    LPAREN params RPAREN compound_decl {
+        popFunctionDecl(functionDeclStackRef);
+        char *prev = getCurrentFunctionName(*functionDeclStackRef);
+        currentScope = prev ? strdup(prev) : "global";
+        $$ = createDeclFuncNode(functionDeclStackRef, declFunc, $1, $4, $6);
+    }
+;
 
 params:
     param_list {

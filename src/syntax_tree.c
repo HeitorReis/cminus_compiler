@@ -1,44 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 #include "node.h"
 #include "syntax_tree.h"
 
+#define DEBUG_FUNCTION_STACK 1 // Set to 1 to enable debugging, 0 to disable
+
 extern char *yytext;
+extern int yylineno;
 extern int tokenNUM;
 
-// Variáveis auxiliares...
 char *expName;
 char *variableName;
-char *currentToken;
 char *currentScope = "global";
 
 functionStack *functionStackHead = NULL;
+functionStack **functionStackRef = &functionStackHead;
+
+FunctionDeclStack *functionDeclStackHead = NULL;
+FunctionDeclStack **functionDeclStackRef = &functionDeclStackHead;
 
 void popFunctionStack(functionStack **headRef) {
-    if (*headRef != NULL) {
-        functionStack *temp = *headRef;
-        *headRef = (*headRef)->next;
-        free(temp->name);
-        free(temp);
+    if (*headRef == NULL) {
+        fprintf(stderr, "Warning: Attempted to pop from an empty function stack.\n");
+        return;
     }
+    functionStack *temp = *headRef;
+    *headRef = (*headRef)->next;
+    free(temp->name);
+    free(temp);
 }
 
 
 void pushFunctionStack(functionStack **headRef, char *name, int line) {
     functionStack *newNode = (functionStack *)malloc(sizeof(functionStack));
+    if (!newNode) {
+        fprintf(stderr, "Error: Memory allocation failed in pushFunctionStack.\n");
+        exit(EXIT_FAILURE);
+    }
     newNode->name = strdup(name);
+    if (!newNode->name) {
+        fprintf(stderr, "Error: Memory allocation failed for function name in pushFunctionStack.\n");
+        free(newNode);
+        exit(EXIT_FAILURE);
+    }
     newNode->line = line;
     newNode->next = *headRef;
     *headRef = newNode;
-
-    printFunctionStack(*headRef);
 }
 
 
 void printFunctionStack(functionStack *functionStackHead) {
     functionStack *temp = functionStackHead;
+    if (temp == NULL) {
+        printf("Function stack is empty.\n");
+        return;
+    }
     while (temp != NULL) {
         printf("Function: %s\n", temp->name);
         printf("Line: %d\n", temp->line);
@@ -60,8 +77,6 @@ int getFunctionLine(functionStack *functionStackHead) {
     return 0;
 }
 
-int currentLine = 1;
-int functionCurrentLine = 1;
 int argsCount = 0;
 int paramsCount = 0;
 
@@ -71,7 +86,7 @@ treeNode *createNode() {
         newNode->child[i] = NULL;
     }
     newNode->sibling = NULL;
-    newNode->line = currentLine;
+    newNode->line = yylineno;
     newNode->scope = currentScope;
     return newNode;
 }
@@ -132,12 +147,18 @@ treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *exp
     return expType;
 }
 
-treeNode *createDeclFuncNode(functionStack *functionStackHead,declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl) {
+treeNode *createDeclFuncNode(
+    FunctionDeclStack **declStackRef,
+    declType declFunc, 
+    treeNode *expType, 
+    treeNode *params, 
+    treeNode *blocDecl
+) {
     treeNode* declFuncNode = createDeclNode(declFunc);
     declFuncNode->child[0] = params;
     declFuncNode->child[1] = blocDecl;
-    declFuncNode->name = getFunctionName(functionStackHead);
-    declFuncNode->line = functionCurrentLine;
+    declFuncNode->name = getFunctionName(*declStackRef);
+    declFuncNode->line = getCurrentFunctionLine(*declStackRef);
     declFuncNode->type = expType->type;
     declFuncNode->params = paramsCount;
     expType->child[0] = declFuncNode;
@@ -215,8 +236,13 @@ treeNode *createExpNum(expType expNum) {
 treeNode *createActivationFunc(functionStack *functionStackHead, stmtType stmtFunc, treeNode *arguments) {
     treeNode *activationFuncNode = createStmtNode(stmtFunc);
     activationFuncNode->child[1] = arguments; 
-    activationFuncNode->name = getFunctionName(functionStackHead);
-    activationFuncNode->line = functionCurrentLine;
+    const char *funcName = getFunctionName(functionStackHead);
+    if (!funcName) {
+        fprintf(stderr, "Error: Function name is NULL in createActivationFunc.\n");
+        exit(EXIT_FAILURE);
+    }
+    activationFuncNode->name = funcName;
+    activationFuncNode->line = getCurrentFunctionLine(*functionStackRef);
     activationFuncNode->args = argsCount;
     return activationFuncNode;
 }
@@ -229,3 +255,69 @@ treeNode *createExpCallNode(const char *funcName, treeNode *args) {
     node->type = Void;      /* será ajustado na semântica */
     return node;
 }
+
+void pushFunctionDecl(FunctionDeclStack **headRef, char *name, int line) {
+    FunctionDeclStack *newNode = (FunctionDeclStack *)malloc(sizeof(FunctionDeclStack));
+    if (!newNode) {
+        fprintf(stderr, "Error: Memory allocation failed in pushFunctionDecl.\n");
+        exit(EXIT_FAILURE);
+    }
+    newNode->name = strdup(name);
+    if (!newNode->name) {
+        fprintf(stderr, "Error: Memory allocation failed for function name in pushFunctionDecl.\n");
+        free(newNode);
+        exit(EXIT_FAILURE);
+    }
+    newNode->line = line;
+    newNode->next = *headRef;
+    *headRef = newNode;
+
+#if DEBUG_FUNCTION_STACK
+    printf("[DEBUG] PUSHED Function Declaration: %s at Line: %d\n", name, line);
+#endif
+}
+
+void popFunctionDecl(FunctionDeclStack **headRef) {
+    if (*headRef == NULL) {
+        fprintf(stderr, "Warning: Attempted to pop from an empty function declaration stack.\n");
+        return;
+    }
+    FunctionDeclStack *temp = *headRef;
+    *headRef = (*headRef)->next;
+
+#if DEBUG_FUNCTION_STACK
+    printf("[DEBUG] POPPED Function Declaration: %s at Line: %d\n", temp->name, temp->line);
+#endif
+
+    free(temp->name);
+    free(temp);
+}
+
+char *getCurrentFunctionName(FunctionDeclStack *head) {
+    if (head != NULL) {
+        return head->name;
+    }
+    return NULL;
+}
+
+int getCurrentFunctionLine(FunctionDeclStack *head) {
+    if (head != NULL) {
+        return head->line;
+    }
+    return 0;
+}
+
+#if DEBUG_FUNCTION_STACK
+void printFunctionDeclStack(FunctionDeclStack *head) {
+    FunctionDeclStack *tmp = head;
+    if (!tmp) {
+        printf("[DEBUG] FunctionDeclStack is empty.\n");
+        return;
+    }
+    printf("[DEBUG] Current FunctionDeclStack:\n");
+    while (tmp) {
+        printf("  → %s (decl at line %d)\n", tmp->name, tmp->line);
+        tmp = tmp->next;
+    }
+}
+#endif

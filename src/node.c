@@ -4,7 +4,7 @@
 
 extern char *yytext;
 
-treeNode *syntaxTree;
+extern treeNode *syntax_tree;
 int treeSize = 0;
 
 void printTreeNode(treeNode *tree) {
