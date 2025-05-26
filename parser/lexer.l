@@ -7,10 +7,12 @@
 #include "node.h"
 
 void ignorar_comentario();
-extern int yylineno; // Variável global de linha
-extern FILE *input_file; // Adicione esta linha para declarar input_file
-extern char *expName; // Variável global para armazenar o nome do identificador
-extern char *variableName; // Variável global para armazenar o nome do array
+int popFunction = 0;
+int pushingFunct = 0; 
+extern int yylineno; 
+extern FILE *input_file; 
+extern char *expName;
+extern char *variableName;
 extern char *currentScope;
 extern functionStack **functionStackRef;
 extern FunctionDeclStack **functionDeclStackRef;
@@ -40,50 +42,55 @@ int openBraces = 0;
 "-"           { return MINUS; }
 "*"           { return TIMES; }
 "/"           { return DIV; }
-";"           { return SEMICOLON; }
+";"           { 
+    if( popFunction == 1) {
+        popFunctionStack(functionStackRef);
+        popFunction = 0;
+    }
+    return SEMICOLON;
+    }
 ","           { return COMMA; }
-"("           {  
-    if(expName) {
-        printf("-----------> pushing Function Stack >>%s<< - >>%i<<\n", expName, yylineno);
-        pushFunctionStack(functionStackRef, expName, yylineno);
-        printf("Current stack:\n");
-        printFunctionStack(*functionStackRef);
-        printf("\n");
-
-    } else {
-        printf("-----------> pushing Function Stack >>%s<< - >>%i<<\n", expName, yylineno);
-        pushFunctionStack(functionStackRef, "global", yylineno);
-        printf("Current stack:\n");
-        printFunctionStack(*functionStackRef);
-        printf("\n");
+"("           {
+    // printf("-----------> pushing Function Stack >>%s<< - >>%i<<\n", expName, yylineno);
+    // printf("Current stack:\n");
+    // printFunctionStack(*functionStackRef);
+    // printf("\n");
+    if (pushingFunct == 1) {
+        pushingFunct = 0;
     }
     return LPAREN; 
 }
 ")"           {
-    printf("-----------> popping Function Stack\n");
-    popFunctionStack(functionStackRef);
-    printf("Current stack:\n");
-    printFunctionStack(*functionStackRef);
-    printf("\n");
+    if( popFunction == 1) {
+        popFunctionStack(functionStackRef);
+        return RPAREN;
+    }
+    popFunction = 1;
     return RPAREN;
 }
-"{"           { openBraces++;
+"{"           {
+    openBraces++;
     #if DEBUG_FUNCTION_STACK
         printf("-----------> entering brace, nesting now = %d\n", openBraces);
     #endif
+    char *functName = getFunctionName(*functionStackRef);
     if (openBraces == 1) {
         #if DEBUG_FUNCTION_STACK
             printf("-----------> PUSH Function Declaration >>%s<< at line %d\n",
-                    expName ? expName : "<unnamed>", yylineno);
+                    functName ? functName : "<unnamed>", yylineno);
         #endif
-        pushFunctionDecl(functionDeclStackRef, expName, yylineno);
+        pushFunctionDecl(functionDeclStackRef, functName, yylineno);
         #if DEBUG_FUNCTION_STACK
             printFunctionDeclStack(*functionDeclStackRef);
         #endif
-        currentScope = strdup(getCurrentFunctionName(*functionDeclStackRef));
+        currentScope = strdup(functName ? functName : "global");
         #if DEBUG_FUNCTION_STACK
             printf("-----------> new currentScope = %s\n\n", currentScope);
         #endif
+    }
+    if(popFunction == 1){
+        popFunctionStack(functionStackRef);
+        popFunction = 0;
     }
     return LBRACE;
 }
@@ -133,6 +140,12 @@ int openBraces = 0;
 [0-9]+        { tokenNUM = atoi(yytext);
     return NUM; }
 [a-zA-Z_][a-zA-Z0-9_]* {
+    if(pushingFunct == 1) {
+        popFunctionStack(functionStackRef);
+    }
+    pushFunctionStack(functionStackRef, (expName ? expName : "global"), yylineno);
+    pushingFunct = 1;
+
     printf("-----> ID found: %s   |   scope: %s\n", yytext, currentScope);
     expName = strdup(yytext);
     return ID;

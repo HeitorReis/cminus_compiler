@@ -2,6 +2,8 @@
 #define SYNTAX_TREE_H
 
 #include "node.h"
+#include "symbol_table.h"
+#include "semantic.h"
 
 #define YYPARSER
 #define YYSTYPE treeNode*
@@ -35,6 +37,7 @@ typedef struct FunctionDeclStack {
 void pushFunctionDecl(FunctionDeclStack **headRef, char *name, int line);
 void popFunctionDecl(FunctionDeclStack **headRef);
 char *getCurrentFunctionName(FunctionDeclStack *head);
+int getCurrentFunctionLine(FunctionDeclStack *head);
 
 void popFunctionStack(functionStack **headRef);
  void pushFunctionStack(functionStack **headRef, char *name, int line);
@@ -46,9 +49,16 @@ treeNode *createDeclNode(declType node);
 treeNode *createExpNode(expType node);
 treeNode *createStmtNode(stmtType node);
 treeNode *traversal(treeNode *node1, treeNode *node2);
-treeNode *createDeclVarNode(declType declVar, treeNode *expType);
-treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *expType);
-treeNode *createDeclFuncNode(FunctionDeclStack **declStackRef, declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl);
+treeNode *createDeclVarNode(declType declSubType,
+  treeNode *typeNode);
+treeNode *createArrayDeclVarNode(declType declSubType,
+  treeNode *typeNode,
+  int size);
+treeNode *createDeclFuncNode(FunctionDeclStack **declStackRef,
+  declType declSubType,
+  treeNode *typeNode,
+  treeNode *params,
+  treeNode *body);
 treeNode *createEmptyParams(expType expId);
 treeNode *createArrayArg(declType declVar, treeNode *expType);
 treeNode *createIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2);

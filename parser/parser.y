@@ -33,6 +33,9 @@
         insertSymbol(&tabela, name, scope, type, line, dataType);
     }
   }
+
+//   yydebug = 1;
+//   %debug
 %}
 
 /* Tokens */
@@ -64,6 +67,7 @@
 %token RBRACK 26
 %token ELSE 27
 
+
 %%
 
 program:
@@ -94,13 +98,11 @@ declaration:
 var_declaration:
     type_specifier ID SEMICOLON {
         $$ = createDeclVarNode(declVar, $1);
-        $$->name = strdup(yytext);
         $$->line = yylineno;
         insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
     }
-    | type_specifier ID LBRACK NUM RBRACK SEMICOLON {
-        $$ = createArrayDeclVarNode(expNum, declVar, $1);
-        $$->name = strdup(yytext);
+  | type_specifier ID LBRACK NUM RBRACK SEMICOLON {
+        $$ = createArrayDeclVarNode(declVar, $1, tokenNUM);
         $$->line = yylineno;
         insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
     }
@@ -116,17 +118,27 @@ type_specifier:
     ;
 
 fun_declaration:
-    type_specifier ID {
-        pushFunctionDecl(functionDeclStackRef, $2->name, $2->line);
-        currentScope = $2->name;
-    }
-    LPAREN params RPAREN compound_decl {
+    type_specifier ID LPAREN params RPAREN compound_decl {
+        /* 1) Announce & push the new function’s name */
+        printf("Function declaration: %s at line %d\n", expName, yylineno);
+        pushFunctionDecl(functionDeclStackRef, expName, yylineno);
+        currentScope = strdup(expName);
+
+        /* 2) Build the function‐declaration node while the name is still on the stack */
+        $$ = createDeclFuncNode(functionDeclStackRef,
+                                declFunc,
+                                $1,    /* return-type node */
+                                $4,    /* params */
+                                $6);   /* body */
+
+        /* 3) Pop it and restore the enclosing scope */
         popFunctionDecl(functionDeclStackRef);
-        char *prev = getCurrentFunctionName(*functionDeclStackRef);
-        currentScope = prev ? strdup(prev) : "global";
-        $$ = createDeclFuncNode(functionDeclStackRef, declFunc, $1, $4, $6);
+        {
+            const char *prev = getCurrentFunctionName(*functionDeclStackRef);
+            currentScope = prev ? strdup(prev) : strdup("global");
+        }
     }
-;
+    ;
 
 params:
     param_list {

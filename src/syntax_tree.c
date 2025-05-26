@@ -125,44 +125,43 @@ treeNode *traversal(treeNode *node1, treeNode *node2) {
     }
 }
 
-treeNode *createDeclVarNode(declType declVar, treeNode *expType) {
-    treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->name = expName;
-    declVarNode->type = expType->type;
-    expType->child[0] = declVarNode;
-    return expType;
+treeNode *createDeclVarNode(declType declSubType, treeNode *typeNode) {
+    treeNode *declNode = createDeclNode(declSubType);
+    declNode->name     = expName;            // identifier string
+    declNode->type     = typeNode->type;     // int or void
+    declNode->child[0] = typeNode;           // link the type-specifier
+    return declNode;
 }
 
-treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *expType) {
-    treeNode *expNumNode = createExpNode(expNum);
-    expNumNode->value = tokenNUM;  
-    expNumNode->type = Integer;
-
-    treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->name = expName; 
-    declVarNode->child[0] = expNumNode;
-
-    declVarNode->type = (expType->type == Integer) ? Array : Void;
-    expType->child[0] = declVarNode;
-    return expType;
+treeNode *createArrayDeclVarNode(declType declSubType, treeNode *typeNode, int size) {
+    treeNode *declNode = createDeclNode(declSubType);
+    declNode->name     = expName;
+    declNode->type     = Array;
+    declNode->child[0] = typeNode;           // element type
+    // build a literal node for the array size
+    treeNode *sizeNode = createExpNode(expNum);
+    sizeNode->value    = size;
+    sizeNode->type     = Integer;
+    declNode->child[1] = sizeNode;
+    return declNode;
 }
 
 treeNode *createDeclFuncNode(
     FunctionDeclStack **declStackRef,
-    declType declFunc, 
-    treeNode *expType, 
-    treeNode *params, 
-    treeNode *blocDecl
+    declType declSubType,
+    treeNode *typeNode,
+    treeNode *params,
+    treeNode *body
 ) {
-    treeNode* declFuncNode = createDeclNode(declFunc);
-    declFuncNode->child[0] = params;
-    declFuncNode->child[1] = blocDecl;
-    declFuncNode->name = getFunctionName(*declStackRef);
-    declFuncNode->line = getCurrentFunctionLine(*declStackRef);
-    declFuncNode->type = expType->type;
-    declFuncNode->params = paramsCount;
-    expType->child[0] = declFuncNode;
-    return expType;
+    treeNode *declNode = createDeclNode(declSubType);
+    declNode->name     = getCurrentFunctionName(*declStackRef);
+    declNode->line     = getCurrentFunctionLine(*declStackRef);
+    declNode->type     = typeNode->type;     // return type
+    declNode->params   = paramsCount;        // number of parameters
+    declNode->child[0] = typeNode;           // return-type node
+    declNode->child[1] = params;             // parameter list
+    declNode->child[2] = body;               // function body (block)
+    return declNode;
 }
 
 treeNode *createEmptyParams(expType expId) {
@@ -241,8 +240,8 @@ treeNode *createActivationFunc(functionStack *functionStackHead, stmtType stmtFu
         fprintf(stderr, "Error: Function name is NULL in createActivationFunc.\n");
         exit(EXIT_FAILURE);
     }
-    activationFuncNode->name = funcName;
-    activationFuncNode->line = getCurrentFunctionLine(*functionStackRef);
+    activationFuncNode->name = strdup(funcName);
+    activationFuncNode->line = getCurrentFunctionLine(*functionDeclStackRef);
     activationFuncNode->args = argsCount;
     return activationFuncNode;
 }
