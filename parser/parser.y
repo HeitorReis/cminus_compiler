@@ -3,13 +3,28 @@
     #include <stdlib.h>
     #include <string.h>
     #include "symbol_table.h"
+    #include "utils.h"
+
+    #define TYPE_INT 1
+    #define TYPE_VOID 2
 
     extern int yylineno;
     extern char *yytext;
 
+    extern char *currentScope;
+
+    extern SymbolTable symtab;
+
 //   yydebug = 1;
 //   %debug
 %}
+
+%union {
+    char *sval;
+    int   ival;
+}
+%token <sval> ID
+%token <ival> NUM
 
 /* Tokens */
 %token IF 1 
@@ -17,8 +32,6 @@
 %token RETURN 3
 %token INT 4 
 %token VOID 5 
-%token NUM 6 
-%token ID 7
 %token EQ 8
 %token NEQ 9 
 %token LT 10
@@ -40,6 +53,8 @@
 %token RBRACK 26
 %token ELSE 27
 %token MOD 28
+
+%type <ival> type_specifier
 
 %%
 
@@ -71,10 +86,11 @@ var_declaration:
         free($2);
     };
 
-type_specifier
-    : INT
-    | VOID
+type_specifier:
+    INT  { $$ = TYPE_INT;  }
+    | VOID { $$ = TYPE_VOID; }
     ;
+
 
 fun_declaration
     : type_specifier ID LPAREN params RPAREN compound_stmt
@@ -211,15 +227,3 @@ int yyerror(char *msg) {
         );
     return 1;
 }
-
-int parse() {
-    initSymbolTable(&symtab);
-    printf("Starting syntax analysis...\n");
-    int res = yyparse();
-    if (res == 0) {
-        printf("Syntax analysis completed successfully.\n");
-        dumpSymbolTable(&symtab);
-    }
-    return res;
-}
-

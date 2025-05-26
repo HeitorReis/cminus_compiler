@@ -29,21 +29,6 @@ void insertSymbol(
     table->head = sym;
 }
 
-void dumpSymbolTable(const SymbolTable *table) {
-    puts("---- Symbol Table ----");
-    printf("%-12s %-10s %-6s %-5s %-5s\n",
-           "Name", "Scope", "Kind", "Line", "Type");
-    for (Symbol *s = table->head; s; s = s->next) {
-        printf("%-12s %-10s %-6s %-5d %-5d\n",
-               s->name,
-               s->scope,
-               s->kind == SYMBOL_VAR ? "VAR" : "FUNC",
-               s->line,
-               s->dataType);
-    }
-    puts("----------------------");
-}
-
 void printSymbolTable(const SymbolTable *table) {
     const char *kindStr;
     const char *typeStr;

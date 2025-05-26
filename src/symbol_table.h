@@ -38,7 +38,4 @@ void insertSymbol(
     int          dataType
 );
 
-/* debug dump after parsing */
-void dumpSymbolTable(const SymbolTable *table);
-
 #endif /* SYMBOL_TABLE_H */

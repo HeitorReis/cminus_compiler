@@ -951,35 +951,36 @@ YY_RULE_SETUP
 #line 53 "parser/lexer.l"
 {
                 printf("[LEX][%d] ID       -> '%s'\n", yylineno, yytext);
+                yylval.sval = strdup(yytext);
                 return ID;
                 }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 58 "parser/lexer.l"
+#line 59 "parser/lexer.l"
 { /* skip whitespace */ }
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 59 "parser/lexer.l"
+#line 60 "parser/lexer.l"
 { /* skip newline; yylineno auto-incremented */ }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 61 "parser/lexer.l"
+#line 62 "parser/lexer.l"
 { printf("[LEX][%d] EOF\n", yylineno); return 0; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 63 "parser/lexer.l"
+#line 64 "parser/lexer.l"
 { fprintf(stderr, "[LEX][%d] ERROR: unexpected '%s'\n", yylineno, yytext); }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 65 "parser/lexer.l"
+#line 66 "parser/lexer.l"
 ECHO;
 	YY_BREAK
-#line 983 "lex.yy.c"
+#line 984 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -1994,7 +1995,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 65 "parser/lexer.l"
+#line 66 "parser/lexer.l"
 
 
 void ignore_comment() {

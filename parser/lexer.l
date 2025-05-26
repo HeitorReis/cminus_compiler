@@ -52,6 +52,7 @@ void ignore_comment();
 
 [a-zA-Z_][a-zA-Z0-9_]* {
                 printf("[LEX][%d] ID       -> '%s'\n", yylineno, yytext);
+                yylval.sval = strdup(yytext);
                 return ID;
                 }
 
