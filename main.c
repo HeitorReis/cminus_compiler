@@ -3,6 +3,9 @@
 #include "parser.tab.h"
 #include "src/symbol_table.h"
 #include "src/utils.h"
+#include "src/syntax_tree.h"
+
+AstNode *syntax_tree; /* Global AST root node */
 
 SymbolTable symtab;  /* Global symbol table */
 
@@ -38,6 +41,12 @@ int main(int argc, char **argv) {
         printf("Symbol table printed successfully.\n");
     } else {
         fprintf(stderr, "Parse failed with code %d.\n", parseResult);
+    }
+
+    if (syntax_tree) {
+        printf("\n=== AST ===\n");
+        printAst(syntax_tree, 0);
+        freeAst(syntax_tree);
     }
 
     fclose(yyin);
