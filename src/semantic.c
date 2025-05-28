@@ -39,7 +39,22 @@ void semanticAnalyze(AstNode *root, SymbolTable *symtab) {
 
     analyzeProgram(root, &ctx);
 
-    printf("Semantic analysis found %d error(s).\n", ctx.errorCount);
+    if (ctx.errorCount > 0)
+        fprintf(stderr, "Semantic analysis found %d error(s).\n", ctx.errorCount);
+    else{
+        printf("Semantic analysis completed successfully with no errors.\n");
+        printf("\n=== IR ===\n");
+        IRList *ir = generateIR(root);
+        dumpIR(ir, stdout);         // or write to file
+        
+        printf("\n=== Codegen ===\n");
+        generateCode(ir, "out.asm"); // or whatever target you choose
+        
+        freeIR(ir);
+    }
+
+    printf("[Codegen DBG] codeGen: completed\n", ctx.errorCount);
+
 }
 
 // stub implementations to be filled in:

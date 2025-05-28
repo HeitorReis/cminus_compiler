@@ -20,8 +20,9 @@ OBJECTS := $(BUILD_DIR)/main.o \
            $(BUILD_DIR)/semantic.o \
            $(BUILD_DIR)/symbol_table.o \
            $(BUILD_DIR)/syntax_tree.o \
-           $(BUILD_DIR)/node.o \
-           $(BUILD_DIR)/utils.o
+           $(BUILD_DIR)/utils.o \
+					 $(BUILD_DIR)/ir.o \
+					 $(BUILD_DIR)/codegen.o
 
 # === Compiler and Linker Settings ===
 CC := gcc
@@ -31,11 +32,12 @@ LDFLAGS := -lfl
 
 # === Source list ===
 SRC_FILES := main.c \
-             $(SRC_DIR)/analisador_semantico.c \
+             $(SRC_DIR)/semantic.c \
              $(SRC_DIR)/symbol_table.c \
              $(SRC_DIR)/syntax_tree.c \
-             $(SRC_DIR)/node.c \
-             $(SRC_DIR)/utils.c
+             $(SRC_DIR)/utils.c \
+						 $(SRC_DIR)/ir.c \
+						 $(SRC_DIR)/codegen.c
 
 # === Rules ===
 
