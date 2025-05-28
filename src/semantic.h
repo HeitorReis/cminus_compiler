@@ -4,10 +4,12 @@
 #include "syntax_tree.h"
 #include "symbol_table.h"
 
+extern char *currentScope;
+
 typedef enum {
-    TYPE_INT,
-    TYPE_VOID,
-    TYPE_ERROR
+    TYPE_INT = 1,
+    TYPE_VOID = 2,
+    TYPE_ERROR = -1
 } ExpType;
 
 typedef struct {

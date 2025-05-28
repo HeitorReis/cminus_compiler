@@ -7,7 +7,11 @@
 #define TYPE_INT 1
 #define TYPE_VOID 2
 
-static Symbol *findSymbol(SymbolTable *table, const char *name, const char *scope) {
+static Symbol *findSymbol(
+    SymbolTable *table, 
+    const char *name, 
+    const char *scope
+) {
     for (Symbol *s = table->head; s; s = s->next) {
         if (strcmp(s->name, name) == 0 && strcmp(s->scope, scope) == 0)
             return s;
@@ -15,10 +19,15 @@ static Symbol *findSymbol(SymbolTable *table, const char *name, const char *scop
     return NULL;
 }
 
-Symbol *getSymbol(SymbolTable *table, const char *name, const char *scope) {
-    for (Symbol *s = table->head; s; s = s->next) {
-        if (strcmp(s->name, name) == 0 && strcmp(s->scope, scope) == 0)
-            return s;
+Symbol *getSymbol(
+    SymbolTable *table, 
+    const char *name, 
+    const char *scope
+) {
+    Symbol *s = findSymbol(table, name, scope);
+    if (s) return s;
+    if (strcmp(scope, "global") != 0) {
+        return findSymbol(table, name, "global");
     }
     return NULL;
 }
@@ -36,7 +45,7 @@ void declareSymbol(
     int          declLine,
     int          dataType
 ) {
-    Symbol *sym = findSymbol(table, name, scope);
+    Symbol *sym = getSymbol(table, name, scope);
     if (sym) {
         /* existing symbol → append another declLine */
         yyerror("redeclared identifier");
@@ -70,7 +79,7 @@ void useSymbol(
     const char  *scope,
     int          useLine
 ) {
-    Symbol *sym = findSymbol(table, name, scope);
+    Symbol *sym = getSymbol(table, name, scope);
     if (!sym) {
         yyerror("use of undeclared identifier");
     return;
@@ -95,7 +104,7 @@ void setFunctionParams(
     int paramCount,
     int *paramTypes
 ) {
-    Symbol *sym = findSymbol(table, name, scope);
+    Symbol *sym = getSymbol(table, name, scope);
     if (!sym || sym->kind != SYMBOL_FUNC) return;
     sym->paramCount = paramCount;
     sym->paramTypes = malloc(paramCount * sizeof(int));
@@ -114,7 +123,7 @@ int getParamCount(
     const char *name,
     const char *scope
 ) {
-    Symbol *sym = findSymbol(table, name, scope);
+    Symbol *sym = getSymbol(table, name, scope);
     return sym ? sym->paramCount : -1;
 }
 
@@ -124,7 +133,7 @@ int getParamType(
     const char *scope,
     int index
 ) {
-    Symbol *sym = findSymbol(table, name, scope);
+    Symbol *sym = getSymbol(table, name, scope);
     if (!sym || index < 0 || index >= sym->paramCount) {
         return -1; // invalid request
     }

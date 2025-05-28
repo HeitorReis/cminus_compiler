@@ -154,6 +154,31 @@ fun_declaration:
         if ($5) addChild(n, $5); // parameters
         if ($7) addChild(n, $7); // compound statement
         $$ = n;
+
+        int pcount = 0;
+        for (AstNode *p = $5; p; p = p->firstChild ? p->firstChild->nextSibling : NULL) {
+            for (AstNode *c = $5->firstChild; c; c = c->nextSibling) {
+                ++pcount;
+            }
+            break;
+        }
+
+        int *types = NULL;
+        if (pcount > 0) {
+            types = malloc(pcount * sizeof(*types));
+            for (int i = 0; i < pcount; ++i)
+                types[i] = TYPE_INT;
+        }
+
+        setFunctionParams(
+            &symtab,
+            $2, 
+            currentScope, 
+            pcount, 
+            types
+        );
+
+        free(types);
         popScope();
         free($2);
         printf(

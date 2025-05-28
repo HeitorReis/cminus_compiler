@@ -12,6 +12,8 @@ SymbolTable symtab;  /* Global symbol table */
 
 extern FILE *yyin;        /* Flex’s input file pointer */
 
+void declareBuiltins(SymbolTable *table);
+
 int main(int argc, char **argv) {
     /* 1. Check command‐line arguments */
     if (argc != 2) {
@@ -30,6 +32,8 @@ int main(int argc, char **argv) {
     printf("Initializing symbol table and scope stack...\n");
     initScopeStack();
     initSymbolTable(&symtab);
+    declareBuiltins(&symtab);
+    printf("Symbol table initialized successfully.\n");
 
     /* 3. Run the parser (which will invoke the lexer internally) */
     printf("Parsing '%s'...\n", argv[1]);
@@ -57,4 +61,13 @@ int main(int argc, char **argv) {
 
     fclose(yyin);
     return parseResult == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+
+void declareBuiltins(SymbolTable *table) {
+    declareSymbol(table, "input",  "global", SYMBOL_FUNC, 0, TYPE_INT);
+    setFunctionParams(table, "input",  "global", 0, NULL);
+
+    declareSymbol(table, "output", "global", SYMBOL_FUNC, 0, TYPE_VOID);
+    int p[1] = { TYPE_INT };
+    setFunctionParams(table, "output", "global", 1, p);
 }
