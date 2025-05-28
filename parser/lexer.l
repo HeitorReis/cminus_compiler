@@ -45,7 +45,9 @@ void ignore_comment();
 "["           { printf("[LEX][%d] LBRACK   -> '%s'\n", yylineno, yytext); return LBRACK; }
 "]"           { printf("[LEX][%d] RBRACK   -> '%s'\n", yylineno, yytext); return RBRACK; }
 
-[0-9]+        { tokenNUM = atoi(yytext);
+[0-9]+        { 
+                tokenNUM = atoi(yytext);
+                yylval.ival = atoi(yytext);
                 printf("[LEX][%d] NUM      -> '%s' (%d)\n", yylineno, yytext, tokenNUM);
                 return NUM;
                 }
