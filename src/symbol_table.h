@@ -22,6 +22,8 @@ typedef struct Symbol {
     int          dataType;  /* TYPE_INT or TYPE_VOID */
     LineNode    *declLines; /* lines where it was declared */
     LineNode    *useLines;  /* lines where it was used */
+    int          paramCount; /* number of parameters (for functions) */
+    int         *paramTypes; /* array of parameter types (for functions) */
     struct Symbol *next;    /* next symbol in table */
 } Symbol;
 
@@ -29,6 +31,27 @@ typedef struct Symbol {
 typedef struct {
     Symbol *head;
 } SymbolTable;
+
+void setFunctionParams(
+    SymbolTable *table,
+    const char *name,
+    const char *scope,
+    int paramCount,
+    int *paramTypes
+);
+
+int getParamCount(
+    SymbolTable *table,
+    const char *name,
+    const char *scope
+);
+
+int getParamType(
+    SymbolTable *table,
+    const char *name,
+    const char *scope,
+    int index
+);
 
 /* debug: print all entries in a human‐readable table */
 void printSymbolTable(const SymbolTable *table);
@@ -40,5 +63,10 @@ void initSymbolTable(SymbolTable *table);
 void declareSymbol(table, name, scope, kind, declLine, dataType); // insert a new symbol
 void useSymbol   (table, name, scope, useLine); // record a use of an existing symbol
 
+Symbol *getSymbol(
+    SymbolTable *table,
+    const char *name,
+    const char *scope
+);
 
 #endif /* SYMBOL_TABLE_H */

@@ -31,15 +31,16 @@ typedef struct AstNode {
     AstNodeKind kind;
     char       *name;         /* identifier name or NULL */
     int         value;        /* literal value for NUM or 0 */
+    int         lineno;
     struct AstNode *firstChild;
     struct AstNode *nextSibling;
 } AstNode;
 
 /* Constructors */
 AstNode *newNode(AstNodeKind kind);
-AstNode *newIdNode(const char *name);
-AstNode *newNumNode(int value);
-AstNode *newOpNode(char *op);
+AstNode *newIdNode(const char *name, int lineno);
+AstNode *newNumNode(int value, int lineno);
+AstNode *newOpNode(char *op, int lineno);
 
 /* Build tree */
 void addChild(AstNode *parent, AstNode *child);

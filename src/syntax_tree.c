@@ -32,6 +32,7 @@ AstNode *newNode(AstNodeKind kind) {
     n->kind        = kind;
     n->name        = NULL;
     n->value       = 0;
+    n->lineno      = 0;  // default line number, can be set later
     n->firstChild  = NULL;
     n->nextSibling = NULL;
     printf("[AST DBG] newNode kind=%s -> %p\n", kindName(kind), (void*)n);
@@ -39,18 +40,27 @@ AstNode *newNode(AstNodeKind kind) {
 }
 
 /* Identifier node */
-AstNode *newIdNode(const char *name) {
+AstNode *newIdNode(const char *name, int lineno) {
     AstNode *n = newNode(AST_ID);
     n->name = strdup(name);
+    n->lineno = lineno;
     printf("[AST DBG] newIdNode(\"%s\") -> %p\n", name, (void*)n);
     return n;
 }
 
 /* Numeric literal node */
-AstNode *newNumNode(int value) {
+AstNode *newNumNode(int value, int lineno) {
     AstNode *n = newNode(AST_NUM);
     n->value = value;
+    n->lineno = lineno;
     printf("[AST DBG] newNumNode(%d) -> %p\n", value, (void*)n);
+    return n;
+}
+
+AstNode *newOpNode(char *op, int lineno) {
+    AstNode *n = newNode(AST_BINOP);  // or AST_BINOP_KIND if you had separate kinds
+    n->lineno = lineno;
+    n->name = strdup(op);                    // store the token code (e.g. PLUS, LTE, etc.)
     return n;
 }
 
@@ -65,9 +75,9 @@ void addChild(AstNode *parent, AstNode *child) {
         s->nextSibling = child;
     }
     printf(
-        "[AST DBG] addChild parent=%p(%s) child=%p(%s)\n",
-        (void*)parent, kindName(parent->kind),
-        (void*)child, kindName(child->kind)
+        "[AST DBG] addChild parent=%p(%s, lineno=%d) child=%p(%s, lineno=%d)\n",
+        (void*)parent, kindName(parent->kind), parent->lineno,
+        (void*)child, kindName(child->kind), child->lineno
     );
 }
 
@@ -76,27 +86,27 @@ void printAst(const AstNode *node, int indent) {
     if (!node) return;
     for (int i = 0; i < indent; i++) putchar(' ');
     switch (node->kind) {
-        case AST_ARG_LIST:      printf("ArgList\n"); break;
-        case AST_PROGRAM:       printf("Program\n"); break;
-        case AST_VAR_DECL:      printf("VarDecl(name=%s)\n", node->name); break;
-        case AST_FUN_DECL:      printf("FunDecl(name=%s)\n", node->name); break;
-        case AST_PARAM:         printf("Param(name=%s)\n", node->name); break;
-        case AST_PARAM_LIST:    printf("ParamList\n"); break;
-        case AST_PARAM_ARRAY:   printf("ParamArray(name=%s)\n", node->name); break;
-        case AST_BLOCK:         printf("Block\n"); break;
-        case AST_IF:            printf("If\n"); break;
-        case AST_WHILE:         printf("While\n"); break;
-        case AST_RETURN:        printf("Return\n"); break;
-        case AST_ASSIGN:        printf("Assign\n"); break;
+        case AST_ARG_LIST:      printf("ArgList (lineno=%d)\n", node->lineno); break;
+        case AST_PROGRAM:       printf("Program (lineno=%d)\n", node->lineno); break;
+        case AST_VAR_DECL:      printf("VarDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_FUN_DECL:      printf("FunDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_PARAM:         printf("Param(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_PARAM_LIST:    printf("ParamList (lineno=%d)\n", node->lineno); break;
+        case AST_PARAM_ARRAY:   printf("ParamArray(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_BLOCK:         printf("Block (lineno=%d)\n", node->lineno); break;
+        case AST_IF:            printf("If (lineno=%d)\n", node->lineno); break;
+        case AST_WHILE:         printf("While (lineno=%d)\n", node->lineno); break;
+        case AST_RETURN:        printf("Return (lineno=%d)\n", node->lineno); break;
+        case AST_ASSIGN:        printf("Assign (lineno=%d)\n", node->lineno); break;
         case AST_BINOP:         
             if (node->name)
-                printf("BinOp(op='%s')\n", node->name);
+                printf("BinOp(op='%s', lineno=%d)\n", node->name, node->lineno);
             else
-                printf("BinOp\n");
+                printf("BinOp (lineno=%d)\n", node->lineno);
             break;
-        case AST_CALL:          printf("Call(name=%s)\n", node->name); break;
-        case AST_ID:            printf("Id(name=%s)\n", node->name); break;
-        case AST_NUM:           printf("Num(value=%d)\n", node->value); break;
+        case AST_CALL:          printf("Call(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_ID:            printf("Id(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_NUM:           printf("Num(value=%d, lineno=%d)\n", node->value, node->lineno); break;
     }
     /* children */
     for (AstNode *c = node->firstChild; c; c = c->nextSibling)
@@ -118,8 +128,3 @@ void freeAst(AstNode *node) {
     free(node);
 }
 
-AstNode *newOpNode(char *op) {
-    AstNode *n = newNode(AST_BINOP);  // or AST_BINOP_KIND if you had separate kinds
-    n->name = strdup(op);                    // store the token code (e.g. PLUS, LTE, etc.)
-    return n;
-}

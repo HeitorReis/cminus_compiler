@@ -120,6 +120,7 @@ var_declaration:
         );
         AstNode *n = newNode(AST_VAR_DECL);
         n->name = strdup($2);
+        n->lineno = yylineno; // Set the line number manually
         $$ = n;
         free($2);
     }
@@ -142,8 +143,14 @@ fun_declaration:
         );
         pushScope($2); // enter function scope
     } params RPAREN compound_stmt {
+        Symbol *funcSym = getSymbol(
+            &symtab, 
+            $2, 
+            "global"
+        );
         AstNode *n = newNode(AST_FUN_DECL);
         n->name = strdup($2); // function name
+        n->lineno = funcSym ? funcSym->declLines->line : yylineno; // Set the line number manually
         if ($5) addChild(n, $5); // parameters
         if ($7) addChild(n, $7); // compound statement
         $$ = n;
@@ -154,8 +161,9 @@ fun_declaration:
             $2, 
             (void*)$5, 
             (void*)$7
-            );
-    };
+        );
+    }
+;
 
 params
     : param_list { $$ = $1; }
@@ -186,6 +194,7 @@ param:
         );
         $$ = newNode(AST_PARAM);
         $$->name = strdup($2); // parameter name
+        $$->lineno = yylineno; // Set the line number manually
         free($2);
     }
     | type_specifier ID LBRACK RBRACK {
@@ -199,6 +208,7 @@ param:
         );
         $$ = newNode(AST_PARAM_ARRAY);
         $$->name = strdup($2); // parameter name
+        $$->lineno = yylineno; // Set the line number manually
         free($2);
     }
 ;
@@ -206,10 +216,11 @@ param:
 compound_stmt: 
     LBRACE local_declarations statement_list RBRACE {
         AstNode *n = newNode(AST_BLOCK);
+        n->lineno = yylineno; // Set the line number manually
         if ($2) addChild(n, $2); // local declarations
-        if($3) {
+        if ($3) {
             AstNode *stmts = $3;
-            while(stmts) {
+            while (stmts) {
                 AstNode *next = stmts->nextSibling; // save next node
                 stmts->nextSibling = NULL; // detach current statement
                 addChild(n, stmts); // add current statement to the block
@@ -221,7 +232,7 @@ compound_stmt:
             "[PARSER DBG] compound_stmt: decls=%p stmts=%p\n",
             (void*)$2,
             (void*)$3
-            );
+        );
     }
     ;
 
@@ -302,6 +313,7 @@ return_stmt
 expression
     : var ASSIGN expression {
         AstNode *n = newNode(AST_ASSIGN);
+        n->lineno = yylineno; // Set the line number manually
         addChild(n, $1); // variable
         addChild(n, $3); // expression
         $$ = n;
@@ -309,10 +321,10 @@ expression
             "[PARSER DBG] assignment: var=%p expr=%p\n",
             (void*)$1,
             (void*)$3
-            );
+        );
     }
     | simple_expression { $$ = $1; }
-    ;
+;
 
 var
     : ID {
@@ -322,7 +334,7 @@ var
             currentScope, 
             yylineno
         );
-        $$ = newIdNode($1);
+        $$ = newIdNode($1, yylineno);
         free($1);
     }
     | ID LBRACK expression RBRACK {
@@ -332,7 +344,7 @@ var
             currentScope, 
             yylineno
         );
-        $$ = newIdNode($1);
+        $$ = newIdNode($1, yylineno);
         free($1);
     }
     ;
@@ -340,6 +352,7 @@ var
 simple_expression:
     additive_expression relop additive_expression {
         AstNode *n = newNode(AST_BINOP);
+        n->lineno = yylineno; // Set the line number manually
         addChild(n, $1); // left operand
         addChild(n, $2); // operator
         addChild(n, $3); // right operand
@@ -349,7 +362,7 @@ simple_expression:
             (void*)$1, 
             (void*)$2, 
             (void*)$3
-            );
+        );
     }
     | additive_expression {
         $$ = $1;
@@ -357,12 +370,12 @@ simple_expression:
     ;
 
 relop
-    : LTE { $$ = newOpNode("<="); }
-    | LT { $$ = newOpNode("<"); }
-    | GT { $$ = newOpNode(">"); }
-    | GTE { $$ = newOpNode(">="); }
-    | EQ { $$ = newOpNode("=="); }
-    | NEQ { $$ = newOpNode("!="); }
+    : LTE { $$ = newOpNode("<=", yylineno); }
+    | LT { $$ = newOpNode("<", yylineno); }
+    | GT { $$ = newOpNode(">", yylineno); }
+    | GTE { $$ = newOpNode(">=", yylineno); }
+    | EQ { $$ = newOpNode("==", yylineno); }
+    | NEQ { $$ = newOpNode("!=", yylineno); }
     ;
 
 additive_expression
@@ -377,8 +390,8 @@ additive_expression
     ;
 
 addop
-    : PLUS { $$ = newOpNode("+"); }
-    | MINUS { $$ = newOpNode("-"); }
+    : PLUS { $$ = newOpNode("+", yylineno); }
+    | MINUS { $$ = newOpNode("-", yylineno); }
     ;
 
 term
@@ -393,9 +406,9 @@ term
     ;
 
 mulop
-    : TIMES { $$ = newOpNode("*"); }
-    | DIV { $$ = newOpNode("/"); }
-    | MOD { $$ = newOpNode("%"); }
+    : TIMES { $$ = newOpNode("*", yylineno); }
+    | DIV { $$ = newOpNode("/", yylineno); }
+    | MOD { $$ = newOpNode("%", yylineno); }
     ;
 
 factor
@@ -404,7 +417,7 @@ factor
     }
     | var { $$ = $1; } // variable
     | call { $$ = $1; } // function call
-    | NUM { $$ = newNumNode($1); } // create a new AST node for the number
+    | NUM { $$ = newNumNode($1, yylineno); } // create a new AST node for the number
     ;
 
 call:
@@ -417,6 +430,7 @@ call:
         );
         AstNode *n = newNode(AST_CALL);
         n->name = strdup($1); // function name
+        n->lineno = yylineno; // Set the line number manually
         addChild(n, $3); // arguments
         $$ = n;
         free($1);
@@ -435,6 +449,7 @@ arg_list
     }
     | expression {
         AstNode *n = newNode(AST_ARG_LIST);
+        n->lineno = yylineno; // Set the line number manually
         addChild(n, $1); // single argument
         $$ = n; // return the argument list
     }

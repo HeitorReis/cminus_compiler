@@ -4,6 +4,7 @@
 #include "src/symbol_table.h"
 #include "src/utils.h"
 #include "src/syntax_tree.h"
+#include "src/semantic.h"
 
 AstNode *syntax_tree; /* Global AST root node */
 
@@ -46,6 +47,11 @@ int main(int argc, char **argv) {
     if (syntax_tree) {
         printf("\n=== AST ===\n");
         printAst(syntax_tree, 0);
+    }
+
+    semanticAnalyze(syntax_tree, &symtab);
+
+    if (syntax_tree) {
         freeAst(syntax_tree);
     }
 
