@@ -90,7 +90,7 @@ void printAst(const AstNode *node, int indent) {
         case AST_ASSIGN:        printf("Assign\n"); break;
         case AST_BINOP:         
             if (node->name)
-                printf("BinOp(op=%s)\n", node->name);
+                printf("BinOp(op='%s')\n", node->name);
             else
                 printf("BinOp\n");
             break;

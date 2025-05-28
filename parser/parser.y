@@ -77,22 +77,28 @@
 
 %%
 
-program
-    : declaration_list {
+program:
+    declaration_list {
         syntax_tree = newNode(AST_PROGRAM);
-        addChild(syntax_tree, $1);
+        for (AstNode *n = $1; n; ) {
+            AstNode *next = n->nextSibling; // save next node
+            n->nextSibling = NULL; // detach current node from the list
+            addChild(syntax_tree, n); // add current node to the syntax tree
+            n = next; // move to the next node
+        }
     }
     ;
 
 declaration_list
     : declaration_list declaration
     {
-        addChild($1, $2);
+        AstNode *n = $1;
+        while (n->nextSibling) n = n->nextSibling; // traverse to the end of the list
+        n->nextSibling = $2; // append the new declaration
         $$ = $1;
+        printf("[PARSER DBG] declaration_list: added %s\n", $2->name);
     }
-    | declaration {
-        $$ = $1;
-    }
+    | declaration { $$ = $1; }
     ;
 
 declaration
@@ -197,11 +203,19 @@ param:
     }
 ;
 
-compound_stmt
-    : LBRACE local_declarations statement_list RBRACE {
+compound_stmt: 
+    LBRACE local_declarations statement_list RBRACE {
         AstNode *n = newNode(AST_BLOCK);
-        addChild(n, $2); // local declarations
-        addChild(n, $3); // statement list
+        if ($2) addChild(n, $2); // local declarations
+        if($3) {
+            AstNode *stmts = $3;
+            while(stmts) {
+                AstNode *next = stmts->nextSibling; // save next node
+                stmts->nextSibling = NULL; // detach current statement
+                addChild(n, stmts); // add current statement to the block
+                stmts = next; // move to the next statement
+            }
+        }
         $$ = n;
         printf(
             "[PARSER DBG] compound_stmt: decls=%p stmts=%p\n",
@@ -211,20 +225,27 @@ compound_stmt
     }
     ;
 
-local_declarations
-    : local_declarations var_declaration {
-        addChild($1, $2); // add variable declaration to the list
-        $$ = $1; // return the updated list
-    }
-    | /* empty */ { $$ = NULL;}
+local_declarations: 
+    local_declarations var_declaration {
+        AstNode *cur = $1;
+        while (cur->nextSibling) cur = cur->nextSibling;
+        cur->nextSibling = $2;
+        $$ = $1;
+        }
+    | var_declaration {
+        $$ = $1;   /* a single VAR_DECL */
+        }
+    | /* empty */ { $$ = NULL; }
     ;
 
-statement_list
-    : statement_list statement {
-        addChild($1, $2); // add statement to the list
+statement_list:
+    statement_list statement {
+        AstNode *n = $1;
+        while (n->nextSibling) n = n->nextSibling; // traverse to the end of the list
+        n->nextSibling = $2; // append the new statement
         $$ = $1; // return the updated list
     }
-    | /* empty */ { $$ = NULL; }
+    | statement { $$ = $1; } // single statement
     ;
 
 statement
