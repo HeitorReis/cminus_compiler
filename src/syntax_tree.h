@@ -3,13 +3,17 @@
 #define SYNTAX_TREE_H
 
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 /* AST node kinds */
 typedef enum {
+    AST_ARG_LIST,
     AST_PROGRAM,
     AST_VAR_DECL,
     AST_FUN_DECL,
     AST_PARAM,
+    AST_PARAM_LIST,
     AST_PARAM_ARRAY,
     AST_BLOCK,
     AST_IF,
@@ -35,7 +39,7 @@ typedef struct AstNode {
 AstNode *newNode(AstNodeKind kind);
 AstNode *newIdNode(const char *name);
 AstNode *newNumNode(int value);
-AstNode *newOpNode(int op);
+AstNode *newOpNode(char *op);
 
 /* Build tree */
 void addChild(AstNode *parent, AstNode *child);

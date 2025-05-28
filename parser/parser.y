@@ -14,7 +14,7 @@
     
     extern char *currentScope;
     extern SymbolTable symtab;
-    extern AstNode *syntax_tree = NULL;
+    extern AstNode *syntax_tree;
 
     int errorCount = 0;
 
@@ -27,18 +27,22 @@
 %union {
     char *sval;
     int   ival;
-    AstNode *ast;
+    struct AstNode *ast;
 }
 
 %token <sval> ID
 %token <ival> NUM
 
 %type <ast> program declaration_list declaration
-%type <ast> var_declaration fun_declaration params param_list param
+%type <ast> var_declaration fun_declaration 
+%type <ast> params param_list param
 %type <ast> statement selection_stmt iteration_stmt return_stmt
 %type <ast> expression_stmt expression simple_expression var call args arg_list
-%type <ast> compound_stmt additive_expression factor
-%type <ival> type_specifier relop addop mulop
+%type <ast> compound_stmt additive_expression
+%type <ival> type_specifier
+%type <ast> relop addop mulop
+%type <ast> local_declarations statement_list
+%type <ast> factor term
 
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -92,17 +96,14 @@ declaration_list
     ;
 
 declaration
-    : var_declaration
-    | fun_declaration
+    : var_declaration { $$ = $1; }
+    | fun_declaration { $$ = $1; }
     ;
 
 
 var_declaration:
     type_specifier ID SEMICOLON
     {
-        AstNode *n = newNode(AST_VAR_DECL);
-        n->name = strdup($2);
-        $$ = n;
         declareSymbol(
             &symtab, 
             $2, 
@@ -111,6 +112,9 @@ var_declaration:
             yylineno, 
             $1
         );
+        AstNode *n = newNode(AST_VAR_DECL);
+        n->name = strdup($2);
+        $$ = n;
         free($2);
     }
 ;
@@ -134,21 +138,34 @@ fun_declaration:
     } params RPAREN compound_stmt {
         AstNode *n = newNode(AST_FUN_DECL);
         n->name = strdup($2); // function name
-        addChild(n, $4); // parameters
-        addChild(n, $6); // compound statement
+        if ($5) addChild(n, $5); // parameters
+        if ($7) addChild(n, $7); // compound statement
         $$ = n;
         popScope();
         free($2);
+        printf(
+            "[PARSER DBG] fun_declaration: name=%s, params=%p, body=%p\n",
+            $2, 
+            (void*)$5, 
+            (void*)$7
+            );
     };
 
 params
-    : param_list
-    | VOID
+    : param_list { $$ = $1; }
+    | VOID { $$ = NULL; }
     ;
 
 param_list
-    : param_list COMMA param
-    | param
+    : param_list COMMA param {
+        addChild($1, $3); // add parameter to the list
+        $$ = $1; // return the updated list
+    }
+    | param {
+        AstNode *n = newNode(AST_PARAM_LIST);
+        addChild(n, $1); // single parameter
+        $$ = n; // return the parameter list
+    }
     ;
 
 param:
@@ -186,30 +203,41 @@ compound_stmt
         addChild(n, $2); // local declarations
         addChild(n, $3); // statement list
         $$ = n;
+        printf(
+            "[PARSER DBG] compound_stmt: decls=%p stmts=%p\n",
+            (void*)$2,
+            (void*)$3
+            );
     }
     ;
 
 local_declarations
-    : local_declarations var_declaration
-    | /* empty */
+    : local_declarations var_declaration {
+        addChild($1, $2); // add variable declaration to the list
+        $$ = $1; // return the updated list
+    }
+    | /* empty */ { $$ = NULL;}
     ;
 
 statement_list
-    : statement_list statement
-    | /* empty */
+    : statement_list statement {
+        addChild($1, $2); // add statement to the list
+        $$ = $1; // return the updated list
+    }
+    | /* empty */ { $$ = NULL; }
     ;
 
 statement
-    : expression_stmt
-    | compound_stmt
-    | selection_stmt
-    | iteration_stmt
-    | return_stmt
+    : expression_stmt { $$ = $1; }
+    | compound_stmt { $$ = $1; }
+    | selection_stmt { $$ = $1; }
+    | iteration_stmt { $$ = $1; }
+    | return_stmt { $$ = $1; }
     ;
 
 expression_stmt
-    : expression SEMICOLON
-    | SEMICOLON
+    : expression SEMICOLON { $$ = $1; }
+    | SEMICOLON { $$ = NULL; }
     ;
 
 selection_stmt
@@ -229,12 +257,25 @@ selection_stmt
     ;
 
 iteration_stmt
-    : WHILE LPAREN expression RPAREN statement
+    : WHILE LPAREN expression RPAREN statement {
+        AstNode *n = newNode(AST_WHILE);
+        addChild(n, $3); // condition
+        addChild(n, $5); // body statement
+        $$ = n;
+    }
     ;
 
 return_stmt
-    : RETURN SEMICOLON
-    | RETURN expression SEMICOLON
+    : RETURN SEMICOLON { 
+        AstNode *n = newNode(AST_RETURN);
+        $$ = n; // return without expression
+    }
+    | RETURN expression SEMICOLON {
+        AstNode *n = newNode(AST_RETURN);
+        if ($2) 
+            addChild(n, $2); // return expression
+        $$ = n;
+    }
     ;
 
 expression
@@ -243,8 +284,13 @@ expression
         addChild(n, $1); // variable
         addChild(n, $3); // expression
         $$ = n;
+        printf(
+            "[PARSER DBG] assignment: var=%p expr=%p\n",
+            (void*)$1,
+            (void*)$3
+            );
     }
-    | simple_expression
+    | simple_expression { $$ = $1; }
     ;
 
 var
@@ -277,6 +323,12 @@ simple_expression:
         addChild(n, $2); // operator
         addChild(n, $3); // right operand
         $$ = n;
+        printf(
+            "[PARSER DBG] binop: left=%p op=%p right=%p\n",
+            (void*)$1, 
+            (void*)$2, 
+            (void*)$3
+            );
     }
     | additive_expression {
         $$ = $1;
@@ -293,8 +345,14 @@ relop
     ;
 
 additive_expression
-    : additive_expression addop term
-    | term
+    : additive_expression addop term {
+        AstNode *n = newNode(AST_BINOP);
+        addChild(n, $1); // left operand
+        addChild(n, $2); // operator
+        addChild(n, $3); // right operand
+        $$ = n;
+    }
+    | term { $$ = $1; }
     ;
 
 addop
@@ -303,8 +361,14 @@ addop
     ;
 
 term
-    : term mulop factor
-    | factor
+    : term mulop factor {
+        AstNode *n = newNode(AST_BINOP);
+        addChild(n, $1); // left operand
+        addChild(n, $2); // operator
+        addChild(n, $3); // right operand
+        $$ = n;
+    }
+    | factor { $$ = $1; }
     ;
 
 mulop
@@ -317,11 +381,9 @@ factor
     : LPAREN expression RPAREN {
         $$ = $2; // return the expression inside parentheses
     }
-    | var
-    | call
-    | NUM {
-        $$ = newNumNode($1); // create a new AST node for the number
-    }
+    | var { $$ = $1; } // variable
+    | call { $$ = $1; } // function call
+    | NUM { $$ = newNumNode($1); } // create a new AST node for the number
     ;
 
 call:
@@ -341,13 +403,20 @@ call:
 ;
 
 args
-    : arg_list
-    | /* empty */
+    : arg_list { $$ = $1; }
+    | /* empty */ { $$ = NULL;}
     ;
 
 arg_list
-    : arg_list COMMA expression
-    | expression
+    : arg_list COMMA expression {
+        addChild($1, $3); // add expression to argument list
+        $$ = $1; // return the updated list
+    }
+    | expression {
+        AstNode *n = newNode(AST_ARG_LIST);
+        addChild(n, $1); // single argument
+        $$ = n; // return the argument list
+    }
     ;
 
 %%

@@ -2,6 +2,7 @@
     "files.associations": {
         "semantic.h": "c",
         "syntax_tree.h": "c",
-        "symbol_table.h": "c"
+        "symbol_table.h": "c",
+        "stdio.h": "c"
     }
 }
