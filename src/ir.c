@@ -70,6 +70,13 @@ static const char *op_name(IrOp op) {
         case IR_SUB:    return "sub";
         case IR_MUL:    return "mul";
         case IR_DIV:    return "div";
+        case IR_MOD:    return "mod";
+        case IR_EQ:     return "eq";
+        case IR_NEQ:    return "new";
+        case IR_HT:     return "ht";
+        case IR_LT:     return "lt";
+        case IR_HTE:    return "hte";
+        case IR_LTE:    return "lte";
         case IR_AND:    return "and";
         case IR_OR:     return "or";
         case IR_XOR:    return "xor";
@@ -188,6 +195,14 @@ IRList *generateIR(AstNode *root) {
             gen_function(decl, ir);
         }
     }
+    
+    FILE *out = fopen("ir_dump.txt", "w");
+    if (!out) {
+        fprintf(stderr, "[IR ERR] generateIR: failed to open ir_dump.txt\n");
+        return NULL;
+    }
+    dumpIR(ir, out);
+    fclose(out);
     return ir;
 }
 
@@ -382,6 +397,13 @@ static char *gen_expr(AstNode *expr, IRList *ir) {
         else if (strcmp(op->name, "-")==0) opc = IR_SUB;
         else if (strcmp(op->name, "*")==0) opc = IR_MUL;
         else if (strcmp(op->name, "/")==0) opc = IR_DIV;
+        if      (strcmp(op->name, "==")==0) opc = IR_EQ;
+        else if (strcmp(op->name, "!=")==0) opc = IR_NEQ;
+        else if (strcmp(op->name, ">")==0) opc = IR_HT;
+        else if (strcmp(op->name, "<")==0) opc = IR_LT;
+        else if (strcmp(op->name, ">=")==0) opc = IR_HTE;
+        else if (strcmp(op->name, "<=")==0) opc = IR_LTE;
+        else if (strcmp(op->name, '%')==0) opc = IR_MOD;
         else                                opc = IR_ADD;
 
         ir_append(ir, ir_new(opc, strdup(t), strdup(l), strdup(r)));

@@ -94,4 +94,4 @@ endif
 
 # Cleanup intermediate files and binary
 clean:
-	rm -rf $(BUILD_DIR) $(BIN_DIR)
+	rm -rf $(BUILD_DIR) $(BIN_DIR) parser.gv parser.output docs/teste.s
