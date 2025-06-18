@@ -1,40 +1,52 @@
+// syntax_tree.h
 #ifndef SYNTAX_TREE_H
 #define SYNTAX_TREE_H
 
-#include "node.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
-extern char *expName;
-extern char *variableName;
-extern char *functionName;
-extern char *currentToken;
+/* AST node kinds */
+typedef enum {
+    AST_ARG_LIST,
+    AST_PROGRAM,
+    AST_VAR_DECL,
+    AST_FUN_DECL,
+    AST_PARAM,
+    AST_PARAM_LIST,
+    AST_PARAM_ARRAY,
+    AST_BLOCK,
+    AST_IF,
+    AST_WHILE,
+    AST_RETURN,
+    AST_ASSIGN,
+    AST_BINOP,
+    AST_CALL,
+    AST_ID,
+    AST_NUM
+} AstNodeKind;
 
-extern int currentLine;
-extern int functionCurrentLine;
-extern int argsCount;
-extern int paramsCount;
+/* Generic AST node for an n-ary tree */
+typedef struct AstNode {
+    AstNodeKind kind;
+    char       *name;         /* identifier name or NULL */
+    int         value;        /* literal value for NUM or 0 */
+    int         lineno;
+    struct AstNode *firstChild;
+    struct AstNode *nextSibling;
+} AstNode;
 
-extern char *argName;
+/* Constructors */
+AstNode *newNode(AstNodeKind kind);
+AstNode *newIdNode(const char *name, int lineno);
+AstNode *newNumNode(int value, int lineno);
+AstNode *newOpNode(char *op, int lineno);
 
-int yylex();
-int yyerror(const char *errorMsg);
+/* Build tree */
+void addChild(AstNode *parent, AstNode *child);
 
-// Funções para manipulação de nós
-treeNode *createDeclNode(declType node);
-treeNode *createExpNode(expType node);
-treeNode *createStmtNode(stmtType node);
-treeNode *traversal(treeNode *node1, treeNode *node2);
-treeNode *createDeclVarNode(declType declVar, treeNode *expType);
-treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *expType);
-treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl);
-treeNode *createEmptyParams(expType expId);
-treeNode *createArrayArg(declType declVar, treeNode *expType);
-treeNode *createIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2);
-treeNode *createWhileStmt(stmtType stmtWhile, treeNode *exp, treeNode *stmt);
-treeNode *createAssignStmt(stmtType stmtAttrib, treeNode *var, treeNode *exp);
-treeNode *createExpVar(expType expId);
-treeNode *createArrayExpVar(expType expId, treeNode *exp);
-treeNode *createExpOp(expType expOp, treeNode *exp1, treeNode *exp2);
-treeNode *createExpNum(expType expNum);
-treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments);
+/* Utilities */
+void printAst(const AstNode *node, int indent);
+void freeAst(AstNode *node);
 
-#endif
+#endif /* SYNTAX_TREE_H */

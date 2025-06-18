@@ -1,51 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "syntax_tree.h"
-#include "symbol_table.h"
-#include "utils.h"
-#include "node.h"
-#include "semantic.h"      
+#include "parser.tab.h"
+#include "src/symbol_table.h"
+#include "src/utils.h"
+#include "src/syntax_tree.h"
+#include "src/semantic.h"
+#include "src/codegen.h"
+#include "src/ir.h"
 
-extern int yyparse();
-extern FILE *yyin;
+AstNode *syntax_tree; /* Global AST root node */
 
-extern treeNode *syntaxTree;
-extern SymbolTable tabela;
-int parseResult = 0;
-int erro_lexico = 0;
+SymbolTable symtab;  /* Global symbol table */
+
+extern FILE *yyin;        /* Flex’s input file pointer */
+
+void declareBuiltins(SymbolTable *table);
 
 int main(int argc, char **argv) {
-    printf("Início do main\n");
-    if (argc < 2) {
-        fprintf(stderr, "Uso: %s <arquivo_de_entrada>\n", argv[0]);
+    /* 1. Check command‐line arguments */
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
+    /* 2. Open the input file for the lexer */
     yyin = fopen(argv[1], "r");
     if (!yyin) {
-        perror("Erro ao abrir o arquivo de entrada");
+        perror("Error opening file");
         return EXIT_FAILURE;
     }
 
-    printf("Analisando o arquivo: %s\n", argv[1]);
-    syntaxTree = parse();
-    if (parseResult != 0 || erro_lexico != 0) {
-        printf(stderr, "Erro na análise sintática.\n");
-        fclose(yyin);
-        return EXIT_FAILURE;
+    /* 2.5 Initialize the symbol table and scope stack */
+    printf("Initializing symbol table and scope stack...\n");
+    initScopeStack();
+    initSymbolTable(&symtab);
+    declareBuiltins(&symtab);
+    printf("Symbol table initialized successfully.\n");
+
+    /* 3. Run the parser (which will invoke the lexer internally) */
+    printf("Parsing '%s'...\n", argv[1]);
+    int parseResult = yyparse();
+
+    /* 4. Report and clean up */
+    if (parseResult == 0) {
+        printf("Parse successful.\n");
+        printSymbolTable(&symtab);
+        printf("Symbol table printed successfully.\n");
+    } else {
+        fprintf(stderr, "Parse failed with code %d.\n", parseResult);
     }
 
-    printf("Análise sintática concluída com sucesso.\n");
-    printf("Árvore sintática gerada:\n");
-    printSyntaxTree(syntaxTree);
+    if (syntax_tree) {
+        printf("\n=== AST ===\n");
+        printAst(syntax_tree, 0);
+    }
 
-    // Build and print the symbol table
-    printf("Tabela de Símbolos:\n");
-    printSymbolTable(&tabela);
+    semanticAnalyze(syntax_tree, &symtab);
 
-   // === RUN SEMANTIC ANALYSIS ===
-    semanticAnalysis(syntaxTree);
+    if (syntax_tree) {
+        freeAst(syntax_tree);
+    }
 
     fclose(yyin);
-    return EXIT_SUCCESS;
+    return parseResult == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+
+void declareBuiltins(SymbolTable *table) {
+    declareSymbol(table, "input",  "global", SYMBOL_FUNC, 0, TYPE_INT);
+    setFunctionParams(table, "input",  "global", 0, NULL);
+
+    declareSymbol(table, "output", "global", SYMBOL_FUNC, 0, TYPE_VOID);
+    int p[1] = { TYPE_INT };
+    setFunctionParams(table, "output", "global", 1, p);
 }

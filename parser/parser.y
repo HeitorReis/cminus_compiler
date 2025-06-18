@@ -1,39 +1,51 @@
 %{
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
-  #include "syntax_tree.h"
-  #include "node.h"
-  #include "utils.h"
-  #include "symbol_table.h"
-  #include "semantic.h"
-  
-  treeNode *syntax_tree;
-  SymbolTable tabela;
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include "symbol_table.h"
+    #include "utils.h"
+    #include "syntax_tree.h"
 
-  extern int tokenNUM;
-  extern int parseResult;
+    #define TYPE_INT 1
+    #define TYPE_VOID 2
 
-  extern char *functionName;
-  extern char *currentScope;
-  extern char *expName;
-  extern int functionCurrentLine;
-  extern char *variableName;
+    extern int yylineno;
+    extern char *yytext;
+    
+    extern char *currentScope;
+    extern SymbolTable symtab;
+    extern AstNode *syntax_tree;
 
-  extern char *argName;
+    int errorCount = 0;
 
-  extern int yylineno;
-  extern char *yytext;
+    void yyerror(const char *msg);
 
-  void insertSymbolInTable(char *name, char *scope, SymbolType type, int line, primitiveType dataType) {
-    Symbol *symbol = findSymbol(&tabela, name, scope);
-    if (symbol) {
-        addLine(symbol, line);
-    } else {
-        insertSymbol(&tabela, name, scope, type, line, dataType);
-    }
-  }
+//   yydebug = 1;
+//   %debug
 %}
+
+%union {
+    char *sval;
+    int   ival;
+    struct AstNode *ast;
+}
+
+%token <sval> ID
+%token <ival> NUM
+
+%type <ast> program declaration_list declaration
+%type <ast> var_declaration fun_declaration 
+%type <ast> params param_list param
+%type <ast> statement selection_stmt iteration_stmt return_stmt
+%type <ast> expression_stmt expression simple_expression var call args arg_list
+%type <ast> compound_stmt additive_expression
+%type <ival> type_specifier
+%type <ast> relop addop mulop
+%type <ast> local_declarations statement_list
+%type <ast> factor term
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 /* Tokens */
 %token IF 1 
@@ -41,8 +53,6 @@
 %token RETURN 3
 %token INT 4 
 %token VOID 5 
-%token NUM 6 
-%token ID 7
 %token EQ 8
 %token NEQ 9 
 %token LT 10
@@ -62,316 +72,417 @@
 %token RBRACE 24
 %token LBRACK 25
 %token RBRACK 26
-%token ELSE 27
+%token MOD 28
 
-%debug
 
 %%
 
 program:
     declaration_list {
-        printf("Program parsed successfully.\n");
-        syntax_tree = $1;
+        syntax_tree = newNode(AST_PROGRAM);
+        for (AstNode *n = $1; n; ) {
+            AstNode *next = n->nextSibling; // save next node
+            n->nextSibling = NULL; // detach current node from the list
+            addChild(syntax_tree, n); // add current node to the syntax tree
+            n = next; // move to the next node
+        }
     }
     ;
 
-declaration_list:
-    declaration_list declaration {
-        $$ = traversal($1, $2);
-    }
-    | declaration {
+declaration_list
+    : declaration_list declaration
+    {
+        AstNode *n = $1;
+        while (n->nextSibling) n = n->nextSibling; // traverse to the end of the list
+        n->nextSibling = $2; // append the new declaration
         $$ = $1;
+        printf("[PARSER DBG] declaration_list: added %s\n", $2->name);
     }
+    | declaration { $$ = $1; }
     ;
 
-declaration:
-    var_declaration {
-        $$ = $1;
-    }
-    | fun_declaration {
-        $$ = $1;
-    }
+declaration
+    : var_declaration { $$ = $1; }
+    | fun_declaration { $$ = $1; }
     ;
+
 
 var_declaration:
-    type_specifier ID SEMICOLON {
-        $$ = createDeclVarNode(declVar, $1);
-        $$->name = strdup(yytext);
-        $$->line = yylineno;
-        insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
+    type_specifier ID SEMICOLON
+    {
+        declareSymbol(
+            &symtab, 
+            $2, 
+            currentScope, 
+            SYMBOL_VAR, 
+            yylineno, 
+            $1
+        );
+        AstNode *n = newNode(AST_VAR_DECL);
+        n->name = strdup($2);
+        n->lineno = yylineno; // Set the line number manually
+        $$ = n;
+        free($2);
     }
-    | type_specifier ID LBRACK NUM RBRACK SEMICOLON {
-        $$ = createArrayDeclVarNode(expNum, declVar, $1);
-        $$->name = strdup(yytext);
-        $$->line = yylineno;
-        insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
-    }
-    ;
+;
 
 type_specifier:
-    INT {
-        $$ = createDeclNode(declIdType); $$->type = Integer;
-    }
-    | VOID {
-        $$ = createDeclNode(declIdType); $$->type = Void;
-    }
+    INT  { $$ = TYPE_INT;  }
+    | VOID { $$ = TYPE_VOID; }
     ;
 
 fun_declaration:
-    type_specifier ID LPAREN params RPAREN compound_decl {
-        $$ = createDeclFuncNode(declFunc, $1, $4, $6); paramsCount = 0;
-        int funcLine = functionCurrentLine;
-        currentScope = strdup(yytext); /* update scope to function name */
-        insertSymbolInTable(functionName, "global", FUNC, funcLine - 1, $1->type);
+    type_specifier ID LPAREN  {
+        declareSymbol(
+            &symtab,
+            $2,              // function name
+            currentScope,
+            SYMBOL_FUNC,
+            yylineno,
+            $1               // return type
+        );
+        pushScope($2); // enter function scope
+    } params RPAREN compound_stmt {
+        Symbol *funcSym = getSymbol(
+            &symtab, 
+            $2, 
+            "global"
+        );
+        AstNode *n = newNode(AST_FUN_DECL);
+        n->name = strdup($2); // function name
+        n->lineno = funcSym ? funcSym->declLines->line : yylineno; // Set the line number manually
+        if ($5) addChild(n, $5); // parameters
+        if ($7) addChild(n, $7); // compound statement
+        $$ = n;
+
+        int pcount = 0;
+        for (AstNode *p = $5; p; p = p->firstChild ? p->firstChild->nextSibling : NULL) {
+            for (AstNode *c = $5->firstChild; c; c = c->nextSibling) {
+                ++pcount;
+            }
+            break;
+        }
+
+        int *types = NULL;
+        if (pcount > 0) {
+            types = malloc(pcount * sizeof(*types));
+            for (int i = 0; i < pcount; ++i)
+                types[i] = TYPE_INT;
+        }
+
+        setFunctionParams(
+            &symtab,
+            $2, 
+            currentScope, 
+            pcount, 
+            types
+        );
+
+        free(types);
+        popScope();
+        free($2);
+        printf(
+            "[PARSER DBG] fun_declaration: name=%s, params=%p, body=%p\n",
+            $2, 
+            (void*)$5, 
+            (void*)$7
+        );
     }
+;
+
+params
+    : param_list { $$ = $1; }
+    | VOID { $$ = NULL; }
     ;
 
-params:
-    param_list {
-        $$ = $1;
-    }
-    | VOID {
-        $$ = createEmptyParams(expId);
-    }
-    ;
-
-param_list:
-    param_list COMMA param {
-        $$ = traversal($1, $3);
+param_list
+    : param_list COMMA param {
+        addChild($1, $3); // add parameter to the list
+        $$ = $1; // return the updated list
     }
     | param {
-        $$ = $1;
+        AstNode *n = newNode(AST_PARAM_LIST);
+        addChild(n, $1); // single parameter
+        $$ = n; // return the parameter list
     }
     ;
 
 param:
     type_specifier ID {
-        $$ = createDeclVarNode(declVar, $1);
-        insertSymbolInTable(expName, currentScope, VAR, yylineno, $1->type);
+        declareSymbol(
+            &symtab,
+            $2,
+            currentScope,
+            SYMBOL_VAR,
+            yylineno,
+            $1
+        );
+        $$ = newNode(AST_PARAM);
+        $$->name = strdup($2); // parameter name
+        $$->lineno = yylineno; // Set the line number manually
+        free($2);
     }
     | type_specifier ID LBRACK RBRACK {
-        $$ = createArrayArg(declVar, $1);
-        insertSymbolInTable(expName, currentScope, ARRAY, yylineno, $1->type);
-    }
-    ;
-
-compound_decl:
-    LBRACE local_declarations statement_list RBRACE {
-        $$ = traversal($2, $3);
+        declareSymbol(
+            &symtab,
+            $2,
+            currentScope,
+            SYMBOL_VAR,
+            yylineno,
+            $1
+        );
+        $$ = newNode(AST_PARAM_ARRAY);
+        $$->name = strdup($2); // parameter name
+        $$->lineno = yylineno; // Set the line number manually
+        free($2);
     }
 ;
 
-local_declarations:
+compound_stmt: 
+    LBRACE local_declarations statement_list RBRACE {
+        AstNode *n = newNode(AST_BLOCK);
+        n->lineno = yylineno; // Set the line number manually
+        if ($2) addChild(n, $2); // local declarations
+        if ($3) {
+            AstNode *stmts = $3;
+            while (stmts) {
+                AstNode *next = stmts->nextSibling; // save next node
+                stmts->nextSibling = NULL; // detach current statement
+                addChild(n, stmts); // add current statement to the block
+                stmts = next; // move to the next statement
+            }
+        }
+        $$ = n;
+        printf(
+            "[PARSER DBG] compound_stmt: decls=%p stmts=%p\n",
+            (void*)$2,
+            (void*)$3
+        );
+    }
+    ;
+
+local_declarations: 
     local_declarations var_declaration {
-        $$ = traversal($1, $2);
-    }
-    | /* empty */ {
-        $$ = NULL;
-    }
+        AstNode *cur = $1;
+        while (cur->nextSibling) cur = cur->nextSibling;
+        cur->nextSibling = $2;
+        $$ = $1;
+        }
+    | var_declaration {
+        $$ = $1;   /* a single VAR_DECL */
+        }
+    | /* empty */ { $$ = NULL; }
     ;
 
 statement_list:
     statement_list statement {
-        $$ = traversal($1, $2);
+        AstNode *n = $1;
+        while (n->nextSibling) n = n->nextSibling; // traverse to the end of the list
+        n->nextSibling = $2; // append the new statement
+        $$ = $1; // return the updated list
     }
-    | /* empty */ {
-        $$ = NULL;
+    | statement { $$ = $1; } // single statement
+    ;
+
+statement
+    : expression_stmt { $$ = $1; }
+    | compound_stmt { $$ = $1; }
+    | selection_stmt { $$ = $1; }
+    | iteration_stmt { $$ = $1; }
+    | return_stmt { $$ = $1; }
+    ;
+
+expression_stmt
+    : expression SEMICOLON { $$ = $1; }
+    | SEMICOLON { $$ = NULL; }
+    ;
+
+selection_stmt
+    : IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE {
+        AstNode *n = newNode(AST_IF);
+        addChild(n, $3); // condition
+        addChild(n, $5); // then statement
+        $$ = n;
+    }
+    | IF LPAREN expression RPAREN statement ELSE statement {
+        AstNode *n = newNode(AST_IF);
+        addChild(n, $3); // condition
+        addChild(n, $5); // then statement
+        addChild(n, $7); // else statement
+        $$ = n;
     }
     ;
 
-statement:
-    matched_stmt
-  | unmatched_stmt
-;
-
-/* Safely matched IF with ELSE or non-IF statements */
-matched_stmt:
-    IF LPAREN expression RPAREN matched_stmt ELSE matched_stmt {
-        $$ = createIfStmt(stmtIf, $3, $5, $7);
-    }
-  | other_stmt {
-        $$ = $1;
-    }
-;
-
-/* Potentially dangling IFs */
-unmatched_stmt:
-    IF LPAREN expression RPAREN statement {
-        $$ = createIfStmt(stmtIf, $3, $5, NULL);
-    }
-  | IF LPAREN expression RPAREN matched_stmt ELSE unmatched_stmt {
-        $$ = createIfStmt(stmtIf, $3, $5, $7);
-    }
-;
-
-/* All other kinds of statements */
-other_stmt:
-    expression_decl {
-        $$ = $1;
-    }
-  | compound_decl {
-        $$ = $1;
-    }
-  | iteration_decl {
-        $$ = $1;
-    }
-  | return_decl {
-        $$ = $1;
-    }
-;
-
-expression_decl:
-    expression SEMICOLON {
-        $$ = $1;
+iteration_stmt
+    : WHILE LPAREN expression RPAREN statement {
+        AstNode *n = newNode(AST_WHILE);
+        addChild(n, $3); // condition
+        addChild(n, $5); // body statement
+        $$ = n;
     }
     ;
 
-
-iteration_decl:
-    WHILE LPAREN expression RPAREN statement {
-        $$ = createWhileStmt(stmtWhile, $3, $5);
-    }
-    ;
-
-return_decl:
-    RETURN SEMICOLON {
-        $$ = createStmtNode(stmtReturn);
+return_stmt
+    : RETURN SEMICOLON { 
+        AstNode *n = newNode(AST_RETURN);
+        $$ = n; // return without expression
     }
     | RETURN expression SEMICOLON {
-        $$ = createStmtNode(stmtReturn); $$->child[0] = $2;
+        AstNode *n = newNode(AST_RETURN);
+        if ($2) 
+            addChild(n, $2); // return expression
+        $$ = n;
     }
     ;
 
-expression:
-    var ASSIGN expression {
-        $$ = createAssignStmt(stmtAttrib, $1, $3); $$->op = ASSIGN;
+expression
+    : var ASSIGN expression {
+        AstNode *n = newNode(AST_ASSIGN);
+        n->lineno = yylineno; // Set the line number manually
+        addChild(n, $1); // variable
+        addChild(n, $3); // expression
+        $$ = n;
+        printf(
+            "[PARSER DBG] assignment: var=%p expr=%p\n",
+            (void*)$1,
+            (void*)$3
+        );
     }
-    | simple_expression {
-        $$ = $1;
-    }
-    ;
+    | simple_expression { $$ = $1; }
+;
 
-var:
-    ID {
-        $$ = createExpVar(expId);
-        $$->line = yylineno;
-        insertSymbolInTable(expName, currentScope, VAR, yylineno, Integer);
+var
+    : ID {
+        useSymbol(
+            &symtab, 
+            $1, 
+            currentScope, 
+            yylineno
+        );
+        $$ = newIdNode($1, yylineno);
+        free($1);
     }
     | ID LBRACK expression RBRACK {
-        $$ = createArrayExpVar(expId, $3);
-        $$->line = yylineno;
-        insertSymbolInTable(variableName, currentScope, ARRAY, yylineno, Integer);
+        useSymbol(
+            &symtab, 
+            $1, 
+            currentScope, 
+            yylineno
+        );
+        $$ = newIdNode($1, yylineno);
+        free($1);
     }
     ;
 
 simple_expression:
-    sum_expression relational sum_expression {
-        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
+    additive_expression relop additive_expression {
+        AstNode *n = newNode(AST_BINOP);
+        n->lineno = yylineno; // Set the line number manually
+        addChild(n, $1); // left operand
+        addChild(n, $2); // operator
+        addChild(n, $3); // right operand
+        $$ = n;
+        printf(
+            "[PARSER DBG] binop: left=%p op=%p right=%p\n",
+            (void*)$1, 
+            (void*)$2, 
+            (void*)$3
+        );
     }
-    | sum_expression {
+    | additive_expression {
         $$ = $1;
     }
     ;
 
-relational:
-    LT  { $$ = createExpNode(expId); $$->op = LT;  $$->line = yylineno; }
-    | LTE { $$ = createExpNode(expId); $$->op = LTE; $$->line = yylineno; }
-    | GT  { $$ = createExpNode(expId); $$->op = GT;  $$->line = yylineno; }
-    | GTE { $$ = createExpNode(expId); $$->op = GTE; $$->line = yylineno; }
-    | EQ  { $$ = createExpNode(expId); $$->op = EQ;  $$->line = yylineno; }
-    | NEQ { $$ = createExpNode(expId); $$->op = NEQ; $$->line = yylineno; }
+relop
+    : LTE { $$ = newOpNode("<=", yylineno); }
+    | LT { $$ = newOpNode("<", yylineno); }
+    | GT { $$ = newOpNode(">", yylineno); }
+    | GTE { $$ = newOpNode(">=", yylineno); }
+    | EQ { $$ = newOpNode("==", yylineno); }
+    | NEQ { $$ = newOpNode("!=", yylineno); }
     ;
 
-sum_expression:
-    sum_expression sum term {
-        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
+additive_expression
+    : additive_expression addop term {
+        AstNode *n = newNode(AST_BINOP);
+        addChild(n, $1); // left operand
+        addChild(n, $2); // operator
+        addChild(n, $3); // right operand
+        $$ = n;
     }
-    | term {
-        $$ = $1;
-    }
+    | term { $$ = $1; }
     ;
 
-sum:
-    PLUS  { $$ = createExpNode(expId); $$->op = PLUS; }
-    | MINUS { $$ = createExpNode(expId); $$->op = MINUS; }
+addop
+    : PLUS { $$ = newOpNode("+", yylineno); }
+    | MINUS { $$ = newOpNode("-", yylineno); }
     ;
 
-term:
-    term mult factor {
-        $$ = createExpOp(expOp, $1, $3); $$->op = $2->op;
+term
+    : term mulop factor {
+        AstNode *n = newNode(AST_BINOP);
+        addChild(n, $1); // left operand
+        addChild(n, $2); // operator
+        addChild(n, $3); // right operand
+        $$ = n;
     }
-    | factor {
-        $$ = $1;
-    }
+    | factor { $$ = $1; }
     ;
 
-mult:
-    TIMES { $$ = createExpNode(expId); $$->op = TIMES; }
-    | DIV   { $$ = createExpNode(expId); $$->op = DIV;   }
+mulop
+    : TIMES { $$ = newOpNode("*", yylineno); }
+    | DIV { $$ = newOpNode("/", yylineno); }
+    | MOD { $$ = newOpNode("%", yylineno); }
     ;
 
-factor:
-    LPAREN expression RPAREN {
-        $$ = $1;
+factor
+    : LPAREN expression RPAREN {
+        $$ = $2; // return the expression inside parentheses
     }
-    | var {
-        $$ = $1;
-    }
-    | call {
-        $$ = $1;
-    }
-    | NUM {
-        $$ = createExpNum(expNum);
-    }
+    | var { $$ = $1; } // variable
+    | call { $$ = $1; } // function call
+    | NUM { $$ = newNumNode($1, yylineno); } // create a new AST node for the number
     ;
 
 call:
     ID LPAREN args RPAREN {
-        $$ = createExpCallNode(strdup(expName), $3);
-        $$->line = yylineno;
+        useSymbol(
+            &symtab, 
+            $1, 
+            currentScope, 
+            yylineno
+        );
+        AstNode *n = newNode(AST_CALL);
+        n->name = strdup($1); // function name
+        n->lineno = yylineno; // Set the line number manually
+        addChild(n, $3); // arguments
+        $$ = n;
+        free($1);
     }
+;
+
+args
+    : arg_list { $$ = $1; }
+    | /* empty */ { $$ = NULL;}
     ;
 
-args:
-    arg_list {
-        $$ = $1;
-    }
-    | /* empty */ {
-        $$ = NULL;
-    }
-    ;
-
-arg_list:
-    arg_list COMMA expression {
-        $$ = traversal($1, $3); argsCount++;
+arg_list
+    : arg_list COMMA expression {
+        addChild($1, $3); // add expression to argument list
+        $$ = $1; // return the updated list
     }
     | expression {
-        $$ = $1; argsCount++;
-    }
-    | param { 
-        $$ = $1; argsCount++;
+        AstNode *n = newNode(AST_ARG_LIST);
+        n->lineno = yylineno; // Set the line number manually
+        addChild(n, $1); // single argument
+        $$ = n; // return the argument list
     }
     ;
 
 %%
 
-
-int yyerror(char *errorMsg) {
-  printf("(!) ERRO SINTATICO: Linha: %d | Token: %s\n", yylineno, yytext);
-  return 1;
+void yyerror(const char *msg) {
+    fprintf(stderr, "Line %d: %s\n", yylineno, msg);
+    errorCount++;
 }
-
-treeNode *parse() {
-    extern int yydebug;
-    yydebug = 1; // ✅ Ativa impressão detalhada das reduções
-
-    printf("Parsing...\n");
-    parseResult = yyparse();
-    if (parseResult == 0) {
-        printf("Parsing completed successfully.\n");
-    } else {
-        printf("Parsing failed.\n");
-    } 
-    return syntax_tree; 
-}
-

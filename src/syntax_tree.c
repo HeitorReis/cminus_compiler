@@ -1,188 +1,130 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include "parser.tab.h"
-#include "node.h"
+// syntax_tree.c
+#include <stdlib.h>    /* for malloc, free */
+#include <string.h>    /* for strdup */
 #include "syntax_tree.h"
+#include <stdio.h>
 
-extern char *yytext;
-extern int tokenNUM;
-
-// Variáveis auxiliares...
-char *expName;
-char *variableName;
-char *functionName;
-char *currentToken;
-char *currentScope = "global";
-char *argName;
-
-int currentLine = 1;
-int functionCurrentLine = 1;
-int argsCount = 0;
-int paramsCount = 0;
-
-treeNode *createNode() {
-    treeNode *newNode = (treeNode*) malloc(sizeof(treeNode));
-    for (int i = 0; i < CHILD_MAX_NODES; i++) {
-        newNode->child[i] = NULL;
-    }
-    newNode->sibling = NULL;
-    newNode->line = currentLine;
-    newNode->scope = currentScope;
-    return newNode;
-}
-
-treeNode *createDeclNode(declType node) {
-    treeNode *newNode = createNode();
-    newNode->node = decl;
-    newNode->declSubType = node;
-    return newNode;
-}
-
-treeNode *createStmtNode(stmtType node) {
-    treeNode *newNode = createNode();
-    newNode->node = stmt;
-    newNode->stmtSubType = node;
-    return newNode;
-}
-
-treeNode *createExpNode(expType node) {
-    treeNode *newNode = createNode();
-    newNode->node = exp;
-    newNode->expSubType = node;
-    return newNode;
-}
-
-treeNode *traversal(treeNode *node1, treeNode *node2) {
-    treeNode *temp = node1;
-    if (temp != NULL) {
-        while (temp->sibling != NULL) {
-            temp = temp->sibling;
+static const char *kindName(AstNodeKind k) {
+    switch(k) {
+        case AST_PROGRAM:      return "AST_PROGRAM";
+        case AST_VAR_DECL:     return "AST_VAR_DECL";
+        case AST_FUN_DECL:     return "AST_FUN_DECL";
+        case AST_PARAM:        return "AST_PARAM";
+        case AST_PARAM_LIST:   return "AST_PARAM_LIST";
+        case AST_PARAM_ARRAY:  return "AST_PARAM_ARRAY";
+        case AST_ARG_LIST:     return "AST_ARG_LIST";
+        case AST_BLOCK:        return "AST_BLOCK";
+        case AST_IF:           return "AST_IF";
+        case AST_WHILE:        return "AST_WHILE";
+        case AST_RETURN:       return "AST_RETURN";
+        case AST_ASSIGN:       return "AST_ASSIGN";
+        case AST_BINOP:        return "AST_BINOP";
+        case AST_CALL:         return "AST_CALL";
+        case AST_ID:           return "AST_ID";
+        case AST_NUM:          return "AST_NUM";
+        default:               return "UNKNOWN";
         }
-        temp->sibling = node2;
-        return node1;
-    } else {
-        return node2;
     }
+
+/* Create a blank node */
+AstNode *newNode(AstNodeKind kind) {
+    AstNode *n = malloc(sizeof(*n));
+    n->kind        = kind;
+    n->name        = NULL;
+    n->value       = 0;
+    n->lineno      = 0;  // default line number, can be set later
+    n->firstChild  = NULL;
+    n->nextSibling = NULL;
+    printf("[AST DBG] newNode kind=%s -> %p\n", kindName(kind), (void*)n);
+    return n;
 }
 
-treeNode *createDeclVarNode(declType declVar, treeNode *expType) {
-    treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->name = expName;
-    declVarNode->type = expType->type;
-    expType->child[0] = declVarNode;
-    return expType;
+/* Identifier node */
+AstNode *newIdNode(const char *name, int lineno) {
+    AstNode *n = newNode(AST_ID);
+    n->name = strdup(name);
+    n->lineno = lineno;
+    printf("[AST DBG] newIdNode(\"%s\") -> %p\n", name, (void*)n);
+    return n;
 }
 
-treeNode *createArrayDeclVarNode(expType expNum, declType declVar, treeNode *expType) {
-    treeNode *expNumNode = createExpNode(expNum);
-    expNumNode->value = tokenNUM;  
-    expNumNode->type = Integer;
-
-    treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->name = expName; 
-    declVarNode->child[0] = expNumNode;
-
-    declVarNode->type = (expType->type == Integer) ? Array : Void;
-    expType->child[0] = declVarNode;
-    return expType;
+/* Numeric literal node */
+AstNode *newNumNode(int value, int lineno) {
+    AstNode *n = newNode(AST_NUM);
+    n->value = value;
+    n->lineno = lineno;
+    printf("[AST DBG] newNumNode(%d) -> %p\n", value, (void*)n);
+    return n;
 }
 
-treeNode *createDeclFuncNode(declType declFunc, treeNode *expType, treeNode *params, treeNode *blocDecl) {
-    treeNode* declFuncNode = createDeclNode(declFunc);
-    declFuncNode->child[0] = params;
-    declFuncNode->child[1] = blocDecl;
-    declFuncNode->name = functionName;
-    declFuncNode->line = functionCurrentLine;
-    declFuncNode->type = expType->type;
-    declFuncNode->params = paramsCount;
-    expType->child[0] = declFuncNode;
-    return expType;
+AstNode *newOpNode(char *op, int lineno) {
+    AstNode *n = newNode(AST_BINOP);  // or AST_BINOP_KIND if you had separate kinds
+    n->lineno = lineno;
+    n->name = strdup(op);                    // store the token code (e.g. PLUS, LTE, etc.)
+    return n;
 }
 
-treeNode *createEmptyParams(expType expId) {
-    treeNode *node = createExpNode(expId);
-    node->name = "void";
-    node->type = Void;
-    return node;
+/* Attach child as last sibling */
+void addChild(AstNode *parent, AstNode *child) {
+    if (!parent || !child) return;
+    if (!parent->firstChild) {
+        parent->firstChild = child;
+    } else {
+        AstNode *s = parent->firstChild;
+        while (s->nextSibling) s = s->nextSibling;
+        s->nextSibling = child;
+    }
+    printf(
+        "[AST DBG] addChild parent=%p(%s, lineno=%d) child=%p(%s, lineno=%d)\n",
+        (void*)parent, kindName(parent->kind), parent->lineno,
+        (void*)child, kindName(child->kind), child->lineno
+    );
 }
 
-treeNode *createArrayArg(declType declVar, treeNode *expType) {
-    treeNode *declVarNode = createDeclNode(declVar);
-    declVarNode->name = expName;
-    declVarNode->type = (expType->type == Integer) ? Array : expType->type;
-    expType->child[0] = declVarNode;
-    return expType;
+/* Indented printing for debugging */
+void printAst(const AstNode *node, int indent) {
+    if (!node) return;
+    for (int i = 0; i < indent; i++) putchar(' ');
+    switch (node->kind) {
+        case AST_ARG_LIST:      printf("ArgList (lineno=%d)\n", node->lineno); break;
+        case AST_PROGRAM:       printf("Program (lineno=%d)\n", node->lineno); break;
+        case AST_VAR_DECL:      printf("VarDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_FUN_DECL:      printf("FunDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_PARAM:         printf("Param(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_PARAM_LIST:    printf("ParamList (lineno=%d)\n", node->lineno); break;
+        case AST_PARAM_ARRAY:   printf("ParamArray(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_BLOCK:         printf("Block (lineno=%d)\n", node->lineno); break;
+        case AST_IF:            printf("If (lineno=%d)\n", node->lineno); break;
+        case AST_WHILE:         printf("While (lineno=%d)\n", node->lineno); break;
+        case AST_RETURN:        printf("Return (lineno=%d)\n", node->lineno); break;
+        case AST_ASSIGN:        printf("Assign (lineno=%d)\n", node->lineno); break;
+        case AST_BINOP:         
+            if (node->name)
+                printf("BinOp(op='%s', lineno=%d)\n", node->name, node->lineno);
+            else
+                printf("BinOp (lineno=%d)\n", node->lineno);
+            break;
+        case AST_CALL:          printf("Call(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_ID:            printf("Id(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_NUM:           printf("Num(value=%d, lineno=%d)\n", node->value, node->lineno); break;
+    }
+    /* children */
+    for (AstNode *c = node->firstChild; c; c = c->nextSibling)
+        printAst(c, indent + 2);
 }
 
-treeNode *createIfStmt(stmtType stmtIf, treeNode *exp, treeNode *stmt1, treeNode *stmt2) {
-    treeNode *stmtIfNode = createStmtNode(stmtIf);
-    stmtIfNode->child[0] = exp;
-    stmtIfNode->child[1] = stmt1;
-    if (stmt2 != NULL) stmtIfNode->child[2] = stmt2;
-    return stmtIfNode;
+/* Recursively free the tree */
+void freeAst(AstNode *node) {
+    if (!node) return;
+    /* free children */
+    AstNode *c = node->firstChild;
+    while (c) {
+        AstNode *next = c->nextSibling;
+        freeAst(c);
+        c = next;
+    }
+    /* free own data */
+    if (node->kind == AST_ID && node->name) free(node->name);
+    free(node);
 }
 
-treeNode *createWhileStmt(stmtType stmtWhile, treeNode *exp, treeNode *stmt) {
-    treeNode *stmtWhileNode = createStmtNode(stmtWhile);
-    stmtWhileNode->child[0] = exp;
-    stmtWhileNode->child[1] = stmt;
-    stmtWhileNode->type = Boolean;
-    return stmtWhileNode;
-}
-
-treeNode *createAssignStmt(stmtType stmtAttrib, treeNode *var, treeNode *exp) {
-    treeNode *stmtAttribNode = createStmtNode(stmtAttrib);
-    stmtAttribNode->child[0] = var;
-    stmtAttribNode->child[1] = exp;
-    stmtAttribNode->type = Integer;
-    return stmtAttribNode;
-}
-
-treeNode *createExpVar(expType expId) {
-    treeNode *expVarNode = createExpNode(expId);
-    expVarNode->name = expName;
-    expVarNode->type = Void;
-    return expVarNode;
-}
-
-treeNode *createArrayExpVar(expType expId, treeNode *exp) {
-    treeNode *expVarNode = createExpNode(expId);
-    expVarNode->name = variableName;
-    expVarNode->child[0] = exp;
-    expVarNode->type = Integer;
-    return expVarNode;
-}
-
-treeNode *createExpOp(expType expOp, treeNode *exp1, treeNode *exp2) {
-    treeNode *expOpNode = createExpNode(expOp);
-    expOpNode->child[0] = exp1;
-    expOpNode->child[1] = exp2;
-    return expOpNode;
-}
-
-treeNode *createExpNum(expType expNum) {
-    treeNode *expNumNode = createExpNode(expNum);
-    expNumNode->value = atoi(yytext);   
-    expNumNode->type = Integer;
-    return expNumNode;
-}
-
-treeNode *createActivationFunc(stmtType stmtFunc, treeNode *arguments) {
-    treeNode *activationFuncNode = createStmtNode(stmtFunc);
-    activationFuncNode->child[1] = arguments; 
-    activationFuncNode->name = functionName;
-    activationFuncNode->line = functionCurrentLine;
-    activationFuncNode->args = argsCount;
-    return activationFuncNode;
-}
-
-/* === Novo construtor para chamada em expressão === */
-treeNode *createExpCallNode(const char *funcName, treeNode *args) {
-    treeNode *node = createExpNode(expCall);
-    node->name = strdup(funcName);
-    node->child[0] = args;  /* lista de argumentos */
-    node->type = Void;      /* será ajustado na semântica */
-    return node;
-}

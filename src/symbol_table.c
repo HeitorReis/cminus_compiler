@@ -1,158 +1,178 @@
+#include "symbol_table.h"
+#include "parser.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "symbol_table.h"
 
-// forward‐declare
-static int internalHash(const char *key, int modulo);
+#define TYPE_INT 1
+#define TYPE_VOID 2
 
-int hash(const char *key) {
-    return internalHash(key, SIZE);
-}
-
-static int internalHash(const char *key, int modulo) {
-    int temp = 0, i = 0;
-    while (key[i] != '\0') {
-        temp = ((temp << SHIFT) + key[i]) % modulo;
-        ++i;
-    }
-    return temp;
-}
-
-void initSymbolTable(SymbolTable *table) {
-    table->count = 0;
-    for (int i = 0; i < SIZE; i++) {
-        table->table[i] = NULL;
-    }
-}
-
-int insertSymbol(SymbolTable *table,
-                const char *name,
-                const char *scope,
-                SymbolType type,
-                int line,
-                primitiveType dataType) {
-    int index = hash(name);
-    Symbol *existing = findSymbol(table, name, scope);
-    if (existing) {
-        addLine(existing, line);
-        return 0;
-    }
-
-    Symbol *newSymbol = malloc(sizeof(Symbol));
-    if (!newSymbol) {
-        fprintf(stderr, "Memory allocation error\n");
-        return -1;
-    }
-    newSymbol->name       = strdup(name);
-    newSymbol->scope      = strdup(scope);
-    newSymbol->type       = type;
-    newSymbol->dataType   = dataType;
-
-    /* inicializa os campos de parâmetros */
-    newSymbol->paramCount = 0;
-    newSymbol->paramTypes = NULL;
-
-    newSymbol->lines = malloc(sizeof(LineList));
-    newSymbol->lines->line = line;
-    newSymbol->lines->next = NULL;
-
-    newSymbol->next = table->table[index];
-    table->table[index] = newSymbol;
-    table->count++;
-    return 0;
-}
-
-void freeSymbolTable(SymbolTable *table) {
-    for (int i = 0; i < SIZE; i++) {
-        Symbol *symbol = table->table[i];
-        while (symbol) {
-            Symbol *tmp = symbol;
-            symbol = symbol->next;
-
-            /* libera lista de linhas */
-            LineList *line = tmp->lines;
-            while (line) {
-                LineList *nextLine = line->next;
-                free(line);
-                line = nextLine;
-            }
-
-            /* libera array de parâmetros, se houver */
-            free(tmp->paramTypes);
-
-            free(tmp->name);
-            free(tmp->scope);
-            free(tmp);
-        }
-    }
-    table->count = 0;
-}
-
-Symbol *findSymbol(SymbolTable *table,
-                   const char *name,
-                   const char *scope) {
-    int index = hash(name);
-    Symbol *current = table->table[index];
-    while (current) {
-        if (strcmp(current->name, name) == 0 &&
-            strcmp(current->scope, scope) == 0) {
-            return current;
-        }
-        current = current->next;
+static Symbol *findSymbol(
+    SymbolTable *table, 
+    const char *name, 
+    const char *scope
+) {
+    for (Symbol *s = table->head; s; s = s->next) {
+        if (strcmp(s->name, name) == 0 && strcmp(s->scope, scope) == 0)
+            return s;
     }
     return NULL;
 }
 
-void addLine(Symbol *symbol, int line) {
-    if (!symbol) return;
-
-    LineList *aux = symbol->lines;
-    while (aux) {
-        if (aux->line == line) return;  // já gravado
-        aux = aux->next;
+Symbol *getSymbol(
+    SymbolTable *table, 
+    const char *name, 
+    const char *scope
+) {
+    Symbol *s = findSymbol(table, name, scope);
+    if (s) return s;
+    if (strcmp(scope, "global") != 0) {
+        return findSymbol(table, name, "global");
     }
-    LineList *newLine = malloc(sizeof(LineList));
-    newLine->line = line;
-    newLine->next = symbol->lines;
-    symbol->lines  = newLine;
+    return NULL;
 }
 
-const char* symbolTypeToString(SymbolType type) {
-    switch (type) {
-        case VAR:   return "var";
-        case ARRAY: return "array";
-        case FUNC:  return "func";
-        default:    return "unknown";
+void initSymbolTable(SymbolTable *table) {
+    table->head = NULL;
+}
+
+/* record a declaration (and allow multiple declLines) */
+void declareSymbol(
+    SymbolTable *table,
+    const char  *name,
+    const char  *scope,
+    SymbolKind   kind,
+    int          declLine,
+    int          dataType
+) {
+    Symbol *sym = getSymbol(table, name, scope);
+    if (sym) {
+        /* existing symbol → append another declLine */
+        yyerror("redeclared identifier");
+    } else {
+        /* brand-new symbol */
+        sym = malloc(sizeof(*sym));
+        if (!sym) { perror("malloc"); exit(1); }
+        sym->name     = strdup(name);
+        sym->scope    = strdup(scope);
+        sym->kind     = kind;
+        sym->dataType = dataType;
+        /* first declLines node */
+        LineNode *dln = malloc(sizeof(*dln));
+        if (!dln) { perror("malloc"); exit(1); }
+        dln->line = declLine;
+        dln->next = NULL;
+        sym->declLines = dln;
+        sym->useLines  = NULL;
+        sym->paramCount = 0;  /* no params yet */
+        sym->paramTypes = NULL; /* no param types yet */
+        /* insert into table head */
+        sym->next      = table->head;
+        table->head    = sym;
     }
 }
 
-const char* primitiveTypeToString(primitiveType type) {
-    switch (type) {
-        case Integer: return "int";
-        case Void:    return "void";
-        default:      return "unknown";
+/* record a use (or error if undeclared) */
+void useSymbol(
+    SymbolTable *table,
+    const char  *name,
+    const char  *scope,
+    int          useLine
+) {
+    Symbol *sym = getSymbol(table, name, scope);
+    if (!sym) {
+        yyerror("use of undeclared identifier");
+    return;
     }
+    LineNode *ln = malloc(sizeof(*ln));
+    if (!ln) { perror("malloc"); exit(1); }
+    ln->line = useLine;
+    ln->next = sym->useLines;
+    sym->useLines = ln;
+    printf(
+        "[SYM_TABLE DBG] useSymbol: '%s' in scope '%s' at line %d\n",
+        name, 
+        scope, 
+        useLine
+    );
 }
 
-void printSymbolTable(SymbolTable *table) {
-    printf("Name     | Scope        | Tipo ID      | Tipo dado | Linhas\n");
-    printf("-------------------------------------------------------------\n");
-    for (int i = 0; i < SIZE; i++) {
-        Symbol *current = table->table[i];
-        while (current) {
-            printf("%-8s | %-12s | %-12s | %-8s | ",
-                   current->name,
-                   current->scope,
-                   symbolTypeToString(current->type),
-                   primitiveTypeToString(current->dataType));
-            LineList *line = current->lines;
-            while (line) {
-                printf("%d ", line->line);
-                line = line->next;
-            }
-            printf("\n");
-            current = current->next;
+void setFunctionParams(
+    SymbolTable *table,
+    const char *name,
+    const char *scope,
+    int paramCount,
+    int *paramTypes
+) {
+    Symbol *sym = getSymbol(table, name, scope);
+    if (!sym || sym->kind != SYMBOL_FUNC) return;
+    sym->paramCount = paramCount;
+    sym->paramTypes = malloc(paramCount * sizeof(int));
+    if (!sym->paramTypes) { perror("malloc"); exit(1); }
+    memcpy(sym->paramTypes, paramTypes, paramCount * sizeof(int));
+    printf(
+        "[SYM_TABLE DBG] setFunctionParams: '%s' in scope '%s' with %d params\n",
+        name, 
+        scope, 
+        paramCount
+    );
+}
+
+int getParamCount(
+    SymbolTable *table,
+    const char *name,
+    const char *scope
+) {
+    Symbol *sym = getSymbol(table, name, scope);
+    return sym ? sym->paramCount : -1;
+}
+
+int getParamType(
+    SymbolTable *table,
+    const char *name,
+    const char *scope,
+    int index
+) {
+    Symbol *sym = getSymbol(table, name, scope);
+    if (!sym || index < 0 || index >= sym->paramCount) {
+        return -1; // invalid request
+    }
+    return sym->paramTypes[index];
+}
+
+void printSymbolTable(const SymbolTable *table) {
+    const char *kindStr, *typeStr;
+
+    puts("======= SYMBOL TABLE =======");
+    printf(
+        "%-15s %-10s %-6s %-20s %-20s %-6s\n",
+        "Name", "Scope", "Kind", "Decl Lines", "Use Lines", "Type"
+    );
+    puts("--------------------------------------------------------------------------");
+
+    for (Symbol *s = table->head; s; s = s->next) {
+        kindStr = (s->kind == SYMBOL_VAR ? "VAR" : "FUNC");
+        typeStr = (s->dataType == TYPE_INT ? "INT" : "VOID");
+
+        /* Print basic info */
+        printf("%-15s %-10s %-6s ", s->name, s->scope, kindStr);
+
+        /* Print all declaration lines as comma-separated */
+        for (LineNode *ln = s->declLines; ln; ln = ln->next) {
+            printf("%d", ln->line);
+            if (ln->next) printf(",");
         }
+
+        printf(" \t");
+
+        /* Print all use lines as comma-separated */
+        for (LineNode *ln = s->useLines; ln; ln = ln->next) {
+            printf("%d", ln->line);
+            if (ln->next) printf(",");
+        }
+
+        printf(" \t%-6s\n", typeStr);
     }
+
+    puts("======= END OF TABLE =======");
 }

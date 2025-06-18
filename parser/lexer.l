@@ -1,111 +1,80 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "parser.tab.h"
-#include "node.h"
+#include <string.h> 
+#include "parser.tab.h"   
 
-void ignorar_comentario();
-extern int yylineno; // Variável global de linha
-extern FILE *input_file; // Adicione esta linha para declarar input_file
-extern char *expName; // Variável global para armazenar o nome do identificador
-extern char *functionName; // Variável global para armazenar o nome da função
-extern char *variableName; // Variável global para armazenar o nome do array
-extern int functionCurrentLine;
-extern char *currentScope;
-extern char *argName;
-extern int erro_lexico;
-char expLine;
-int tokenNUM;
-int openBraces = 0;
+extern int yylineno;        
+int tokenNUM;               
 
-#define CPY_TK strncpy(token_str, yytext, TOKEN_LEN);
+void ignore_comment();      
 %}
 
 %option yylineno
 
 %%
-"if"          { return IF; }
-"else"        { return ELSE; }
-"while"       { return WHILE; }
-"return"      { return RETURN; }
-"int"         { return INT; }
-"void"        { return VOID; }
-"=="          { return EQ; }
-"!="          { return NEQ; }
-"<"           { return LT; }
-"<="          { return LTE; }
-">"           { return GT; }
-">="          { return GTE; }
-"="           { return ASSIGN; }
-"+"           { return PLUS; }
-"-"           { return MINUS; }
-"*"           { return TIMES; }
-"/"           { return DIV; }
-";"           { return SEMICOLON; }
-","           { return COMMA; }
-"("           { 
-    if (openBraces == 0) {
-        functionCurrentLine = yylineno; 
-        functionName = strdup(expName);
-        if (openBraces == 0) {
-            currentScope = strdup(functionName);
-        }
-    }
-    argName = strdup(functionName);
-    return LPAREN; }
-")"           { return RPAREN; }
-"{"           { 
-    openBraces++;
-    if (openBraces == 1) {
-        functionCurrentLine = yylineno;
-        currentScope = strdup(functionName);
-        // printf("Scope: %s\n", currentScope);
-        // printf("Function name: %s\n", functionName);
-    }
-    return LBRACE; }
-"}"           {
-    //yylineno++; 
-    if (openBraces > 0){
-        openBraces--;
-    }
-    if (openBraces == 0) {
-        currentScope = "global";
-    }
-    return RBRACE; }
-"["           { 
-    variableName = strdup(expName); 
-    return LBRACK; }
-"]"           { return RBRACK; }
-"/*"          { ignorar_comentario(); }
 
-[0-9]+        { tokenNUM = atoi(yytext);
-    return NUM; }
+"/*"            { ignore_comment(); 
+                printf("[LEX][%d] SKIP_COMMENT\n", yylineno);
+                }
+
+"if"           { printf("[LEX][%d] IF       -> '%s'\n", yylineno, yytext); return IF; }
+"else"         { printf("[LEX][%d] ELSE     -> '%s'\n", yylineno, yytext); return ELSE; }
+"while"        { printf("[LEX][%d] WHILE    -> '%s'\n", yylineno, yytext); return WHILE; }
+"return"       { printf("[LEX][%d] RETURN   -> '%s'\n", yylineno, yytext); return RETURN; }
+"int"          { printf("[LEX][%d] INT      -> '%s'\n", yylineno, yytext); return INT; }
+"void"         { printf("[LEX][%d] VOID     -> '%s'\n", yylineno, yytext); return VOID; }
+"=="          { printf("[LEX][%d] EQ       -> '%s'\n", yylineno, yytext); return EQ; }
+"!="          { printf("[LEX][%d] NEQ      -> '%s'\n", yylineno, yytext); return NEQ; }
+"<="          { printf("[LEX][%d] LTE      -> '%s'\n", yylineno, yytext); return LTE; }
+"<"           { printf("[LEX][%d] LT       -> '%s'\n", yylineno, yytext); return LT; }
+">="          { printf("[LEX][%d] GTE      -> '%s'\n", yylineno, yytext); return GTE; }
+">"           { printf("[LEX][%d] GT       -> '%s'\n", yylineno, yytext); return GT; }
+"="           { printf("[LEX][%d] ASSIGN   -> '%s'\n", yylineno, yytext); return ASSIGN; }
+"+"           { printf("[LEX][%d] PLUS     -> '%s'\n", yylineno, yytext); return PLUS; }
+"-"           { printf("[LEX][%d] MINUS    -> '%s'\n", yylineno, yytext); return MINUS; }
+"*"           { printf("[LEX][%d] TIMES    -> '%s'\n", yylineno, yytext); return TIMES; }
+"%"         { printf("[LEX][%d] MOD      -> '%s'\n", yylineno, yytext); return MOD; }  
+"/"          { printf("[LEX][%d] DIV      -> '%s'\n", yylineno, yytext); return DIV; }
+";"           { printf("[LEX][%d] SEMI     -> '%s'\n", yylineno, yytext); return SEMICOLON; }
+","           { printf("[LEX][%d] COMMA    -> '%s'\n", yylineno, yytext); return COMMA; }
+"("           { printf("[LEX][%d] LPAREN   -> '%s'\n", yylineno, yytext); return LPAREN; }
+")"           { printf("[LEX][%d] RPAREN   -> '%s'\n", yylineno, yytext); return RPAREN; }
+"{"           { printf("[LEX][%d] LBRACE   -> '%s'\n", yylineno, yytext); return LBRACE; }
+"}"           { printf("[LEX][%d] RBRACE   -> '%s'\n", yylineno, yytext); return RBRACE; }
+"["           { printf("[LEX][%d] LBRACK   -> '%s'\n", yylineno, yytext); return LBRACK; }
+"]"           { printf("[LEX][%d] RBRACK   -> '%s'\n", yylineno, yytext); return RBRACK; }
+
+[0-9]+        { 
+                tokenNUM = atoi(yytext);
+                yylval.ival = atoi(yytext);
+                printf("[LEX][%d] NUM      -> '%s' (%d)\n", yylineno, yytext, tokenNUM);
+                return NUM;
+                }
+
 [a-zA-Z_][a-zA-Z0-9_]* {
-    // printf("ID: %s   |   scope: %s\n", yytext, currentScope);
-    expLine = yylineno;
-    expName = strdup(yytext);
-    return ID;
-} // Assign value to expName for identifiers
+                printf("[LEX][%d] ID       -> '%s'\n", yylineno, yytext);
+                yylval.sval = strdup(yytext);
+                return ID;
+                }
 
-[ \t\r]+    { /* Ignorar espaços e quebras de linha */ }
+[ \t\r]+      { /* skip whitespace */ }
+\n            { /* skip newline; yylineno auto-incremented */ }
 
-\n            { /*yylineno++;*/ }
+<<EOF>>       { printf("[LEX][%d] EOF\n", yylineno); return 0; }
 
-<<EOF>>  { return 0; }
+.             { fprintf(stderr, "[LEX][%d] ERROR: unexpected '%s'\n", yylineno, yytext); }
 
-.             { printf("ERRO LÉXICO: '%s' LINHA: %i\n", yytext, yylineno); erro_lexico = 1; }
 %%
 
-// Função para ignorar comentários
-void ignorar_comentario() {
+void ignore_comment() {
     int c;
-    while (1) {
-        c = input();
+    while ((c = input()) != 0) {
         if (c == '*') {
-            c = input();
-            if (c == '/') break;
+            int d = input();
+            if (d == '/') break;
+            unput(d);
         }
-        if (c == 0 || c == EOF) break;  // prevent infinite loop at EOF
+        if (c == '\n') yylineno++;
     }
 }

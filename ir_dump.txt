@@ -1,0 +1,23 @@
+test_fn:
+load t0, [v]
+mov t1, 0, _
+eq t2, t0, t1
+brz L0, t2
+mov t3, 1, _
+mov retval, t3, _
+ret
+br L1
+L0:
+mov t4, 2, _
+mov retval, t4, _
+ret
+L1:
+ret
+main:
+call test_fn
+mov t5, retval, _
+store [x], t5
+mov t6, 1, _
+mov retval, t6, _
+ret
+ret

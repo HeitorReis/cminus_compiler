@@ -51,8 +51,8 @@ Module.symvers
 Mkfile.old
 dkms.conf
 .qodo
-build/lex.yy.c
-build/parser.tab.c
-parser.gv
-build/parser.tab.h
 parser.output
+parser.gv
+/build
+bin/c-c
+entrega1.zip
