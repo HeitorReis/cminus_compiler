@@ -1,23 +1,19 @@
-test_fn:
-load t0, [v]
-mov t1, 0
-cmpeq t2, t0, t1
-brz L0, t2
-mov t3, 1
-mov retval, t3
-ret
+main:
+bl input
+mov t0, retval
+store [x], t0
+bl input
+mov t1, retval
+store [y], t1
+load t2, [x]
+load t3, [y]
+cmpgt t4, t2, t3
+brz L0, t4
+bl output
+mov t5, retval
 b L1
 L0:
-mov t4, 2
-mov retval, t4
-ret
+bl output
+mov t6, retval
 L1:
-ret
-main:
-bl test_fn
-mov t5, retval
-store [x], t5
-mov t6, 1
-mov retval, t6
-ret
 ret

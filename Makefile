@@ -88,6 +88,8 @@ else ifeq ($(TEST),3)
 	$(EXEC) $(DOCS_DIR)/teste3.txt
 else ifeq ($(TEST),4)
 	$(EXEC) $(DOCS_DIR)/teste4.txt
+else ifeq ($(TEST),5)
+	$(EXEC) $(DOCS_DIR)/teste5.txt
 else
 	$(EXEC) $(DOCS_DIR)/teste.txt
 endif

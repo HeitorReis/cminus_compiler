@@ -1,23 +1,19 @@
-test_fn:
-load t0, [v]
-mov t1, 0, _
-eq t2, t0, t1
-brz L0, t2
-mov t3, 1, _
-mov retval, t3, _
-ret
+main:
+call input
+mov t0, retval, _
+store [x], t0
+call input
+mov t1, retval, _
+store [y], t1
+load t2, [x]
+load t3, [y]
+ht t4, t2, t3
+brz L0, t4
+call output
+mov t5, retval, _
 br L1
 L0:
-mov t4, 2, _
-mov retval, t4, _
-ret
+call output
+mov t6, retval, _
 L1:
-ret
-main:
-call test_fn
-mov t5, retval, _
-store [x], t5
-mov t6, 1, _
-mov retval, t6, _
-ret
 ret
