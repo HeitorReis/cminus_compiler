@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 /*── IR list management ───────────────────────────────────────────────────*/
 
@@ -73,9 +74,9 @@ static const char *op_name(IrOp op) {
         case IR_MOD:    return "mod";
         case IR_EQ:     return "eq";
         case IR_NEQ:    return "new";
-        case IR_HT:     return "ht";
+        case IR_GT:     return "gt";
         case IR_LT:     return "lt";
-        case IR_HTE:    return "hte";
+        case IR_GTE:    return "gte";
         case IR_LTE:    return "lte";
         case IR_AND:    return "and";
         case IR_OR:     return "or";
@@ -152,6 +153,37 @@ void freeIR(IRList *list) {
 static int temp_count  = 0;
 static int label_count = 0;
 
+/* Map function parameters to temps */
+typedef struct ParamMap {
+    char *name;
+    char *temp;
+    struct ParamMap *next;
+} ParamMap;
+
+static ParamMap *param_add(ParamMap *head, const char *name, char *temp) {
+    ParamMap *n = malloc(sizeof(*n));
+    n->name = strdup(name);
+    n->temp = temp;
+    n->next = head;
+    return n;
+}
+
+static char *param_lookup(ParamMap *head, const char *name) {
+    for (ParamMap *p = head; p; p = p->next)
+        if (strcmp(p->name, name) == 0)
+            return p->temp;
+    return NULL;
+}
+
+static void param_free(ParamMap *head) {
+    while (head) {
+        ParamMap *n = head->next;
+        free(head->name);
+        free(head);
+        head = n;
+    }
+}
+
 /* Returns a fresh temp name "t0", "t1", ... */
 char *new_temp(void) {
     char buf[16];
@@ -168,8 +200,8 @@ char *new_label(void) {
 
 /*── Forward declarations of lowering helpers ────────────────────────────*/
 static void      gen_function(AstNode *funcDecl, IRList *ir);
-static void      gen_stmt    (AstNode *stmt,     IRList *ir);
-static char     *gen_expr    (AstNode *expr,     IRList *ir);
+static void      gen_stmt    (AstNode *stmt,     IRList *ir, ParamMap *params);
+static char     *gen_expr    (AstNode *expr,     IRList *ir, ParamMap *params);
 
 /*── Top‐level IR generation ───────────────────────────────────────────────*/
 
@@ -208,27 +240,47 @@ IRList *generateIR(AstNode *root) {
 
 /*── Function lowering ───────────────────────────────────────────────────*/
 
+static ParamMap *create_param_map(AstNode *paramList, IRList *ir) {
+    ParamMap *map = NULL;
+    int idx = 0;
+    for (AstNode *p = paramList->firstChild; p; p = p->nextSibling, ++idx) {
+        char *t = new_temp();
+        char reg[16];
+        sprintf(reg, "arg%d", idx);
+        ir_append(ir, ir_new(IR_MOV, strdup(t), strdup(reg), NULL));
+        map = param_add(map, p->name, t);
+    }
+    return map;
+}
+
 static void gen_function(AstNode *funcDecl, IRList *ir) {
     /* Emit entry label */
     ir_append(ir,
         ir_new(IR_LABEL, strdup(funcDecl->name), NULL, NULL));
+    
+    ParamMap *params = NULL;
 
     /* Skip past parameter list if present */
     AstNode *child = funcDecl->firstChild;
     if (child && child->kind == AST_PARAM_LIST) {
+        params = create_param_map(child, ir);
         child = child->nextSibling;
     }
     /* Lower the function body */
-    gen_stmt(child, ir);
+    gen_stmt(child, ir, params);
 
-    /* Ensure a RET at end */
-    ir_append(ir,
-        ir_new(IR_RET, NULL, NULL, NULL));
+    /* Ensure a RET at end if none emitted */
+    if (!ir->tail || ir->tail->op != IR_RET) {
+        ir_append(ir,
+            ir_new(IR_RET, NULL, NULL, NULL));
+    }
+
+    param_free(params);
 }
 
 /*── Statement lowering ──────────────────────────────────────────────────*/
 
-static void gen_stmt(AstNode *stmt, IRList *ir) {
+static void gen_stmt(AstNode *stmt, IRList *ir, ParamMap *params) {
     if (!stmt) {
         fprintf(stderr, "[IR ERR] gen_stmt: stmt is NULL\n");
         return;
@@ -248,9 +300,25 @@ static void gen_stmt(AstNode *stmt, IRList *ir) {
             return; /* nothing to emit for declarations */
         case AST_RETURN: {
             AstNode *expr = stmt->firstChild;
-            char *val = gen_expr(expr, ir);
-            ir_append(ir,
-                ir_new(IR_MOV, strdup("retval"), strdup(val), NULL));
+            if (expr && expr->kind == AST_NUM) {
+                char buf[32];
+                snprintf(buf, sizeof(buf), "%d", expr->value);
+                ir_append(ir,
+                    ir_new(IR_MOV, strdup("retval"), strdup(buf), NULL));
+            } else if (expr && expr->kind == AST_ID) {
+                char *tmp = param_lookup(params, expr->name);
+                if (tmp) {
+                    ir_append(ir,
+                        ir_new(IR_MOV, strdup("retval"), strdup(tmp), NULL));
+                } else {
+                    ir_append(ir,
+                        ir_new(IR_LOAD, strdup("retval"), strdup(expr->name), NULL));
+                }
+            } else if (expr) {
+                char *val = gen_expr(expr, ir, params);
+                ir_append(ir,
+                    ir_new(IR_MOV, strdup("retval"), strdup(val), NULL));
+            }
             ir_append(ir,
                 ir_new(IR_RET, NULL, NULL, NULL));
             break;
@@ -261,7 +329,7 @@ static void gen_stmt(AstNode *stmt, IRList *ir) {
             AstNode *thenNode = condNode->nextSibling;
             AstNode *elseNode = thenNode->nextSibling;
 
-            char *cond    = gen_expr(condNode, ir);
+            char *cond    = gen_expr(condNode, ir, params);
             char *elseLbl = new_label();
             char *endLbl  = new_label();
 
@@ -274,23 +342,31 @@ static void gen_stmt(AstNode *stmt, IRList *ir) {
                 ir_new(IR_BRZ, strdup(elseLbl), strdup(cond), NULL));
 
             /* then‐branch */
-            gen_stmt(stmt->firstChild->nextSibling, ir);
+            gen_stmt(thenNode, ir, params);
+
+            bool thenRet = ir->tail && ir->tail->op == IR_RET;
 
             /* jump past else */
-            ir_append(ir,
-                ir_new(IR_BR, strdup(endLbl), NULL, NULL));
+            if (!thenRet) {
+                ir_append(ir,
+                    ir_new(IR_BR, strdup(endLbl), NULL, NULL));
+            }
 
             /* else label */
             ir_append(ir,
                 ir_new(IR_LABEL, strdup(elseLbl), NULL, NULL));
             
             if (elseNode) {
-                gen_stmt(elseNode, ir);
+                gen_stmt(elseNode, ir, params);
             }
 
+            bool elseRet = elseNode && ir->tail && ir->tail->op == IR_RET;
+
             /* end label */
-            ir_append(ir,
-                ir_new(IR_LABEL, strdup(endLbl), NULL, NULL));
+            if (!thenRet || (elseNode && !elseRet)) {
+                ir_append(ir,
+                    ir_new(IR_LABEL, strdup(endLbl), NULL, NULL));
+            }
             
             break;
         }
@@ -310,16 +386,20 @@ static void gen_stmt(AstNode *stmt, IRList *ir) {
                 ir_new(IR_LABEL, strdup(startLbl), NULL, NULL));
 
             /* condition */
-            char *cond = gen_expr(condNode, ir);
+            char *cond = gen_expr(condNode, ir, params);
             ir_append(ir,
                 ir_new(IR_BRZ, strdup(endLbl), strdup(cond), NULL));
 
             /* body */
-            gen_stmt(bodyNode, ir);
+            gen_stmt(bodyNode, ir, params);
+
+            bool bodyRet = ir->tail && ir->tail->op == IR_RET;
 
             /* back to start */
-            ir_append(ir,
-                ir_new(IR_BR, strdup(startLbl), NULL, NULL));
+            if (!bodyRet) {
+                ir_append(ir,
+                    ir_new(IR_BR, strdup(startLbl), NULL, NULL));
+            }
 
             /* end label */
             ir_append(ir,
@@ -329,7 +409,7 @@ static void gen_stmt(AstNode *stmt, IRList *ir) {
 
         case AST_BLOCK: {
             for (AstNode *c = stmt->firstChild; c; c = c->nextSibling) {
-                gen_stmt(c, ir);
+                gen_stmt(c, ir, params);
             }
             break;
         }
@@ -339,7 +419,7 @@ static void gen_stmt(AstNode *stmt, IRList *ir) {
             fprintf(stderr,
                 "[IR DBG]   expr-stmt dispatch at %p\n",
                 (void*)stmt);
-            gen_expr(stmt, ir);
+            gen_expr(stmt, ir, params);
             break;
         }
     }
@@ -347,7 +427,7 @@ static void gen_stmt(AstNode *stmt, IRList *ir) {
 
 /*── Expression lowering ─────────────────────────────────────────────────*/
 
-static char *gen_expr(AstNode *expr, IRList *ir) {
+static char *gen_expr(AstNode *expr, IRList *ir, ParamMap *params) {
     if (!expr) {
         fprintf(stderr, "[IR ERR] gen_expr: expr is NULL\n");
         return NULL;
@@ -369,18 +449,27 @@ static char *gen_expr(AstNode *expr, IRList *ir) {
     }
 
     case AST_ID: {
+        char *tmp = param_lookup(params, expr->name);
+        if (tmp) {
+            return strdup(tmp);
+        }
         char *t = new_temp();
         ir_append(ir, ir_new(IR_LOAD, strdup(t), strdup(expr->name), NULL));
-        return strdup(t);
+        return t;
     }
 
     case AST_ASSIGN: {
         AstNode *lhs = expr->firstChild;
         AstNode *rhs = lhs->nextSibling;
-        char *r = gen_expr(rhs, ir);
+        char *r = gen_expr(rhs, ir, params);
         char *var = lhs->name ? lhs->name : NULL;
-        ir_append(ir, ir_new(IR_STORE, strdup(var), strdup(r), NULL));
-        return strdup(r);
+        char *dest = param_lookup(params, var);
+        if (dest) {
+            ir_append(ir, ir_new(IR_MOV, strdup(dest), strdup(r), NULL));
+        } else {
+            ir_append(ir, ir_new(IR_STORE, strdup(var), strdup(r), NULL));
+        }
+        return r;
     }
 
     case AST_BINOP: {
@@ -388,8 +477,8 @@ static char *gen_expr(AstNode *expr, IRList *ir) {
         AstNode *op    = left->nextSibling;
         AstNode *right = op->nextSibling;
 
-        char *l = gen_expr(left,  ir);
-        char *r = gen_expr(right, ir);
+        char *l = gen_expr(left,  ir, params);
+        char *r = gen_expr(right, ir, params);
         char *t = new_temp();
 
         IrOp opc;
@@ -399,9 +488,9 @@ static char *gen_expr(AstNode *expr, IRList *ir) {
         else if (strcmp(op->name, "/")==0) opc = IR_DIV;
         if      (strcmp(op->name, "==")==0) opc = IR_EQ;
         else if (strcmp(op->name, "!=")==0) opc = IR_NEQ;
-        else if (strcmp(op->name, ">")==0) opc = IR_HT;
+        else if (strcmp(op->name, ">")==0) opc = IR_GT;
         else if (strcmp(op->name, "<")==0) opc = IR_LT;
-        else if (strcmp(op->name, ">=")==0) opc = IR_HTE;
+        else if (strcmp(op->name, ">=")==0) opc = IR_GTE;
         else if (strcmp(op->name, "<=")==0) opc = IR_LTE;
         else if (strcmp(op->name, '%')==0) opc = IR_MOD;
         else                                opc = IR_ADD;
@@ -411,14 +500,27 @@ static char *gen_expr(AstNode *expr, IRList *ir) {
     }
 
     case AST_CALL: {
-        for (AstNode *arg = expr->firstChild; arg; arg = arg->nextSibling) {
-            (void)gen_expr(arg, ir);
+        int idx = 0;
+        AstNode *argList = expr->firstChild;
+        for (
+            AstNode *arg = argList ? argList->firstChild : NULL;
+            arg;
+            arg = arg->nextSibling, ++idx
+        ) {            
+            char *val = gen_expr(arg, ir, params);
+            char reg[16];
+            sprintf(reg, "arg%d", idx);
+            ir_append(ir, ir_new(IR_MOV, strdup(reg), strdup(val), NULL));
         }
         ir_append(ir, ir_new(IR_CALL, strdup(expr->name), NULL, NULL));
         char *t = new_temp();
         ir_append(ir, ir_new(IR_MOV, t, strdup("retval"), NULL));
         return t;
     }
+
+    case AST_ARG_LIST:
+        /* Argument lists are handled in the CALL case */
+        return NULL;
 
     default:
         fprintf(stderr,

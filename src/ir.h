@@ -10,7 +10,7 @@ typedef struct AstNode AstNode;
 /* your three-address IR opcodes */
 typedef enum {
     IR_ADD, IR_SUB, IR_MUL, IR_DIV,
-    IR_HT, IR_LT, IR_HTE, IR_LTE,
+    IR_GT, IR_LT, IR_GTE, IR_LTE,
     IR_MOD, IR_EQ, IR_NEQ,
     IR_AND, IR_OR, IR_XOR, IR_NOT,
     IR_LOAD, IR_STORE,

@@ -30,13 +30,13 @@ void generateCode(IRList *ir, const char *out_filename) {
             case IR_MOD:
                 fprintf(out, "mod %s, %s, %s\n", i->res, i->arg1, i->arg2);
                 break;
-            case IR_HT:
+            case IR_GT:
                 fprintf(out, "cmpgt %s, %s, %s\n", i->res, i->arg1, i->arg2);
                 break;
             case IR_LT:
                 fprintf(out, "cmplt %s, %s, %s\n", i->res, i->arg1, i->arg2);
                 break;
-            case IR_HTE:
+            case IR_GTE:
                 fprintf(out, "cmpge %s, %s, %s\n", i->res, i->arg1, i->arg2);
                 break;
             case IR_LTE:
