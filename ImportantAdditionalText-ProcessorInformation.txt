@@ -1,0 +1,162 @@
+﻿ARM‑Style Instruction Encoding Model
+1. Introduction
+This document presents a detailed report on the custom 32‑bit instruction encoding format designed for our prototype processor. The encoding borrows heavily from the ARM architecture’s conditional‑execution and fixed‑width style, while introducing compact support suffixes and simplified fields tailored to our ISA.
+Key characteristics:
+* Fixed 32‑bit width for all instructions simplifies fetch and decode.
+* Conditional execution via a 4‑bit Cond field at bits [31:28].
+* Compact support suffix (immediate flag, CPSR‑update flag) in bits [25:24].
+* Unified OpCode+Funct space in bits [23:20], covering data processing, memory, and branching.
+* Orthogonal register/immediate payload in bits [19:0], with consistent Rd, Rh, and Operand₂ layout.
+________________
+
+
+2. Instruction Bit‑Field Layout
+|31      28|27 26|25 24|23    20|19    15|14    10|9               0|
+|------------|-------|--------|----------|----------|----------|----------------|
+|  Cond     |Type |Supp | Funct  |  Rd    |  Rh    |   Operand₂       |
+* Cond [31:28]: 4‑bit condition code (e.g. always, EQ, NEQ, GT…) determines whether the instruction is executed based on CPSR flags.
+* Type [27:26]: Top‑two bits of the primary OpCode: 00=DataProc, 01=Load/Store, 11=Branch.
+* Supp [25:24]: Support suffix bits – immediate (i), CPSR update (s), both (is), or none (na).
+* Funct [23:20]: 4‑bit function sub‑code selecting the specific operation within each type.
+* Rd [19:15]: Destination register index (0–31).
+* Rh [14:10]: Secondary register (source or base) index.
+* Operand₂ [9:0]: 10‑bit signed immediate or register+padding (register in bits [9:5], low bits zero).
+________________
+
+
+3. Condition Field (bits 31–28)
+Mnemonic
+	Code
+	Semantics
+	do
+	0000
+	always (unconditional)
+	eq
+	0001
+	Z==1 (equal)
+	neq
+	0010
+	Z==0 (not equal)
+	gt
+	0011
+	Z==0 & N==0 (greater)
+	gteq
+	0100
+	Z==1 or N==0 (≥)
+	lt
+	0101
+	N==1 (less)
+	lteq
+	0110
+	Z==1 or N==1 (≤)
+	Rationale: embedding predication avoids explicit branches for simple if‑tests and speeds conditional code.
+________________
+
+
+4. Support Suffix Field (bits 25–24)
+Suffix
+	Bits
+	Effect
+	na
+	00
+	no immediate, no CPSR update
+	i
+	10
+	immediate addressing (Operand₂ is 10‑bit literal)
+	s
+	01
+	set CPSR flags (NZCV) based on result
+	is
+	11
+	both immediate and CPSR update
+	Rationale: two bits suffice to combine the common modifiers, keeping the format orthogonal.
+________________
+
+
+5. OpCode + Funct Field (bits 27–20)
+5.1 Data‑Processing (Type=00)
+Mnemonic
+	Funct [23:20]
+	Semantics
+	add
+	0000
+	Rd = Rh + Op₂
+	sub
+	0001
+	Rd = Rh − Op₂
+	mul
+	0010
+	Rd = Rh × Op₂
+	div
+	0011
+	Rd = Rh ÷ Op₂ (aux)
+	and
+	0100
+	Rd = Rh & Op₂
+	or
+	0101
+	Rd = Rh | Op₂
+	xor
+	0110
+	Rd = Rh ^ Op₂
+	not
+	0111
+	Rd = ¬Rh
+	mov
+	1000
+	Rd = Op₂
+	5.2 Load/Store (Type=01)
+Mnemonic
+	Funct [23:20]
+	Semantics
+	store
+	0000
+	[Ro+imm] ← Rh
+	load
+	0001
+	Rd ← [Ro+imm]
+	5.3 Branch & Link (Type=11)
+Mnemonic
+	Funct pattern
+	Semantics
+	b
+	0X0X
+	PC ← PC+offset (no link)
+	bl
+	1X0X
+	Rlink ← PC+4; PC ← PC+offset
+	l
+	0100
+	Rlink ← PC+4 (link only, no jump)
+	ll
+	1100
+	Rlink ← PC+4; Save PC (link & save)
+	Note: X bits are reserved or ignored based on immediate vs. register form.
+________________
+
+
+6. Register & Immediate Encoding (bits 19–0)
+1. Rd [19:15] – 5 bits for destination register.
+2. Rh [14:10] – 5 bits for second/source register.
+3. Operand₂ [9:0] – either:
+   * Immediate: signed 10‑bit two’s‑complement literal, when support bit i=1.
+   * Register: 5‑bit Ro in bits [9:5], lower 5 bits = 0.
+Rationale: aligning register fields at 5‑bit boundaries eases wiring in hardware; immediate field consumes the rest.
+________________
+
+
+7. Example Instruction
+eq_adds: r3 = r4, r5
+1. Suffix eq → Cond=0001.
+2. OpCode add, support s → Type=00, Supp=01, Funct=0000.
+3. Rd=r3→00011, Rh=r4→00100, Ro=r5→00101, low bits=00000.
+Final encoding (bits 31..0):
+0001 00 01 0000 00011 00100 00101 00000
+Grouped:
+Cond  Type Supp Funct  Rd   Rh   Ro   pad
+0001  00   01   0000 00011 00100 00101 00000
+________________
+
+
+8. Conclusion
+This encoding strikes a balance between flexibility (rich conditional and modifier bits) and simplicity (fixed 32‑bit width, orthogonal register fields). The two‑bit support suffix enables immediate or flag‑setting modes without bloating the primary OpCode, and the unified payload layout brings regularity to hardware decode.
