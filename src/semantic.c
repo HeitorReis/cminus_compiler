@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "semantic.h"
+#include "ir.h"
 
 extern char *currentScope;
 
@@ -44,13 +45,15 @@ void semanticAnalyze(AstNode *root, SymbolTable *symtab) {
     else{
         printf("Semantic analysis completed successfully with no errors.\n");
         printf("\n=== IR ===\n");
-        IRList *ir = generateIR(root);
-        dumpIR(ir, stdout);         // or write to file
+        
+        // To this:
+        IRList *ir = generate_ir(root, &symtab); // Assuming you pass the symbol table
+        print_ir(ir, stdout);
         
         printf("\n=== Codegen ===\n");
-        generateCode(ir, "out.asm"); // or whatever target you choose
+        generate_code(ir, "out.asm"); 
         
-        freeIR(ir);
+        free_ir(ir);
     }
 
     printf("[Codegen DBG] codeGen: completed\n", ctx.errorCount);

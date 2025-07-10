@@ -22,7 +22,7 @@ OBJECTS := $(BUILD_DIR)/main.o \
            $(BUILD_DIR)/syntax_tree.o \
            $(BUILD_DIR)/utils.o \
 					 $(BUILD_DIR)/ir.o \
-					 $(BUILD_DIR)/codegen.o
+					#  $(BUILD_DIR)/codegen.o
 
 # === Compiler and Linker Settings ===
 CC := gcc
@@ -37,7 +37,7 @@ SRC_FILES := main.c \
              $(SRC_DIR)/syntax_tree.c \
              $(SRC_DIR)/utils.c \
 						 $(SRC_DIR)/ir.c \
-						 $(SRC_DIR)/codegen.c
+						#  $(SRC_DIR)/codegen.c
 
 # === Rules ===
 
