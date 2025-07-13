@@ -241,6 +241,7 @@ def generate_assembly(ir_list):
         
         instruction_counter += len(temp_code)
         # Adicionar epílogo simples
+        final_code.append(f"{func_name}_epilogue:")
         final_code.append("\tret:")
         instruction_counter += 1
         final_code.append("")

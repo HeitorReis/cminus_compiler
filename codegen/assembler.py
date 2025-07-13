@@ -1,14 +1,25 @@
-# python_assembler.py
+# codegen/assembler.py
+
+import re
 
 # Dicionários de mapeamento da arquitetura do processador
 instructions = {
-    'add': ['00', '0000'], 'sub': ['00', '0001'], 'mul': ['00', '0010'],
-    'div': ['00', '0011'], 'and': ['00', '0100'], 'or':  ['00', '0101'],
-    'xor': ['00', '0110'], 'not': ['00', '0111'], 'mov': ['00', '1000'],
-    'in':  ['00', '1001'],
-    'load': ['01', '0001'], 'store': ['01', '0000'],
-    'b': ['11', '0000'], 'bl': ['11', '1000'],
-    'l': ['11', '0100'], 'll': ['11', '1100']
+    # Data-Processing (Type 00)
+    'add': '0000', 'sub': '0001', 'mul': '0010', 'div': '0011',
+    'and': '0100', 'or':  '0101', 'xor': '0110', 'not': '0111',
+    'mov': '1000', 'in': '1001',
+    
+    # Load/Store (Type 01)
+    'store': '0000', 'load': '0001',
+    
+    # Branch (Type 11)
+    'b': '0000', 'bl': '1000', 'ret': '1111'
+}
+
+type_codes = {
+    '00': ['add', 'sub', 'mul', 'div', 'and', 'or', 'xor', 'not', 'mov', 'in'],
+    '01': ['load', 'store'],
+    '11': ['b', 'bl', 'ret', 'bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq']
 }
 
 condition_setting = {
@@ -16,194 +27,273 @@ condition_setting = {
     'gteq': '0100', 'lt': '0101', 'lteq': '0110'
 }
 
-support_bits = {
+support_bits_map = {
     'i': '10', 's': '01', 'is': '11', 'si': '11', 'na': '00'
 }
 
 class Instruction:
-    """
-    Representa e processa uma única linha de código assembly,
-    ignorando diretivas e labels.
-    """
-    def __init__(self, assembly_single_line: str):
+    def __init__(self, assembly_single_line: str, symbol_table: dict, current_address: int):
         self.assembly_line = assembly_single_line.strip()
+        self.symbol_table = symbol_table
+        self.current_address = current_address
         self.binary32_line = ""
         self.debug_line = ""
-        self.condition = "do"
-        self.opCode = ""
-        self.supportBits = "na"
-        self.destinyRegister = ""
-        self.hitRegister = ""
-        self.operandRegister = ""
-        self.immediateValue = "0"
         self.response = '-> Success'
+        self.op_details = {}
 
-        # Se a linha estiver vazia, ou for uma diretiva (começa com '.'), ou um label (termina com ':'), pule.
-        if not self.assembly_line or self.assembly_line.startswith('.') or self.assembly_line.endswith(':'):
-            self.response = '-> Skipped: Directive, Label, or Empty line'
+        if self.assembly_line.startswith('.') or (self.assembly_line.endswith(':') and self.assembly_line != 'ret:'):
+            self.response = '-> Skipped: Directive or Label'
             return
 
-        self.disassemble(self.assembly_line)
+        self.op_details = self.disassemble(self.assembly_line)
+        if 'Error' in self.op_details:
+            self.response = self.op_details['Error']
+            return
 
-        if 'Error' not in self.response:
-            self.decode_assembly()
+        self.binary32_line, self.debug_line = self.encode()
+        if 'Error' in self.binary32_line:
+            self.response = self.binary32_line
+            return
 
-    def disassemble(self, line: str):
+    def get_op_type(self, opcode):
+        for type_code, op_list in type_codes.items():
+            if opcode in op_list:
+                return type_code
+        if any(opcode.startswith(br) for br in ['bi']):
+             return '11'
+        return None
+
+    def disassemble(self, line: str) -> dict:
         """
-        Analisa a linha de assembly e preenche os atributos da classe.
+        Analisa a linha de assembly e extrai suas partes.
+        *** LÓGICA DE ANÁLISE FINAL E CORRIGIDA ***
         """
+        details = {'cond': 'do', 'supp': 'na'}
+        
+        if line == 'ret:':
+            details['opcode'] = 'ret'
+            details['type'] = '11'
+            return details
+
         try:
             op_part, rest_part = line.split(':', 1)
             rest_part = rest_part.strip()
         except ValueError:
-            self.response = f'-> Error: Syntax (missing ":" separator)'
-            return
+            return {'Error': f'-> Error: Syntax (missing ":" separator) in line "{line}"'}
 
-        self.get_op_cond_support(op_part)
-        if 'Error' in self.response:
-            return
+        op_part = op_part.strip()
 
-        # Lógica para tratar aliases como 'retval' e 'arg'
-        if 'retval' in rest_part: rest_part = rest_part.replace('retval', 'r0')
-        if 'arg' in rest_part: rest_part = rest_part.replace('arg', 'r0') # Simplificação: assumindo que o primeiro argumento vai para r0
-
-
-        if self.opCode in ('l', 'll', 'ret'): # Adicionado 'ret' para ser ignorado aqui
-            return
-
-        if self.opCode == 'in':
-            self.destinyRegister = rest_part
-            return
-
-        if self.opCode in ('b', 'bl'):
-            # Para branches, o 'rest_part' é o label e não será convertido para binário aqui
-            # A resolução de labels é uma etapa posterior do montador/linker.
-            self.immediateValue = rest_part # Apenas guardamos o label
-            return
-
-        try:
-            dest_part, source_part = rest_part.split('=', 1)
-            self.destinyRegister = dest_part.strip()
-
-            if ',' not in source_part:
-                if '#' in source_part:
-                    self.supportBits = 'i' # Detecta imediato pelo '#'
-                    self.immediateValue = source_part.replace('#', '').strip()
-                else:
-                    self.hitRegister = source_part.strip()
-                return
-
-            source_parts = [p.strip() for p in source_part.split(',')]
-            self.hitRegister = source_parts[0]
-            if len(source_parts) > 1:
-                if '#' in source_parts[1]:
-                    self.supportBits = 'i'
-                    self.immediateValue = source_parts[1].replace('#', '').strip()
-                else:
-                    self.operandRegister = source_parts[1]
-        except (ValueError, IndexError):
-            self.response = f"-> Error: Malformed operands for instruction '{self.opCode}'"
-    
-    # O restante da classe (decode_assembly, get_op_cond_support, getSignedBinary) permanece o mesmo...
-    def decode_assembly(self):
-        """
-        Codifica os atributos para a representação binária de 32 bits e
-        cria uma linha de depuração paralela.
-        """
-        try:
-            cond_bits = condition_setting.get(self.condition, '0000')
-            type_code, op_code_val = instructions.get(self.opCode, ["", ""])
-            support = support_bits.get(self.supportBits, '00')
-            
-            self.binary32_line = cond_bits + type_code + support + op_code_val
-            self.debug_line = f"cond[{cond_bits}] type[{type_code}] sup[{support}] op[{op_code_val}] "
-
-            if self.opCode in ('b', 'bl'):
-                self.binary32_line += format(0, '020b') # Placeholder para o endereço do label
-                self.debug_line += f"label[{self.immediateValue}]"
-                return
-
-            if self.opCode in ('l', 'll', 'ret'):
-                self.binary32_line += format(0, '020b')
-                self.debug_line += "n/a[0...19]"
-                return
-
-            rd_bits = format(int(self.destinyRegister[1:]), '05b') if self.destinyRegister and 'r' in self.destinyRegister else '00000'
-            self.binary32_line += rd_bits
-            self.debug_line += f"Rd[{rd_bits}] "
-
-            if self.opCode == 'in':
-                self.binary32_line += format(0, '015b')
-                self.debug_line += "n/a[0...14]"
-                return
-
-            rh_bits = format(int(self.hitRegister[1:]), '05b') if self.hitRegister and 'r' in self.hitRegister else '00000'
-            self.binary32_line += rh_bits
-            self.debug_line += f"Rh[{rh_bits}] "
-
-            if 'i' in self.supportBits:
-                imm_bits = self.getSignedBinary(self.immediateValue, 10)
-                self.binary32_line += imm_bits
-                self.debug_line += f"imm[{imm_bits}]"
-            else:
-                ro_bits = format(int(self.operandRegister[1:]), '05b') if self.operandRegister and 'r' in self.operandRegister else '00000'
-                self.binary32_line += ro_bits + '00000'
-                self.debug_line += f"Ro[{ro_bits}] pad[00000]"
-
-        except Exception as e:
-            self.response = f"-> Error: An unexpected error occurred during decoding: {e}"
-
-    def get_op_cond_support(self, op_part: str):
-        temp_op = op_part.strip()
-        conditions = ['gteq', 'lteq', 'neq', 'eq', 'gt', 'lt']
-        for cond in conditions:
-            if temp_op.endswith(cond):
-                self.condition = cond
-                temp_op = temp_op[:-len(cond)]
+        sorted_conditions = sorted(condition_setting.keys(), key=len, reverse=True)
+        for cond_suffix in sorted_conditions:
+            if cond_suffix != 'do' and op_part.endswith(cond_suffix):
+                details['cond'] = cond_suffix
+                op_part = op_part[:-len(cond_suffix)]
                 break
-        else:
-            self.condition = 'do'
-
-        if temp_op.endswith(('is', 'si')):
-            self.supportBits = 'is'
-            temp_op = temp_op[:-2]
-        elif temp_op.endswith('i'):
-            self.supportBits = 'i'
-            temp_op = temp_op[:-1]
-        elif temp_op.endswith('s'):
-            self.supportBits = 's'
-            temp_op = temp_op[:-1]
         
-        self.opCode = temp_op
-        if self.opCode not in instructions and self.opCode != 'ret': # Permitir 'ret'
-            self.response = f"-> Error: Syntax (invalid base OpCode '{self.opCode}')"
+        if op_part.endswith(('is', 'si')):
+            details['supp'] = 'is'
+            op_part = op_part[:-2]
+        elif op_part.endswith('i'):
+            details['supp'] = 'i'
+            op_part = op_part[:-1]
+        elif op_part.endswith('s'):
+            details['supp'] = 's'
+            op_part = op_part[:-1]
+            
+        details['opcode'] = op_part
+        details['type'] = self.get_op_type(details['opcode'])
 
-    def getSignedBinary(self, immediateValue: str, bits: int) -> str:
-        value = int(immediateValue.replace('#', ''))
-        if value >= 0:
-            return format(value, f'0{bits}b')
-        else:
-            return format((1 << bits) + value, f'0{bits}b')
+        if details['type'] is None and not details['opcode'].startswith("bi"):
+             return {'Error': f"-> Error: Unknown instruction opcode '{details['opcode']}'"}
+
+        rest_part = rest_part.replace('retval', 'r0').replace('arg0', 'r0')
+
+        # Analisar operandos com base no tipo de instrução
+        if details['type'] == '11': # Branch
+            details['op2'] = rest_part
+        elif '=' not in rest_part:
+             # ex: in: r1
+            details['rd'] = rest_part if rest_part else 'r0'
+            details['rh'] = 'r0'
+            details['op2'] = '0'
+        else: # Instruções com '='
+            dest, source = map(str.strip, rest_part.split('=', 1))
+            
+            # Sintaxe: storei: 152 = r4
+            if details['opcode'] == 'store' and 'i' in details['supp']:
+                details['op2'] = dest       # Endereço imediato
+                details['rh'] = source      # Registrador com o valor
+                details['rd'] = 'r0'        # Rd não é usado, mas precisa de um valor padrão
+            else:
+            # Sintaxe: rd = ...
+                details['rd'] = dest
+                source_parts = list(map(str.strip, source.split(',')))
+                details['rh'] = source_parts[0]
+                if len(source_parts) > 1:
+                    details['op2'] = source_parts[1]
+                else: # Implícito em loadi rd = imm, onde rh é opcional
+                    if 'i' in details['supp']:
+                        details['op2'] = details['rh']
+                        details['rh'] = 'r0' # Base padrão
+                    else:
+                        details['op2'] = 'r0' # operando2 padrão
+
+        return details
+
+    def get_signed_binary(self, value_str: str, bits: int) -> str:
+        try:
+            value = int(value_str)
+            if value >= 0:
+                return format(value, f'0{bits}b')
+            else: # Complemento de dois
+                return format((1 << bits) + value, f'0{bits}b')
+        except (ValueError, TypeError):
+            return f"Error: Invalid immediate value '{value_str}'"
+
+    def encode(self) -> (str, str):
+        d = self.op_details
+        
+        cond_bin = condition_setting.get(d['cond'], '0000')
+        type_bin = d.get('type', '00')
+        supp_bin = support_bits_map[d['supp']]
+
+        base_opcode = d['opcode']
+        if base_opcode.startswith('bi'):
+            d['cond'] = base_opcode[2:]
+            base_opcode = 'b'
+            cond_bin = condition_setting.get(d['cond'], '0000')
+        
+        funct_bin = instructions.get(base_opcode)
+        if funct_bin is None:
+             return f"Error: Instruction '{base_opcode}' not found", ""
+
+        debug = f"cond[{cond_bin}] type[{type_bin}] supp[{supp_bin}] op[{funct_bin}] "
+        binary = cond_bin + type_bin + supp_bin + funct_bin
+        
+        if base_opcode == 'ret':
+            binary += '0' * 20
+            debug += "n/a[0...19]"
+            return binary, debug
+        
+        if d['type'] == '11': # Branch
+            try:
+                target = d['op2']
+                offset = 0
+                if target in self.symbol_table:
+                    offset = self.symbol_table[target] - (self.current_address + 4)
+                else:
+                    offset = int(target)
+                
+                offset_val = offset // 4
+                offset_bin = self.get_signed_binary(str(offset_val), 20)
+                if 'Error' in offset_bin: return offset_bin, ""
+                binary += offset_bin
+                debug += f"offset_calc[({self.symbol_table.get(target, 'imm')} - {self.current_address + 4})/4 = {offset_val}]->bin[{offset_bin}]"
+            except (ValueError, KeyError) as e:
+                return f"Error resolving branch target '{d['op2']}': {e}", ""
+        else: # Data-Proc e Load/Store
+            rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
+            rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
+            debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
+            
+            op2_str = d.get('op2', '0')
+            op2_bin = ""
+            is_immediate = 'i' in d['supp']
+
+            if is_immediate:
+                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
+                imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
+                op2_bin = self.get_signed_binary(str(imm_val), 10)
+                debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
+            else: # Registrador
+                ro_num_str = op2_str.replace('r', '')
+                ro_bin = self.get_signed_binary(ro_num_str, 5)
+                op2_bin = ro_bin + '00000'
+                debug += f"Ro[{ro_bin}] pad[00000]"
+
+            if 'Error' in rd_bin or 'Error' in rh_bin or 'Error' in op2_bin:
+                 return "Error during operand encoding", ""
+
+            binary += rd_bin + rh_bin + op2_bin
+
+        if len(binary) != 32:
+            return f"Error: Generated instruction has invalid length {len(binary)}", debug
+
+        return binary, debug
+
 
 class FullCode:
     def __init__(self, assembly_code_lines: list):
-        self.assembly_list = assembly_code_lines
-        self.code_list = []
+        self.assembly_list = [line.strip() for line in assembly_code_lines if line.strip()]
+        self.symbol_table = {}
         self.full_code = ""
         self.debug_output = ""
-        self.response = self.decode_full_code()
-
-    def decode_full_code(self):
-        all_lines_data = []
-        for row_index, row in enumerate(self.assembly_list):
-            line_instruction = Instruction(row)
-            if 'Error' in line_instruction.response:
-                return f"{line_instruction.response} in line {row_index + 1} ('{row.strip()}')"
-            
-            if 'Skipped' not in line_instruction.response:
-                all_lines_data.append((line_instruction.binary32_line, line_instruction.debug_line))
-
-        self.full_code = "".join([f"{data[0]}\n" for data in all_lines_data])
-        self.debug_output = "\n".join([f"{data[0]} -> {data[1]}" for data in all_lines_data])
+        self.response = '-> Success'
         
-        return '-> Success'
+        self.first_pass()
+        if 'Error' in self.response:
+            return
+
+        self.second_pass()
+
+    def first_pass(self):
+        current_address = 0
+        in_data_section = False
+        for line in self.assembly_list:
+            if line.startswith(".data"):
+                in_data_section = True
+                continue
+            if in_data_section: continue
+            if line.endswith(':') and line != 'ret:':
+                label = line[:-1]
+                if label in self.symbol_table:
+                    self.response = f"Error: Duplicate label '{label}'"
+                    return
+                self.symbol_table[label] = current_address
+            elif not line.startswith('.'):
+                current_address += 4
+        
+        data_base_address = current_address
+        current_address = data_base_address
+        in_data_section = False
+        for line in self.assembly_list:
+            if line.startswith(".data"):
+                in_data_section = True
+                continue
+            if not in_data_section: continue
+            if ':' in line:
+                label, directive = map(str.strip, line.split(':', 1))
+                if label in self.symbol_table:
+                    self.response = f"Error: Duplicate symbol '{label}'"
+                    return
+                self.symbol_table[label] = current_address
+                if '.word' in directive:
+                    current_address += 4
+        
+        print("--- SYMBOL TABLE (1st Pass) ---")
+        for symbol, address in self.symbol_table.items():
+            print(f"{symbol}: {address}")
+        print("---------------------------------")
+
+    def second_pass(self):
+        all_lines_data = []
+        current_address = 0
+        in_data_section = False
+        for line_num, line in enumerate(self.assembly_list):
+            if line.startswith(".data"):
+                in_data_section = True
+                continue
+            if in_data_section: continue
+            if line.startswith('.') or (line.endswith(':') and line != 'ret:'): continue
+            
+            line_instruction = Instruction(line, self.symbol_table, current_address)
+            
+            if 'Error' in line_instruction.response:
+                self.response = f"{line_instruction.response} in line {line_num + 1} ('{line.strip()}')"
+                return
+            
+            all_lines_data.append((line_instruction.binary32_line, line_instruction.debug_line))
+            current_address += 4
+
+        self.full_code = "\n".join([f"{data[0]}" for data in all_lines_data]) + "\n"
+        self.debug_output = "\n".join([f"{data[0]} -> {data[1]}" for data in all_lines_data])
