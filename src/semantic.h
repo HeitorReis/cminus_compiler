@@ -4,7 +4,7 @@
 #include "syntax_tree.h"
 #include "symbol_table.h"
 #include "ir.h"
-#include "codegen.h"
+// #include "codegen.h"
 
 extern char *currentScope;
 

@@ -5,7 +5,7 @@
 #include "src/utils.h"
 #include "src/syntax_tree.h"
 #include "src/semantic.h"
-#include "src/codegen.h"
+// #include "src/codegen.h"
 #include "src/ir.h"
 
 AstNode *syntax_tree; /* Global AST root node */

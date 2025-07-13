@@ -48,10 +48,10 @@ void semanticAnalyze(AstNode *root, SymbolTable *symtab) {
         
         // To this:
         IRList *ir = generate_ir(root, &symtab); // Assuming you pass the symbol table
-        print_ir(ir, stdout);
+        print_ir(ir);
         
         printf("\n=== Codegen ===\n");
-        generate_code(ir, "out.asm"); 
+        // generate_code(ir, "out.asm"); 
         
         free_ir(ir);
     }

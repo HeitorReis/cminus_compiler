@@ -3,7 +3,8 @@
         "semantic.h": "c",
         "syntax_tree.h": "c",
         "symbol_table.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "stdlib.h": "c"
     },
     "makefile.configureOnOpen": true
 }
