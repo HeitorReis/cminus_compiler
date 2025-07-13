@@ -60,8 +60,20 @@ void printSymbolTable(const SymbolTable *table);
 void initSymbolTable(SymbolTable *table);
 
 /* called from your grammar actions */
-void declareSymbol(table, name, scope, kind, declLine, dataType); // insert a new symbol
-void useSymbol   (table, name, scope, useLine); // record a use of an existing symbol
+void declareSymbol(
+    SymbolTable *table,
+    const char  *name,
+    const char  *scope,
+    SymbolKind   kind,
+    int          declLine,
+    int          dataType
+);
+void useSymbol(
+    SymbolTable *table,
+    const char  *name,
+    const char  *scope,
+    int          useLine
+);
 
 Symbol *getSymbol(
     SymbolTable *table,

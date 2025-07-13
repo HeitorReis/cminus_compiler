@@ -93,6 +93,7 @@ else ifeq ($(TEST),5)
 else
 	$(EXEC) $(DOCS_DIR)/teste.txt
 endif
+	python3.10 -u codegen/main.py
 
 # Cleanup intermediate files and binary
 clean:

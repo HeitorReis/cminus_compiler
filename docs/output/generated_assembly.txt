@@ -1,0 +1,26 @@
+.text
+.global main
+
+test_fn:
+	load: r0, [v]
+	subis: r0, r0, r2
+	moveqi: r1, #1
+	movneqi: r1, #0
+	subis: r0, r1, #0
+	beq: L0
+	mov: retval, r3
+	ret
+	b: L1
+L0:
+	mov: retval, r4
+	ret
+L1:
+	ret
+main:
+	mov: arg, r5
+	bl: test_fn
+	mov: r6, retval
+	store: [x], r6
+	mov: retval, r3
+	ret
+	ret

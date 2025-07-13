@@ -38,6 +38,16 @@ static const char* kind_to_string(AstNodeKind kind) {
     }
 }
 
+// Função auxiliar para copiar um operando de forma segura
+static Operand copy_operand(Operand op) {
+    if (op.kind == OPERAND_NAME || op.kind == OPERAND_LABEL) {
+        if (op.data.name != NULL) {
+            op.data.name = strdup(op.data.name); // Cria uma cópia nova
+        }
+    }
+    return op;
+}
+
 static Operand new_temp() {
     printf("[IR_DBG] Creating new temporary: t%d\n", temp_counter);
     return (Operand){.kind = OPERAND_TEMP, .data.temp_id = temp_counter++};
@@ -73,9 +83,12 @@ static void emit(IRList* list, IrOpcode opcode, Operand result, Operand arg1, Op
         exit(EXIT_FAILURE);
     }
     instr->opcode = opcode;
-    instr->result = result;
-    instr->arg1 = arg1;
-    instr->arg2 = arg2;
+
+    // Em vez de uma atribuição direta, usamos a nossa função de cópia segura
+    instr->result = copy_operand(result);
+    instr->arg1 = copy_operand(arg1);
+    instr->arg2 = copy_operand(arg2);
+    
     instr->next = NULL;
 
     if (list->head == NULL) {
@@ -85,6 +98,7 @@ static void emit(IRList* list, IrOpcode opcode, Operand result, Operand arg1, Op
         list->tail = instr;
     }
 }
+
 
 // --- Main IR Generation Logic ---
 
@@ -376,8 +390,7 @@ static void print_instruction_to_stream(FILE* out, IRInstruction* instr) {
     fprintf(out, "\n");
 }
 
-void print_ir(IRList* list, FILE* stream) {
-    const char* file_path = "docs/output/ir_dump.txt";
+void print_ir(IRList* list, char* file_path) {
     FILE* outfile = fopen(file_path, "w");
     if (!outfile) {
         fprintf(stderr, "\n[Compiler Warning] Could not open '%s' for writing. Ensure 'docs/output' directory exists.\n", file_path);
@@ -403,11 +416,20 @@ void free_ir(IRList* list) {
     IRInstruction* current = list->head;
     while (current) {
         IRInstruction* next = current->next;
-        if (current->result.kind == OPERAND_NAME || current->result.kind == OPERAND_LABEL) free(current->result.data.name);
-        if (current->arg1.kind == OPERAND_NAME || current->arg1.kind == OPERAND_LABEL) free(current->arg1.data.name);
-        if (current->arg2.kind == OPERAND_NAME || current->arg2.kind == OPERAND_LABEL) free(current->arg2.data.name);
-        free(current);
+        
+        // Liberta a memória se o ponteiro não for nulo
+        if ((current->result.kind == OPERAND_NAME || current->result.kind == OPERAND_LABEL) && current->result.data.name) {
+            free(current->result.data.name);
+        }
+        if ((current->arg1.kind == OPERAND_NAME || current->arg1.kind == OPERAND_LABEL) && current->arg1.data.name) {
+            free(current->arg1.data.name);
+        }
+        if ((current->arg2.kind == OPERAND_NAME || current->arg2.kind == OPERAND_LABEL) && current->arg2.data.name) {
+            free(current->arg2.data.name);
+        }
+        
+        free(current); // Liberta a estrutura da instrução
         current = next;
     }
-    free(list);
+    free(list); // Liberta a estrutura da lista
 }

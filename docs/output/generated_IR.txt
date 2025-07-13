@@ -1,0 +1,16 @@
+test_fn:
+  t0 := *v
+  t1 := t0 == 0
+  if_false t1 goto L0
+  return 1
+  goto L1
+L0:
+  return 2
+L1:
+  return _
+main:
+  arg 5
+  t2 := call test_fn, 1
+  *x := t2
+  return 1
+  return _
