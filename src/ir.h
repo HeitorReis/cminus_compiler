@@ -77,7 +77,7 @@ typedef struct {
 // These functions will be implemented in ir.c
 
 IRList* generate_ir(AstNode* root, SymbolTable* symtab);
-void print_ir(IRList* list);
+void print_ir(IRList* list, FILE* out);
 void free_ir(IRList* list);
 
 #endif /* IR_H */
