@@ -22,10 +22,10 @@ support_bits = {
 
 class Instruction:
     """
-    Representa e processa uma única linha de código assembly.
+    Representa e processa uma única linha de código assembly,
+    ignorando diretivas e labels.
     """
     def __init__(self, assembly_single_line: str):
-        # 1. Inicializa todos os atributos com valores padrão para evitar erros
         self.assembly_line = assembly_single_line.strip()
         self.binary32_line = ""
         self.debug_line = ""
@@ -38,34 +38,37 @@ class Instruction:
         self.immediateValue = "0"
         self.response = '-> Success'
 
-        if not self.assembly_line:
-            self.response = '-> Skipped: Empty line'
+        # Se a linha estiver vazia, ou for uma diretiva (começa com '.'), ou um label (termina com ':'), pule.
+        if not self.assembly_line or self.assembly_line.startswith('.') or self.assembly_line.endswith(':'):
+            self.response = '-> Skipped: Directive, Label, or Empty line'
             return
 
-        # 2. O 'disassemble' preenche os atributos ou define self.response em caso de erro
         self.disassemble(self.assembly_line)
 
-        # 3. Se não houver erros no 'disassemble', prossegue para o 'decode'
         if 'Error' not in self.response:
             self.decode_assembly()
 
     def disassemble(self, line: str):
         """
         Analisa a linha de assembly e preenche os atributos da classe.
-        Não retorna valores, apenas modifica o estado do objeto.
         """
         try:
             op_part, rest_part = line.split(':', 1)
             rest_part = rest_part.strip()
         except ValueError:
-            self.response = '-> Error: Syntax (missing ":" separator)'
+            self.response = f'-> Error: Syntax (missing ":" separator)'
             return
 
         self.get_op_cond_support(op_part)
         if 'Error' in self.response:
             return
 
-        if self.opCode in ('l', 'll'):
+        # Lógica para tratar aliases como 'retval' e 'arg'
+        if 'retval' in rest_part: rest_part = rest_part.replace('retval', 'r0')
+        if 'arg' in rest_part: rest_part = rest_part.replace('arg', 'r0') # Simplificação: assumindo que o primeiro argumento vai para r0
+
+
+        if self.opCode in ('l', 'll', 'ret'): # Adicionado 'ret' para ser ignorado aqui
             return
 
         if self.opCode == 'in':
@@ -73,10 +76,9 @@ class Instruction:
             return
 
         if self.opCode in ('b', 'bl'):
-            if 'i' in self.supportBits:
-                self.immediateValue = rest_part
-            else:
-                self.operandRegister = rest_part
+            # Para branches, o 'rest_part' é o label e não será convertido para binário aqui
+            # A resolução de labels é uma etapa posterior do montador/linker.
+            self.immediateValue = rest_part # Apenas guardamos o label
             return
 
         try:
@@ -84,8 +86,9 @@ class Instruction:
             self.destinyRegister = dest_part.strip()
 
             if ',' not in source_part:
-                if 'i' in self.supportBits:
-                    self.immediateValue = source_part.strip()
+                if '#' in source_part:
+                    self.supportBits = 'i' # Detecta imediato pelo '#'
+                    self.immediateValue = source_part.replace('#', '').strip()
                 else:
                     self.hitRegister = source_part.strip()
                 return
@@ -93,13 +96,15 @@ class Instruction:
             source_parts = [p.strip() for p in source_part.split(',')]
             self.hitRegister = source_parts[0]
             if len(source_parts) > 1:
-                if 'i' in self.supportBits:
-                    self.immediateValue = source_parts[1]
+                if '#' in source_parts[1]:
+                    self.supportBits = 'i'
+                    self.immediateValue = source_parts[1].replace('#', '').strip()
                 else:
                     self.operandRegister = source_parts[1]
         except (ValueError, IndexError):
             self.response = f"-> Error: Malformed operands for instruction '{self.opCode}'"
-
+    
+    # O restante da classe (decode_assembly, get_op_cond_support, getSignedBinary) permanece o mesmo...
     def decode_assembly(self):
         """
         Codifica os atributos para a representação binária de 32 bits e
@@ -114,21 +119,13 @@ class Instruction:
             self.debug_line = f"cond[{cond_bits}] type[{type_code}] sup[{support}] op[{op_code_val}] "
 
             if self.opCode in ('b', 'bl'):
-                self.binary32_line += format(0, '010b')
-                self.debug_line += "n/a[00000] n/a[00000] "
-                if 'i' in self.supportBits:
-                    imm_bits = self.getSignedBinary(self.immediateValue, 10)
-                    self.binary32_line += imm_bits
-                    self.debug_line += f"imm[{imm_bits}]"
-                else:
-                    reg_bits = format(int(self.operandRegister[1:]), '05b')
-                    self.binary32_line += reg_bits + '00000'
-                    self.debug_line += f"reg[{reg_bits}] pad[00000]"
+                self.binary32_line += format(0, '020b') # Placeholder para o endereço do label
+                self.debug_line += f"label[{self.immediateValue}]"
                 return
 
-            if self.opCode in ('l', 'll'):
+            if self.opCode in ('l', 'll', 'ret'):
                 self.binary32_line += format(0, '020b')
-                self.debug_line += "n/a[00000000000000000000]"
+                self.debug_line += "n/a[0...19]"
                 return
 
             rd_bits = format(int(self.destinyRegister[1:]), '05b') if self.destinyRegister and 'r' in self.destinyRegister else '00000'
@@ -137,7 +134,7 @@ class Instruction:
 
             if self.opCode == 'in':
                 self.binary32_line += format(0, '015b')
-                self.debug_line += "n/a[000000000000000]"
+                self.debug_line += "n/a[0...14]"
                 return
 
             rh_bits = format(int(self.hitRegister[1:]), '05b') if self.hitRegister and 'r' in self.hitRegister else '00000'
@@ -157,7 +154,7 @@ class Instruction:
             self.response = f"-> Error: An unexpected error occurred during decoding: {e}"
 
     def get_op_cond_support(self, op_part: str):
-        temp_op = op_part
+        temp_op = op_part.strip()
         conditions = ['gteq', 'lteq', 'neq', 'eq', 'gt', 'lt']
         for cond in conditions:
             if temp_op.endswith(cond):
@@ -176,15 +173,13 @@ class Instruction:
         elif temp_op.endswith('s'):
             self.supportBits = 's'
             temp_op = temp_op[:-1]
-        else:
-            self.supportBits = 'na'
-            
+        
         self.opCode = temp_op
-        if self.opCode not in instructions:
+        if self.opCode not in instructions and self.opCode != 'ret': # Permitir 'ret'
             self.response = f"-> Error: Syntax (invalid base OpCode '{self.opCode}')"
 
     def getSignedBinary(self, immediateValue: str, bits: int) -> str:
-        value = int(immediateValue)
+        value = int(immediateValue.replace('#', ''))
         if value >= 0:
             return format(value, f'0{bits}b')
         else:
