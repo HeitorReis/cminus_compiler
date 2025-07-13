@@ -2,50 +2,44 @@
 .global main
 
 test_fn:
-	storei: [r13, #-4]! = r14
-	storei: [r13, #-4]! = r11
-	mov: r11 = r13
-	subi: r13 = r13, #16
-	loadi: r4 = [r11, #-4]
-	loadi: r5 = [r11, #-8]
-	subis: r0, r5, #0
-	moveqi: r6 = #1
-	movneqi: r6 = #0
-	loadi: r7 = [r11, #-12]
-	subis: r0, r7, #0
-	beqi: #5
-	movi: r8 = #1
+	loadi: r4 = 148
+	loadi: r5 = 132
+	subis: r0 = r5, 0
+	movieq: r6 = 1
+	movineq: r6 = 0
+	loadi: r7 = 136
+	subis: r0 = r7, 0
+	bieq: 5
+	movi: r8 = 1
 	mov: r0 = r8
-	storei: [r11, #-4] = r4
-	bi: #5
-	bi: #3
-	movi: r7 = #2
+	storei: 148 = r4
+	bi: 6
+	bi: 3
+	movi: r7 = 2
 	mov: r0 = r7
-	bi: #1
-	bi: #0
-test_fn_epilogue:
-	mov: r13 = r11
-	loadi: r11 = [r13]!
-	loadi: r14 = [r13]!
-	ret
+	bi: 2
+	bi: 1
+	bi: 0
+	ret:
 
 main:
-	storei: [r13, #-4]! = r14
-	storei: [r13, #-4]! = r11
-	mov: r11 = r13
-	subi: r13 = r13, #12
-	movi: r4 = #5
+	movi: r4 = 5
 	mov: r0 = r4
 	bl: test_fn
 	mov: r5 = r0
-	loadi: r6 = [r11, #-8]
-	storei: [r11, #-4] = r6
-	movi: r7 = #1
+	loadi: r6 = 140
+	storei: 152 = r6
+	movi: r7 = 1
 	mov: r0 = r7
-	bi: #1
-	bi: #0
-main_epilogue:
-	mov: r13 = r11
-	loadi: r11 = [r13]!
-	loadi: r14 = [r13]!
-	ret
+	bi: 2
+	bi: 1
+	bi: 0
+	ret:
+
+.data
+var_t0: .word 0
+var_t1: .word 0
+var_t2: .word 0
+var_test_fn: .word 0
+var_v: .word 0
+var_x: .word 0

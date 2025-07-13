@@ -1,52 +1,38 @@
 import collections
+import re
 
 # Mapeamento de nomes simbólicos para registradores físicos
 SPECIAL_REGS = {'sp': 'r13', 'lr': 'r14', 'fp': 'r11', 'retval': 'r0', 'arg': 'r0'}
 
 class RegisterAllocator:
-    """
-    Gerencia o uso de registradores, otimizando loads/stores e mantendo o estado.
-    Usa uma fila (deque) para uma política de substituição LRU (Least Recently Used) aproximada.
-    """
+    """ Gerencia o uso de registradores com alocação estática de memória. """
     def __init__(self, func_context):
         self.func_context = func_context
-        self.reg_pool = [f"r{i}" for i in range(4, 11)]  # r4-r10 para uso geral
-        self.free_regs = collections.deque(self.reg_pool)
+        self.reg_pool = [f"r{i}" for i in range(4, 11)]
+        self.free_regs = collections.deque(self.reg_pool.copy())
         self.var_to_reg = {}
         self.reg_to_var = {}
         self.dirty_regs = set()
-
-    def _get_stack_offset(self, var_name):
-        """ Retorna o offset da variável na pilha a partir do frame pointer (fp). """
-        if var_name not in self.func_context.var_map:
-            self.func_context.stack_size += 4
-            offset = -self.func_context.stack_size
-            self.func_context.var_map[var_name] = offset
-        return self.func_context.var_map[var_name]
 
     def ensure_var_in_reg(self, var_name):
         """ Garante que uma variável ou imediato esteja em um registrador. """
         if var_name.isdigit() or (var_name.startswith('-') and var_name[1:].isdigit()):
             reg = self._get_free_reg()
-            self.func_context.add_instruction(f"\tmovi: {reg} = #{var_name}")
+            self.func_context.add_instruction(f"\tmovi: {reg} = {var_name}")
             return reg
         
         if var_name in self.var_to_reg:
-            reg = self.var_to_reg[var_name]
-            # Move o registrador para o final da fila para indicar que foi usado recentemente
-            if reg in self.free_regs: self.free_regs.remove(reg)
-            self.free_regs.append(reg)
-            return reg
+            self._mark_reg_used(self.var_to_reg[var_name])
+            return self.var_to_reg[var_name]
 
         reg = self._get_free_reg()
-        offset = self._get_stack_offset(var_name)
-        self.func_context.add_instruction(f"\tloadi: {reg} = [{SPECIAL_REGS['fp']}, #{offset}]")
+        # A instrução é gerada com um placeholder que será substituído depois
+        self.func_context.add_instruction(f"\tloadi: {reg} = [var_{var_name}]")
         self._assign_reg_to_var(reg, var_name)
         self.dirty_regs.discard(reg)
         return reg
 
     def get_reg_for_temp(self, temp_name):
-        """ Aloca um registrador para um resultado temporário. """
         reg = self._get_free_reg()
         self._assign_reg_to_var(temp_name, reg)
         self.dirty_regs.add(reg)
@@ -57,12 +43,11 @@ class RegisterAllocator:
         self.dirty_regs.add(reg)
 
     def spill_reg(self, reg):
-        """ Salva um registrador na pilha se necessário e o libera. """
         if reg in self.dirty_regs:
             var_name = self.reg_to_var.get(reg)
             if var_name:
-                offset = self._get_stack_offset(var_name)
-                self.func_context.add_instruction(f"\tstorei: [{SPECIAL_REGS['fp']}, #{offset}] = {reg}")
+                # Gera instrução com placeholder
+                self.func_context.add_instruction(f"\tstorei: [var_{var_name}] = {reg}")
             self.dirty_regs.discard(reg)
         
         if reg in self.reg_to_var:
@@ -73,61 +58,36 @@ class RegisterAllocator:
             self.free_regs.appendleft(reg)
 
     def spill_all(self):
-        """ Força o spill de todos os registradores alocados. """
         for reg in self.reg_pool:
             if reg in self.reg_to_var:
                 self.spill_reg(reg)
 
     def _get_free_reg(self):
         if not self.free_regs:
-            # Lógica de spill: libera o registrador usado menos recentemente (início da fila)
-            reg_to_spill = self.free_regs.popleft()
+            reg_to_spill = self.free_regs.pop() # LRU aproximado
             self.spill_reg(reg_to_spill)
-            self.free_regs.append(reg_to_spill)
+            self.free_regs.appendleft(reg_to_spill)
             return reg_to_spill
-        
-        reg = self.free_regs.popleft()
-        self.free_regs.append(reg) # Move para o final (mais recentemente usado)
-        return reg
+        return self.free_regs.popleft()
 
     def _assign_reg_to_var(self, reg, var_name):
         if reg in self.reg_to_var: self.spill_reg(reg)
         self.var_to_reg[var_name] = reg
         self.reg_to_var[reg] = var_name
-        if reg in self.free_regs:
-             self.free_regs.remove(reg)
+        if reg in self.free_regs: self.free_regs.remove(reg)
+
+    def _mark_reg_used(self, reg):
+        if reg in self.free_regs: self.free_regs.remove(reg)
+        self.free_regs.append(reg)
 
 class FunctionContext:
     def __init__(self, name):
         self.name = name
-        self.var_map = {}
-        self.stack_size = 0
         self.instructions = []
         self.allocator = RegisterAllocator(self)
 
     def add_instruction(self, instruction):
         self.instructions.append(instruction)
-
-    def generate_prologue(self):
-        prologue = [
-            f"{self.name}:",
-            f"\tstorei: [{SPECIAL_REGS['sp']}, #-4]! = {SPECIAL_REGS['lr']}",
-            f"\tstorei: [{SPECIAL_REGS['sp']}, #-4]! = {SPECIAL_REGS['fp']}",
-            f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}"
-        ]
-        if self.stack_size > 0:
-            prologue.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, #{self.stack_size}")
-        return prologue
-
-    def generate_epilogue(self):
-        epilogue = [
-            f"{self.name}_epilogue:",
-            f"\tmov: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['fp']}",
-            f"\tloadi: {SPECIAL_REGS['fp']} = [{SPECIAL_REGS['sp']}]!",
-            f"\tloadi: {SPECIAL_REGS['lr']} = [{SPECIAL_REGS['sp']}]!",
-            "\tret"
-        ]
-        return epilogue
 
 IR_TO_COND = {'>': ('gt', 'lteq'), '<': ('lt', 'gteq'), '==': ('eq', 'neq'),
               '!=': ('neq', 'eq'), '>=': ('gteq', 'lt'), '<=': ('lteq', 'gt')}
@@ -141,16 +101,13 @@ def translate_instruction(instr_parts, func_ctx):
 
     if ':=' in instr_parts:
         dest, _, *expr_parts = instr_parts
-        expr = " ".join(expr_parts)
-
-        if expr.startswith('*'):
+        if expr_parts[0].startswith('*'):
             reg = alloc.ensure_var_in_reg(expr_parts[0][1:])
             alloc.update_var_from_reg(dest, reg)
         elif dest.startswith('*'):
-            offset = alloc._get_stack_offset(dest[1:])
             reg_val = alloc.ensure_var_in_reg(expr_parts[0])
-            func_ctx.add_instruction(f"\tstorei: [{SPECIAL_REGS['fp']}, #{offset}] = {reg_val}")
-        elif 'call' in expr:
+            func_ctx.add_instruction(f"\tstorei: [var_{dest[1:]}] = {reg_val}")
+        elif 'call' in expr_parts:
             alloc.spill_all()
             func_ctx.add_instruction(f"\tbl: {expr_parts[1].replace(',', '')}")
             dest_reg = alloc.get_reg_for_temp(dest)
@@ -159,21 +116,22 @@ def translate_instruction(instr_parts, func_ctx):
             op, arg2 = expr_parts[1], expr_parts[2]
             arg1_reg = alloc.ensure_var_in_reg(expr_parts[0])
             if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
-                compare_instr = f"\tsubis: r0, {arg1_reg}, #{arg2}"
+                compare_instr = f"\tsubis: r0 = {arg1_reg}, {arg2}"
             else:
                 arg2_reg = alloc.ensure_var_in_reg(arg2)
-                compare_instr = f"\tsubis: r0, {arg1_reg}, {arg2_reg}"
+                compare_instr = f"\tsubis: r0 = {arg1_reg}, {arg2_reg}"
             dest_reg = alloc.get_reg_for_temp(dest)
             cond_true, cond_false = IR_TO_COND[op]
             func_ctx.add_instruction(compare_instr)
-            func_ctx.add_instruction(f"\tmov{cond_true}i: {dest_reg} = #1")
-            func_ctx.add_instruction(f"\tmov{cond_false}i: {dest_reg} = #0")
+            # A ordem do sufixo é [opcode][suporte][condição]
+            func_ctx.add_instruction(f"\tmovi{cond_true}: {dest_reg} = 1")
+            func_ctx.add_instruction(f"\tmovi{cond_false}: {dest_reg} = 0")
         else:
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
             alloc.update_var_from_reg(dest, reg_src)
     elif opcode == 'if_false':
         reg = alloc.ensure_var_in_reg(instr_parts[1])
-        func_ctx.add_instruction(f"\tsubis: r0, {reg}, #0")
+        func_ctx.add_instruction(f"\tsubis: r0 = {reg}, 0")
         func_ctx.add_instruction(f"beq: {instr_parts[3]}")
     elif opcode == 'arg':
         reg = alloc.ensure_var_in_reg(instr_parts[1])
@@ -183,80 +141,113 @@ def translate_instruction(instr_parts, func_ctx):
             reg = alloc.ensure_var_in_reg(instr_parts[1])
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
         alloc.spill_all()
-        func_ctx.add_instruction(f"b: {func_ctx.name}_epilogue")
+        func_ctx.add_instruction(f"\tb: {func_ctx.name}_epilogue")
+
 
 def generate_assembly(ir_list):
     functions = collections.OrderedDict()
+    all_vars = set()
     
-    # Pass 1: Discover all functions first to initialize their contexts.
+    # Pass 1: Descobrir funções e todas as variáveis estáticas
+    active_func_name = None
     for line in ir_list:
         parts = line.strip().split()
         if not parts: continue
+        
+        for part in re.split(r'[\s,:=\*\[\]]+', line):
+             if part and part.startswith(('t', 'v', 'x', 'y', 'z')):
+                all_vars.add(part)
+
         if parts[0].endswith(':'):
             func_name = parts[0][:-1]
             if not func_name.startswith('L'):
+                active_func_name = func_name
                 if func_name not in functions:
                     functions[func_name] = FunctionContext(func_name)
-
-    # Pass 2: Process IR line by line, assigning instructions to the current function context.
-    active_func_ctx = None
-    for line in ir_list:
-        parts = line.strip().split()
-        if not parts: continue
-        
-        if parts[0].endswith(':'):
-            func_name = parts[0][:-1]
-            if func_name in functions:
-                active_func_ctx = functions[func_name]
-
-        if active_func_ctx:
-            translate_instruction(parts, active_func_ctx)
-
-    # Pass 3: Resolve branches and build the final code string.
-    final_code = [".text", ".global main", ""]
+    
+    # Pass 2: Gerar código intermediário para cada função
     for func_name, func_ctx in functions.items():
-        # Pre-pass to determine stack size based on all variables encountered.
-        alloc = func_ctx.allocator
-        # Re-scan a clean version of the function's IR to map all variables
-        func_ir_lines = [l.strip() for l in ir_list if l.strip()]
-        start_idx = func_ir_lines.index(f"{func_name}:")
-        end_idx = len(func_ir_lines)
-        for i in range(start_idx + 1, len(func_ir_lines)):
-            if func_ir_lines[i].endswith(':') and not func_ir_lines[i].startswith('L'):
-                end_idx = i
-                break
+        func_ir = []
+        in_func = False
+        for line in ir_list:
+            stripped = line.strip()
+            if not stripped: continue
+            if stripped.startswith(func_name + ':'): in_func = True
+            elif stripped.endswith(':') and not stripped.startswith('L'): in_func = False
+            if in_func: func_ir.append(stripped)
         
-        for line in func_ir_lines[start_idx:end_idx]:
-             parts = line.replace(',', ' ').replace('[', ' ').replace(']', ' ').replace(':', '').split()
-             for part in parts:
-                if part.startswith(('t', 'v', 'x', 'y', 'z')):
-                    alloc._get_stack_offset(part)
+        for line in func_ir:
+            translate_instruction(line.split(), func_ctx)
+        # Adicionar um epílogo implícito
+        func_ctx.add_instruction(f"b: {func_name}_epilogue")
 
-        final_code.extend(func_ctx.generate_prologue())
-        
+
+    # Pass 3: Calcular layout de memória e resolver branches
+    final_code = [".text", ".global main", ""]
+    code_section_size = 0
+    # Calcular tamanho da seção de código
+    for func_name, func_ctx in functions.items():
+        # Prólogo simples (apenas label da função)
+        code_section_size += 1 
+        # Corpo da função
+        for instr in func_ctx.instructions:
+            if not instr.endswith(':'):
+                code_section_size += 1
+        # Epílogo (ret)
+        code_section_size += 1 
+
+    # Calcular endereços das variáveis estáticas
+    data_base_address = code_section_size * 4 # Assumindo 4 bytes por instrução
+    var_address_map = {}
+    current_addr = data_base_address
+    for var in sorted(list(all_vars)):
+        var_address_map[f"var_{var}"] = current_addr
+        current_addr += 4
+
+    # Pass 4: Montar código final com endereços e offsets resolvidos
+    instruction_counter = 0
+    for func_name, func_ctx in functions.items():
+        func_body_start_pos = instruction_counter + 1 # Posição após o label da função
+        final_code.append(f"{func_name}:")
+        instruction_counter += 1
+
         label_map = {}
         temp_code = []
+        # Mapear labels para suas posições relativas no corpo da função
         for instr in func_ctx.instructions:
             if instr.endswith(':'):
                 label_map[instr[:-1]] = len(temp_code)
             else:
                 temp_code.append(instr)
-        
         label_map[f"{func_name}_epilogue"] = len(temp_code)
 
-        final_body = []
+        # Gerar o corpo da função com branches e endereços resolvidos
         for i, instr in enumerate(temp_code):
-            parts = instr.strip().split()
-            opcode = parts[0][:-1] 
+            # Substituir placeholders de endereço de memória
+            instr = re.sub(r'\[(var_.*?)\]', lambda m: f"{var_address_map.get(m.group(1), 0)}", instr)
+
+            parts = instr.strip().split(':')
+            opcode = parts[0].strip()
             if opcode in ['b', 'beq']:
-                target_label = parts[1]
-                offset = label_map[target_label] - i - 1
-                final_body.append(f"\t{opcode}i: #{offset}")
+                target_label = parts[1].strip()
+                offset = label_map.get(target_label, len(temp_code)) - i - 1
+                # ALTERAÇÃO MÍNIMA AQUI:
+                if opcode == 'beq':
+                    final_code.append(f"\tbieq: {offset}")
+                else: # opcode == 'b'
+                    final_code.append(f"\tbi: {offset}")
             else:
-                final_body.append(instr)
+                final_code.append(instr)
         
-        final_code.extend(final_body)
-        final_code.extend(func_ctx.generate_epilogue())
+        instruction_counter += len(temp_code)
+        # Adicionar epílogo simples
+        final_code.append("\tret:")
+        instruction_counter += 1
         final_code.append("")
+
+    # Adicionar seção de dados
+    final_code.append(".data")
+    for var in sorted(list(all_vars)):
+        final_code.append(f"var_{var}: .word 0")
 
     return "\n".join(final_code)
