@@ -217,10 +217,14 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             result_op = new_const(node->value);
             break;
 
-        case AST_ID:
+        case AST_ID: {
             printf("[IR_DBG]    Case AST_ID\n");
-            result_op = new_name(node->name);
+            Operand temp = new_temp();
+            // Emite: temp := *ID
+            emit(list, IR_LOAD, temp, new_name(node->name), (Operand){.kind=OPERAND_EMPTY});
+            result_op = temp; // Retorna o temporário que contém o valor
             break;
+        }
 
         case AST_ASSIGN: {
             printf("[IR_DBG]    Case AST_ASSIGN\n");
@@ -229,46 +233,50 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             AstNode* rhs = lhs->nextSibling;
             if (!rhs) break;
 
-            Operand rhs_op = generate_ir_for_expr(rhs, list, symtab);
-            Operand lhs_op = new_name(lhs->name);
-            emit(list, IR_ASSIGN, lhs_op, rhs_op, (Operand){.kind=OPERAND_EMPTY});
-            result_op = lhs_op;
+            Operand rhs_op = generate_ir_for_expr(rhs, list, symtab); // Obtém o valor do lado direito (já em um temporário)
+            Operand lhs_op = new_name(lhs->name); // Obtém o nome da variável do lado esquerdo
+            
+            // Emite: *lhs = rhs (Store rhs_op at address lhs_op)
+            emit(list, IR_STORE, lhs_op, rhs_op, (Operand){.kind=OPERAND_EMPTY}); 
+            result_op = rhs_op; // Uma atribuição retorna o valor atribuído
             break;
         }
 
         case AST_BINOP: {
-            // Corrected: Added a NULL check for node->name before using strcmp
-            if (node->name == NULL) {
-                fprintf(stderr, "[IR_DBG] Error: AST_BINOP node at line %d has a NULL operator name.\n", node->lineno);
-                // Attempt to process children anyway if they exist, assuming it's a wrapper node
-                if(node->firstChild) {
-                    result_op = generate_ir_for_expr(node->firstChild, list, symtab);
-                }
-                break;
-            }
-            printf("[IR_DBG]    Case AST_BINOP ('%s')\n", node->name);
-            AstNode* left = node->firstChild;
-            if (!left) break;
-            AstNode* right = left->nextSibling;
-            if (!right) break;
+            printf("[IR_DBG]    Case AST_BINOP\n");
 
-            Operand left_op = generate_ir_for_expr(left, list, symtab);
-            Operand right_op = generate_ir_for_expr(right, list, symtab);
+            // --- OLD, INCORRECT LOGIC ---
+            // AstNode* left = node->firstChild;
+            // AstNode* right = left->nextSibling; // This was wrong.
+            // if (strcmp(node->name, "+") == 0) op = IR_ADD; // This was also wrong.
+            
+            // --- NEW, CORRECTED LOGIC ---
+            AstNode* left_node = node->firstChild;
+            if (!left_node) break;
+            AstNode* op_node = left_node->nextSibling;
+            if (!op_node || op_node->name == NULL) break;
+            AstNode* right_node = op_node->nextSibling;
+            if (!right_node) break;
+
+            printf("[IR_DBG]      Operator: '%s'\n", op_node->name);
+            
+            Operand left_op = generate_ir_for_expr(left_node, list, symtab);
+            Operand right_op = generate_ir_for_expr(right_node, list, symtab);
             Operand result = new_temp();
             
             IrOpcode op;
-            if (strcmp(node->name, "+") == 0) op = IR_ADD;
-            else if (strcmp(node->name, "-") == 0) op = IR_SUB;
-            else if (strcmp(node->name, "*") == 0) op = IR_MUL;
-            else if (strcmp(node->name, "/") == 0) op = IR_DIV;
-            else if (strcmp(node->name, "==") == 0) op = IR_EQ;
-            else if (strcmp(node->name, "!=") == 0) op = IR_NEQ;
-            else if (strcmp(node->name, "<") == 0) op = IR_LT;
-            else if (strcmp(node->name, "<=") == 0) op = IR_LTE;
-            else if (strcmp(node->name, ">") == 0) op = IR_GT;
-            else if (strcmp(node->name, ">=") == 0) op = IR_GTE;
+            if (strcmp(op_node->name, "+") == 0) op = IR_ADD;
+            else if (strcmp(op_node->name, "-") == 0) op = IR_SUB;
+            else if (strcmp(op_node->name, "*") == 0) op = IR_MUL;
+            else if (strcmp(op_node->name, "/") == 0) op = IR_DIV;
+            else if (strcmp(op_node->name, "==") == 0) op = IR_EQ;
+            else if (strcmp(op_node->name, "!=") == 0) op = IR_NEQ;
+            else if (strcmp(op_node->name, "<") == 0) op = IR_LT;
+            else if (strcmp(op_node->name, "<=") == 0) op = IR_LTE;
+            else if (strcmp(op_node->name, ">") == 0) op = IR_GT;
+            else if (strcmp(op_node->name, ">=") == 0) op = IR_GTE;
             else {
-                fprintf(stderr, "Unknown binary operator: %s\n", node->name);
+                fprintf(stderr, "Unknown binary operator: %s\n", op_node->name);
                 break;
             }
             

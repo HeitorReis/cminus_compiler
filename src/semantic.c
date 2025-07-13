@@ -47,7 +47,7 @@ void semanticAnalyze(AstNode *root, SymbolTable *symtab) {
         printf("\n=== IR ===\n");
         
         // To this:
-        IRList *ir = generate_ir(root, &symtab); // Assuming you pass the symbol table
+        IRList *ir = generate_ir(root, symtab); // Assuming you pass the symbol table
         print_ir(ir, stdout);
         
         printf("\n=== Codegen ===\n");
