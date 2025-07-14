@@ -1,16 +1,7 @@
-/* semantic_error_test.txt
-   Teste de erros semânticos:
-   - f() não retorna valor em função int
-   - atribuição de void para int
-   - chamada de input() com argumento extra
-*/
-
-int f(void) {
-    return;
-}
-
-void main(void) {
-    int x;
-    x = output();
-    x = input(42);
+int main(void) {
+    int x; int y;
+    x = input();
+    y = x * 2;
+    y = output();
+    return 1;
 }

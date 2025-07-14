@@ -1,16 +1,35 @@
-test_fn:
+gcd:
   t0 := *v
   t1 := t0 == 0
   if_false t1 goto L0
-  return 1
+  t2 := *u
+  return t2
   goto L1
 L0:
-  return 2
+  t3 := *v
+  arg t3
+  t4 := *u
+  t5 := *u
+  t6 := *v
+  t7 := t5 / t6
+  t8 := *v
+  t9 := t7 * t8
+  t10 := t4 - t9
+  arg t10
+  t11 := call gcd, 2
+  return t11
 L1:
   return _
 main:
-  arg 5
-  t2 := call test_fn, 1
-  *x := t2
-  return 1
+  t12 := call input, 0
+  *x := t12
+  t13 := call input, 0
+  *y := t13
+  t14 := *x
+  arg t14
+  t15 := *y
+  arg t15
+  t16 := call gcd, 2
+  arg t16
+  call output, 1
   return _
