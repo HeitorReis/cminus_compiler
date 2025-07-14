@@ -56,3 +56,4 @@ parser.gv
 /build
 bin/c-c
 entrega1.zip
+/codegen/__pycache__
