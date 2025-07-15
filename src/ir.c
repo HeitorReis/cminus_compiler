@@ -247,11 +247,32 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             AstNode* rhs = lhs->nextSibling;
             if (!rhs) break;
 
-            Operand rhs_op = generate_ir_for_expr(rhs, list, symtab); // Obtém o valor do lado direito (já em um temporário)
-            Operand lhs_op = new_name(lhs->name); // Obtém o nome da variável do lado esquerdo
+            // Gera IR para o lado direito (o valor a ser atribuído)
+            Operand rhs_op = generate_ir_for_expr(rhs, list, symtab); 
             
-            // Emite: *lhs = rhs (Store rhs_op at address lhs_op)
-            emit(list, IR_STORE, lhs_op, rhs_op, (Operand){.kind=OPERAND_EMPTY}); 
+            if (lhs->kind == AST_ID) {
+                // Caso original: x = ...
+                Operand lhs_op = new_name(lhs->name); 
+                emit(list, IR_STORE, lhs_op, rhs_op, (Operand){.kind=OPERAND_EMPTY});
+            } else if (lhs->kind == AST_ARRAY_ACCESS) {
+                // Novo caso: a[i] = ...
+                printf("[IR_DBG]      Assigning to Array Access\n");
+                AstNode* index_node = lhs->firstChild;
+                if (!index_node) break;
+                
+                // A lógica de cálculo de endereço é a mesma do LOAD
+                Operand index_op = generate_ir_for_expr(index_node, list, symtab);
+                Operand offset_op = new_temp();
+                emit(list, IR_MUL, offset_op, index_op, new_const(4));
+                Operand base_addr_op = new_temp();
+                emit(list, IR_ADDR, base_addr_op, new_name(lhs->name), (Operand){.kind=OPERAND_EMPTY});
+                Operand final_addr_op = new_temp();
+                emit(list, IR_ADD, final_addr_op, base_addr_op, offset_op);
+                
+                // Em vez de carregar, ARMAZENA o valor do lado direito (rhs_op) no endereço final
+                emit(list, IR_STORE, final_addr_op, rhs_op, (Operand){.kind=OPERAND_EMPTY});
+            }
+            
             result_op = rhs_op; // Uma atribuição retorna o valor atribuído
             break;
         }
@@ -323,6 +344,35 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             break;
         }
 
+        case AST_ARRAY_ACCESS: {
+            printf("[IR_DBG]    Case AST_ARRAY_ACCESS (Load)\n");
+            AstNode* index_node = node->firstChild;
+            if (!index_node) break;
+
+            // 1. Gera IR para o índice e obtém o operando temporário (ex: t_idx)
+            Operand index_op = generate_ir_for_expr(index_node, list, symtab);
+
+            // 2. Calcula o offset em bytes (índice * 4, pois C-minus só tem int)
+            Operand offset_op = new_temp();
+            emit(list, IR_MUL, offset_op, index_op, new_const(4));
+
+            // 3. Obtém o endereço base do vetor
+            Operand base_addr_op = new_temp();
+            emit(list, IR_ADDR, base_addr_op, new_name(node->name), (Operand){.kind=OPERAND_EMPTY});
+
+            // 4. Soma o endereço base com o offset para obter o endereço final
+            Operand final_addr_op = new_temp();
+            emit(list, IR_ADD, final_addr_op, base_addr_op, offset_op);
+
+            // 5. Carrega o valor do endereço final para o resultado
+            Operand result = new_temp();
+            emit(list, IR_LOAD, result, final_addr_op, (Operand){.kind=OPERAND_EMPTY});
+            
+            result_op = result; // O resultado da expressão é o valor carregado
+            break;
+        }
+
+
         default:
             fprintf(stderr, "[IR_DBG] Unhandled expression node kind: %s\n", kind_to_string(node->kind));
             result_op = (Operand){.kind=OPERAND_EMPTY};
@@ -376,6 +426,7 @@ static void print_instruction_to_stream(FILE* out, IRInstruction* instr) {
         case IR_PCALL:   fprintf(out, "  call "); print_operand(out, instr->result); fprintf(out, ", "); print_operand(out, instr->arg1); break;
         case IR_LOAD:    fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := *"); print_operand(out, instr->arg1); break;
         case IR_STORE:   fprintf(out, "  *"); print_operand(out, instr->result); fprintf(out, " := "); print_operand(out, instr->arg1); break;
+        case IR_ADDR:    fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := &"); print_operand(out, instr->arg1); break;
         default: {
             const char* op_str = "?";
             switch(instr->opcode) {
