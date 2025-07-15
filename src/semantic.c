@@ -370,6 +370,38 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
         break;
     }
 
+    case AST_ARRAY_ACCESS: {
+        printf("[Semantic DBG]   Case AST_ARRAY_ACCESS for '%s' at line %d\n", expr->name, expr->lineno);
+
+        // 1. Verifica se o nome do vetor foi declarado.
+        Symbol *array_symbol = getSymbol(ctx->symtab, expr->name, currentScope);
+        if (!array_symbol) {
+            semanticError(expr->lineno, ctx, "o vetor '%s' não foi declarado", expr->name);
+            return TYPE_ERROR;
+        }
+
+        // 2. Analisa a expressão do índice.
+        AstNode *index_node = expr->firstChild;
+        if (!index_node) {
+            semanticError(expr->lineno, ctx, "o acesso ao vetor '%s' não tem um índice", expr->name);
+            return TYPE_ERROR;
+        }
+
+        printf("[Semantic DBG]   Analyzing index expression for '%s'\n", expr->name);
+        ExpType index_type = analyzeExpression(index_node, ctx);
+
+        // 3. Verifica se o tipo do índice é inteiro.
+        if (index_type != TYPE_INT) {
+            semanticError(expr->lineno, ctx, "o índice do vetor '%s' tem de ser um inteiro", expr->name);
+            return TYPE_ERROR;
+        }
+        
+        // Se todas as verificações passaram, o resultado é um inteiro.
+        printf("[Semantic DBG]   Array access is valid, returning TYPE_INT.\n");
+        result = TYPE_INT; 
+        break;
+    }
+
     default:
         fprintf(stderr, "[Semantic DBG] unhandled expr kind=%d\n",
                 expr->kind);

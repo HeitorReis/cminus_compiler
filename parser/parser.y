@@ -382,13 +382,13 @@ var
         free($1);
     }
     | ID LBRACK expression RBRACK {
-        useSymbol(
-            &symtab, 
-            $1, 
-            currentScope, 
-            yylineno
-        );
-        $$ = newIdNode($1, yylineno);
+        AstNode *n = newNode(AST_ARRAY_ACCESS);
+        n->name = strdup($1);    // Guarda o nome do vetor (ex: "a")
+        n->lineno = yylineno;
+        addChild(n, $3);         // Adiciona a expressão do índice (ex: "k") como filho do nó.
+        $$ = n;
+
+        useSymbol(&symtab, $1, currentScope, yylineno);
         free($1);
     }
     ;

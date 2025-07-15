@@ -23,7 +23,8 @@ typedef enum {
     AST_BINOP,
     AST_CALL,
     AST_ID,
-    AST_NUM
+    AST_NUM,
+    AST_ARRAY_ACCESS
 } AstNodeKind;
 
 /* Generic AST node for an n-ary tree */

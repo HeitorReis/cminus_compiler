@@ -3,7 +3,7 @@ import re
 
 # Mapeamento de nomes simbólicos para registradores físicos
 SPECIAL_REGS = {'sp': 'r13', 'lr': 'r14', 'fp': 'r11', 'retval': 'r0', 'arg': 'r0'}
-
+ARG_REGS = ['r1', 'r2', 'r3', 'r4'] # Registrador r0 é reservado para operação de output
 
 class RegisterAllocator:
     """
@@ -158,6 +158,7 @@ class FunctionContext:
         self.name = name
         self.instructions = []
         self.allocator = RegisterAllocator(self)
+        self.arg_count = 0
 
     def add_instruction(self, instruction):
         self.instructions.append(instruction)
@@ -194,17 +195,19 @@ def translate_instruction(instr_parts, func_ctx):
             func_name = expr_parts[1].replace(',', '')
             
             if func_name == 'input':
-                # Traduz para a instrução 'in' dedicada, conforme o design do processador.
+                # Traduz para a instrução 'in' dedicada
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tin: {dest_reg}")
             else:
-                # Mantém o comportamento padrão para outras funções (como 'output').
+                # Mantém o comportamento padrão para outras funções
                 alloc.spill_all_dirty()
                 func_ctx.add_instruction(f"\tbl: {func_name}")
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
-
-        # Caso: t2 := t1 * 2
+                
+            # Independentemente da função chamada, reinicia a contagem de argumentos.
+            func_ctx.arg_count = 0
+            
         elif len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/']:
             op_map = {'+': 'add', '-': 'sub', '*': 'mul', '/': 'div'}
             arg1, op_str, arg2 = expr_parts
@@ -251,11 +254,20 @@ def translate_instruction(instr_parts, func_ctx):
         func_name = instr_parts[1].replace(',', '')
         alloc.spill_all_dirty()
         func_ctx.add_instruction(f"\tbl: {func_name}")
+        func_ctx.arg_count = 0
     
     elif opcode == 'arg':
-        reg = alloc.ensure_var_in_reg(instr_parts[1])
-        func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['arg']} = {reg}")
-        alloc.free_reg_if_temp(reg) # O argumento foi passado, o registrador pode ser liberado
+        if func_ctx.arg_count < len(ARG_REGS):
+            # 1. Pega no valor do argumento.
+            src_reg = alloc.ensure_var_in_reg(instr_parts[1])
+            # 2. Usa o contador (arg_count) para escolher o registrador de destino (r0, r1, ...).
+            dest_reg = ARG_REGS[func_ctx.arg_count]
+            # 3. Move o argumento para o seu lugar correto.
+            func_ctx.add_instruction(f"\tmov: {dest_reg} = {src_reg}")
+            alloc.free_reg_if_temp(src_reg)
+            # 4. Atualiza o contador para o próximo argumento.
+            func_ctx.arg_count += 1
+        return  
     
     elif opcode == 'return':
         if len(instr_parts) > 1 and instr_parts[1] != '_':

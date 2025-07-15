@@ -43,11 +43,11 @@ L4:
 	subi: r7 = r6, 1
 	bilteq: L5
 	loadi: r8 = [var_a]
-	mov: r0 = r8
+	mov: r1 = r8
 	loadi: r9 = [var_i]
-	mov: r0 = r9
+	mov: r2 = r9
 	loadi: r10 = [var_high]
-	mov: r0 = r10
+	mov: r3 = r10
 	bl: minloc
 	mov: r4 = r0
 	storei: [var_k] = r4
@@ -80,11 +80,11 @@ L6:
 	bi: L6
 L7:
 	loadi: r9 = [var_vet]
-	mov: r0 = r9
+	mov: r1 = r9
 	movi: r10 = 0
-	mov: r0 = r10
+	mov: r2 = r10
 	movi: r5 = 10
-	mov: r0 = r5
+	mov: r3 = r5
 	bl: sort
 	movi: r6 = 0
 	storei: [var_i] = r6
@@ -92,7 +92,7 @@ L8:
 	loadi: r7 = [var_i]
 	bilteq: L9
 	loadi: r8 = [var_vet]
-	mov: r0 = r8
+	mov: r1 = r8
 	bl: output
 	loadi: r9 = [var_i]
 	addi: r5 = r9, 1

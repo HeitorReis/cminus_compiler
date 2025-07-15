@@ -6,23 +6,24 @@
 
 static const char *kindName(AstNodeKind k) {
     switch(k) {
-        case AST_PROGRAM:      return "AST_PROGRAM";
-        case AST_VAR_DECL:     return "AST_VAR_DECL";
-        case AST_FUN_DECL:     return "AST_FUN_DECL";
-        case AST_PARAM:        return "AST_PARAM";
-        case AST_PARAM_LIST:   return "AST_PARAM_LIST";
-        case AST_PARAM_ARRAY:  return "AST_PARAM_ARRAY";
-        case AST_ARG_LIST:     return "AST_ARG_LIST";
-        case AST_BLOCK:        return "AST_BLOCK";
-        case AST_IF:           return "AST_IF";
-        case AST_WHILE:        return "AST_WHILE";
-        case AST_RETURN:       return "AST_RETURN";
-        case AST_ASSIGN:       return "AST_ASSIGN";
-        case AST_BINOP:        return "AST_BINOP";
-        case AST_CALL:         return "AST_CALL";
-        case AST_ID:           return "AST_ID";
-        case AST_NUM:          return "AST_NUM";
-        default:               return "UNKNOWN";
+        case AST_PROGRAM:               return "AST_PROGRAM";
+        case AST_VAR_DECL:              return "AST_VAR_DECL";
+        case AST_FUN_DECL:              return "AST_FUN_DECL";
+        case AST_PARAM:                 return "AST_PARAM";
+        case AST_PARAM_LIST:            return "AST_PARAM_LIST";
+        case AST_PARAM_ARRAY:           return "AST_PARAM_ARRAY";
+        case AST_ARG_LIST:              return "AST_ARG_LIST";
+        case AST_BLOCK:                 return "AST_BLOCK";
+        case AST_IF:                    return "AST_IF";
+        case AST_WHILE:                 return "AST_WHILE";
+        case AST_RETURN:                return "AST_RETURN";
+        case AST_ASSIGN:                return "AST_ASSIGN";
+        case AST_BINOP:                 return "AST_BINOP";
+        case AST_CALL:                  return "AST_CALL";
+        case AST_ID:                    return "AST_ID";
+        case AST_NUM:                   return "AST_NUM";
+        case AST_ARRAY_ACCESS:          return "AST_ARRAY_ACCESS";
+        default:                        return "UNKNOWN";
         }
     }
 
@@ -107,6 +108,7 @@ void printAst(const AstNode *node, int indent) {
         case AST_CALL:          printf("Call(name=%s, lineno=%d)\n", node->name, node->lineno); break;
         case AST_ID:            printf("Id(name=%s, lineno=%d)\n", node->name, node->lineno); break;
         case AST_NUM:           printf("Num(value=%d, lineno=%d)\n", node->value, node->lineno); break;
+        case AST_ARRAY_ACCESS:  printf("ArrayAccess(name=%s, lineno=%d)\n", node->name, node->lineno); break;
     }
     /* children */
     for (AstNode *c = node->firstChild; c; c = c->nextSibling)
