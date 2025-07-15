@@ -120,22 +120,47 @@ def translate_instruction(instr_parts, func_ctx):
     if ':=' in instr_parts:
         dest, _, *expr_parts = instr_parts
         
-        # *** CORREÇÃO PRINCIPAL AQUI ***
         if 'call' in expr_parts:
-            # Ex: t0 := call input, 0 OR call output, 1
+            # (A lógica de chamada de função ainda tem problemas, mas vamos corrigi-la depois)
             func_name = expr_parts[1].replace(',', '')
             alloc.spill_all()
 
             if func_name == 'input':
-                # Traduz para a instrução 'in' do processador
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tin: {dest_reg}")
-            else: # Chamada de função padrão (ex: gcd, output)
+            else: 
                 func_ctx.add_instruction(f"\tbl: {func_name}")
-                if dest: # Se a função tem valor de retorno
+                if dest:
                     dest_reg = alloc.get_reg_for_temp(dest)
                     func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
 
+        # Verifica se é uma operação aritmética como: t2 := t1 * 2
+        elif len(expr_parts) == 3 and expr_parts[1] in ['+', '-', '*', '/']:
+            op_map = {'+': 'add', '-': 'sub', '*': 'mul', '/': 'div'}
+            
+            arg1, op_str, arg2 = expr_parts
+            
+            # Garante que os operandos estão em registradores
+            reg1 = alloc.ensure_var_in_reg(arg1)
+            
+            # Determina a instrução assembly (imediata ou registrador)
+            assembly_op = op_map[op_str]
+            if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
+                assembly_op += 'i' # Usa a versão imediata: addi, muli, etc.
+                reg2 = arg2 # O operando é o próprio número
+            else:
+                reg2 = alloc.ensure_var_in_reg(arg2)
+
+            # Obtém um registrador para o resultado
+            dest_reg = alloc.get_reg_for_temp(dest)
+            
+            # Gera a instrução de assembly
+            func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {reg2}")
+            
+            # Libera os registradores dos operandos se eles forem temporários
+            if arg1.startswith('t'): alloc.spill_reg(reg1)
+            if arg2.startswith('t') and not (arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit())): alloc.spill_reg(reg2)
+            
         elif len(expr_parts) > 1 and expr_parts[1] in IR_BRANCH_COND:
             op, arg2 = expr_parts[1], expr_parts[2]
             arg1_reg = alloc.ensure_var_in_reg(expr_parts[0])

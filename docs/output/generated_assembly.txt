@@ -7,15 +7,15 @@ main:
 	storei: [var_t0] = r4
 	loadi: r5 = [var_x]
 	loadi: r6 = [var_t1]
-	loadi: r7 = [var_t2]
+	muli: r7 = r6, 2
 	storei: [var_y] = r7
+	storei: [var_t2] = r7
 	loadi: r8 = [var_y]
 	loadi: r9 = [var_t3]
 	mov: r0 = r9
 	movi: r10 = 1
 	mov: r0 = r10
 	storei: [var_x] = r5
-	storei: [var_t1] = r6
 	storei: [var_y] = r8
 	bi: main_epilogue
 main_epilogue:
