@@ -104,10 +104,12 @@ main_epilogue:
 	ret:
 
 .data
+var__: .word 0
 var_a: .word 0
 var_high: .word 0
 var_i: .word 0
 var_k: .word 0
 var_low: .word 0
+var_t: .word 0
 var_vet: .word 0
 var_x: .word 0

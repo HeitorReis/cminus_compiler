@@ -265,21 +265,28 @@ def translate_instruction(instr_parts, func_ctx):
 
     elif opcode == 'if_false': # (Lógica de branch - pode ser melhorada no futuro)
         func_ctx.add_instruction(f"\tbilteq: {instr_parts[3]}")
-    
+
+
 def generate_assembly(ir_list):
     functions = collections.OrderedDict()
     all_vars = set()
     
     # Coleta todos os nomes de variáveis do código IR.
-    # Isto é uma forma simples de garantir que 'x' e 'y' sejam declarados.
     for line in ir_list:
         parts = line.strip().split()
         if not parts: continue
         
-        # Encontra todas as palavras que podem ser variáveis
-        for part in re.split(r'[\s,:=\*\[\]]+', line):
-            if part and part.isalpha() and part not in ['call', 'goto', 'arg', 'return', 'if_false', 'input', 'output']:
-                all_vars.add(part)
+        # --- INÍCIO DA MODIFICAÇÃO (Lógica antiga substituída) ---
+        # Regex para encontrar todas as palavras que podem ser variáveis,
+        # ignorando temporários (t0, t1...), labels (L0, L1...) e palavras-chave.
+        variable_pattern = re.compile(r'\b(?!t\d|L\d\b)\b([a-zA-Z_]\w*)\b')
+        keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output'}
+        
+        matches = variable_pattern.findall(line)
+        for var_name in matches:
+            if var_name not in keywords:
+                all_vars.add(var_name)
+        # --- FIM DA MODIFICAÇÃO ---
 
         if parts[0].endswith(':'):
             func_name = parts[0][:-1]
@@ -332,7 +339,8 @@ def generate_assembly(ir_list):
     final_code.append(".data")
     func_names = set(functions.keys())
     # Filtra para declarar apenas variáveis que não são temporárias ('t*') ou nomes de funções.
-    var_names = sorted([var for var in all_vars if var not in func_names and not var.startswith('t')])
+    # Adicionamos 't' à verificação para garantir que a variável local 't' seja incluída.
+    var_names = sorted([var for var in all_vars if var not in func_names and not (var.startswith('t') and var[1:].isdigit())])
 
     for var in var_names:
         final_code.append(f"var_{var}: .word 0")
