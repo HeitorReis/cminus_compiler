@@ -124,7 +124,24 @@ var_declaration:
         $$ = n;
         free($2);
     }
-;
+    | type_specifier ID LBRACK NUM RBRACK SEMICOLON  /* <-- Adicione esta regra */
+    {
+        // Ação para declarar um vetor
+        declareSymbol(
+            &symtab,
+            $2,
+            currentScope,
+            SYMBOL_VAR, // Pode querer um SYMBOL_ARRAY no futuro
+            yylineno,
+            $1
+        );
+        AstNode *n = newNode(AST_VAR_DECL); // Ou um novo AST_ARRAY_DECL
+        n->name = strdup($2);
+        n->value = $4; // Guarda o tamanho do vetor
+        n->lineno = yylineno;
+        $$ = n;
+        free($2);
+    } ;
 
 type_specifier:
     INT  { $$ = TYPE_INT;  }

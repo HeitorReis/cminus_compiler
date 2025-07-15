@@ -60,7 +60,7 @@ class Instruction:
             if opcode in op_list:
                 return type_code
         if any(opcode.startswith(br) for br in ['bi']):
-             return '11'
+            return '11'
         return None
 
     def disassemble(self, line: str) -> dict:
@@ -104,7 +104,7 @@ class Instruction:
         details['type'] = self.get_op_type(details['opcode'])
 
         if details['type'] is None and not details['opcode'].startswith("bi"):
-             return {'Error': f"-> Error: Unknown instruction opcode '{details['opcode']}'"}
+            return {'Error': f"-> Error: Unknown instruction opcode '{details['opcode']}'"}
 
         rest_part = rest_part.replace('retval', 'r0').replace('arg0', 'r0')
 
@@ -112,7 +112,7 @@ class Instruction:
         if details['type'] == '11': # Branch
             details['op2'] = rest_part
         elif '=' not in rest_part:
-             # ex: in: r1
+            # ex: in: r1
             details['rd'] = rest_part if rest_part else 'r0'
             details['rh'] = 'r0'
             details['op2'] = '0'
@@ -165,7 +165,7 @@ class Instruction:
         
         funct_bin = instructions.get(base_opcode)
         if funct_bin is None:
-             return f"Error: Instruction '{base_opcode}' not found", ""
+            return f"Error: Instruction '{base_opcode}' not found", ""
 
         debug = f"cond[{cond_bin}] type[{type_bin}] supp[{supp_bin}] op[{funct_bin}] "
         binary = cond_bin + type_bin + supp_bin + funct_bin
@@ -212,7 +212,7 @@ class Instruction:
                 debug += f"Ro[{ro_bin}] pad[00000]"
 
             if 'Error' in rd_bin or 'Error' in rh_bin or 'Error' in op2_bin:
-                 return "Error during operand encoding", ""
+                return "Error during operand encoding", ""
 
             binary += rd_bin + rh_bin + op2_bin
 
@@ -225,7 +225,7 @@ class Instruction:
 class FullCode:
     def __init__(self, assembly_code_lines: list):
         self.assembly_list = [line.strip() for line in assembly_code_lines if line.strip()]
-        self.symbol_table = {}
+        self.symbol_table = {'output': 4}
         self.full_code = ""
         self.debug_output = ""
         self.response = '-> Success'

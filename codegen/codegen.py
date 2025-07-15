@@ -192,11 +192,18 @@ def translate_instruction(instr_parts, func_ctx):
         # Caso: t0 := call input
         if 'call' in expr_parts:
             func_name = expr_parts[1].replace(',', '')
-            alloc.spill_all_dirty()
-            func_ctx.add_instruction(f"\tbl: {func_name}")
-            dest_reg = alloc.get_reg_for_temp(dest)
-            func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
-        
+            
+            if func_name == 'input':
+                # Traduz para a instrução 'in' dedicada, conforme o design do processador.
+                dest_reg = alloc.get_reg_for_temp(dest)
+                func_ctx.add_instruction(f"\tin: {dest_reg}")
+            else:
+                # Mantém o comportamento padrão para outras funções (como 'output').
+                alloc.spill_all_dirty()
+                func_ctx.add_instruction(f"\tbl: {func_name}")
+                dest_reg = alloc.get_reg_for_temp(dest)
+                func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+
         # Caso: t2 := t1 * 2
         elif len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/']:
             op_map = {'+': 'add', '-': 'sub', '*': 'mul', '/': 'div'}
@@ -271,7 +278,7 @@ def generate_assembly(ir_list):
         
         # Encontra todas as palavras que podem ser variáveis
         for part in re.split(r'[\s,:=\*\[\]]+', line):
-            if part and part.isalpha() and part not in ['call', 'goto', 'arg', 'return', 'if_false']:
+            if part and part.isalpha() and part not in ['call', 'goto', 'arg', 'return', 'if_false', 'input', 'output']:
                 all_vars.add(part)
 
         if parts[0].endswith(':'):

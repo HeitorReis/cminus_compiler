@@ -1,24 +1,113 @@
 .text
 .global main
 
-main:
-	bl: input
-	mov: r4 = r0
-	storei: [var_x] = r4
-	loadi: r5 = [var_x]
-	muli: r6 = r5, 2
-	storei: [var_y] = r6
-	loadi: r7 = [var_y]
-	mov: r0 = r7
-	bl: output
-	movi: r8 = 1
+minloc:
+	loadi: r4 = [var_low]
+	storei: [var_k] = r4
+	loadi: r5 = [var_a]
+	storei: [var_x] = r5
+	loadi: r6 = [var_low]
+	addi: r7 = r6, 1
+	storei: [var_i] = r7
+L0:
+	loadi: r8 = [var_i]
+	loadi: r9 = [var_high]
+	bilteq: L1
+	loadi: r10 = [var_a]
+	loadi: r4 = [var_x]
+	bilteq: L2
+	loadi: r5 = [var_a]
+	storei: [var_x] = r5
+	loadi: r6 = [var_i]
+	storei: [var_k] = r6
+	bi: L3
+L2:
+L3:
+	loadi: r7 = [var_i]
+	addi: r8 = r7, 1
+	storei: [var_i] = r8
+	bi: L0
+L1:
+	loadi: r9 = [var_k]
+	mov: r0 = r9
+	bi: minloc_epilogue
+minloc_epilogue:
+	ret:
+
+sort:
+	loadi: r4 = [var_low]
+	storei: [var_i] = r4
+L4:
+	loadi: r5 = [var_i]
+	loadi: r6 = [var_high]
+	subi: r7 = r6, 1
+	bilteq: L5
+	loadi: r8 = [var_a]
 	mov: r0 = r8
+	loadi: r9 = [var_i]
+	mov: r0 = r9
+	loadi: r10 = [var_high]
+	mov: r0 = r10
+	bl: minloc
+	mov: r4 = r0
+	storei: [var_k] = r4
+	loadi: r5 = [var_a]
+	storei: [var_t] = r5
+	loadi: r6 = [var_a]
+	storei: [var_a] = r6
+	loadi: r8 = [var_t]
+	storei: [var_a] = r8
+	loadi: r9 = [var_i]
+	addi: r10 = r9, 1
+	storei: [var_i] = r10
+	bi: L4
+L5:
+	bi: sort_epilogue
+sort_epilogue:
+	ret:
+
+main:
+	movi: r4 = 0
+	storei: [var_i] = r4
+L6:
+	loadi: r5 = [var_i]
+	bilteq: L7
+	in: r6
+	storei: [var_vet] = r6
+	loadi: r7 = [var_i]
+	addi: r8 = r7, 1
+	storei: [var_i] = r8
+	bi: L6
+L7:
+	loadi: r9 = [var_vet]
+	mov: r0 = r9
+	movi: r10 = 0
+	mov: r0 = r10
+	movi: r5 = 10
+	mov: r0 = r5
+	bl: sort
+	movi: r6 = 0
+	storei: [var_i] = r6
+L8:
+	loadi: r7 = [var_i]
+	bilteq: L9
+	loadi: r8 = [var_vet]
+	mov: r0 = r8
+	bl: output
+	loadi: r9 = [var_i]
+	addi: r5 = r9, 1
+	storei: [var_i] = r5
+	bi: L8
+L9:
 	bi: main_epilogue
 main_epilogue:
 	ret:
 
 .data
-var_input: .word 0
-var_output: .word 0
+var_a: .word 0
+var_high: .word 0
+var_i: .word 0
+var_k: .word 0
+var_low: .word 0
+var_vet: .word 0
 var_x: .word 0
-var_y: .word 0
