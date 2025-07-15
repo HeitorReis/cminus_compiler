@@ -124,6 +124,17 @@ class Instruction:
                 details['op2'] = dest       # Endereço imediato
                 details['rh'] = source      # Registrador com o valor
                 details['rd'] = 'r0'        # Rd não é usado, mas precisa de um valor padrão
+            # Sintaxe: load r5 = [r4] ou store [r4] = r5
+            elif source.startswith('[') and source.endswith(']') or dest.startswith('[') and dest.endswith(']'):
+                if details['opcode'] == 'load':
+                    details['rd'] = dest
+                    details['rh'] = source.strip('[]')
+                    details['op2'] = '0' # O offset é 0, pois o endereço já está calculado em rh
+                elif details['opcode'] == 'store':
+                    details['rd'] = 'r0' # Não usado
+                    details['rh'] = dest.strip('[]')
+                    details['op2'] = source
+                details['supp'] = 'na' # Garante que não é tratado como imediato
             else:
             # Sintaxe: rd = ...
                 details['rd'] = dest

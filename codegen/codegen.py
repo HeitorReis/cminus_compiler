@@ -190,62 +190,76 @@ def translate_instruction(instr_parts, func_ctx):
         
         # --- LÓGICA DE ATRIBUIÇÃO E OPERAÇÕES ---
         
-        # Caso: t0 := call input
-        if 'call' in expr_parts:
-            func_name = expr_parts[1].replace(',', '')
+        # CASO 1: t1 := &x (Obter o Endereço de uma Variável)
+        # Quando a IR nos dá o operador '&', ela está a pedir o endereço, não o valor.
+        if expr_parts[0].startswith('&'):
+            var_name = expr_parts[0][1:]
+            dest_reg = alloc.get_reg_for_temp(dest)
+            # A instrução 'movi' é perfeita aqui. Ela trata 'var_x' como um rótulo
+            # cujo valor (o endereço) é um imediato para o montador.
+            func_ctx.add_instruction(f"\tmovi: {dest_reg} = var_{var_name}")
+
+        # CASO 2: t1 := *t2 (Carregar Valor Usando um Endereço que está em um Registador)
+        # O '*' diz-nos para tratar o operando (t2) não como um valor, mas como um ponteiro.
+        elif expr_parts[0].startswith('*'):
+            ptr_name = expr_parts[0][1:]
+            # Garante que o endereço (contido em t2) está num registador (ex: r4).
+            ptr_reg = alloc.ensure_var_in_reg(ptr_name)
+            # Pega num novo registador para guardar o valor que vamos buscar à memória.
+            dest_reg = alloc.get_reg_for_temp(dest)
+            # Gera a instrução 'load' correta, que usa um registador para endereçamento.
+            func_ctx.add_instruction(f"\tload: {dest_reg} = [{ptr_reg}]")
+            alloc.free_reg_if_temp(ptr_reg) # O endereço em ptr_reg já foi usado.
             
+        # CASO 3: *t1 := t2 (Armazenar Valor Usando um Endereço em um Registador)
+        # Aqui, o '*' está no destino. Queremos guardar um valor no endereço apontado por t1.
+        elif dest.startswith('*'):
+            ptr_name = dest[1:]
+            # Garante que o endereço (contido em t1) está num registador (ex: r4).
+            ptr_reg = alloc.ensure_var_in_reg(ptr_name)
+            # Garante que o valor a ser guardado (contido em t2) está noutro registador (ex: r5).
+            src_reg = alloc.ensure_var_in_reg(expr_parts[0])
+            # Gera a instrução 'store' correta, usando um registador para o endereço.
+            func_ctx.add_instruction(f"\tstore: [{ptr_reg}] = {src_reg}")
+            alloc.free_reg_if_temp(ptr_reg)
+            alloc.free_reg_if_temp(src_reg)
+
+        # CASO 4: Chamada de função (ex: t0 := call input) - Sem alterações, já estava correta.
+        elif 'call' in expr_parts:
+            func_name = expr_parts[1].replace(',', '')
+            alloc.spill_all_dirty()
             if func_name == 'input':
-                # Traduz para a instrução 'in' dedicada
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tin: {dest_reg}")
             else:
-                # Mantém o comportamento padrão para outras funções
-                alloc.spill_all_dirty()
                 func_ctx.add_instruction(f"\tbl: {func_name}")
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
-                
-            # Independentemente da função chamada, reinicia a contagem de argumentos.
             func_ctx.arg_count = 0
             
+        # CASO 5: Operação aritmética (ex: t2 := t0 + t1) - Sem alterações, já estava correta.
         elif len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/']:
             op_map = {'+': 'add', '-': 'sub', '*': 'mul', '/': 'div'}
             arg1, op_str, arg2 = expr_parts
-            
             reg1 = alloc.ensure_var_in_reg(arg1)
             assembly_op = op_map[op_str]
-
             if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
                 assembly_op += 'i'
                 op2_val = arg2
             else:
                 op2_val = alloc.ensure_var_in_reg(arg2)
-            
             dest_reg = alloc.get_reg_for_temp(dest)
             func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {op2_val}")
-            
-            # Libera registradores que continham temporárias, pois seus valores foram consumidos.
             alloc.free_reg_if_temp(reg1)
             if not (arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit())):
                 alloc.free_reg_if_temp(op2_val)
-
-        # Caso: t1 := *x (Load)
-        elif expr_parts[0].startswith('*'):
-            var_name = expr_parts[0][1:]
-            reg = alloc.ensure_var_in_reg(var_name)
-            alloc.update_var_from_reg(dest, reg)
-            
-        # Caso: *x := t0 (Store)
-        elif dest.startswith('*'):
-            var_name = dest[1:]
-            reg_val = alloc.ensure_var_in_reg(expr_parts[0])
-            func_ctx.add_instruction(f"\tstorei: [var_{var_name}] = {reg_val}")
-            # O valor da temporária foi usado, podemos liberar seu registrador.
-            alloc.free_reg_if_temp(reg_val)
-
-        # Caso: t1 := t0 (Mov)
+                
+        # CASO 6: Movimento simples (ex: t1 := x ou t1 := t0)
         else:
+            # Carrega o valor da variável/temporário da direita para um registrador
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
+            # Em vez de gerar uma instrução 'mov', apenas otimizamos dizendo que 'dest'
+            # agora aponta para o mesmo registrador que contém o valor de 'reg_src'.
             alloc.update_var_from_reg(dest, reg_src)
 
     # --- LÓGICA DE CONTROLO E CHAMADAS DE PROCEDIMENTO ---
