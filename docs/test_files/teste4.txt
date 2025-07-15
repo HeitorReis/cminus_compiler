@@ -2,6 +2,6 @@ int main(void) {
     int x; int y;
     x = input();
     y = x * 2;
-    y = output();
+    output(y);
     return 1;
 }

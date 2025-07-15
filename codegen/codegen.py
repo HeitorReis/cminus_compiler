@@ -181,7 +181,7 @@ def generate_assembly(ir_list):
         
         for part in re.split(r'[\s,:=\*\[\]]+', line):
             if part and part.isalpha() and part not in ['call', 'goto', 'arg', 'return', 'if_false']:
-                 all_vars.add(part)
+                all_vars.add(part)
 
         if parts[0].endswith(':'):
             func_name = parts[0][:-1]

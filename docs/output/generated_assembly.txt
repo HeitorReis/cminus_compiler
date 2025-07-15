@@ -1,61 +1,22 @@
 .text
 .global main
 
-gcd:
-	loadi: r4 = [var_v]
-	loadi: r5 = [var_t0]
-	movi: r6 = 0
-	subis: r0 = r5, r6
-	bilteq: L0
-	loadi: r7 = [var_u]
-	loadi: r8 = [var_t2]
-	mov: r0 = r8
-	storei: [var_v] = r4
-	storei: [var_u] = r7
-	bi: L1
-L0:
-	loadi: r9 = [var_v]
-	loadi: r10 = [var_t3]
-	mov: r0 = r10
-	loadi: r5 = [var_u]
-	loadi: r6 = [var_t5]
-	loadi: r4 = [var_t7]
-	loadi: t0 = [var_t4]
-	loadi: r7 = [var_t10]
-	mov: r0 = r7
-	storei: [var_v] = r9
-	storei: [var_u] = r5
-	storei: [var_t5] = r6
-	storei: [var_t7] = r4
-	storei: [var_t4] = t0
-	bl: gcd
-	mov: t2 = r0
-	mov: r0 = t2
-	storei: [var_t11] = t2
-L1:
-	bi: gcd_epilogue
-gcd_epilogue:
-	ret:
-
 main:
 	in: r4
 	storei: [var_x] = r4
-	storei: [var_t12] = r4
-	in: r5
-	storei: [var_y] = r5
-	storei: [var_t13] = r5
-	loadi: r6 = [var_x]
-	loadi: r7 = [var_t14]
-	mov: r0 = r7
+	storei: [var_t0] = r4
+	loadi: r5 = [var_x]
+	loadi: r6 = [var_t1]
+	loadi: r7 = [var_t2]
+	storei: [var_y] = r7
 	loadi: r8 = [var_y]
-	loadi: r9 = [var_t15]
+	loadi: r9 = [var_t3]
 	mov: r0 = r9
-	storei: [var_x] = r6
-	storei: [var_y] = r8
-	bl: gcd
-	mov: r10 = r0
+	movi: r10 = 1
 	mov: r0 = r10
-	storei: [var_t16] = r10
+	storei: [var_x] = r5
+	storei: [var_t1] = r6
+	storei: [var_y] = r8
 	bi: main_epilogue
 main_epilogue:
 	ret:
@@ -63,7 +24,5 @@ main_epilogue:
 .data
 var_input: .word 0
 var_output: .word 0
-var_u: .word 0
-var_v: .word 0
 var_x: .word 0
 var_y: .word 0

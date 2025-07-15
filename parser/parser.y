@@ -325,10 +325,12 @@ iteration_stmt
 return_stmt
     : RETURN SEMICOLON { 
         AstNode *n = newNode(AST_RETURN);
+        n->lineno = yylineno; // Set the line number manually
         $$ = n; // return without expression
     }
     | RETURN expression SEMICOLON {
         AstNode *n = newNode(AST_RETURN);
+        n->lineno = yylineno; // Set the line number manually
         if ($2) 
             addChild(n, $2); // return expression
         $$ = n;
@@ -422,6 +424,7 @@ addop
 term
     : term mulop factor {
         AstNode *n = newNode(AST_BINOP);
+        n->lineno = yylineno; // Set the line number manually
         addChild(n, $1); // left operand
         addChild(n, $2); // operator
         addChild(n, $3); // right operand

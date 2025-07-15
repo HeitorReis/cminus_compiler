@@ -1,21 +1,11 @@
-/*
-  test_max.c: Testa múltiplas funcionalidades.
-  - I/O, condicionais, chamada de função e aritmética.
-*/
-int special_calc(int a) {
-  return a * 2;
+void count (int number) {
+  if(count == 0) return;
+  output (number);
+  count (number - 1);
 }
 
-void main(void) {
+int main (void) {
   int x;
-  int y;
-
   x = input();
-
-  if (x == 5) {
-    y = special_calc(x);
-  } else {
-    y = x + 1;
-  }
-  output(y);
+  count(x);
 }
