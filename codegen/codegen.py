@@ -37,21 +37,24 @@ class RegisterAllocator:
             reg = self.var_to_reg[var_name]
             self._mark_as_used(reg)
             return reg
-
+        
         # Se for uma constante numérica, move o valor para um novo registrador.
         if var_name.isdigit() or (var_name.startswith('-') and var_name[1:].isdigit()):
             reg = self._get_free_reg()
             self.func_context.add_instruction(f"\tmovi: {reg} = {var_name}")
             return reg
 
-        # Se não, aloca um registrador e carrega a variável da memória.
-        reg = self._get_free_reg()
-        # CORREÇÃO: Dividir em duas instruções separadas
-        addr_reg = self._get_free_reg()
-        self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
-        self.func_context.add_instruction(f"\tload: {reg} = [{addr_reg}]")
-        self._assign_reg_to_var(reg, var_name)
-        return reg
+        if var_name.startswith('t'):
+            # Se for uma variável temporária (ex: 't0'), aloca um registrador e marca como "dirty".
+            pass
+        else:
+            # Se não, aloca um registrador e carrega a variável da memória.
+            reg = self._get_free_reg()
+            addr_reg = self._get_free_reg()
+            self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+            self.func_context.add_instruction(f"\tload: {reg} = [{addr_reg}]")
+            self._assign_reg_to_var(reg, var_name)
+            return reg
 
     def get_reg_for_temp(self, temp_name):
         """
@@ -196,29 +199,45 @@ def translate_instruction(instr_parts, func_ctx):
         
         # --- LÓGICA DE ATRIBUIÇÃO E OPERAÇÕES ---
         
-        # CASO 1: t1 := &x (Obter o Endereço de uma Variável)
-        # Quando a IR nos dá o operador '&', ela está a pedir o endereço, não o valor.
-        if expr_parts[0].startswith('&'):
+        # CASO 1: Operação aritmética (ex: t2 := t0 + t1)
+        if len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/', '<', '<=', '>', '>=', '==', '!=']:
+            op_map = {
+                '+': 'add', '-': 'sub', '*': 'mul', '/': 'div',
+                '<': 'slt', '<=': 'sle', '>': 'sgt', '>=': 'sge',
+                '==': 'seq', '!=': 'sne'
+                }
+            arg1, op_str, arg2 = expr_parts
+            
+            # Garante que os operandos estejam em registradores
+            reg1 = alloc.ensure_var_in_reg(arg1)
+            assembly_op = op_map[op_str]
+            
+            # Verifica se o segundo operando é um imediato ou um registrador
+            if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
+                assembly_op += 'i'  # Usa a versão imediata da instrução
+                op2_val = arg2
+            else:
+                op2_val = alloc.ensure_var_in_reg(arg2)
+            
+            # Obtém um registrador para o resultado e marca-o como "sujo"
+            dest_reg = alloc.get_reg_for_temp(dest)
+            func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {op2_val}")
+        
+        elif expr_parts[0].startswith('&'):
             var_name = expr_parts[0][1:]
             dest_reg = alloc.get_reg_for_temp(dest)
-            # A instrução 'movi' é perfeita aqui. Ela trata 'var_x' como um rótulo
-            # cujo valor (o endereço) é um imediato para o montador.
+            # Gera a instrução para obter o endereço da variável
             func_ctx.add_instruction(f"\tmovi: {dest_reg} = var_{var_name}")
-
         # CASO 2:  t1 := *t2 (Carregar Valor Usando um Endereço que está em um Registador)
         # O '*' diz-nos para tratar o operando (t2) não como um valor, mas como um ponteiro.
         elif expr_parts[0].startswith('*'):
             var_name_to_load_from = expr_parts[0][1:]
+            addr_reg = alloc.ensure_var_in_reg(var_name_to_load_from) 
             dest_reg = alloc.get_reg_for_temp(dest)
             
             # PASSO 1: Obter o ENDEREÇO da variável para um registador.
             addr_reg = alloc.get_reg_for_temp(f"addr_{var_name_to_load_from}")
-            func_ctx.add_instruction(f"\tmovi: {addr_reg} = var_{var_name_to_load_from}")
-
-            # PASSO 2: Usar esse registador para carregar o VALOR.
             func_ctx.add_instruction(f"\tload: {dest_reg} = [{addr_reg}]")
-
-            alloc.free_reg_if_temp(addr_reg)
         
         # CASO 3: *x := t1 (Armazenar valor na memória)
         # Aqui, o '*' está no destino. Queremos guardar um valor no endereço apontado por t1.
@@ -234,10 +253,6 @@ def translate_instruction(instr_parts, func_ctx):
             
             # PASSO 3: Executar o store.
             func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
-
-            # Liberta os registadores temporários usados.
-            alloc.free_reg_if_temp(addr_reg)
-            alloc.free_reg_if_temp(src_reg)
 
         # CASO 4: Chamada de função (ex: t0 := call input) - Sem alterações, já estava correta.
         elif 'call' in expr_parts:
@@ -265,17 +280,11 @@ def translate_instruction(instr_parts, func_ctx):
                 op2_val = alloc.ensure_var_in_reg(arg2)
             dest_reg = alloc.get_reg_for_temp(dest)
             func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {op2_val}")
-            alloc.free_reg_if_temp(reg1)
-            if not (arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit())):
-                alloc.free_reg_if_temp(op2_val)
-                
+            
         # CASO 6: Movimento simples (ex: t1 := x ou t1 := t0)
         else:
             # Carrega o valor da variável/temporário da direita para um registrador
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
-            # Em vez de gerar uma instrução 'mov', apenas otimizamos dizendo que 'dest'
-            # agora aponta para o mesmo registrador que contém o valor de 'reg_src'.
-            alloc.update_var_from_reg(dest, reg_src)
 
     # --- LÓGICA DE CONTROLO E CHAMADAS DE PROCEDIMENTO ---
 
@@ -287,7 +296,6 @@ def translate_instruction(instr_parts, func_ctx):
             src_reg = alloc.ensure_var_in_reg(instr_parts[2])
             func_ctx.add_instruction(f"\tmov: r0 = {src_reg}")
             func_ctx.add_instruction(f"\tbl: {func_name}")
-            alloc.free_reg_if_temp(src_reg)
         else:
             func_ctx.add_instruction(f"\tbl: {func_name}")
         func_ctx.arg_count = 0
@@ -300,7 +308,6 @@ def translate_instruction(instr_parts, func_ctx):
             dest_reg = ARG_REGS[func_ctx.arg_count]
             # 3. Move o argumento para o seu lugar correto.
             func_ctx.add_instruction(f"\tmov: {dest_reg} = {src_reg}")
-            alloc.free_reg_if_temp(src_reg)
             # 4. Atualiza o contador para o próximo argumento.
             func_ctx.arg_count += 1
         return  

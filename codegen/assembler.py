@@ -324,11 +324,15 @@ class FullCode:
 
     def first_pass(self):
         current_address = 0
-        
-        # 1. PREVISÃO: Prever o tamanho que cada instrução vai ocupar (1 ou 2 posições de memória)
         instruction_sizes = {}
+        
+        # ETAPA 1: Percorrer APENAS a seção de código (.text) para prever o tamanho das instruções
+        in_text_section = True
         for i, line in enumerate(self.assembly_list):
-            if line.startswith(".") or (line.endswith(':') and line != 'ret:'):
+            if line.startswith(".data"):
+                in_text_section = False
+                continue
+            if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
                 continue
 
             details = self._disassemble_for_pass1(line)
@@ -348,7 +352,14 @@ class FullCode:
         
         # 2. CONSTRUÇÃO: Construir a tabela de símbolos com base nos tamanhos previstos
         current_address = 0
+        in_text_section = True
         for i, line in enumerate(self.assembly_list):
+            if line.startswith(".data"):
+                in_text_section = False
+                continue
+            if not in_text_section:
+                continue
+            
             if line.endswith(':') and line != 'ret:':
                 label = line[:-1]
                 if label in self.symbol_table:
