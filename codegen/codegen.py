@@ -2,7 +2,7 @@ import collections
 import re
 
 # Mapeamento de nomes simbólicos para registradores físicos
-SPECIAL_REGS = {'sp': 'r13', 'lr': 'r14', 'fp': 'r11', 'retval': 'r0', 'arg': 'r0'}
+SPECIAL_REGS = {'sp': 'r29', 'lr': 'r30', 'fp': 'r28', 'retval': 'r0', 'arg': 'r0'}
 ARG_REGS = ['r1', 'r2', 'r3', 'r4'] # Registrador r0 é reservado para operação de output
 
 class RegisterAllocator:
@@ -13,9 +13,13 @@ class RegisterAllocator:
     """
     def __init__(self, func_context):
         self.func_context = func_context
+        
         # Define o conjunto de registradores de uso geral disponíveis (r4 a r10)
-        self.reg_pool = [f"r{i}" for i in range(4, 13)] 
-        self.SPILL_TEMP_REG = "r13" # Registrador temporário para derramamento (spill)
+        self.callee_reg_pool = [f'r{i}' for i in range(13,28)]  # Registradores de uso geral
+        self.caller_saved_reg_pool = [f'r{i}' for i in range(4, 13)] # Registradores que podem ser salvos pelo chamador
+        self.reg_pool = self.callee_reg_pool + self.caller_saved_reg_pool
+        
+        self.SPILL_TEMP_REG = "r28" # Registrador temporário para derramamento (spill)
         
         # Estruturas para rastrear o estado dos registradores
         self.free_regs = collections.deque(self.reg_pool.copy())
@@ -27,6 +31,8 @@ class RegisterAllocator:
         
         # Rastreia registradores com valores novos que ainda não foram salvos na memória ("dirty")
         self.dirty_regs = set()
+        
+        self.spilled_temps = {}
 
     def ensure_var_in_reg(self, var_name):
         """
@@ -55,6 +61,7 @@ class RegisterAllocator:
             self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
             self.func_context.add_instruction(f"\tload: {reg} = [{addr_reg}]")
             self._assign_reg_to_var(reg, var_name)
+            self._unassign_reg(addr_reg)
             return reg
 
     def get_reg_for_temp(self, temp_name):
@@ -116,29 +123,38 @@ class RegisterAllocator:
                 break
         
         if reg_to_spill is None:
-            raise Exception("Erro de alocação: Sem registradores disponíveis para derramar.")
+            if self.lru_order:
+                reg_to_spill = self.lru_order[0]
+            else:
+                raise Exception("Erro de alocação: Sem registradores disponíveis para derramar.")
         
         self._spill_reg(reg_to_spill)
         self._mark_as_used(reg_to_spill)
         return reg_to_spill
 
     def _spill_reg(self, reg):
-        """ Salva um registrador na memória se ele estiver 'sujo' e contiver uma variável real. """
+        var_name = self.reg_to_var.get(reg)
+        if not var_name:
+            self._unassign_reg(reg)
+            return
+        
         if reg in self.dirty_regs:
-            var_name = self.reg_to_var.get(reg)
-            # A CONDIÇÃO MAIS IMPORTANTE:
-            # Só salva na memória se for uma variável real (não começa com 't').
-            # Ignora completamente as temporárias.
-            if var_name and not var_name.startswith('t'):
-                # CORREÇÃO: Dividir em duas instruções separadas
+            if not var_name.startswith('t'):
+                # Se o registrador está "sujo", salva a variável na memória.
                 addr_reg = self.SPILL_TEMP_REG
                 self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
                 self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
+            else:
+                self.func_context.spill_offset -= 1
+                offset = self.func_context.spill_offset
+                
+                self.spilled_temps[var_name] = offset
+                
+                self.func_context.add_instruction(f"\tstorei: [fp, #{offset}] = {reg}")
+                print(f"[SPILL] Temp '{var_name}' spilled from {reg} to stack at offset {offset} from fp.")
             
-            # Independentemente de ter salvo ou não, o registrador não está mais "sujo".
             self.dirty_regs.discard(reg)
-        
-        # Remove o mapeamento antigo do registrador para que ele possa ser reutilizado
+            
         self._unassign_reg(reg)
 
     def _assign_reg_to_var(self, reg, var_name):
@@ -148,10 +164,12 @@ class RegisterAllocator:
             self._unassign_reg(old_reg)
 
         if reg in self.reg_to_var and self.reg_to_var[reg] != var_name:
-            self._unassign_reg(reg)
+            old_var = self.reg_to_var.pop(reg)
+            if old_var in self.var_to_reg:
+                del self.var_to_reg[old_var]
 
         self.var_to_reg[var_name] = reg
-        self.reg_to_var[reg] = var_name  # <-- CORREÇÃO: Deve ser var_name, não reg
+        self.reg_to_var[reg] = var_name
         self._mark_as_used(reg)
 
     def _unassign_reg(self, reg):
@@ -178,6 +196,8 @@ class FunctionContext:
         self.instructions = []
         self.allocator = RegisterAllocator(self)
         self.arg_count = 0
+        
+        self.spill_offset = 0
 
     def add_instruction(self, instruction):
         self.instructions.append(instruction)
@@ -250,17 +270,17 @@ def translate_instruction(instr_parts, func_ctx):
         # Aqui, o '*' está no destino. Queremos guardar um valor no endereço apontado por t1.
         elif dest.startswith('*'):
             var_name_to_store_in = dest[1:]
+            value_to_store = expr_parts[0]
             
-            # PASSO 1: Obter o ENDEREÇO da variável de destino.
-            addr_reg = alloc.get_reg_for_temp(f"addr_{var_name_to_store_in}")
+            src_reg = alloc.ensure_var_in_reg(value_to_store)
+            
+            addr_reg = alloc._get_free_reg()
+            
             func_ctx.add_instruction(f"\tmovi: {addr_reg} = var_{var_name_to_store_in}")
-            
-            # PASSO 2: Garantir que o VALOR a ser guardado está num registador.
-            src_reg = alloc.ensure_var_in_reg(expr_parts[0])
-            
-            # PASSO 3: Executar o store.
             func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
-
+            
+            alloc._unassign_reg(addr_reg)
+            
         # CASO 4: Chamada de função (ex: t0 := call input) - Sem alterações, já estava correta.
         elif 'call' in expr_parts:
             func_name = expr_parts[1].replace(',', '')
@@ -404,5 +424,5 @@ def generate_assembly(ir_list):
 
     for var in var_names:
         final_code.append(f"var_{var}: .word 0")
-
+    
     return "\n".join(final_code)
