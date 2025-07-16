@@ -3,170 +3,194 @@ import re
 
 # Mapeamento de nomes simbólicos para registradores físicos
 SPECIAL_REGS = {'sp': 'r29', 'lr': 'r30', 'fp': 'r28', 'retval': 'r0', 'arg': 'r0'}
-ARG_REGS = ['r1', 'r2', 'r3', 'r4'] # Registrador r0 é reservado para operação de output
+# r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
+ARG_REGS = ['r1', 'r2', 'r3']
 
 class RegisterAllocator:
     """
-    Gerencia o uso de registradores de forma inteligente. Diferencia variáveis
-    reais de temporárias, minimiza acessos à memória e usa uma política
-    LRU (Least Recently Used) para liberar (spill) registradores.
+    Gerencia o uso de registradores de forma inteligente, distinguindo entre
+    registradores "caller-saved" (voláteis) e "callee-saved" (preservados).
     """
     def __init__(self, func_context):
         self.func_context = func_context
-        
-        # Define o conjunto de registradores de uso geral disponíveis (r4 a r10)
-        self.callee_reg_pool = [f'r{i}' for i in range(13,28)]  # Registradores de uso geral
-        self.caller_saved_reg_pool = [f'r{i}' for i in range(4, 13)] # Registradores que podem ser salvos pelo chamador
-        self.reg_pool = self.callee_reg_pool + self.caller_saved_reg_pool
-        
-        self.SPILL_TEMP_REG = "r28" # Registrador temporário para derramamento (spill)
+        print(f"[ALLOC_INIT] Inicializando alocador para a função '{func_context.name}'")
+
+        # Prioriza o uso de registradores Callee-Saved para variáveis locais
+        # e Caller-Saved para cálculos rápidos e temporários.
+        self.callee_saved_pool = [f"r{i}" for i in range(13, 28)]  # r13 a r27 (15 regs)
+        self.caller_saved_pool = [f"r{i}" for i in range(4, 13)]   # r4 a r12 (9 regs)
+
+        self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
+        self.SPILL_TEMP_REG = "r28" 
+        print(f"[ALLOC_INIT] Pool de registradores definido: {self.reg_pool}")
+        print(f"[ALLOC_INIT] Registrador de spill reservado: {self.SPILL_TEMP_REG}")
         
         # Estruturas para rastrear o estado dos registradores
         self.free_regs = collections.deque(self.reg_pool.copy())
-        self.var_to_reg = {}  # Mapeia um nome de variável/temporária para um registrador (ex: 't0' -> 'r4')
-        self.reg_to_var = {}  # Mapeia um registrador para a variável que ele contém (ex: 'r4' -> 't0')
-        
-        # Rastreia a ordem de uso para a política LRU. O registrador menos usado recentemente fica na frente.
+        self.var_to_reg = {}
+        self.reg_to_var = {}
         self.lru_order = collections.deque()
-        
-        # Rastreia registradores com valores novos que ainda não foram salvos na memória ("dirty")
         self.dirty_regs = set()
-        
         self.spilled_temps = {}
+        print(f"[ALLOC_INIT] Estado inicial: {len(self.free_regs)} registradores livres.")
 
     def ensure_var_in_reg(self, var_name):
         """
         Garante que uma variável do código-fonte (como 'x') ou uma constante
         esteja carregada em um registrador.
         """
+        print(f"[ENSURE] Tentando garantir '{var_name}' em um registrador.")
+        
         # Se a variável já está em um registrador, apenas o retorna.
         if var_name in self.var_to_reg:
             reg = self.var_to_reg[var_name]
             self._mark_as_used(reg)
+            print(f"[ENSURE] -> Sucesso! '{var_name}' já está em {reg}.")
             return reg
         
+        # Se foi derramado para a pilha, recupera.
+        if var_name in self.spilled_temps:
+            reg = self._get_free_reg()
+            offset = self.spilled_temps[var_name]
+            self.func_context.add_instruction(f"\tloadi: {reg} = [fp, #{offset}]")
+            print(f"[ENSURE] -> Recuperando '{var_name}' da pilha [fp, #{offset}] para {reg}.")
+            del self.spilled_temps[var_name]
+            self._assign_reg_to_var(reg, var_name)
+            self.dirty_regs.add(reg)
+            return reg
+
         # Se for uma constante numérica, move o valor para um novo registrador.
         if var_name.isdigit() or (var_name.startswith('-') and var_name[1:].isdigit()):
             reg = self._get_free_reg()
+            print(f"[ENSURE] -> Alocando {reg} para a constante '{var_name}'.")
             self.func_context.add_instruction(f"\tmovi: {reg} = {var_name}")
             return reg
 
-        if var_name.startswith('t'):
-            # Se for uma variável temporária (ex: 't0'), aloca um registrador e marca como "dirty".
-            pass
-        else:
-            # Se não, aloca um registrador e carrega a variável da memória.
-            reg = self._get_free_reg()
-            addr_reg = self._get_free_reg()
-            self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
-            self.func_context.add_instruction(f"\tload: {reg} = [{addr_reg}]")
-            self._assign_reg_to_var(reg, var_name)
-            self._unassign_reg(addr_reg)
-            return reg
+        # Se for uma variável real, carrega da memória.
+        print(f"[ENSURE] -> Variável '{var_name}' não está em um registrador. Carregando da memória.")
+        reg = self._get_free_reg()
+        addr_reg = self._get_free_reg()
+        print(f"[ENSURE] -> Usando {reg} para o valor e {addr_reg} para o endereço.")
+        self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+        self.func_context.add_instruction(f"\tload: {reg} = [{addr_reg}]")
+        self._assign_reg_to_var(reg, var_name)
+        self._unassign_reg(addr_reg) # Libera o registrador de endereço
+        return reg
 
     def get_reg_for_temp(self, temp_name):
         """
         Aloca um registrador para uma nova variável temporária (ex: 't2').
-        Este registrador é marcado como "dirty" (sujo).
         """
+        print(f"[GET_TEMP] Solicitando registrador para o temporário '{temp_name}'.")
         reg = self._get_free_reg()
         self._assign_reg_to_var(reg, temp_name)
         self.dirty_regs.add(reg)
+        print(f"[GET_TEMP] -> '{temp_name}' alocado no registrador {reg}.")
         return reg
 
     def free_reg_if_temp(self, reg):
         """
-        Libera um registrador se ele contiver uma temporária. Variáveis
-        reais (não 't*') não são liberadas.
+        Libera um registrador se ele contiver uma temporária.
         """
         var_name = self.reg_to_var.get(reg)
         if var_name and var_name.startswith('t'):
+            print(f"[FREE_TEMP] Liberando registrador {reg} que continha o temporário '{var_name}'.")
             self._unassign_reg(reg)
 
     def update_var_from_reg(self, dest_var, src_reg):
         """
         Atualiza o mapeamento para refletir uma atribuição (mov).
-        Ex: 't1 := t0', onde t0 está em src_reg. Agora t1 também aponta para src_reg.
         """
+        print(f"[UPDATE_MAP] Mapeando '{dest_var}' para o registrador {src_reg} (que contém o valor de origem).")
         self._assign_reg_to_var(src_reg, dest_var)
 
     def spill_all_dirty(self):
         """
-        Força o salvamento de todas as variáveis "reais" (não temporárias) que
-        estão em registradores sujos. Útil antes de chamadas de função.
+        Força o salvamento de todas as variáveis "reais" antes de chamadas de função.
         """
+        print(f"[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: {self.dirty_regs}")
         for reg in list(self.dirty_regs):
             var_name = self.reg_to_var.get(reg)
             if var_name and not var_name.startswith('t'):
-                # CORREÇÃO: Dividir em duas instruções separadas
-                addr_reg = self._get_free_reg()
+                addr_reg = self.SPILL_TEMP_REG
+                print(f"[SPILL_ALL] -> Salvando variável real '{var_name}' do registrador {reg} na memória.")
                 self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
                 self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
                 self.dirty_regs.discard(reg)
 
     def _get_free_reg(self):
         """
-        Obtém um registrador livre. Se não houver, derrama (spills) o menos
-        usado recentemente (LRU).
+        Obtém um registrador livre ou derrama um, se necessário.
         """
         if self.free_regs:
             reg = self.free_regs.popleft()
             self._mark_as_used(reg)
+            print(f"[GET_FREE] -> Encontrado registrador livre: {reg}. Restantes: {len(self.free_regs)}.")
             return reg
         
+        print("[GET_FREE] -> Nenhum registrador livre. Iniciando processo de spill.")
+        # Lógica de spill aprimorada
         reg_to_spill = None
+        # Tenta primeiro encontrar um registrador com uma variável real para derramar
         for reg in self.lru_order:
             var_name = self.reg_to_var.get(reg)
-            # Se for uma variável real (não temporária), podemos derramar.
             if var_name and not var_name.startswith('t'):
                 reg_to_spill = reg
                 break
         
+        # Se não encontrou, pega o menos usado recentemente, seja ele qual for
         if reg_to_spill is None:
             if self.lru_order:
                 reg_to_spill = self.lru_order[0]
+                print(f"[GET_FREE] -> Nenhum candidato ideal para spill. Forçando o spill do menos usado: {reg_to_spill}.")
             else:
-                raise Exception("Erro de alocação: Sem registradores disponíveis para derramar.")
-        
+                raise Exception("Erro de alocação: LRU vazia e sem registradores livres. Impossível continuar.")
+
         self._spill_reg(reg_to_spill)
         self._mark_as_used(reg_to_spill)
         return reg_to_spill
 
     def _spill_reg(self, reg):
+        """ Salva um registrador na memória (se for variável) ou na pilha (se for temporário). """
         var_name = self.reg_to_var.get(reg)
         if not var_name:
+            print(f"[SPILL] Registrador {reg} não tinha variável mapeada. Apenas liberando.")
             self._unassign_reg(reg)
             return
-        
+
+        print(f"[SPILL] Derramando registrador {reg}, que contém '{var_name}'.")
+
         if reg in self.dirty_regs:
             if not var_name.startswith('t'):
-                # Se o registrador está "sujo", salva a variável na memória.
                 addr_reg = self.SPILL_TEMP_REG
+                print(f"[SPILL] -> '{var_name}' é uma variável real. Salvando em .data.")
                 self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
                 self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
             else:
-                self.func_context.spill_offset -= 1
+                self.func_context.spill_offset -= 4 
                 offset = self.func_context.spill_offset
-                
                 self.spilled_temps[var_name] = offset
-                
+                print(f"[SPILL] -> '{var_name}' é um temporário. Salvando na pilha em [fp, #{offset}].")
                 self.func_context.add_instruction(f"\tstorei: [fp, #{offset}] = {reg}")
-                print(f"[SPILL] Temp '{var_name}' spilled from {reg} to stack at offset {offset} from fp.")
             
             self.dirty_regs.discard(reg)
+        else:
+            print(f"[SPILL] -> Registrador {reg} não estava 'sujo'. Nenhum valor foi salvo.")
             
         self._unassign_reg(reg)
 
     def _assign_reg_to_var(self, reg, var_name):
         """ Cria um novo mapeamento entre um registrador e uma variável. """
+        print(f"[ASSIGN_REG] Mapeando '{var_name}' para {reg}.")
         if var_name in self.var_to_reg and self.var_to_reg[var_name] != reg:
             old_reg = self.var_to_reg[var_name]
+            print(f"[ASSIGN_REG] -> Variável '{var_name}' já estava em {old_reg}. Liberando o mapeamento antigo.")
             self._unassign_reg(old_reg)
 
         if reg in self.reg_to_var and self.reg_to_var[reg] != var_name:
-            old_var = self.reg_to_var.pop(reg)
-            if old_var in self.var_to_reg:
-                del self.var_to_reg[old_var]
+            old_var = self.reg_to_var[reg]
+            print(f"[ASSIGN_REG] -> Registrador {reg} já continha '{old_var}'. Liberando o mapeamento antigo.")
+            self._unassign_reg(reg)
 
         self.var_to_reg[var_name] = reg
         self.reg_to_var[reg] = var_name
@@ -178,11 +202,15 @@ class RegisterAllocator:
             var_name = self.reg_to_var.pop(reg)
             if var_name in self.var_to_reg:
                 del self.var_to_reg[var_name]
+            print(f"[UNASSIGN_REG] Desmapeado {reg} de '{var_name}'.")
+        else:
+            print(f"[UNASSIGN_REG] {reg} já estava desmapeado.")
 
         if reg not in self.free_regs:
-            self.free_regs.append(reg) # Devolve para a lista de livres
+            self.free_regs.append(reg)
         if reg in self.lru_order:
             self.lru_order.remove(reg)
+        print(f"[UNASSIGN_REG] -> Estado atual: {len(self.free_regs)} registradores livres. Mapeamentos: {self.var_to_reg}")
 
     def _mark_as_used(self, reg):
         """ Marca um registrador como o mais recentemente usado. """
@@ -196,10 +224,11 @@ class FunctionContext:
         self.instructions = []
         self.allocator = RegisterAllocator(self)
         self.arg_count = 0
-        
         self.spill_offset = 0
+        print(f"[FUNC_CTX] Contexto para a função '{name}' criado.")
 
     def add_instruction(self, instruction):
+        print(f"[ADD_INSTR] Adicionando instrução para '{self.name}': {instruction.strip()}")
         self.instructions.append(instruction)
 
 IR_BRANCH_COND = {'>': 'bigt', '<': 'bilt', '==': 'bieq', '!=': 'bineq', '>=': 'bigteq', '<=': 'bilteq'}
@@ -209,80 +238,109 @@ def translate_instruction(instr_parts, func_ctx):
     Trabalha com o novo RegisterAllocator para traduzir uma única linha de IR
     para um assembly mais eficiente e conceitualmente correto.
     """
+    print(f"\n--- [TRANSLATE] Processando IR: {' '.join(instr_parts)} ---")
     alloc = func_ctx.allocator
     opcode = instr_parts[0]
     
     if opcode.endswith(':'):
+        print(f"[TRANSLATE] -> Rótulo detectado: {opcode}")
         alloc.spill_all_dirty()
         func_ctx.add_instruction(opcode)
         return
+        
     if opcode == 'goto':
+        print(f"[TRANSLATE] -> Desvio incondicional detectado: {instr_parts[1]}")
         alloc.spill_all_dirty()
         func_ctx.add_instruction(f"\tbi: {instr_parts[1]}")
         return
 
     if ':=' in instr_parts:
         dest, _, *expr_parts = instr_parts
+        print(f"[TRANSLATE] -> Detalhes: Destino='{dest}', Expressão='{' '.join(expr_parts)}'")
         
-        # --- LÓGICA DE ATRIBUIÇÃO E OPERAÇÕES ---
+        if len(expr_parts) > 1 and expr_parts[1] in ['<', '<=', '>', '>=', '==', '!=']:
+            print("[TRANSLATE] -> Caminho: Comparação (condicional)")
+            cond_map = {
+                '<': 'lt',
+                '<=': 'lteq',
+                '>': 'gt',
+                '>=': 'gteq',
+                '==': 'eq',
+                '!=': 'ne'
+            }
+            inv_cond_map = {
+                '<': 'gteq', 
+                '<=': 'gt', 
+                '>': 'lteq', 
+                '>=': 'lt', 
+                '==': 'ne', 
+                '!=': 'eq'
+                }
+            
+            arg1, op_str, arg2 = expr_parts
+            
+            reg1 = alloc.ensure_var_in_reg(arg1)
+            
+            if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
+                op2_val = arg2
+                func_ctx.add_instruction(f"\tcmpi: {reg1}, {op2_val}")
+            
+            dest_reg = alloc.get_reg_for_temp(dest)
+            
+            cond_suffix = cond_map[op_str]
+            inv_cond_suffix = inv_cond_map[op_str]
+            
+            func_ctx.add_instruction(f"\tmov{cond_suffix}: {dest_reg} = 1")
+            func_ctx.add_instruction(f"\tmov{inv_cond_suffix}: {dest_reg} = 0")
         
-        # CASO 1: Operação aritmética (ex: t2 := t0 + t1)
-        if len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/', '<', '<=', '>', '>=', '==', '!=']:
+        elif len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/']:
+            print("[TRANSLATE] -> Caminho: Operação Aritmética")
             op_map = {
                 '+': 'add', '-': 'sub', '*': 'mul', '/': 'div',
                 '<': 'slt', '<=': 'sle', '>': 'sgt', '>=': 'sge',
                 '==': 'seq', '!=': 'sne'
-                }
+            }
             arg1, op_str, arg2 = expr_parts
-            
-            # Garante que os operandos estejam em registradores
             reg1 = alloc.ensure_var_in_reg(arg1)
             assembly_op = op_map[op_str]
             
-            # Verifica se o segundo operando é um imediato ou um registrador
             if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
-                assembly_op += 'i'  # Usa a versão imediata da instrução
+                assembly_op += 'i'
                 op2_val = arg2
+                print(f"[TRANSLATE] -> Operando 2 é um imediato: {op2_val}")
             else:
                 op2_val = alloc.ensure_var_in_reg(arg2)
             
-            # Obtém um registrador para o resultado e marca-o como "sujo"
             dest_reg = alloc.get_reg_for_temp(dest)
             func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {op2_val}")
         
         elif expr_parts[0].startswith('&'):
+            print("[TRANSLATE] -> Caminho: Obter Endereço (&)")
             var_name = expr_parts[0][1:]
             dest_reg = alloc.get_reg_for_temp(dest)
-            # Gera a instrução para obter o endereço da variável
             func_ctx.add_instruction(f"\tmovi: {dest_reg} = var_{var_name}")
-        # CASO 2:  t1 := *t2 (Carregar Valor Usando um Endereço que está em um Registador)
-        # O '*' diz-nos para tratar o operando (t2) não como um valor, mas como um ponteiro.
+
         elif expr_parts[0].startswith('*'):
+            print("[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)")
             var_name_to_load_from = expr_parts[0][1:]
-            addr_reg = alloc.ensure_var_in_reg(var_name_to_load_from) 
+            addr_reg = alloc.ensure_var_in_reg(var_name_to_load_from)
             dest_reg = alloc.get_reg_for_temp(dest)
-            
-            # PASSO 1: Obter o ENDEREÇO da variável para um registador.
-            addr_reg = alloc.get_reg_for_temp(f"addr_{var_name_to_load_from}")
             func_ctx.add_instruction(f"\tload: {dest_reg} = [{addr_reg}]")
-        
-        # CASO 3: *x := t1 (Armazenar valor na memória)
-        # Aqui, o '*' está no destino. Queremos guardar um valor no endereço apontado por t1.
+            # Este addr_reg não é mais necessário após o load
+            alloc.free_reg_if_temp(addr_reg)
+
         elif dest.startswith('*'):
+            print("[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)")
             var_name_to_store_in = dest[1:]
             value_to_store = expr_parts[0]
-            
             src_reg = alloc.ensure_var_in_reg(value_to_store)
-            
             addr_reg = alloc._get_free_reg()
-            
             func_ctx.add_instruction(f"\tmovi: {addr_reg} = var_{var_name_to_store_in}")
             func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
-            
             alloc._unassign_reg(addr_reg)
             
-        # CASO 4: Chamada de função (ex: t0 := call input) - Sem alterações, já estava correta.
         elif 'call' in expr_parts:
+            print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
             func_name = expr_parts[1].replace(',', '')
             alloc.spill_all_dirty()
             if func_name == 'input':
@@ -294,28 +352,14 @@ def translate_instruction(instr_parts, func_ctx):
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
             func_ctx.arg_count = 0
             
-        # CASO 5: Operação aritmética (ex: t2 := t0 + t1) - Sem alterações, já estava correta.
-        elif len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/']:
-            op_map = {'+': 'add', '-': 'sub', '*': 'mul', '/': 'div'}
-            arg1, op_str, arg2 = expr_parts
-            reg1 = alloc.ensure_var_in_reg(arg1)
-            assembly_op = op_map[op_str]
-            if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
-                assembly_op += 'i'
-                op2_val = arg2
-            else:
-                op2_val = alloc.ensure_var_in_reg(arg2)
-            dest_reg = alloc.get_reg_for_temp(dest)
-            func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {op2_val}")
-            
-        # CASO 6: Movimento simples (ex: t1 := x ou t1 := t0)
         else:
-            # Carrega o valor da variável/temporário da direita para um registrador
+            print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
+            alloc.update_var_from_reg(dest, reg_src)
 
-    # --- LÓGICA DE CONTROLO E CHAMADAS DE PROCEDIMENTO ---
-
+    # Lógica para instruções que não são de atribuição
     elif opcode == 'call':
+        print("[TRANSLATE] -> Caminho: Chamada de Procedimento (sem retorno)")
         func_name = instr_parts[1].replace(',', '')
         alloc.spill_all_dirty()
         if func_name == 'output':
@@ -328,59 +372,76 @@ def translate_instruction(instr_parts, func_ctx):
         func_ctx.arg_count = 0
     
     elif opcode == 'arg':
+        print(f"[TRANSLATE] -> Caminho: Passagem de Argumento (arg {func_ctx.arg_count+1})")
         if func_ctx.arg_count < len(ARG_REGS):
-            # 1. Pega no valor do argumento.
             src_reg = alloc.ensure_var_in_reg(instr_parts[1])
-            # 2. Usa o contador (arg_count) para escolher o registrador de destino (r0, r1, ...).
             dest_reg = ARG_REGS[func_ctx.arg_count]
-            # 3. Move o argumento para o seu lugar correto.
             func_ctx.add_instruction(f"\tmov: {dest_reg} = {src_reg}")
-            # 4. Atualiza o contador para o próximo argumento.
             func_ctx.arg_count += 1
-        return  
+        else:
+            print(f"[TRANSLATE_WARN] -> Aviso: Mais de {len(ARG_REGS)} argumentos. Passagem pela pilha não implementada.")
+        return
     
     elif opcode == 'return':
+        print("[TRANSLATE] -> Caminho: Retorno de Função")
         if len(instr_parts) > 1 and instr_parts[1] != '_':
             reg = alloc.ensure_var_in_reg(instr_parts[1])
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
         alloc.spill_all_dirty()
 
-    elif opcode == 'if_false': # (Lógica de branch - pode ser melhorada no futuro)
-        func_ctx.add_instruction(f"\tbilteq: {instr_parts[3]}")
-
+    elif opcode == 'if_false':
+        print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
+        # A lógica aqui pode precisar ser expandida para usar os operadores de comparação do IR_BRANCH_COND
+        # Por enquanto, mantendo o bilteq hardcoded que você tinha
+        cond_var = instr_parts[1]
+        target_label = instr_parts[3]
+        cond_reg = alloc.ensure_var_in_reg(cond_var)
+        # Exemplo de como poderia ser:
+        # func_ctx.add_instruction(f"\tcmp: {cond_reg}, #0")
+        # func_ctx.add_instruction(f"\tbeq: {target_label}") # Branch if equal (to zero)
+        func_ctx.add_instruction(f"\tbilteq: {target_label}")
 
 def generate_assembly(ir_list):
+    print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
     functions = collections.OrderedDict()
     all_vars = set()
     
-    # Coleta todos os nomes de variáveis do código IR.
-    for line in ir_list:
+    # --- PASSAGEM 1: Análise inicial do IR ---
+    print("\n--- Passagem 1: Coletando funções e variáveis globais do IR ---")
+    for i, line in enumerate(ir_list):
         parts = line.strip().split()
         if not parts: continue
         
-        # Regex para encontrar todas as palavras que podem ser variáveis,
-        # ignorando temporários (t0, t1...), labels (L0, L1...) e palavras-chave.
+        # Coleta de variáveis
         variable_pattern = re.compile(r'\b(?!t\d|L\d\b)\b([a-zA-Z_]\w*)\b')
         keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output'}
-        
         matches = variable_pattern.findall(line)
         for var_name in matches:
             if var_name not in keywords and not (var_name.startswith('t') and var_name[1:].isdigit()):
-                all_vars.add(var_name)
+                if var_name not in all_vars:
+                    print(f"[Passagem 1] Variável global encontrada: '{var_name}' na linha {i+1}")
+                    all_vars.add(var_name)
 
+        # Coleta de funções
         if parts[0].endswith(':'):
             func_name = parts[0][:-1]
             if not func_name.startswith('L'):
                 if func_name not in functions:
+                    print(f"[Passagem 1] Função encontrada: '{func_name}'")
                     functions[func_name] = FunctionContext(func_name)
 
     if not functions and any(ir_list):
+        print("[Passagem 1] Nenhuma função explícita encontrada. Assumindo função 'main'.")
         functions['main'] = FunctionContext('main')
+    print(f"--- Fim da Passagem 1: {len(functions)} funções e {len(all_vars)} variáveis encontradas. ---\n")
 
-    # Processa cada função para gerar seu código assembly
+    # --- PASSAGEM 2: Geração de código para cada função ---
+    print("--- Passagem 2: Traduzindo o IR para cada função ---")
     for func_name, func_ctx in functions.items():
+        print(f"\n[Processando Função] -> '{func_name}'")
         func_ir = []
         in_func = False
+        # Isola o IR pertencente apenas a esta função
         for line in ir_list:
             stripped = line.strip()
             if not stripped: continue
@@ -396,33 +457,47 @@ def generate_assembly(ir_list):
             if in_func:
                 func_ir.append(stripped)
         
-        # Limpa instruções antigas e traduz a IR para a função atual
+        print(f"-> IR isolado para '{func_name}' contém {len(func_ir)} instruções.")
+        
+        # Limpa instruções antigas e traduz
         func_ctx.instructions.clear()
         for line in func_ir:
             translate_instruction(line.split(), func_ctx)
         
         # Garante que qualquer variável modificada seja salva no final da função
+        print(f"-> Finalizando a função '{func_name}', fazendo spill de todos os registradores sujos.")
         func_ctx.allocator.spill_all_dirty()
+    print("--- Fim da Passagem 2 ---\n")
 
-    # --- Monta o código final ---
+    # --- Montagem Final ---
+    print("--- Montagem Final: Construindo o arquivo assembly completo ---")
     final_code = [".text", ".global main", ""]
     
     for func_name, func_ctx in functions.items():
+        print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
+
+        # ADIÇÃO DO PRÓLOGO (exemplo, você pode expandir isso)
+        # print(f"[Montagem] -> Adicionando prólogo para '{func_name}' (gerenciamento da pilha).")
+        # final_code.append("\t# Prólogo da Função")
+        
         final_code.extend(func_ctx.instructions)
+        
+        # ADIÇÃO DO EPÍLOGO (exemplo)
+        # print(f"[Montagem] -> Adicionando epílogo para '{func_name}'.")
         final_code.append(f"\tbi: {func_name}_epilogue")
         final_code.append(f"{func_name}_epilogue:")
         final_code.append("\tret:")
         final_code.append("")
 
-    # Secção de dados: declara apenas as variáveis reais do programa
+    # Secção de dados
+    print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
     func_names = set(functions.keys())
-    # Filtra para declarar apenas variáveis que não são temporárias ('t*') ou nomes de funções.
-    # Adicionamos 't' à verificação para garantir que a variável local 't' seja incluída.
     var_names = sorted([var for var in all_vars if var not in func_names and not (var.startswith('t') and var[1:].isdigit())])
-
+    print(f"[Montagem] -> Variáveis a serem declaradas: {var_names}")
     for var in var_names:
         final_code.append(f"var_{var}: .word 0")
     
+    print("=== GERAÇÃO DE ASSEMBLY CONCLUÍDA ===")
     return "\n".join(final_code)
