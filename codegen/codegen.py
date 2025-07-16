@@ -14,7 +14,8 @@ class RegisterAllocator:
     def __init__(self, func_context):
         self.func_context = func_context
         # Define o conjunto de registradores de uso geral disponíveis (r4 a r10)
-        self.reg_pool = [f"r{i}" for i in range(4, 11)] 
+        self.reg_pool = [f"r{i}" for i in range(4, 13)] 
+        self.SPILL_TEMP_REG = "r13" # Registrador temporário para derramamento (spill)
         
         # Estruturas para rastrear o estado dos registradores
         self.free_regs = collections.deque(self.reg_pool.copy())
@@ -106,11 +107,17 @@ class RegisterAllocator:
             self._mark_as_used(reg)
             return reg
         
-        # Se não há registradores livres, escolhe o menos usado para derramar.
-        if not self.lru_order:
+        reg_to_spill = None
+        for reg in self.lru_order:
+            var_name = self.reg_to_var.get(reg)
+            # Se for uma variável real (não temporária), podemos derramar.
+            if var_name and not var_name.startswith('t'):
+                reg_to_spill = reg
+                break
+        
+        if reg_to_spill is None:
             raise Exception("Erro de alocação: Sem registradores disponíveis para derramar.")
         
-        reg_to_spill = self.lru_order.popleft() # Pega o menos usado recentemente
         self._spill_reg(reg_to_spill)
         self._mark_as_used(reg_to_spill)
         return reg_to_spill
@@ -124,7 +131,7 @@ class RegisterAllocator:
             # Ignora completamente as temporárias.
             if var_name and not var_name.startswith('t'):
                 # CORREÇÃO: Dividir em duas instruções separadas
-                addr_reg = self._get_free_reg()
+                addr_reg = self.SPILL_TEMP_REG
                 self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
                 self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
             

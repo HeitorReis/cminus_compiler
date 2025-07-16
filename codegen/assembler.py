@@ -193,7 +193,7 @@ class Instruction:
                             break
                     
                     if literal_label is None:
-                         return f"Error: Literal for value {numeric_val} not found in pool", ""
+                        return f"Error: Literal for value {numeric_val} not found in pool", ""
 
                     # 3b. Gerar a 1ª instrução: movi r12, <endereço_da_constante>
                     movi_details = d.copy()
