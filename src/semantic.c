@@ -317,20 +317,24 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
     case AST_ASSIGN: {
         AstNode *lval = expr->firstChild;
         AstNode *rval = lval ? lval->nextSibling : NULL;
-        if (!lval || lval->kind!=AST_ID) {
+        
+        if (!lval || (lval->kind != AST_ID && lval->kind != AST_ARRAY_ACCESS)) {
             semanticError(expr->lineno, ctx,
-                        "lhs of assignment not an identifier");
+                        "lhs of assignment must be a variable or array element");
         }
+        
         if (!rval) {
             semanticError(expr->lineno, ctx,
                         "assignment with no right-hand side");
             result = TYPE_ERROR;
         } else {
+            // A análise do lado direito continua a mesma.
             ExpType rt = analyzeExpression(rval, ctx);
             if (rt != TYPE_INT) {
                 semanticError(expr->lineno, ctx,
                             "rhs of assignment not int");
             }
+            // O tipo de uma expressão de atribuição é sempre o tipo do valor, ou seja, INT.
             result = TYPE_INT;
         }
         break;

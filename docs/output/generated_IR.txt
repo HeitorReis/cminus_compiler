@@ -1,93 +1,129 @@
 minloc:
   t0 := *low
   *k := t0
-  t1 := *a
-  *x := t1
-  t2 := *low
-  t3 := t2 + 1
-  *i := t3
+  t1 := *low
+  t2 := t1 * 4
+  t3 := &a
+  t4 := t3 + t2
+  t5 := *t4
+  *x := t5
+  t6 := *low
+  t7 := t6 + 1
+  *i := t7
 L0:
-  t4 := *i
-  t5 := *high
-  t6 := t4 < t5
-  if_false t6 goto L1
-  t7 := *a
-  t8 := *x
-  t9 := t7 < t8
-  if_false t9 goto L2
-  t10 := *a
-  *x := t10
+  t8 := *i
+  t9 := *high
+  t10 := t8 < t9
+  if_false t10 goto L1
   t11 := *i
-  *k := t11
+  t12 := t11 * 4
+  t13 := &a
+  t14 := t13 + t12
+  t15 := *t14
+  t16 := *x
+  t17 := t15 < t16
+  if_false t17 goto L2
+  t18 := *i
+  t19 := t18 * 4
+  t20 := &a
+  t21 := t20 + t19
+  t22 := *t21
+  *x := t22
+  t23 := *i
+  *k := t23
   goto L3
 L2:
 L3:
-  t12 := *i
-  t13 := t12 + 1
-  *i := t13
+  t24 := *i
+  t25 := t24 + 1
+  *i := t25
   goto L0
 L1:
-  t14 := *k
-  return t14
+  t26 := *k
+  return t26
   return _
 sort:
-  t15 := *low
-  *i := t15
+  t27 := *low
+  *i := t27
 L4:
-  t16 := *i
-  t17 := *high
-  t18 := t17 - 1
-  t19 := t16 < t18
-  if_false t19 goto L5
-  t20 := *a
-  arg t20
-  t21 := *i
-  arg t21
-  t22 := *high
-  arg t22
-  t23 := call minloc, 3
-  *k := t23
-  t24 := *a
-  *t := t24
-  t25 := *a
-  *a := t25
-  t26 := *t
-  *a := t26
-  t27 := *i
-  t28 := t27 + 1
-  *i := t28
+  t28 := *i
+  t29 := *high
+  t30 := t29 - 1
+  t31 := t28 < t30
+  if_false t31 goto L5
+  t32 := *a
+  arg t32
+  t33 := *i
+  arg t33
+  t34 := *high
+  arg t34
+  t35 := call minloc, 3
+  *k := t35
+  t36 := *k
+  t37 := t36 * 4
+  t38 := &a
+  t39 := t38 + t37
+  t40 := *t39
+  *t := t40
+  t41 := *i
+  t42 := t41 * 4
+  t43 := &a
+  t44 := t43 + t42
+  t45 := *t44
+  t46 := *k
+  t47 := t46 * 4
+  t48 := &a
+  t49 := t48 + t47
+  *t49 := t45
+  t50 := *t
+  t51 := *i
+  t52 := t51 * 4
+  t53 := &a
+  t54 := t53 + t52
+  *t54 := t50
+  t55 := *i
+  t56 := t55 + 1
+  *i := t56
   goto L4
 L5:
   return _
 main:
   *i := 0
 L6:
-  t29 := *i
-  t30 := t29 < 10
-  if_false t30 goto L7
-  t31 := call input, 0
-  *vet := t31
-  t32 := *i
-  t33 := t32 + 1
-  *i := t33
+  t57 := *i
+  t58 := t57 < 10
+  if_false t58 goto L7
+  t59 := call input, 0
+  t60 := *i
+  t61 := t60 * 4
+  t62 := &vet
+  t63 := t62 + t61
+  *t63 := t59
+  t64 := *i
+  t65 := t64 + 1
+  *i := t65
   goto L6
 L7:
-  t34 := *vet
-  arg t34
+  t66 := *vet
+  arg t66
   arg 0
   arg 10
   call sort, 3
   *i := 0
 L8:
-  t35 := *i
-  t36 := t35 < 10
-  if_false t36 goto L9
-  t37 := *vet
-  arg t37
+  t67 := *i
+  t68 := t67 < 10
+  if_false t68 goto L9
+  t69 := *i
+  t70 := t69 * 4
+  t71 := &vet
+  t72 := t71 + t70
+  t73 := *t72
+  arg t73
   call output, 1
-  t38 := *i
-  t39 := t38 + 1
-  *i := t39
+  t74 := *i
+  t75 := t74 + 1
+  *i := t75
   goto L8
 L9:
   return _

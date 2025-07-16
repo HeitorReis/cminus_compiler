@@ -2,83 +2,194 @@
 .global main
 
 minloc:
-	loadi: r4 = [var_low]
-	load: r5 = [r4]
-	loadi: r6 = [var_k]
-	store: [r6] = r5
-	loadi: r7 = [var_a]
-	load: r8 = [r7]
-	loadi: r9 = [var_x]
+	movi: r5 = var_low
+	load: r4 = [r5]
+	movi: r6 = var_k
+	store: [r6] = r4
+	movi: r8 = var_low
+	load: r7 = [r8]
+	muli: r9 = r7, 4
+	movi: r10 = var_a
+	add: r4 = r10, r9
+	movi: r7 = var_t4
+	load: r5 = [r7]
+	movi: r10 = var_x
+	store: [r10] = r5
+	movi: r5 = var_low
+	load: r9 = [r5]
+	addi: r8 = r9, 1
+	movi: r9 = var_i
 	store: [r9] = r8
-	load: r10 = [r4]
-	addi: r5 = r10, 1
-	loadi: r8 = [var_i]
+	movi: r8 = var_addr_low
 	store: [r8] = r5
-	storei: [var_i] = r8
-L0:
-	load: r10 = [r8]
-	loadi: r5 = [var_high]
-	load: r6 = [r5]
-	bilteq: L1
-	load: r6 = [r7]
-	load: r10 = [r9]
-	bilteq: L2
-	load: r6 = [r7]
-	store: [r9] = r6
-	load: r10 = [r8]
-	loadi: r6 = [var_k]
+	movi: r4 = var_addr_k
+	store: [r4] = r6
+	movi: r6 = var_addr_i
+	store: [r6] = r9
+	movi: r4 = var_addr_t4
+	store: [r4] = r7
+	movi: r6 = var_addr_x
 	store: [r6] = r10
-	storei: [var_high] = r5
-	storei: [var_k] = r6
+L0:
+	movi: r7 = var_i
+	load: r7 = [r7]
+	movi: r7 = var_high
+	load: r9 = [r7]
+	movi: r10 = var_t8
+	load: r7 = [r10]
+	bilteq: L1
+	movi: r7 = var_i
+	load: r10 = [r7]
+	muli: r7 = r10, 4
+	movi: r7 = var_a
+	movi: r7 = var_t12
+	load: r10 = [r7]
+	add: r5 = r7, r10
+	movi: r7 = var_t14
+	load: r5 = [r7]
+	movi: r5 = var_x
+	load: r10 = [r5]
+	movi: r8 = var_t15
+	load: r5 = [r8]
+	bilteq: L2
+	movi: r5 = var_i
+	load: r8 = [r5]
+	muli: r5 = r8, 4
+	movi: r5 = var_a
+	movi: r5 = var_t19
+	load: r8 = [r5]
+	add: r4 = r5, r8
+	movi: r5 = var_t21
+	load: r4 = [r5]
+	movi: r8 = var_x
+	store: [r8] = r4
+	movi: r6 = var_i
+	load: r4 = [r6]
+	movi: r6 = var_k
+	store: [r6] = r4
+	movi: r6 = var_addr_t21
+	store: [r6] = r5
+	movi: r4 = var_addr_k
+	store: [r4] = r6
+	movi: r9 = var_addr_x
+	store: [r9] = r8
+	movi: r9 = var_addr_t14
+	store: [r9] = r7
 	bi: L3
 L2:
 L3:
-	load: r10 = [r8]
-	addi: r4 = r10, 1
-	store: [r8] = r4
+	movi: r7 = var_i
+	load: r7 = [r7]
+	movi: r10 = var_t24
+	load: r7 = [r10]
+	addi: r10 = r7, 1
+	movi: r7 = var_i
+	store: [r7] = r10
+	movi: r10 = var_addr_i
+	store: [r10] = r7
 	bi: L0
 L1:
-	load: r4 = [r6]
-	mov: r0 = r4
+	movi: r5 = var_k
+	load: r5 = [r5]
+	movi: r5 = var_t26
+	load: r6 = [r5]
+	mov: r0 = r6
+	movi: r8 = var_addr_k
+	store: [r8] = r5
 	bi: minloc_epilogue
 minloc_epilogue:
 	ret:
 
 sort:
-	loadi: r4 = [var_low]
-	load: r5 = [r4]
-	loadi: r6 = [var_i]
-	store: [r6] = r5
+	movi: r5 = var_low
+	load: r4 = [r5]
+	movi: r6 = var_i
+	store: [r6] = r4
+	movi: r7 = var_addr_low
+	store: [r7] = r5
+	movi: r8 = var_addr_i
+	store: [r8] = r6
 L4:
-	load: r7 = [r6]
-	loadi: r8 = [var_high]
-	load: r9 = [r8]
-	subi: r10 = r9, 1
+	movi: r10 = var_i
+	load: r9 = [r10]
+	movi: r6 = var_high
+	load: r4 = [r6]
+	subi: r5 = r4, 1
 	bilteq: L5
-	loadi: r5 = [var_a]
+	movi: r4 = var_a
+	load: r5 = [r4]
+	mov: r1 = r5
+	movi: r5 = var_i
 	load: r9 = [r5]
-	mov: r1 = r9
-	load: r7 = [r6]
-	mov: r2 = r7
-	load: r9 = [r8]
+	mov: r2 = r9
+	movi: r10 = var_high
+	load: r9 = [r10]
 	mov: r3 = r9
-	storei: [var_a] = r5
+	movi: r6 = var_addr_a
+	store: [r6] = r4
+	movi: r9 = var_addr_i
+	store: [r9] = r5
+	movi: r7 = var_addr_high
+	store: [r7] = r10
 	bl: minloc
 	mov: r7 = r0
-	loadi: r9 = [var_k]
-	store: [r9] = r7
-	load: r7 = [r5]
-	loadi: r4 = [var_t]
-	store: [r4] = r7
-	load: r4 = [r5]
-	store: [r5] = r4
-	loadi: r7 = [var_t]
-	load: r4 = [r7]
-	store: [r5] = r4
-	load: r7 = [r6]
-	addi: r4 = r7, 1
-	store: [r6] = r4
-	storei: [var_k] = r9
+	movi: r8 = var_k
+	store: [r8] = r7
+	movi: r7 = var_k
+	load: r8 = [r7]
+	muli: r8 = r8, 4
+	movi: r8 = var_a
+	movi: r4 = var_t37
+	load: r4 = [r4]
+	add: r5 = r8, r4
+	movi: r8 = var_t39
+	load: r5 = [r8]
+	movi: r4 = var_t
+	store: [r4] = r5
+	movi: r10 = var_i
+	load: r5 = [r10]
+	muli: r10 = r5, 4
+	movi: r10 = var_a
+	movi: r10 = var_t42
+	load: r5 = [r10]
+	add: r6 = r10, r5
+	movi: r10 = var_t44
+	load: r6 = [r10]
+	movi: r6 = var_k
+	load: r5 = [r6]
+	muli: r7 = r5, 4
+	movi: r6 = var_a
+	add: r5 = r6, r7
+	movi: r6 = var_t49
+	movi: r9 = var_t45
+	load: r7 = [r9]
+	store: [r6] = r7
+	movi: r7 = var_t
+	load: r9 = [r7]
+	movi: r5 = var_addr_t44
+	store: [r5] = r10
+	movi: r10 = var_addr_t39
+	store: [r10] = r8
+	movi: r8 = var_i
+	load: r4 = [r8]
+	muli: r5 = r4, 4
+	movi: r10 = var_a
+	add: r8 = r10, r5
+	movi: r4 = var_t54
+	store: [r4] = r9
+	movi: r10 = var_i
+	load: r8 = [r10]
+	addi: r5 = r8, 1
+	movi: r9 = var_i
+	store: [r9] = r5
+	movi: r8 = var_addr_t54
+	store: [r8] = r4
+	movi: r10 = var_addr_i
+	store: [r10] = r9
+	movi: r5 = var_addr_t49
+	store: [r5] = r6
+	movi: r6 = var_addr_t
+	store: [r6] = r7
 	bi: L4
 L5:
 	bi: sort_epilogue
@@ -86,38 +197,85 @@ sort_epilogue:
 	ret:
 
 main:
-	loadi: r4 = [var_i]
+	movi: r4 = var_i
 	movi: r5 = 0
 	store: [r4] = r5
+	movi: r6 = var_addr_i
+	store: [r6] = r4
 L6:
-	load: r6 = [r4]
+	movi: r8 = var_i
+	load: r7 = [r8]
 	bilteq: L7
-	in: r7
-	loadi: r8 = [var_vet]
+	movi: r9 = var_addr_i
+	store: [r9] = r8
+	in: r10
+	movi: r7 = var_i
+	load: r4 = [r7]
+	muli: r8 = r4, 4
+	movi: r7 = var_vet
+	add: r4 = r7, r8
+	movi: r7 = var_t63
+	store: [r7] = r10
+	movi: r10 = var_i
+	load: r8 = [r10]
+	addi: r5 = r8, 1
+	movi: r5 = var_i
+	movi: r10 = var_t65
+	load: r8 = [r10]
+	store: [r5] = r8
+	movi: r5 = var_addr_i
+	store: [r5] = r5
+	movi: r8 = var_addr_t63
 	store: [r8] = r7
-	load: r9 = [r4]
-	addi: r10 = r9, 1
-	store: [r4] = r10
 	bi: L6
 L7:
-	load: r6 = [r8]
+	movi: r6 = var_vet
+	load: r6 = [r6]
+	movi: r9 = var_t66
+	load: r6 = [r9]
 	mov: r1 = r6
-	movi: r7 = 0
-	mov: r2 = r7
-	movi: r9 = 10
-	mov: r3 = r9
+	movi: r9 = 0
+	mov: r2 = r9
+	movi: r6 = 10
+	mov: r3 = r6
 	bl: sort
-	movi: r10 = 0
-	store: [r4] = r10
+	movi: r4 = var_i
+	movi: r4 = 0
+	store: [r4] = r4
+	movi: r5 = var_addr_i
+	store: [r5] = r4
 L8:
-	load: r6 = [r4]
+	movi: r7 = var_i
+	load: r7 = [r7]
+	movi: r7 = var_t67
+	load: r4 = [r7]
 	bilteq: L9
-	load: r6 = [r8]
-	mov: r1 = r6
+	movi: r4 = var_i
+	load: r4 = [r4]
+	movi: r4 = var_t69
+	load: r7 = [r4]
+	muli: r10 = r7, 4
+	movi: r10 = var_vet
+	movi: r10 = var_t70
+	load: r7 = [r10]
+	add: r8 = r10, r7
+	movi: r10 = var_t72
+	load: r8 = [r10]
+	mov: r1 = r8
+	movi: r7 = var_addr_i
+	store: [r7] = r4
+	movi: r8 = var_addr_t72
+	store: [r8] = r10
+	movi: r9 = 1
+	mov: r0 = r9
 	bl: output
-	load: r6 = [r4]
-	addi: r5 = r6, 1
-	store: [r4] = r5
+	movi: r6 = var_i
+	load: r9 = [r6]
+	addi: r6 = r9, 1
+	movi: r4 = var_i
+	store: [r4] = r6
+	movi: r6 = var_addr_i
+	store: [r6] = r4
 	bi: L8
 L9:
 	bi: main_epilogue

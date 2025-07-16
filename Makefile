@@ -22,7 +22,6 @@ OBJECTS := $(BUILD_DIR)/main.o \
            $(BUILD_DIR)/syntax_tree.o \
            $(BUILD_DIR)/utils.o \
 					 $(BUILD_DIR)/ir.o \
-					#  $(BUILD_DIR)/codegen.o
 
 # === Compiler and Linker Settings ===
 CC := gcc
@@ -97,4 +96,4 @@ endif
 
 # Cleanup intermediate files and binary
 clean:
-	rm -rf $(BUILD_DIR) $(BIN_DIR) parser.gv parser.output docs/teste.s
+	rm -rf $(BUILD_DIR) $(BIN_DIR) parser.gv parser.output

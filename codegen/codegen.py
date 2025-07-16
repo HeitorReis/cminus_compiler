@@ -46,7 +46,10 @@ class RegisterAllocator:
 
         # Se não, aloca um registrador e carrega a variável da memória.
         reg = self._get_free_reg()
-        self.func_context.add_instruction(f"\tloadi: {reg} = [var_{var_name}]")
+        # CORREÇÃO: Dividir em duas instruções separadas
+        addr_reg = self._get_free_reg()
+        self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+        self.func_context.add_instruction(f"\tload: {reg} = [{addr_reg}]")
         self._assign_reg_to_var(reg, var_name)
         return reg
 
@@ -84,7 +87,10 @@ class RegisterAllocator:
         for reg in list(self.dirty_regs):
             var_name = self.reg_to_var.get(reg)
             if var_name and not var_name.startswith('t'):
-                self.func_context.add_instruction(f"\tstorei: [var_{var_name}] = {reg}")
+                # CORREÇÃO: Dividir em duas instruções separadas
+                addr_reg = self._get_free_reg()
+                self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+                self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
                 self.dirty_regs.discard(reg)
 
     def _get_free_reg(self):
@@ -114,7 +120,10 @@ class RegisterAllocator:
             # Só salva na memória se for uma variável real (não começa com 't').
             # Ignora completamente as temporárias.
             if var_name and not var_name.startswith('t'):
-                self.func_context.add_instruction(f"\tstorei: [var_{var_name}] = {reg}")
+                # CORREÇÃO: Dividir em duas instruções separadas
+                addr_reg = self._get_free_reg()
+                self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+                self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
             
             # Independentemente de ter salvo ou não, o registrador não está mais "sujo".
             self.dirty_regs.discard(reg)
@@ -165,9 +174,6 @@ class FunctionContext:
 
 IR_BRANCH_COND = {'>': 'bigt', '<': 'bilt', '==': 'bieq', '!=': 'bineq', '>=': 'bigteq', '<=': 'bilteq'}
 
-# COLOQUE ESTA VERSÃO CORRIGIDA EM cminus_compiler/codegen/codegen.py
-
-# COLOQUE ESTA VERSÃO CORRIGIDA EM cminus_compiler/codegen/codegen.py
 def translate_instruction(instr_parts, func_ctx):
     """
     Trabalha com o novo RegisterAllocator para traduzir uma única linha de IR
@@ -199,29 +205,38 @@ def translate_instruction(instr_parts, func_ctx):
             # cujo valor (o endereço) é um imediato para o montador.
             func_ctx.add_instruction(f"\tmovi: {dest_reg} = var_{var_name}")
 
-        # CASO 2: t1 := *t2 (Carregar Valor Usando um Endereço que está em um Registador)
+        # CASO 2:  t1 := *t2 (Carregar Valor Usando um Endereço que está em um Registador)
         # O '*' diz-nos para tratar o operando (t2) não como um valor, mas como um ponteiro.
         elif expr_parts[0].startswith('*'):
-            ptr_name = expr_parts[0][1:]
-            # Garante que o endereço (contido em t2) está num registador (ex: r4).
-            ptr_reg = alloc.ensure_var_in_reg(ptr_name)
-            # Pega num novo registador para guardar o valor que vamos buscar à memória.
+            var_name_to_load_from = expr_parts[0][1:]
             dest_reg = alloc.get_reg_for_temp(dest)
-            # Gera a instrução 'load' correta, que usa um registador para endereçamento.
-            func_ctx.add_instruction(f"\tload: {dest_reg} = [{ptr_reg}]")
-            alloc.free_reg_if_temp(ptr_reg) # O endereço em ptr_reg já foi usado.
             
-        # CASO 3: *t1 := t2 (Armazenar Valor Usando um Endereço em um Registador)
+            # PASSO 1: Obter o ENDEREÇO da variável para um registador.
+            addr_reg = alloc.get_reg_for_temp(f"addr_{var_name_to_load_from}")
+            func_ctx.add_instruction(f"\tmovi: {addr_reg} = var_{var_name_to_load_from}")
+
+            # PASSO 2: Usar esse registador para carregar o VALOR.
+            func_ctx.add_instruction(f"\tload: {dest_reg} = [{addr_reg}]")
+
+            alloc.free_reg_if_temp(addr_reg)
+        
+        # CASO 3: *x := t1 (Armazenar valor na memória)
         # Aqui, o '*' está no destino. Queremos guardar um valor no endereço apontado por t1.
         elif dest.startswith('*'):
-            ptr_name = dest[1:]
-            # Garante que o endereço (contido em t1) está num registador (ex: r4).
-            ptr_reg = alloc.ensure_var_in_reg(ptr_name)
-            # Garante que o valor a ser guardado (contido em t2) está noutro registador (ex: r5).
+            var_name_to_store_in = dest[1:]
+            
+            # PASSO 1: Obter o ENDEREÇO da variável de destino.
+            addr_reg = alloc.get_reg_for_temp(f"addr_{var_name_to_store_in}")
+            func_ctx.add_instruction(f"\tmovi: {addr_reg} = var_{var_name_to_store_in}")
+            
+            # PASSO 2: Garantir que o VALOR a ser guardado está num registador.
             src_reg = alloc.ensure_var_in_reg(expr_parts[0])
-            # Gera a instrução 'store' correta, usando um registador para o endereço.
-            func_ctx.add_instruction(f"\tstore: [{ptr_reg}] = {src_reg}")
-            alloc.free_reg_if_temp(ptr_reg)
+            
+            # PASSO 3: Executar o store.
+            func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
+
+            # Liberta os registadores temporários usados.
+            alloc.free_reg_if_temp(addr_reg)
             alloc.free_reg_if_temp(src_reg)
 
         # CASO 4: Chamada de função (ex: t0 := call input) - Sem alterações, já estava correta.
@@ -267,7 +282,14 @@ def translate_instruction(instr_parts, func_ctx):
     elif opcode == 'call':
         func_name = instr_parts[1].replace(',', '')
         alloc.spill_all_dirty()
-        func_ctx.add_instruction(f"\tbl: {func_name}")
+        if func_name == 'output':
+            # Para output, o valor a ser impresso deve estar em r0
+            src_reg = alloc.ensure_var_in_reg(instr_parts[2])
+            func_ctx.add_instruction(f"\tmov: r0 = {src_reg}")
+            func_ctx.add_instruction(f"\tbl: {func_name}")
+            alloc.free_reg_if_temp(src_reg)
+        else:
+            func_ctx.add_instruction(f"\tbl: {func_name}")
         func_ctx.arg_count = 0
     
     elif opcode == 'arg':
