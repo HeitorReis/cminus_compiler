@@ -25,6 +25,7 @@ L0:
 	movi: r6 = var_high
 	load: r5 = [r6]
 	load: r7 = [r5]
+	subs: r0 = r4, r7
 	movlt: r8 = 1
 	movgteq: r8 = 0
 	bilteq: L1
@@ -36,6 +37,7 @@ L0:
 	movi: r20 = var_x
 	load: r16 = [r20]
 	load: r22 = [r16]
+	subs: r0 = r14, r22
 	movlt: r25 = 1
 	movgteq: r25 = 0
 	bilteq: L2
@@ -82,6 +84,7 @@ L4:
 	load: r20 = [r21]
 	load: r22 = [r20]
 	subi: r23 = r22, 1
+	subs: r0 = r19, r23
 	movlt: r24 = 1
 	movgteq: r24 = 0
 	bilteq: L5
@@ -146,7 +149,7 @@ L6:
 	movi: r16 = var_i
 	load: r15 = [r16]
 	load: r17 = [r15]
-	cmpi: r17, 10
+	subis: r17, 10
 	movlt: r18 = 1
 	movgteq: r18 = 0
 	bilteq: L7
@@ -177,7 +180,7 @@ L7:
 	store: [r10] = r9
 L8:
 	load: r11 = [r15]
-	cmpi: r11, 10
+	subis: r11, 10
 	movlt: r12 = 1
 	movgteq: r12 = 0
 	bilteq: L9

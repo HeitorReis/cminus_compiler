@@ -85,7 +85,7 @@ class Instruction:
         for type_code, op_list in type_codes.items():
             if opcode in op_list:
                 return type_code
-        if any(opcode.startswith(br) for br in ['bi']):
+        if any(opcode.startswith(br) for br in ['b']):
             return '11'
         return None
 
@@ -108,13 +108,24 @@ class Instruction:
         op_part = op_part.strip()
         print(f"[DISASSEMBLE] -> Parte do opcode: '{op_part}', Parte dos operandos: '{rest_part}'")
 
-        sorted_conditions = sorted(condition_setting.keys(), key=len, reverse=True)
-        for cond_suffix in sorted_conditions:
-            if cond_suffix != 'do' and op_part.endswith(cond_suffix):
-                details['cond'] = cond_suffix
-                op_part = op_part[:-len(cond_suffix)]
-                print(f"[DISASSEMBLE] -> Sufixo de condição encontrado: '{cond_suffix}'. Opcode base agora é '{op_part}'")
-                break
+        branch_ops = ['bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq']
+        if op_part in branch_ops:
+            details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
+            details['cond'] = op_part[2:]    # A condição são os últimos caracteres (ex: 'lteq')
+            details['type'] = '11'
+            details['supp'] = 'na' # A lógica de branch não precisa de 'i' aqui.
+            details['op2'] = rest_part       # O alvo do desvio
+            return details
+        
+        branch_ops = ['beq', 'bneq', 'bgt', 'bgteq', 'blt', 'blteq']
+        if op_part in branch_ops:
+            details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
+            details['cond'] = op_part[1:]    # A condição são os últimos caracteres (ex: 'lteq')
+            details['type'] = '11'
+            details['supp'] = 'na' # A lógica de branch não precisa de 'i' aqui.
+            details['op2'] = rest_part       # O alvo do desvio
+            return details
+
         
         if op_part.endswith(('is', 'si')):
             details['supp'] = 'is'
@@ -133,13 +144,13 @@ class Instruction:
         details['type'] = self.get_op_type(details['opcode'])
         print(f"[DISASSEMBLE] -> Opcode final: '{details['opcode']}', Tipo: {details['type']}")
 
-        if details['type'] is None and not details['opcode'].startswith("bi"):
+        if details['type'] is None and not details['opcode'].startswith("b"):
             return {'Error': f"-> Error: Unknown instruction opcode '{details['opcode']}'"}
 
         rest_part = rest_part.replace('retval', 'r0').replace('arg0', 'r0')
 
         if details['type'] == '11': # Branch
-            print(f"[DISASSEMBLE] -> Instrução de Branch. Alvo: '{details['op2']}'")
+            print(f"[DISASSEMBLE] -> Instrução de Branch. Alvo: '{rest_part}'")
         elif '=' not in rest_part:
             details['rd'] = rest_part if rest_part else 'r0'
             details['rh'] = 'r0'
@@ -252,7 +263,7 @@ class Instruction:
         supp_bin = support_bits_map[d['supp']]
 
         base_opcode = d['opcode']
-        if base_opcode.startswith('bi'):
+        if base_opcode.startswith('b'):
             d['cond'] = base_opcode[2:]
             base_opcode = 'b'
             cond_bin = condition_setting.get(d['cond'], '0000')

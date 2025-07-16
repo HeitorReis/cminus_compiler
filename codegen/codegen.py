@@ -283,7 +283,10 @@ def translate_instruction(instr_parts, func_ctx):
             
             if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
                 op2_val = arg2
-                func_ctx.add_instruction(f"\tcmpi: {reg1}, {op2_val}")
+                func_ctx.add_instruction(f"\tsubis: {reg1}, {op2_val}")
+            else:
+                op2_val = alloc.ensure_var_in_reg(arg2)
+                func_ctx.add_instruction(f"\tsubs: r0 = {reg1}, {op2_val}")
             
             dest_reg = alloc.get_reg_for_temp(dest)
             
