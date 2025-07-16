@@ -324,7 +324,6 @@ def generate_assembly(ir_list):
         parts = line.strip().split()
         if not parts: continue
         
-        # --- INÍCIO DA MODIFICAÇÃO (Lógica antiga substituída) ---
         # Regex para encontrar todas as palavras que podem ser variáveis,
         # ignorando temporários (t0, t1...), labels (L0, L1...) e palavras-chave.
         variable_pattern = re.compile(r'\b(?!t\d|L\d\b)\b([a-zA-Z_]\w*)\b')
@@ -332,9 +331,8 @@ def generate_assembly(ir_list):
         
         matches = variable_pattern.findall(line)
         for var_name in matches:
-            if var_name not in keywords:
+            if var_name not in keywords and not (var_name.startswith('t') and var_name[1:].isdigit()):
                 all_vars.add(var_name)
-        # --- FIM DA MODIFICAÇÃO ---
 
         if parts[0].endswith(':'):
             func_name = parts[0][:-1]
