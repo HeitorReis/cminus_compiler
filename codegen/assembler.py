@@ -24,9 +24,9 @@ type_codes = {
 }
 
 condition_setting = {
-    'do': '0000', 'eq': '0001', 'neq': '0010', 'gt': '0011',
-    'gteq': '0100', 'lt': '0101', 'lteq': '0110'
-}
+    "simple": {'do': '0000', 'eq': '0001', 'gt': '0011', 'lt': '0101'},
+    "complex": {'neq': '0010', 'gteq': '0100',  'lteq': '0110'}
+}   
 
 support_bits_map = {
     'i': '10', 's': '01', 'is': '11', 'si': '11', 'na': '00'
@@ -150,6 +150,7 @@ class Instruction:
         rest_part = rest_part.replace('retval', 'r0').replace('arg0', 'r0')
 
         if details['type'] == '11': # Branch
+            details['op2'] = rest_part
             print(f"[DISASSEMBLE] -> Instrução de Branch. Alvo: '{rest_part}'")
         elif '=' not in rest_part:
             details['rd'] = rest_part if rest_part else 'r0'
@@ -258,7 +259,8 @@ class Instruction:
         return self._encode_single_instruction(self.op_details)
 
     def _encode_single_instruction(self, d, is_pseudo=False):
-        cond_bin = condition_setting.get(d['cond'], '0000')
+        aux_cond = condition_setting['complex'].get(d['cond'], '0000')
+        cond_bin = aux_cond if aux_cond else condition_setting['simple'].get(d['cond'], '0000')
         type_bin = d.get('type', '00')
         supp_bin = support_bits_map[d['supp']]
 
@@ -266,7 +268,8 @@ class Instruction:
         if base_opcode.startswith('b'):
             d['cond'] = base_opcode[2:]
             base_opcode = 'b'
-            cond_bin = condition_setting.get(d['cond'], '0000')
+            aux_cond = condition_setting['complex'].get(d['cond'], '0000')
+            cond_bin = aux_cond if aux_cond else condition_setting['simple'].get(d['cond'], '0000')
         
         funct_bin = instructions.get(base_opcode)
         if funct_bin is None:
@@ -511,7 +514,10 @@ class FullCode:
             op_part = op_part.strip()
             details['supp'] = 'i' if 'i' in op_part else 'na'
             op_part_no_cond = op_part
-            for cond in condition_setting:
+            for cond in condition_setting["complex"]:
+                if op_part_no_cond.endswith(cond):
+                    op_part_no_cond = op_part_no_cond[:-len(cond)]
+            for cond in condition_setting["simple"]:
                 if op_part_no_cond.endswith(cond):
                     op_part_no_cond = op_part_no_cond[:-len(cond)]
             details['opcode'] = op_part_no_cond.rstrip('is')

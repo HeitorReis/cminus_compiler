@@ -1,6 +1,16 @@
 import collections
 import re
 
+IR_TO_ASSEMBLY_BRANCH = {
+    # IR op: Assembly branch instruction
+    '<': 'bigteq',  # if_false (a < b)  -> branch if (a >= b)
+    '<=': 'bigt',   # if_false (a <= b) -> branch if (a > b)
+    '>': 'bilteq',  # if_false (a > b)  -> branch if (a <= b)
+    '>=': 'bilt',   # if_false (a >= b) -> branch if (a < b)
+    '==': 'bineq',  # if_false (a == b) -> branch if (a != b)
+    '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
+}
+
 # Mapeamento de nomes simbólicos para registradores físicos
 SPECIAL_REGS = {'sp': 'r29', 'lr': 'r30', 'fp': 'r28', 'retval': 'r0', 'arg': 'r0'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
@@ -64,6 +74,12 @@ class RegisterAllocator:
             reg = self._get_free_reg()
             print(f"[ENSURE] -> Alocando {reg} para a constante '{var_name}'.")
             self.func_context.add_instruction(f"\tmovi: {reg} = {var_name}")
+            return reg
+        
+        if var_name.startswith('t'):
+            # Se for uma variável temporária, aloca um novo registrador.
+            reg = self.get_reg_for_temp(var_name)
+            print(f"[ENSURE] -> Variável temporária '{var_name}' alocada em {reg}.")
             return reg
 
         # Se for uma variável real, carrega da memória.
@@ -225,6 +241,7 @@ class FunctionContext:
         self.allocator = RegisterAllocator(self)
         self.arg_count = 0
         self.spill_offset = 0
+        self.last_comparison = None
         print(f"[FUNC_CTX] Contexto para a função '{name}' criado.")
 
     def add_instruction(self, instruction):
@@ -260,41 +277,17 @@ def translate_instruction(instr_parts, func_ctx):
         
         if len(expr_parts) > 1 and expr_parts[1] in ['<', '<=', '>', '>=', '==', '!=']:
             print("[TRANSLATE] -> Caminho: Comparação (condicional)")
-            cond_map = {
-                '<': 'lt',
-                '<=': 'lteq',
-                '>': 'gt',
-                '>=': 'gteq',
-                '==': 'eq',
-                '!=': 'ne'
-            }
-            inv_cond_map = {
-                '<': 'gteq', 
-                '<=': 'gt', 
-                '>': 'lteq', 
-                '>=': 'lt', 
-                '==': 'ne', 
-                '!=': 'eq'
-                }
             
             arg1, op_str, arg2 = expr_parts
             
             reg1 = alloc.ensure_var_in_reg(arg1)
+            reg2 = alloc.ensure_var_in_reg(arg2)
             
-            if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
-                op2_val = arg2
-                func_ctx.add_instruction(f"\tsubis: {reg1}, {op2_val}")
-            else:
-                op2_val = alloc.ensure_var_in_reg(arg2)
-                func_ctx.add_instruction(f"\tsubs: r0 = {reg1}, {op2_val}")
+            func_ctx.add_instruction(f"\tsubs: r0 = {reg1}, {reg2}")
             
-            dest_reg = alloc.get_reg_for_temp(dest)
+            func_ctx.last_comparison = op_str 
             
-            cond_suffix = cond_map[op_str]
-            inv_cond_suffix = inv_cond_map[op_str]
-            
-            func_ctx.add_instruction(f"\tmov{cond_suffix}: {dest_reg} = 1")
-            func_ctx.add_instruction(f"\tmov{inv_cond_suffix}: {dest_reg} = 0")
+            return
         
         elif len(expr_parts) > 1 and expr_parts[1] in ['+', '-', '*', '/']:
             print("[TRANSLATE] -> Caminho: Operação Aritmética")
@@ -354,6 +347,23 @@ def translate_instruction(instr_parts, func_ctx):
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
             func_ctx.arg_count = 0
+        
+        elif opcode == "if_false":
+            print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
+            target_label = instr_parts[3]
+            
+            if not hasattr(func_ctx, 'last_comparison'):
+                print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
+                return
+            
+            original_op = func_ctx.last_comparison
+            branch_instruction = IR_TO_ASSEMBLY_BRANCH[original_op]
+            
+            func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
+            
+            del func_ctx.last_comparison 
+            return
+            
             
         else:
             print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
