@@ -12,7 +12,7 @@ IR_TO_ASSEMBLY_BRANCH = {
 }
 
 # Mapeamento de nomes simbólicos para registradores físicos
-SPECIAL_REGS = {'sp': 'r29', 'lr': 'r30', 'fp': 'r28', 'retval': 'r0', 'arg': 'r0'}
+SPECIAL_REGS = {'sp': 'r29', 'lr': 'r30', 'fp': 'r28', 'retval': 'r0', 'arg': 'r0', 'out': 'r4'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -28,7 +28,7 @@ class RegisterAllocator:
         # Prioriza o uso de registradores Callee-Saved para variáveis locais
         # e Caller-Saved para cálculos rápidos e temporários.
         self.callee_saved_pool = [f"r{i}" for i in range(13, 28)]  # r13 a r27 (15 regs)
-        self.caller_saved_pool = [f"r{i}" for i in range(4, 13)]   # r4 a r12 (9 regs)
+        self.caller_saved_pool = [f"r{i}" for i in range(5, 13)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
         self.SPILL_TEMP_REG = "r28" 
@@ -327,13 +327,17 @@ def translate_instruction(instr_parts, func_ctx):
 
         elif dest.startswith('*'):
             print("[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)")
-            var_name_to_store_in = dest[1:]
+            addr_var_name = dest[1:]
             value_to_store = expr_parts[0]
+            
             src_reg = alloc.ensure_var_in_reg(value_to_store)
-            addr_reg = alloc._get_free_reg()
-            func_ctx.add_instruction(f"\tmovi: {addr_reg} = var_{var_name_to_store_in}")
+            
+            addr_reg = alloc.ensure_var_in_reg(addr_var_name)
+            
             func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
+            
             alloc._unassign_reg(addr_reg)
+            alloc._unassign_reg(src_reg)
             
         elif 'call' in expr_parts:
             print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
@@ -378,8 +382,7 @@ def translate_instruction(instr_parts, func_ctx):
         if func_name == 'output':
             # Para output, o valor a ser impresso deve estar em r0
             src_reg = alloc.ensure_var_in_reg(instr_parts[2])
-            func_ctx.add_instruction(f"\tmov: r0 = {src_reg}")
-            func_ctx.add_instruction(f"\tbl: {func_name}")
+            func_ctx.add_instruction(f"\tmov: r4 = {src_reg}")
         else:
             func_ctx.add_instruction(f"\tbl: {func_name}")
         func_ctx.arg_count = 0
@@ -426,7 +429,7 @@ def generate_assembly(ir_list):
         if not parts: continue
         
         # Coleta de variáveis
-        variable_pattern = re.compile(r'\b(?!t\d|L\d\b)\b([a-zA-Z_]\w*)\b')
+        variable_pattern = re.compile(r'\b(?!t\d+\b|L\d+\b)([a-zA-Z_]\w*)\b')
         keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output'}
         matches = variable_pattern.findall(line)
         for var_name in matches:

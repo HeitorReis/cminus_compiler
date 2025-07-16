@@ -25,11 +25,24 @@ type_codes = {
 
 condition_setting = {
     "simple": {'do': '0000', 'eq': '0001', 'gt': '0011', 'lt': '0101'},
-    "complex": {'neq': '0010', 'gteq': '0100',  'lteq': '0110'}
+    "complex": {'neq': '0010', 'gteq': '0100', 'lteq': '0110'}
 }   
 
 support_bits_map = {
     'i': '10', 's': '01', 'is': '11', 'si': '11', 'na': '00'
+}
+
+# Mapeamento reverso para encontrar o nome da instrução a partir do opcode
+reversed_instructions = {v: k for k, v in instructions.items()}
+
+# Mapeamento reverso para encontrar o nome da condição a partir do código
+reversed_conditions = {v: k for d in condition_setting.values() for k, v in d.items()}
+
+# Mapeamento dos códigos de tipo para nomes descritivos
+type_names = {
+    '00': "Data-Processing",
+    '01': "Load/Store",
+    '11': "Branch"
 }
 
 class Instruction:
@@ -102,30 +115,32 @@ class Instruction:
         try:
             op_part, rest_part = line.split(':', 1)
             rest_part = rest_part.strip()
+            op_part = op_part.strip()
         except ValueError:
             return {'Error': f'-> Error: Syntax (missing ":" separator) in line "{line}"'}
 
         op_part = op_part.strip()
         print(f"[DISASSEMBLE] -> Parte do opcode: '{op_part}', Parte dos operandos: '{rest_part}'")
 
-        branch_ops = ['bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq']
+        branch_ops = ['bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq', 'bi']
         if op_part in branch_ops:
+            print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
             details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
-            details['cond'] = op_part[2:]    # A condição são os últimos caracteres (ex: 'lteq')
+            details['cond'] = op_part[2:] if len(op_part) > 2 else 'do'    # A condição são os últimos caracteres (ex: 'lteq')
             details['type'] = '11'
-            details['supp'] = 'na' # A lógica de branch não precisa de 'i' aqui.
+            details['supp'] = 'i' # A lógica de branch não precisa de 'i' aqui.
             details['op2'] = rest_part       # O alvo do desvio
             return details
         
-        branch_ops = ['beq', 'bneq', 'bgt', 'bgteq', 'blt', 'blteq']
+        branch_ops = ['b', 'beq', 'bneq', 'bgt', 'bgteq', 'blt', 'blteq', 'b']
         if op_part in branch_ops:
+            print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
             details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
-            details['cond'] = op_part[1:]    # A condição são os últimos caracteres (ex: 'lteq')
+            details['cond'] = op_part[1:] if len(op_part) > 1 else 'do'   # A condição são os últimos caracteres (ex: 'lteq')
             details['type'] = '11'
-            details['supp'] = 'na' # A lógica de branch não precisa de 'i' aqui.
+            details['supp'] = 'na' 
             details['op2'] = rest_part       # O alvo do desvio
             return details
-
         
         if op_part.endswith(('is', 'si')):
             details['supp'] = 'is'
@@ -259,17 +274,17 @@ class Instruction:
         return self._encode_single_instruction(self.op_details)
 
     def _encode_single_instruction(self, d, is_pseudo=False):
+        print(f"[ENCODE] -> Codificando instrução: {d}")
         aux_cond = condition_setting['complex'].get(d['cond'], '0000')
         cond_bin = aux_cond if aux_cond else condition_setting['simple'].get(d['cond'], '0000')
         type_bin = d.get('type', '00')
         supp_bin = support_bits_map[d['supp']]
 
         base_opcode = d['opcode']
-        if base_opcode.startswith('b'):
-            d['cond'] = base_opcode[2:]
-            base_opcode = 'b'
-            aux_cond = condition_setting['complex'].get(d['cond'], '0000')
-            cond_bin = aux_cond if aux_cond else condition_setting['simple'].get(d['cond'], '0000')
+        if base_opcode == 'b':
+            print(f"[ENCODE] -> Instrução de branch detectada: {base_opcode} com condição {d['cond']}")
+            aux_cond = condition_setting['complex'].get(d['cond'], 'na')
+            cond_bin = aux_cond if aux_cond != 'na' else condition_setting['simple'].get(d['cond'], 'error')
         
         funct_bin = instructions.get(base_opcode)
         if funct_bin is None:
@@ -289,12 +304,20 @@ class Instruction:
                 offset = 0
                 
                 next_instruction_address = self.current_address + (2 if is_pseudo else 1)
-                
-                if target in self.symbol_table:
-                    # offset = destino - (PC + 1)
-                    offset = self.symbol_table[target] - next_instruction_address
+                if 'bl' in d['opcode']:
+                    if target in self.symbol_table:
+                        # offset = destino - (PC + 1)
+                        offset = self.symbol_table[target] - next_instruction_address
+                    else:
+                        offset = int(target)
+                elif 'i' in d['supp']:
+                    if target in self.symbol_table:
+                        # offset = destino - (PC + 1)
+                        offset = self.symbol_table[target] - next_instruction_address
+                    else:
+                        offset = int(target)
                 else:
-                    offset = int(target)
+                    offset = d['op2'].replace('r', '')
                 
                 offset_val = offset
                 offset_bin = self.get_signed_binary(str(offset_val), 20)
@@ -348,6 +371,16 @@ class FullCode:
         if 'Error' in self.response:
             print(f"[INIT] Erro detectado na primeira passagem: {self.response}")
             return
+        
+        try:
+            debug_filename = "docs/output/debug_machine_code.txt"
+            with open(debug_filename, 'w') as f:
+                f.write(self.debug_output)
+            print(f"Versão de debug gerada com sucesso em: {debug_filename}")
+
+        except IOError as e:
+            self.response = f"Error writing to output files: {e}"
+            print(f"[INIT] Erro ao escrever arquivos: {self.response}")
 
         print(f"[INIT] Tabela de símbolos após a primeira passagem: {self.symbol_table}")
         print("[INIT] Executando a segunda passagem para codificar as instruções...")
@@ -436,9 +469,13 @@ class FullCode:
         # ETAPA 1: Atribuir endereços aos literais
         print("[PASS 2] Etapa 1: Coletando literais grandes e atribuindo endereços a eles...")
         literal_address = max(self.symbol_table.values(), default=-1) + 1
-        for line in self.assembly_list:
-            if line.startswith(".") or (line.endswith(':') and line != 'ret:'): continue
-            
+        in_text_section = True
+        for i, line in enumerate(self.assembly_list):
+            if line.startswith(".data"):
+                in_text_section = False
+                continue
+            if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
+                continue
             details = self._disassemble_for_pass1(line)
             if details.get('opcode') == 'mov' and details.get('supp') == 'i':
                 try:
@@ -461,8 +498,13 @@ class FullCode:
 
         # ETAPA 2: Codificar as instruções
         print("\n[PASS 2] Etapa 2: Codificando cada linha de instrução para binário...")
+        in_text_section = True
         for line_num, line in enumerate(self.assembly_list):
-            if line.startswith(".") or (line.endswith(':') and line != 'ret:'): continue
+            if line.startswith(".data"):
+                in_text_section = False
+                continue
+            if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
+                continue
             
             line_instruction = Instruction(line, self.symbol_table, current_address, self.literal_pool)
             if 'Error' in line_instruction.response:
