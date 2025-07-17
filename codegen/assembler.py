@@ -32,19 +32,6 @@ support_bits_map = {
     'i': '10', 's': '01', 'is': '11', 'si': '11', 'na': '00'
 }
 
-# Mapeamento reverso para encontrar o nome da instrução a partir do opcode
-reversed_instructions = {v: k for k, v in instructions.items()}
-
-# Mapeamento reverso para encontrar o nome da condição a partir do código
-reversed_conditions = {v: k for d in condition_setting.values() for k, v in d.items()}
-
-# Mapeamento dos códigos de tipo para nomes descritivos
-type_names = {
-    '00': "Data-Processing",
-    '01': "Load/Store",
-    '11': "Branch"
-}
-
 class Instruction:
     def __init__(
         self, 
@@ -371,16 +358,6 @@ class FullCode:
         if 'Error' in self.response:
             print(f"[INIT] Erro detectado na primeira passagem: {self.response}")
             return
-        
-        try:
-            debug_filename = "docs/output/debug_machine_code.txt"
-            with open(debug_filename, 'w') as f:
-                f.write(self.debug_output)
-            print(f"Versão de debug gerada com sucesso em: {debug_filename}")
-
-        except IOError as e:
-            self.response = f"Error writing to output files: {e}"
-            print(f"[INIT] Erro ao escrever arquivos: {self.response}")
 
         print(f"[INIT] Tabela de símbolos após a primeira passagem: {self.symbol_table}")
         print("[INIT] Executando a segunda passagem para codificar as instruções...")
@@ -470,27 +447,29 @@ class FullCode:
         print("[PASS 2] Etapa 1: Coletando literais grandes e atribuindo endereços a eles...")
         literal_address = max(self.symbol_table.values(), default=-1) + 1
         in_text_section = True
-        for i, line in enumerate(self.assembly_list):
-            if line.startswith(".data"):
-                in_text_section = False
-                continue
-            if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
-                continue
-            details = self._disassemble_for_pass1(line)
-            if details.get('opcode') == 'mov' and details.get('supp') == 'i':
-                try:
-                    imm_val_str = details.get('op2', '0')
-                    imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                    numeric_val = int(imm_val)
-                    if not (-512 <= numeric_val <= 511):
-                        if numeric_val not in self.literal_pool.values():
-                            literal_label = f".Lconst{len(self.literal_pool)}"
-                            self.literal_pool[literal_label] = numeric_val
-                            self.symbol_table[literal_label] = literal_address
-                            print(f"[PASS 2] -> Literal grande '{numeric_val}' encontrado. Rótulo '{literal_label}' mapeado para o endereço {literal_address}.")
-                            literal_address += 1
-                except (ValueError, KeyError):
-                    pass 
+        with open("docs/output/debug_assembly.txt", "w") as debug_file:
+            for i, line in enumerate(self.assembly_list):
+                if line.startswith(".data"):
+                    in_text_section = False
+                    continue
+                if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
+                    continue
+                details = self._disassemble_for_pass1(line)
+                if details.get('opcode') == 'mov' and details.get('supp') == 'i':
+                    try:
+                        imm_val_str = details.get('op2', '0')
+                        imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
+                        numeric_val = int(imm_val)
+                        if not (-512 <= numeric_val <= 511):
+                            if numeric_val not in self.literal_pool.values():
+                                literal_label = f".Lconst{len(self.literal_pool)}"
+                                self.literal_pool[literal_label] = numeric_val
+                                self.symbol_table[literal_label] = literal_address
+                                print(f"[PASS 2] -> Literal grande '{numeric_val}' encontrado. Rótulo '{literal_label}' mapeado para o endereço {literal_address}.")
+                                literal_address += 1
+                    except (ValueError, KeyError):
+                        pass 
+                debug_file.write(f"{line.strip()} -> {details}\n")
         if self.literal_pool:
             print(f"[PASS 2] -> Pool de literais final: {self.literal_pool}")
         else:
@@ -535,7 +514,7 @@ class FullCode:
                 label = line.split(':')[0]
                 val_str = line.split('.word')[1].strip()
                 data_vars[self.symbol_table[label]] = val_str
-
+        
         for label, value in self.literal_pool.items():
             data_vars[self.symbol_table[label]] = str(value)
         
@@ -584,3 +563,53 @@ class FullCode:
                 return format((1 << bits) + value, f'0{bits}b')
         except (ValueError, TypeError):
             return f"Error: Invalid immediate value '{value_str}'"
+    
+    def decode_machine_code(self):
+        print("\n--- Iniciando a Decodificação do Código de Máquina ---")
+        decoded_lines = []
+        for line in self.full_code.splitlines():
+            if not line.strip():
+                continue
+            if len(line) != 32:
+                decoded_lines.append(f"Error: Invalid instruction length {len(line)}")
+                continue
+            
+            type_names = {
+                '00': "Data-Processing.",
+                '01': "Load / Store . .",
+                '11': "Branch . . . . ."
+            }
+            
+            cond = line[:4]
+            for cond_dict in [condition_setting['simple'], condition_setting['complex']]:
+                for cond_key, cond_value in cond_dict.items():
+                    if cond == cond_value:
+                        cond_decoded = cond_key
+                        break
+            type_code = line[4:6]
+            type_decoded = type_names.get(type_code, ['unknown'])
+            supp = line[6:8]
+            for supp_key, supp_value in support_bits_map.items():
+                if supp == supp_value:
+                    supp_decoded = supp_key
+                    break
+            opcode = line[8:12]
+            opcode_decoded = next((k for k, v in instructions.items() if v == opcode), 'unknown')
+            rd = int(line[12:17], 2)
+            rd_decoded = f"r{rd}"
+            rh = int(line[17:22], 2)
+            rh_decoded = f"r{rh}"
+            op2 = int(line[22:], 2)
+            if type_code == '11':
+                if 'b' in opcode_decoded:
+                    op2_decoded = f"branch target {op2}"
+                else:
+                    op2_decoded = f"immediate {op2}"
+            else:
+                op2_decoded = f"r{op2}" if op2 < 32 else f"immediate {op2}"
+            
+            decoded_line = f"Type: {type_decoded} \tCond: {cond_decoded} \tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= {rh_decoded} \t[ {op2_decoded} ]"
+            decoded_lines.append(decoded_line)
+            
+        print("--- Decodificação Concluída ---")
+        return "\n".join(decoded_lines)

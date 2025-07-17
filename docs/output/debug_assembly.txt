@@ -1,0 +1,27 @@
+in: r13 -> {'supp': 'i', 'opcode': 'in'}
+movi: r15 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
+load: r14 = [r15] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r15]'}
+store: [r14] = r13 -> {'supp': 'na', 'opcode': 'store', 'op2': 'r13'}
+movi: r16 = 2 -> {'supp': 'i', 'opcode': 'mov', 'op2': '2'}
+movi: r18 = var_y -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_y'}
+load: r17 = [r18] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r18]'}
+store: [r17] = r16 -> {'supp': 'na', 'opcode': 'store', 'op2': 'r16'}
+movi: r20 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
+load: r19 = [r20] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r20]'}
+load: r21 = [r19] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r19]'}
+movi: r23 = var_y -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_y'}
+load: r22 = [r23] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r23]'}
+load: r24 = [r22] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r22]'}
+subs: r0 = r21, r24 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r21'}
+bilteq: L0 -> {'supp': 'i', 'opcode': 'b'}
+load: r26 = [r19] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r19]'}
+mov: r1 = r26 -> {'supp': 'na', 'opcode': 'mov', 'op2': 'r26'}
+movi: r27 = 1 -> {'supp': 'i', 'opcode': 'mov', 'op2': '1'}
+mov: r4 = r27 -> {'supp': 'na', 'opcode': 'mov', 'op2': 'r27'}
+bi: L1 -> {'supp': 'i', 'opcode': 'b'}
+load: r5 = [r22] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r22]'}
+mov: r1 = r5 -> {'supp': 'na', 'opcode': 'mov', 'op2': 'r5'}
+movi: r6 = 1 -> {'supp': 'i', 'opcode': 'mov', 'op2': '1'}
+mov: r4 = r6 -> {'supp': 'na', 'opcode': 'mov', 'op2': 'r6'}
+bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
+ret: -> {'supp': 'na', 'opcode': 'ret'}

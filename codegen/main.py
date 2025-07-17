@@ -44,3 +44,8 @@ if 'Error' not in machine_code.response:
 else:
     # Imprime a mensagem de erro detalhada
     print(f"Falha na montagem: {machine_code.response}")
+
+debug_log = machine_code.decode_machine_code()
+print("--- MACHINE CODE DECODED ---")
+with open("docs/output/debug_machine_code.txt", "w") as debug_file:
+    debug_file.write(debug_log)
