@@ -92,6 +92,16 @@ class RegisterAllocator:
         self._assign_reg_to_var(reg, var_name)
         self._unassign_reg(addr_reg) # Libera o registrador de endereço
         return reg
+        
+    def get_address_in_reg(self, var_name):
+        """
+        Garante que o ENDEREÇO de uma variável esteja em um registrador.
+        """
+        print(f"[GET_ADDR] Obtendo endereço para '{var_name}'.")
+        addr_reg = self._get_free_reg()
+        self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+        print(f"[GET_ADDR] -> Endereço de '{var_name}' carregado em {addr_reg}.")
+        return addr_reg
 
     def get_reg_for_temp(self, temp_name):
         """
@@ -319,11 +329,14 @@ def translate_instruction(instr_parts, func_ctx):
         elif expr_parts[0].startswith('*'):
             print("[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)")
             var_name_to_load_from = expr_parts[0][1:]
-            addr_reg = alloc.ensure_var_in_reg(var_name_to_load_from)
-            dest_reg = alloc.get_reg_for_temp(dest)
-            func_ctx.add_instruction(f"\tload: {dest_reg} = [{addr_reg}]")
-            # Este addr_reg não é mais necessário após o load
-            alloc.free_reg_if_temp(addr_reg)
+            
+            # Obtém o endereço da variável de destino
+            src_reg_with_value = alloc.ensure_var_in_reg(var_name_to_load_from)
+            
+            # Obtém o endereço da variável de destino
+            alloc.update_var_from_reg(dest, src_reg_with_value)
+            
+            print(f"[TRANSLATE] -> Valor de '{var_name_to_load_from}' agora em {src_reg_with_value}, mapeado para '{dest}'.")
 
         elif dest.startswith('*'):
             print("[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)")
@@ -332,12 +345,17 @@ def translate_instruction(instr_parts, func_ctx):
             
             src_reg = alloc.ensure_var_in_reg(value_to_store)
             
-            addr_reg = alloc.ensure_var_in_reg(addr_var_name)
+            if addr_var_name.startswith('t'):
+                print("[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.")
+                addr_reg = alloc.ensure_var_in_reg(addr_var_name)
+            else:
+                print("[TRANSLATE] -> Endereço de destino é uma variável real. Obtendo endereço em registrador.")
+                addr_reg = alloc.get_address_in_reg(addr_var_name)
             
             func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
             
+            alloc.free_reg_if_temp(src_reg) 
             alloc._unassign_reg(addr_reg)
-            alloc._unassign_reg(src_reg)
             
         elif 'call' in expr_parts:
             print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")

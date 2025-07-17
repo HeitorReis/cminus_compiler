@@ -3,31 +3,29 @@
 
 main:
 	in: r13
-	movi: r15 = var_x
-	load: r14 = [r15]
+	movi: r14 = var_x
 	store: [r14] = r13
-	movi: r16 = 2
-	movi: r18 = var_y
+	movi: r15 = 2
+	movi: r16 = var_y
+	store: [r16] = r15
+	movi: r18 = var_x
 	load: r17 = [r18]
-	store: [r17] = r16
-	movi: r20 = var_x
+	movi: r20 = var_y
 	load: r19 = [r20]
-	load: r21 = [r19]
-	movi: r23 = var_y
-	load: r22 = [r23]
-	load: r24 = [r22]
-	subs: r0 = r21, r24
+	subs: r0 = r17, r19
 	bilteq: L0
-	load: r26 = [r19]
-	mov: r1 = r26
-	movi: r27 = 1
-	mov: r4 = r27
+	movi: r23 = var_x
+	load: r22 = [r23]
+	mov: r1 = r22
+	movi: r24 = 1
+	mov: r4 = r24
 	bi: L1
 L0:
-	load: r5 = [r22]
-	mov: r1 = r5
-	movi: r6 = 1
-	mov: r4 = r6
+	movi: r26 = var_y
+	load: r25 = [r26]
+	mov: r1 = r25
+	movi: r27 = 1
+	mov: r4 = r27
 L1:
 	bi: main_epilogue
 main_epilogue:

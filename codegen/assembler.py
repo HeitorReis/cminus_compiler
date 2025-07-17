@@ -170,15 +170,22 @@ class Instruction:
             elif source.startswith('[') and source.endswith(']') or dest.startswith('[') and dest.endswith(']'):
                 if details['opcode'] == 'load':
                     details['rd'] = dest
-                    details['rh'] = source.strip('[]')
-                    details['op2'] = '0'
+                    details['rh'] = 'r0'
+                    details['op2'] = source.strip('[]')
                 elif details['opcode'] == 'store':
+                    print(f"[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: {dest}. Source detectado: '{source}'")
                     details['rd'] = 'r0'
-                    details['rh'] = dest.strip('[]')
-                    details['op2'] = source
-                details['supp'] = 'na'
+                    details['op2'] = dest.strip('[]')
+                    details['rh'] = source.strip(' ')
                 print("[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.")
-            
+            elif dest.startswith('[') and dest.endswith(']'):
+                if details['opcode'] == 'store':
+                    details['rd'] = 'r0'
+                    details['op2'] = dest.strip('[]')
+                    details['rh'] = source.strip(' ')
+                    print(f"[DISASSEMBLE] -> Store com endereçamento por registrador. Destino: '{dest}', Origem: '{source}'")
+                else:
+                    print("[DISASSEMBLE] -> ERRO REVER SEçÃO DE CODIGO AINDA NAO IMPLEMENTADA.")
             else:
                 details['rd'] = dest
                 source_parts = list(map(str.strip, source.split(',')))
@@ -321,13 +328,23 @@ class Instruction:
             op2_str = d.get('op2', '0')
             op2_bin = ""
             is_immediate = 'i' in d['supp']
-
+            
             if is_immediate:
                 imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
                 imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
                 op2_bin = self.get_signed_binary(str(imm_val), 10)
                 debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
+            elif d['opcode'] in ['load', 'store']:
+                ro_bin = '00000'
+                op2_bin = ro_bin + '00000'
+                debug += f"Ro[{ro_bin}] pad[00000] (Load/Store sem registrador de origem)"
+            elif d['opcode'] == 'in':
+                ro_bin = '00000'
+                op2_bin = ro_bin + '00000'
+                debug += f"Ro[{ro_bin}] pad[00000]"
             else: # Registrador
+                if not op2_str.startswith('r'):
+                    return f"Error: Invalid register format '{op2_str}'", ""
                 ro_num_str = op2_str.replace('r', '')
                 ro_bin = self.get_signed_binary(ro_num_str, 5)
                 op2_bin = ro_bin + '00000'
@@ -601,14 +618,36 @@ class FullCode:
             rh_decoded = f"r{rh}"
             op2 = int(line[22:], 2)
             if type_code == '11':
+                opcode_decoded = 'b  ' if opcode == '0000' else 'bl' if opcode == '1000' else 'ret'
                 if 'b' in opcode_decoded:
                     op2_decoded = f"branch target {op2}"
                 else:
                     op2_decoded = f"immediate {op2}"
-            else:
-                op2_decoded = f"r{op2}" if op2 < 32 else f"immediate {op2}"
+            elif type_code == '01':
+                if opcode_decoded == 'sub':
+                    opcode_decoded = 'load'
+                    op2_decoded = f"null [r{op2}]"
+                elif opcode_decoded == 'add':
+                    opcode_decoded = 'store'
+                    op2_decoded = f"null [r{op2}]"
+                else:
+                    op2_decoded = f"immediate {op2}"
+            else: # Data-Processing
+                is_immediate = supp[0] == '1' # Verifica o bit 'i' no campo de suporte (bits 25-24)
+                if is_immediate:
+                    # Se for imediato, converte de binário de 10 bits para inteiro com sinal
+                    if line[22] == '1': # Se for negativo (complemento de dois)
+                        op2_val = op2 - (1 << 10)
+                    else:
+                        op2_val = op2
+                    op2_decoded = f"immediate {op2_val}"
+                else:
+                    # Se não for imediato, os 5 bits mais altos são o registrador Ro
+                    ro_reg = int(line[22:27], 2)
+                    op2_decoded = f"r{ro_reg}"
             
-            decoded_line = f"Type: {type_decoded} \tCond: {cond_decoded} \tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= {rh_decoded} \t[ {op2_decoded} ]"
+            
+            decoded_line = f"Type: {type_decoded} \tCond: {cond_decoded} \tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= (Rh) {rh_decoded} \tOperand: {op2_decoded}"
             decoded_lines.append(decoded_line)
             
         print("--- Decodificação Concluída ---")
