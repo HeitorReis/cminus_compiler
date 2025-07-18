@@ -424,6 +424,8 @@ def translate_instruction(instr_parts, func_ctx):
             reg = alloc.ensure_var_in_reg(instr_parts[1])
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
         alloc.spill_all_dirty()
+        func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
+        return # Adicionado para clareza
 
     elif opcode == 'if_false':
         print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
@@ -519,11 +521,18 @@ def generate_assembly(ir_list):
         
         final_code.extend(func_ctx.instructions)
         
-        # ADIÇÃO DO EPÍLOGO (exemplo)
-        # print(f"[Montagem] -> Adicionando epílogo para '{func_name}'.")
-        final_code.append(f"\tbi: {func_name}_epilogue")
+        # ADIÇÃO DO EPÍLOGO
+        final_code.append(f"\tbi: {func_name}_epilogue") # Salta para o epílogo
         final_code.append(f"{func_name}_epilogue:")
-        final_code.append("\tret:")
+        
+        # Se a função for a 'main', ela deve parar o processador.
+        if func_name == 'main':
+            final_code.append("\tret:")
+        # Qualquer outra função deve retornar para quem a chamou.
+        else:
+            # Gera um branch para o endereço no Link Register (r30).
+            final_code.append(f"\tb: {SPECIAL_REGS['lr']}") # SPECIAL_REGS['lr'] é 'r30'
+            
         final_code.append("")
 
     # Secção de dados
