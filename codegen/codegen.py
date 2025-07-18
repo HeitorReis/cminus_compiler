@@ -399,8 +399,10 @@ def translate_instruction(instr_parts, func_ctx):
         alloc.spill_all_dirty()
         if func_name == 'output':
             # Para output, o valor a ser impresso deve estar em r0
-            src_reg = alloc.ensure_var_in_reg(instr_parts[2])
-            func_ctx.add_instruction(f"\tmov: r4 = {src_reg}")
+            output_reg = SPECIAL_REGS['out']  # Busca 'r4' do dicionário
+            argument_reg = ARG_REGS[0]        # Busca 'r1', o primeiro registrador de argumento
+            
+            func_ctx.add_instruction(f"\tmov: {output_reg} = {argument_reg}")
         else:
             func_ctx.add_instruction(f"\tbl: {func_name}")
         func_ctx.arg_count = 0
