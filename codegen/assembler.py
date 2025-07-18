@@ -93,6 +93,26 @@ class Instruction:
         print(f"[DISASSEMBLE] Analisando: '{line}'")
         details = {'cond': 'do', 'supp': 'na'}
         
+        # 1. Primeiro, tratamos o caso especial 'ret:', que é uma linha inteira.
+        if line == 'ret:':
+            details['opcode'] = 'ret'
+            details['type'] = '11'
+            print(f"[DISASSEMBLE] -> Instrução 'ret' identificada.")
+            return details
+
+        # 2. ### ALTERAÇÃO ###
+        #    Movemos o bloco que divide a linha para o início. Agora, 'op_part' e
+        #    'rest_part' serão criadas aqui, antes de qualquer outra lógica.
+        try:
+            op_part, rest_part = line.split(':', 1)
+            rest_part = rest_part.strip()
+            op_part = op_part.strip()
+        except ValueError:
+            return {'Error': f'-> Error: Syntax (missing ":" separator) in line "{line}"'}
+
+        # 3. ### ALTERAÇÃO ###
+        #    Movemos o bloco que trata o 'branch-para-registrador' para DEPOIS
+        #    da divisão da linha. Agora ele pode usar 'op_part' e 'rest_part' com segurança.
         if op_part == 'b' and rest_part.strip().startswith('r'):
             print(f"[DISASSEMBLE] -> Branch-para-registrador detectado: '{line}'")
             details['opcode'] = 'b'
@@ -101,20 +121,7 @@ class Instruction:
             details['op2'] = rest_part.strip()  # Ex: 'r30'
             return details
         
-        if line == 'ret:':
-            details['opcode'] = 'ret'
-            details['type'] = '11'
-            print(f"[DISASSEMBLE] -> Instrução 'ret' identificada.")
-            return details
-
-        try:
-            op_part, rest_part = line.split(':', 1)
-            rest_part = rest_part.strip()
-            op_part = op_part.strip()
-        except ValueError:
-            return {'Error': f'-> Error: Syntax (missing ":" separator) in line "{line}"'}
-
-        op_part = op_part.strip()
+        # 4. O resto da sua função continua a partir daqui, exatamente como estava.
         print(f"[DISASSEMBLE] -> Parte do opcode: '{op_part}', Parte dos operandos: '{rest_part}'")
 
         branch_ops = ['bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq', 'bi']
