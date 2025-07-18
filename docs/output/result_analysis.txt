@@ -1,0 +1,32 @@
+Cond: do 	 na  	Opcode: in  	Rd:  r13 	= (Rh) r0 	Operand: r0
+Cond: do 	 i  	Opcode: mov  	Rd:  r14 	= (Rh) r0 	Operand: immediate 32
+Cond: do 	 na  	Opcode: store  	Rd:  r0 	= (Rh) r14 	Operand: null [r0]
+Cond: do 	 i  	Opcode: mov  	Rd:  r15 	= (Rh) r0 	Operand: immediate 2
+Cond: do 	 i  	Opcode: mov  	Rd:  r16 	= (Rh) r0 	Operand: immediate 33
+Cond: do 	 na  	Opcode: store  	Rd:  r0 	= (Rh) r16 	Operand: null [r0]
+Cond: do 	 i  	Opcode: mov  	Rd:  r18 	= (Rh) r0 	Operand: immediate 32
+Cond: do 	 na  	Opcode: load  	Rd:  r17 	= (Rh) r18 	Operand: null [r0]
+Cond: do 	 i  	Opcode: mov  	Rd:  r20 	= (Rh) r0 	Operand: immediate 33
+Cond: do 	 na  	Opcode: load  	Rd:  r19 	= (Rh) r20 	Operand: null [r0]
+Cond: do 	 s  	Opcode: sub  	Rd:  r0 	= (Rh) r17 	Operand: r19
+Cond: lteq 	 i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 11
+Cond: do 	 i  	Opcode: mov  	Rd:  r23 	= (Rh) r0 	Operand: immediate 32
+Cond: do 	 na  	Opcode: load  	Rd:  r22 	= (Rh) r23 	Operand: null [r0]
+Cond: do 	 na  	Opcode: mov  	Rd:  r1 	= (Rh) r22 	Operand: r0
+Cond: do 	 i  	Opcode: mov  	Rd:  r24 	= (Rh) r0 	Operand: immediate 1
+Cond: do 	 na  	Opcode: mov  	Rd:  r4 	= (Rh) r24 	Operand: r0
+Cond: do 	 i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 11
+Cond: do 	 i  	Opcode: mov  	Rd:  r26 	= (Rh) r0 	Operand: immediate 33
+Cond: do 	 na  	Opcode: load  	Rd:  r25 	= (Rh) r26 	Operand: null [r0]
+Cond: do 	 na  	Opcode: mov  	Rd:  r1 	= (Rh) r25 	Operand: r0
+Cond: do 	 i  	Opcode: mov  	Rd:  r27 	= (Rh) r0 	Operand: immediate 1
+Cond: do 	 na  	Opcode: mov  	Rd:  r4 	= (Rh) r27 	Operand: r0
+Cond: do 	 i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 6
+Cond: do 	 na  	Opcode: ret  	Rd:  r0 	= (Rh) r0 	Operand: immediate 0
+Cond: do 	 na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
+Cond: do 	 na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
+Cond: do 	 na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
+
+1. r13 = input
+2. r14 = i32
+3. endereço de r0 recebe r14

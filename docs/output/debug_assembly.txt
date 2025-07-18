@@ -1,9 +1,9 @@
 in: r13 -> {'supp': 'i', 'opcode': 'in'}
 movi: r14 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
-store: [r14] = r13 -> {'supp': 'na', 'opcode': 'store', 'op2': 'r13'}
+store: [r14] = r13 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r14', 'rh': 'r13'}
 movi: r15 = 2 -> {'supp': 'i', 'opcode': 'mov', 'op2': '2'}
 movi: r16 = var_y -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_y'}
-store: [r16] = r15 -> {'supp': 'na', 'opcode': 'store', 'op2': 'r15'}
+store: [r16] = r15 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r16', 'rh': 'r15'}
 movi: r18 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
 load: r17 = [r18] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r18]'}
 movi: r20 = var_y -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_y'}

@@ -320,6 +320,44 @@ class Instruction:
                 debug += f"offset_calc[({self.symbol_table.get(target, 'imm')} - {next_instruction_address}) = {offset_val}]->bin[{offset_bin}]"
             except (ValueError, KeyError) as e:
                 return f"Error resolving branch target '{d['op2']}': {e}", ""
+        elif d['type'] == '01':
+            if d['opcode'] == 'load':
+                rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
+                rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
+                debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
+                op2_str = d.get('op2', '0')
+                if op2_str.startswith('r'):
+                    ro_num_str = op2_str.replace('r', '')
+                    ro_bin = self.get_signed_binary(ro_num_str, 5)
+                    op2_bin = ro_bin + '00000'
+                    debug += f"Ro[{ro_bin}] pad[00000] (Load sem imediato)"
+                else:
+                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
+                    imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
+                    op2_bin = self.get_signed_binary(str(imm_val), 10)
+                    debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
+                binary += rd_bin + rh_bin + op2_bin
+            elif d['opcode'] == 'store':
+                print("[ENCODE] -> Instrução Store detectada.")
+                rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
+                rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
+                debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
+                print(f"[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:{rd_bin} e Rh({d['rh']})=:{rh_bin}")
+                
+                op2_str = d.get('op2', '0')
+                if 'i' not in d['supp']:
+                    ro_num_str = op2_str.replace('r', '')
+                    ro_bin = self.get_signed_binary(ro_num_str, 5)
+                    op2_bin = ro_bin + '00000'
+                    debug += f"Ro[{ro_bin}] pad[00000] (Store sem imediato)"
+                    print(f"[ENCODE] -> Op2 é um registrador: {op2_str}, convertido para binário: {op2_bin}")
+                else:
+                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
+                    imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
+                    op2_bin = self.get_signed_binary(str(imm_val), 10)
+                    debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
+                    print(f"[ENCODE] -> Op2 é um imediato: {op2_str}, convertido para binário: {op2_bin}")
+                binary += rd_bin + rh_bin + op2_bin
         else: # Data-Proc e Load/Store
             rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
             rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
@@ -334,10 +372,6 @@ class Instruction:
                 imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
                 op2_bin = self.get_signed_binary(str(imm_val), 10)
                 debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
-            elif d['opcode'] in ['load', 'store']:
-                ro_bin = '00000'
-                op2_bin = ro_bin + '00000'
-                debug += f"Ro[{ro_bin}] pad[00000] (Load/Store sem registrador de origem)"
             elif d['opcode'] == 'in':
                 ro_bin = '00000'
                 op2_bin = ro_bin + '00000'
@@ -514,12 +548,11 @@ class FullCode:
             elif line_instruction.binary32_line:
                 all_lines_data.append((line_instruction.binary32_line, line_instruction.debug_line))
                 current_address += 1
-
+                
         self.full_code = "\n".join([f"{data[0]}" for data in all_lines_data])
         self.debug_output = "\n".join([f"{data[0]} -> {data[1]}" for data in all_lines_data])
         print(f"\n[PASS 2] -> {len(all_lines_data)} linhas de código de máquina geradas.")
-
-        # ETAPA 3: Adicionar dados e literais ao código de máquina
+        
         print("\n[PASS 2] Etapa 3: Adicionando a seção de dados e literais ao código de máquina final...")
         data_section_code = []
         data_vars = {}
@@ -565,6 +598,10 @@ class FullCode:
                     details['op2'] = source.split(',')[0].strip()
                 elif 'store' in details['opcode'] and 'i' in details['supp']:
                     details['op2'] = dest
+                elif 'store' in details['opcode']:
+                    details['rd'] = 'r0'
+                    details['op2'] = dest.strip('[]')
+                    details['rh'] = source.strip(' ')
                 else:
                     details['op2'] = source.split(',')[0].strip()
         except ValueError:
