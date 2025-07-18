@@ -93,16 +93,12 @@ class Instruction:
         print(f"[DISASSEMBLE] Analisando: '{line}'")
         details = {'cond': 'do', 'supp': 'na'}
         
-        # 1. Primeiro, tratamos o caso especial 'ret:', que é uma linha inteira.
         if line == 'ret:':
             details['opcode'] = 'ret'
             details['type'] = '11'
             print(f"[DISASSEMBLE] -> Instrução 'ret' identificada.")
             return details
 
-        # 2. ### ALTERAÇÃO ###
-        #    Movemos o bloco que divide a linha para o início. Agora, 'op_part' e
-        #    'rest_part' serão criadas aqui, antes de qualquer outra lógica.
         try:
             op_part, rest_part = line.split(':', 1)
             rest_part = rest_part.strip()
@@ -110,18 +106,7 @@ class Instruction:
         except ValueError:
             return {'Error': f'-> Error: Syntax (missing ":" separator) in line "{line}"'}
 
-        # 3. ### ALTERAÇÃO ###
-        #    Movemos o bloco que trata o 'branch-para-registrador' para DEPOIS
-        #    da divisão da linha. Agora ele pode usar 'op_part' e 'rest_part' com segurança.
-        if op_part == 'b' and rest_part.strip().startswith('r'):
-            print(f"[DISASSEMBLE] -> Branch-para-registrador detectado: '{line}'")
-            details['opcode'] = 'b'
-            details['type'] = '11'
-            details['supp'] = 'na'  # Não é um valor imediato
-            details['op2'] = rest_part.strip()  # Ex: 'r30'
-            return details
-        
-        # 4. O resto da sua função continua a partir daqui, exatamente como estava.
+        op_part = op_part.strip()
         print(f"[DISASSEMBLE] -> Parte do opcode: '{op_part}', Parte dos operandos: '{rest_part}'")
 
         branch_ops = ['bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq', 'bi']
@@ -281,7 +266,7 @@ class Instruction:
             
         print("[ENCODE] -> Tratando como instrução normal.")
         return self._encode_single_instruction(self.op_details)
-    
+
     def _encode_single_instruction(self, d, is_pseudo=False):
         print(f"[ENCODE] -> Codificando instrução: {d}")
         aux_cond = condition_setting['complex'].get(d['cond'], '0000')
@@ -302,46 +287,39 @@ class Instruction:
         debug = f"cond[{cond_bin}] type[{type_bin}] supp[{supp_bin}] op[{funct_bin}] "
         binary = cond_bin + type_bin + supp_bin + funct_bin
         
+        if base_opcode == 'ret':
+            binary += '1' * 20
+            debug += "operand[-1]"
+            return binary, debug
+        
         if d['type'] == '11': # Branch
-            
-            # Primeiro, tratamos o caso especial 'ret', que significa "parar o programa".
-            if base_opcode == 'ret':
-                binary += '1' * 20
-                debug += "operand[-1] (halt)"
-                return binary, debug
-            
-            if 'i' in d['supp']:
-                try:
-                    target = d['op2']
-                    next_instruction_address = self.current_address + (2 if is_pseudo else 1)
-                    
-                    # O offset é a distância entre o alvo e a instrução seguinte.
-                    offset_val = self.symbol_table[target] - next_instruction_address
-                    
-                    offset_bin = self.get_signed_binary(str(offset_val), 20)
-                    if 'Error' in offset_bin: return offset_bin, ""
-                    
-                    binary += offset_bin
-                    debug += f"offset_calc[({self.symbol_table.get(target, 'imm')} - {next_instruction_address}) = {offset_val}]->bin[{offset_bin}]"
-                except (ValueError, KeyError) as e:
-                    return f"Error resolving branch target '{d['op2']}': {e}", ""
-            
-            else:
-                target_reg_str = d.get('op2', 'r0')
+            try:
+                target = d['op2']
+                offset = 0
                 
-                if not target_reg_str.startswith('r'):
-                    return f"Error: Branch target must be a label or register. Got '{target_reg_str}'", ""
+                next_instruction_address = self.current_address + (2 if is_pseudo else 1)
+                if 'bl' in d['opcode']:
+                    if target in self.symbol_table:
+                        # offset = destino - (PC + 1)
+                        offset = self.symbol_table[target] - next_instruction_address
+                    else:
+                        offset = int(target)
+                elif 'i' in d['supp']:
+                    if target in self.symbol_table:
+                        # offset = destino - (PC + 1)
+                        offset = self.symbol_table[target] - next_instruction_address
+                    else:
+                        offset = int(target)
+                else:
+                    offset = d['op2'].replace('r', '')
                 
-                ro_num_str = target_reg_str.replace('r', '')
-                
-                ro_bin = self.get_signed_binary(ro_num_str, 5)
-                if 'Error' in ro_bin: return ro_bin, ""
-                
-                operand2_bin = ro_bin + '0' * 15 
-                
-                binary += operand2_bin
-                debug += f"target_reg[{target_reg_str}]->bin[{operand2_bin}]"
-                
+                offset_val = offset
+                offset_bin = self.get_signed_binary(str(offset_val), 20)
+                if 'Error' in offset_bin: return offset_bin, ""
+                binary += offset_bin
+                debug += f"offset_calc[({self.symbol_table.get(target, 'imm')} - {next_instruction_address}) = {offset_val}]->bin[{offset_bin}]"
+            except (ValueError, KeyError) as e:
+                return f"Error resolving branch target '{d['op2']}': {e}", ""
         elif d['type'] == '01':
             if d['opcode'] == 'load':
                 rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
