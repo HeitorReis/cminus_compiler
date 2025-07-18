@@ -288,8 +288,8 @@ class Instruction:
         binary = cond_bin + type_bin + supp_bin + funct_bin
         
         if base_opcode == 'ret':
-            binary += '0' * 20
-            debug += "n/a[0...19]"
+            binary += '1' * 20
+            debug += "operand[-1]"
             return binary, debug
         
         if d['type'] == '11': # Branch
@@ -429,21 +429,34 @@ class FullCode:
                 continue
             if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
                 continue
-
+            
             details = self._disassemble_for_pass1(line)
+            size = 1  # 1. Começamos assumindo que toda instrução tem tamanho 1.
+            
+            # 2. A lógica de tamanho 2 só se aplica a 'movi'.
             if details.get('opcode') == 'mov' and details.get('supp') == 'i':
-                try:
-                    imm_val = int(details.get('op2', '0'))
+                op2_str = details.get('op2', '0')
+                
+                # 3. VERIFICAMOS PRIMEIRO SE O OPERANDO É UM NÚMERO.
+                #    Isso evita o erro com símbolos como 'var_x'.
+                is_numeric = op2_str.isdigit() or (op2_str.startswith('-') and op2_str[1:].isdigit())
+                
+                if is_numeric:
+                    imm_val = int(op2_str)
+                    
+                    # 4. Se for um número, verificamos se ele é grande demais.
                     if not (-512 <= imm_val <= 511):
-                        instruction_sizes[i] = 2
+                        # Só aqui definimos o tamanho como 2.
+                        size = 2
                         print(f"[PASS 1] -> Linha {i+1} ('{line}') é uma pseudo-instrução (tamanho 2).")
-                    else:
-                        instruction_sizes[i] = 1
-                except ValueError:
-                    instruction_sizes[i] = 2 
-                    print(f"[PASS 1] -> Linha {i+1} ('{line}') tratada como pseudo-instrução (tamanho 2).")
-            else:
-                instruction_sizes[i] = 1
+                        
+            # 5. Atribuímos o tamanho calculado (1 ou 2) à instrução.
+            instruction_sizes[i] = size
+                
+        print("\n[DEBUG PASS 1] Tabela de Símbolos Final:")
+        import json
+        print(json.dumps(self.symbol_table, indent=2))
+        print("--- Fim do Debug ---\n")
         
         # ETAPA 2: Construir tabela de símbolos para rótulos de CÓDIGO
         print("\n[PASS 1] Etapa 2: Mapeando os rótulos de código para endereços...")
