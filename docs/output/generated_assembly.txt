@@ -2,39 +2,52 @@
 .global main
 
 main:
-	in: r13
-	movi: r14 = var_x
-	store: [r14] = r13
-	movi: r16 = var_x
-	load: r15 = [r16]
-	mov: r1 = r15
+	movi: r29 = stack_space
+	addi: r29 = r29, 512
+	addi: r29 = r29, -4
+	store: [r29] = r0
+	addi: r29 = r29, -4
+	store: [r29] = r31
+	mov: r31 = r29
+	in: r12
+	movi: r13 = var_x
+	store: [r13] = r12
+	movi: r15 = var_x
+	load: r14 = [r15]
+	mov: r1 = r14
 	out: r1
-	movi: r17 = 4
-	movi: r18 = var_y
-	store: [r18] = r17
-	movi: r20 = var_x
-	load: r19 = [r20]
-	movi: r22 = var_y
-	load: r21 = [r22]
-	subs: r0 = r19, r21
+	movi: r16 = 4
+	movi: r17 = var_y
+	store: [r17] = r16
+	movi: r19 = var_x
+	load: r18 = [r19]
+	movi: r21 = var_y
+	load: r20 = [r21]
+	subs: r0 = r18, r20
 	bilteq: L0
-	movi: r25 = var_x
-	load: r24 = [r25]
-	mov: r1 = r24
+	movi: r24 = var_x
+	load: r23 = [r24]
+	mov: r1 = r23
 	out: r1
 	bi: L1
 L0:
-	movi: r27 = var_y
-	load: r26 = [r27]
-	mov: r1 = r26
+	movi: r26 = var_y
+	load: r25 = [r26]
+	mov: r1 = r25
 	out: r1
 L1:
 	bi: main_epilogue
 	bi: main_epilogue
 main_epilogue:
+	mov: r29 = r31
+	load: r31 = [r29]
+	addi: r29 = r29, 4
+	load: r0 = [r29]
+	addi: r29 = r29, 4
 	ret:
 
 .data
+stack_space: .space 512
 var__: .word 0
 var_x: .word 0
 var_y: .word 0

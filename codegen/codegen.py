@@ -11,6 +11,7 @@ IR_TO_ASSEMBLY_BRANCH = {
     '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
 }
 
+LINK_STACK_SPACE = 512  # Espaço reservado para a pilha de chamadas
 # Mapeamento de nomes simbólicos para registradores físicos
 SPECIAL_REGS = { 'lr': 'r0', 'sp': 'r29','spill': 'r30', 'fp': 'r31', 'retval': 'r0'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
@@ -27,8 +28,8 @@ class RegisterAllocator:
 
         # Prioriza o uso de registradores Callee-Saved para variáveis locais
         # e Caller-Saved para cálculos rápidos e temporários.
-        self.callee_saved_pool = [f"r{i}" for i in range(13, 30)]  # r13 a r27 (15 regs)
-        self.caller_saved_pool = [f"r{i}" for i in range(4, 13)]   # r4 a r12 (9 regs)
+        self.callee_saved_pool = [f"r{i}" for i in range(12, 29)]  # r13 a r27 (15 regs)
+        self.caller_saved_pool = [f"r{i}" for i in range(4, 11)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
         self.SPILL_TEMP_REG = SPECIAL_REGS['spill']  # Registrador para spill temporário 
@@ -503,10 +504,28 @@ def generate_assembly(ir_list):
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
         
+        if func_name == 'main':
+            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space")
+            final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, {LINK_STACK_SPACE}")  # Reservando espaço na pilha
+            
+        # Prólogo: empilha lr e fp atualiza o frame pointer
+        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, -4")
+        final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}")
+        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, -4")
+        final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['fp']}")
+        final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
+        
         final_code.extend(func_ctx.instructions)
         
-        final_code.append(f"\tbi: {func_name}_epilogue") 
+        final_code.append(f"\tbi: {func_name}_epilogue")
         final_code.append(f"{func_name}_epilogue:")
+        
+        # Epílogo: restaura fp e lr e desfaz o frame atual
+        final_code.append(f"\tmov: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['fp']}")
+        final_code.append(f"\tload: {SPECIAL_REGS['fp']} = [{SPECIAL_REGS['sp']}]")
+        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 4")
+        final_code.append(f"\tload: {SPECIAL_REGS['lr']} = [{SPECIAL_REGS['sp']}]")
+        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 4")
         
         if func_name == 'main':
             final_code.append("\tret:")
@@ -517,6 +536,7 @@ def generate_assembly(ir_list):
 
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
+    final_code.append(f"stack_space: .space {LINK_STACK_SPACE}")  # Espaço para a pilha
     func_names = set(functions.keys())
     var_names = sorted([var for var in all_vars if var not in func_names and not (var.startswith('t') and var[1:].isdigit())])
     print(f"[Montagem] -> Variáveis a serem declaradas: {var_names}")

@@ -485,6 +485,9 @@ class FullCode:
         print("[INIT] Executando a segunda passagem para codificar as instruções...")
         self.second_pass()
         print("=== PROCESSO DE MONTAGEM CONCLUÍDO ===")
+        
+        while('0'*32 in self.full_code):
+            self.full_code = self.full_code.replace('0'*32, '')
 
     def first_pass(self):
         print("\n--- [PASS 1] Iniciando a Primeira Passagem ---")
@@ -722,6 +725,8 @@ class FullCode:
                 continue
             if len(line) != 32:
                 decoded_lines.append(f"Error: Invalid instruction length {len(line)}")
+                continue
+            if (line == '0' * 32):
                 continue
             
             type_names = {
