@@ -194,7 +194,12 @@ class Instruction:
         else: # Instruções com '='
             dest, source = map(str.strip, rest_part.split('=', 1))
             
-            if details['opcode'] == 'store' and 'i' in details['supp']:
+            if details['opcode'] == 'mov':
+                print(f"[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: '{dest}', Origem: '{source}'")
+                details['rd'] = dest
+                details['rh'] = 'r0'
+                details['op2'] = source.strip() if source else 'r0'
+            elif details['opcode'] == 'store' and 'i' in details['supp']:
                 print("[DISASSEMBLE] -> Caso especial 'storei' identificado.")
                 details['op2'] = dest
                 details['rh'] = source
@@ -431,6 +436,17 @@ class Instruction:
                 ro_bin = '00000'
                 op2_bin = ro_bin + '00000'
                 debug += f"Ro[{ro_bin}] pad[00000]"
+            elif d['opcode'] == 'mov':
+                if op2_str.startswith('r'):
+                    ro_num_str = op2_str.replace('r', '')
+                    ro_bin = self.get_signed_binary(ro_num_str, 5)
+                    op2_bin = ro_bin + '00000'
+                    debug += f"Ro[{ro_bin}] pad[00000] (Mov sem imediato)"
+                else:
+                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
+                    imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
+                    op2_bin = self.get_signed_binary(str(imm_val), 10)
+                    debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
             else: # Registrador
                 if not op2_str.startswith('r'):
                     return f"Error: Invalid register format '{op2_str}'", ""
@@ -569,21 +585,25 @@ class FullCode:
                     print(f"[PASS 2] -> Linha {i+1} ('{line.strip()}') é uma instrução 'out'. Ignorando para literais.")
                     continue
                 
-                if details.get('opcode') == 'mov' and details.get('supp') == 'i':
-                    try:
-                        imm_val_str = details.get('op2', '0')
-                        imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                        numeric_val = int(imm_val)
-                        if not (-512 <= numeric_val <= 511):
-                            if numeric_val not in self.literal_pool.values():
-                                literal_label = f".Lconst{len(self.literal_pool)}"
-                                self.literal_pool[literal_label] = numeric_val
-                                self.symbol_table[literal_label] = literal_address
-                                print(f"[PASS 2] -> Literal grande '{numeric_val}' encontrado. Rótulo '{literal_label}' mapeado para o endereço {literal_address}.")
-                                literal_address += 1
-                    except (ValueError, KeyError):
-                        pass 
-                debug_file.write(f"{line.strip()} -> {details}\n")
+                if details.get('opcode') == 'mov':
+                    if details.get('supp') == 'i':
+                        try:
+                            imm_val_str = details.get('op2', '0')
+                            imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
+                            numeric_val = int(imm_val)
+                            if not (-512 <= numeric_val <= 511):
+                                if numeric_val not in self.literal_pool.values():
+                                    literal_label = f".Lconst{len(self.literal_pool)}"
+                                    self.literal_pool[literal_label] = numeric_val
+                                    self.symbol_table[literal_label] = literal_address
+                                    print(f"[PASS 2] -> Literal grande '{numeric_val}' encontrado. Rótulo '{literal_label}' mapeado para o endereço {literal_address}.")
+                                    literal_address += 1
+                        except (ValueError, KeyError):
+                            pass 
+                    else:
+                        print(f"[PASS 2] -> Linha {i+1} ('{line.strip()}') é uma instrução 'mov' sem imediato. Ignorando para literais.")
+                        continue
+                debug_file.write(f"{line.strip()} -> {details}\n")    
         if self.literal_pool:
             print(f"[PASS 2] -> Pool de literais final: {self.literal_pool}")
         else:
@@ -664,8 +684,10 @@ class FullCode:
             details['opcode'] = op_part_no_cond.rstrip('is')
             if '=' in rest_part:
                 dest, source = map(str.strip, rest_part.split('=', 1))
-                if 'mov' in details['opcode'] and 'i' in details['supp']:
-                    details['op2'] = source.split(',')[0].strip()
+                if 'mov' in details['opcode']:
+                    details['rd'] = dest
+                    details['rh'] = 'r0'
+                    details['op2'] = source
                 elif 'store' in details['opcode'] and 'i' in details['supp']:
                     details['op2'] = dest
                 elif 'store' in details['opcode']:
@@ -675,9 +697,9 @@ class FullCode:
                 elif 'in' in details['opcode']:
                     details['rd'] = dest
                     details['rh'] = 'r0'
-                    details['op2'] = '0'
+                    details['op2'] = 'error: IN instruction generated with "="'
                 else:
-                    details['op2'] = source.split(',')[0].strip()
+                    details['op2'] = source
         except ValueError:
             pass
         return details
@@ -739,7 +761,7 @@ class FullCode:
             elif type_code == '01':
                 if opcode_decoded == 'sub':
                     opcode_decoded = 'load'
-                    op2_decoded = f"null [rX]"
+                    op2_decoded = f"immediate {op2}" if 'i' in supp else f"reg_addr: r{int(line[22:27], 2)}"
                 elif opcode_decoded == 'add':
                     opcode_decoded = 'store'
                     if 'i' in supp:
@@ -763,9 +785,9 @@ class FullCode:
                     ro_reg = int(line[22:27], 2)
                     op2_decoded = f"r{ro_reg}"
             
-            decoded_line = f"Line {lineno+1} - Type: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= (Rh) {rh_decoded} \tOperand: {op2_decoded}"
+            decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= (Rh) {rh_decoded} \tOperand: {op2_decoded}"
             decoded_lines.append(decoded_line)
-            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd_decoded})  \t  Rh({rh_decoded}) \tOp2({op2_decoded})"
+            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd_decoded})  \t  Rh({rh_decoded}) \tOp2({op2_decoded})\n"
             decoded_lines.append(decode_line)
             
         print("--- Decodificação Concluída ---")

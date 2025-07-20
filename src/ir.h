@@ -57,6 +57,7 @@ typedef enum {
     IR_ARG,         // Push an argument for a function call
     IR_PCALL,       // Procedure call (no return value)
     IR_CALL,        // Function call (with return value)
+    IR_INOUT_CALL
 
 } IrOpcode;
 

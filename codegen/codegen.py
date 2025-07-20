@@ -12,7 +12,7 @@ IR_TO_ASSEMBLY_BRANCH = {
 }
 
 # Mapeamento de nomes simbólicos para registradores físicos
-SPECIAL_REGS = {'sp': 'r29', 'lr': 'r30', 'fp': 'r28', 'retval': 'r0', 'arg': 'r0', 'out': 'r4'}
+SPECIAL_REGS = { 'lr': 'r0', 'fp': 'r31', 'retval': 'r0'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -27,8 +27,8 @@ class RegisterAllocator:
 
         # Prioriza o uso de registradores Callee-Saved para variáveis locais
         # e Caller-Saved para cálculos rápidos e temporários.
-        self.callee_saved_pool = [f"r{i}" for i in range(13, 28)]  # r13 a r27 (15 regs)
-        self.caller_saved_pool = [f"r{i}" for i in range(5, 13)]   # r4 a r12 (9 regs)
+        self.callee_saved_pool = [f"r{i}" for i in range(13, 30)]  # r13 a r27 (15 regs)
+        self.caller_saved_pool = [f"r{i}" for i in range(4, 13)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
         self.SPILL_TEMP_REG = "r28" 
@@ -362,6 +362,11 @@ def translate_instruction(instr_parts, func_ctx):
             if func_name == 'input':
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tin: {dest_reg}")
+            elif func_name == 'output':
+                hit_reg = expr_parts[1].split(',', 1)[1]
+                print(f"[TRANSLATE] -> Função chamada: {func_name}, argumento: {hit_reg}")
+                print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
+                func_ctx.add_instruction(f"\tout: {hit_reg}")
             else:
                 func_ctx.add_instruction(f"\tbl: {func_name}")
                 dest_reg = alloc.get_reg_for_temp(dest)
@@ -401,6 +406,7 @@ def translate_instruction(instr_parts, func_ctx):
         else:
             func_ctx.add_instruction(f"\tbl: {func_name}")
         func_ctx.arg_count = 0
+    
     
     elif opcode == 'arg':
         print(f"[TRANSLATE] -> Caminho: Passagem de Argumento (arg {func_ctx.arg_count+1})")

@@ -9,7 +9,7 @@ main:
 	load: r15 = [r16]
 	mov: r1 = r15
 	out: r1
-	movi: r17 = 2
+	movi: r17 = 4
 	movi: r18 = var_y
 	store: [r18] = r17
 	movi: r20 = var_x

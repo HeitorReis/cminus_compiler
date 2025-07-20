@@ -4,7 +4,7 @@ main:
   t1 := *x
   arg t1
   call output, 1
-  *y := 2
+  *y := 4
   t2 := *x
   t3 := *y
   t4 := t2 > t3

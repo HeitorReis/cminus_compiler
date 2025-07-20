@@ -1,25 +1,22 @@
 in: r13 -> {'supp': 'i', 'opcode': 'in'}
-movi: r14 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
+movi: r14 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r14', 'rh': 'r0', 'op2': 'var_x'}
 store: [r14] = r13 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r14', 'rh': 'r13'}
-movi: r16 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
+movi: r16 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': 'var_x'}
 load: r15 = [r16] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r16]'}
-mov: r1 = r15 -> {'supp': 'na', 'opcode': 'mov', 'op2': 'r15'}
-movi: r17 = 2 -> {'supp': 'i', 'opcode': 'mov', 'op2': '2'}
-movi: r18 = var_y -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_y'}
+movi: r17 = 4 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r17', 'rh': 'r0', 'op2': '4'}
+movi: r18 = var_y -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r18', 'rh': 'r0', 'op2': 'var_y'}
 store: [r18] = r17 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r18', 'rh': 'r17'}
-movi: r20 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
+movi: r20 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r20', 'rh': 'r0', 'op2': 'var_x'}
 load: r19 = [r20] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r20]'}
-movi: r22 = var_y -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_y'}
+movi: r22 = var_y -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r22', 'rh': 'r0', 'op2': 'var_y'}
 load: r21 = [r22] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r22]'}
-subs: r0 = r19, r21 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r19'}
+subs: r0 = r19, r21 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r19, r21'}
 bilteq: L0 -> {'supp': 'i', 'opcode': 'bilteq'}
-movi: r25 = var_x -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_x'}
+movi: r25 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r25', 'rh': 'r0', 'op2': 'var_x'}
 load: r24 = [r25] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r25]'}
-mov: r1 = r24 -> {'supp': 'na', 'opcode': 'mov', 'op2': 'r24'}
 bi: L1 -> {'supp': 'i', 'opcode': 'b'}
-movi: r27 = var_y -> {'supp': 'i', 'opcode': 'mov', 'op2': 'var_y'}
+movi: r27 = var_y -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r27', 'rh': 'r0', 'op2': 'var_y'}
 load: r26 = [r27] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r27]'}
-mov: r1 = r26 -> {'supp': 'na', 'opcode': 'mov', 'op2': 'r26'}
 bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
 bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
 ret: -> {'supp': 'na', 'opcode': 'ret'}
