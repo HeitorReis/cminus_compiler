@@ -12,7 +12,7 @@ IR_TO_ASSEMBLY_BRANCH = {
 }
 
 # Mapeamento de nomes simbólicos para registradores físicos
-SPECIAL_REGS = { 'lr': 'r0', 'fp': 'r31', 'retval': 'r0'}
+SPECIAL_REGS = { 'lr': 'r0', 'sp': 'r29','spill': 'r30', 'fp': 'r31', 'retval': 'r0'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -31,7 +31,7 @@ class RegisterAllocator:
         self.caller_saved_pool = [f"r{i}" for i in range(4, 13)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
-        self.SPILL_TEMP_REG = "r28" 
+        self.SPILL_TEMP_REG = SPECIAL_REGS['spill']  # Registrador para spill temporário 
         print(f"[ALLOC_INIT] Pool de registradores definido: {self.reg_pool}")
         print(f"[ALLOC_INIT] Registrador de spill reservado: {self.SPILL_TEMP_REG}")
         
