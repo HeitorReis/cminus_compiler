@@ -330,10 +330,8 @@ def translate_instruction(instr_parts, func_ctx):
             print("[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)")
             var_name_to_load_from = expr_parts[0][1:]
             
-            # Obtém o endereço da variável de destino
             src_reg_with_value = alloc.ensure_var_in_reg(var_name_to_load_from)
             
-            # Obtém o endereço da variável de destino
             alloc.update_var_from_reg(dest, src_reg_with_value)
             
             print(f"[TRANSLATE] -> Valor de '{var_name_to_load_from}' agora em {src_reg_with_value}, mapeado para '{dest}'.")
@@ -392,17 +390,14 @@ def translate_instruction(instr_parts, func_ctx):
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
             alloc.update_var_from_reg(dest, reg_src)
 
-    # Lógica para instruções que não são de atribuição
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento (sem retorno)")
         func_name = instr_parts[1].replace(',', '')
         alloc.spill_all_dirty()
         if func_name == 'output':
-            # Para output, o valor a ser impresso deve estar em r0
-            output_reg = SPECIAL_REGS['out']  # Busca 'r4' do dicionário
-            argument_reg = ARG_REGS[0]        # Busca 'r1', o primeiro registrador de argumento
+            output_reg = ARG_REGS[0]  
             
-            func_ctx.add_instruction(f"\tmov: {output_reg} = {argument_reg}")
+            func_ctx.add_instruction(f"\tout: {output_reg}")
         else:
             func_ctx.add_instruction(f"\tbl: {func_name}")
         func_ctx.arg_count = 0
@@ -425,18 +420,13 @@ def translate_instruction(instr_parts, func_ctx):
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
         alloc.spill_all_dirty()
         func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
-        return # Adicionado para clareza
+        return 
 
     elif opcode == 'if_false':
         print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
-        # A lógica aqui pode precisar ser expandida para usar os operadores de comparação do IR_BRANCH_COND
-        # Por enquanto, mantendo o bilteq hardcoded que você tinha
         cond_var = instr_parts[1]
         target_label = instr_parts[3]
         cond_reg = alloc.ensure_var_in_reg(cond_var)
-        # Exemplo de como poderia ser:
-        # func_ctx.add_instruction(f"\tcmp: {cond_reg}, #0")
-        # func_ctx.add_instruction(f"\tbeq: {target_label}") # Branch if equal (to zero)
         func_ctx.add_instruction(f"\tbilteq: {target_label}")
 
 def generate_assembly(ir_list):
@@ -444,13 +434,11 @@ def generate_assembly(ir_list):
     functions = collections.OrderedDict()
     all_vars = set()
     
-    # --- PASSAGEM 1: Análise inicial do IR ---
     print("\n--- Passagem 1: Coletando funções e variáveis globais do IR ---")
     for i, line in enumerate(ir_list):
         parts = line.strip().split()
         if not parts: continue
         
-        # Coleta de variáveis
         variable_pattern = re.compile(r'\b(?!t\d+\b|L\d+\b)([a-zA-Z_]\w*)\b')
         keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output'}
         matches = variable_pattern.findall(line)
@@ -460,7 +448,6 @@ def generate_assembly(ir_list):
                     print(f"[Passagem 1] Variável global encontrada: '{var_name}' na linha {i+1}")
                     all_vars.add(var_name)
 
-        # Coleta de funções
         if parts[0].endswith(':'):
             func_name = parts[0][:-1]
             if not func_name.startswith('L'):
@@ -473,13 +460,11 @@ def generate_assembly(ir_list):
         functions['main'] = FunctionContext('main')
     print(f"--- Fim da Passagem 1: {len(functions)} funções e {len(all_vars)} variáveis encontradas. ---\n")
 
-    # --- PASSAGEM 2: Geração de código para cada função ---
     print("--- Passagem 2: Traduzindo o IR para cada função ---")
     for func_name, func_ctx in functions.items():
         print(f"\n[Processando Função] -> '{func_name}'")
         func_ir = []
         in_func = False
-        # Isola o IR pertencente apenas a esta função
         for line in ir_list:
             stripped = line.strip()
             if not stripped: continue
@@ -497,45 +482,33 @@ def generate_assembly(ir_list):
         
         print(f"-> IR isolado para '{func_name}' contém {len(func_ir)} instruções.")
         
-        # Limpa instruções antigas e traduz
         func_ctx.instructions.clear()
         for line in func_ir:
             translate_instruction(line.split(), func_ctx)
         
-        # Garante que qualquer variável modificada seja salva no final da função
         print(f"-> Finalizando a função '{func_name}', fazendo spill de todos os registradores sujos.")
         func_ctx.allocator.spill_all_dirty()
     print("--- Fim da Passagem 2 ---\n")
 
-    # --- Montagem Final ---
     print("--- Montagem Final: Construindo o arquivo assembly completo ---")
     final_code = [".text", ".global main", ""]
     
     for func_name, func_ctx in functions.items():
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
-
-        # ADIÇÃO DO PRÓLOGO (exemplo, você pode expandir isso)
-        # print(f"[Montagem] -> Adicionando prólogo para '{func_name}' (gerenciamento da pilha).")
-        # final_code.append("\t# Prólogo da Função")
         
         final_code.extend(func_ctx.instructions)
         
-        # ADIÇÃO DO EPÍLOGO
-        final_code.append(f"\tbi: {func_name}_epilogue") # Salta para o epílogo
+        final_code.append(f"\tbi: {func_name}_epilogue") 
         final_code.append(f"{func_name}_epilogue:")
         
-        # Se a função for a 'main', ela deve parar o processador.
         if func_name == 'main':
             final_code.append("\tret:")
-        # Qualquer outra função deve retornar para quem a chamou.
         else:
-            # Gera um branch para o endereço no Link Register (r30).
-            final_code.append(f"\tb: {SPECIAL_REGS['lr']}") # SPECIAL_REGS['lr'] é 'r30'
+            final_code.append(f"\tb: {SPECIAL_REGS['lr']}") 
             
         final_code.append("")
 
-    # Secção de dados
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
     func_names = set(functions.keys())

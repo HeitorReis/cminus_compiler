@@ -2,6 +2,7 @@ void main(void)
 {
     int x; int y;
     x = input(); 
+    output(x);
     y = 2;
     if (x>y)
         output(x);

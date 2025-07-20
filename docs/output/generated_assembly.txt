@@ -1,185 +1,34 @@
 .text
 .global main
 
-minloc:
-	movi: r14 = var_low
-	load: r13 = [r14]
-	movi: r15 = var_k
-	store: [r15] = r13
-	movi: r17 = var_low
-	load: r16 = [r17]
-	muli: r18 = r16, 4
-	movi: r19 = var_a
-	add: r20 = r19, r18
-	movi: r21 = var_x
-	store: [r21] = r20
-	movi: r23 = var_low
-	load: r22 = [r23]
-	addi: r24 = r22, 1
-	movi: r25 = var_i
-	store: [r25] = r24
-L0:
-	movi: r27 = var_i
-	load: r26 = [r27]
-	movi: r6 = var_high
-	load: r5 = [r6]
-	subs: r0 = r26, r5
-	bilteq: L1
-	movi: r9 = var_i
-	load: r8 = [r9]
-	muli: r10 = r8, 4
-	movi: r11 = var_a
-	add: r12 = r11, r10
-	movi: r13 = var_x
-	load: r14 = [r13]
-	subs: r0 = r12, r14
-	bilteq: L2
-	movi: r16 = var_i
-	load: r17 = [r16]
-	muli: r20 = r17, 4
-	movi: r21 = var_a
-	add: r23 = r21, r20
-	movi: r22 = var_x
-	store: [r22] = r23
-	movi: r25 = var_i
-	load: r24 = [r25]
-	movi: r27 = var_k
-	store: [r27] = r24
-	bi: L3
-L2:
-L3:
-	movi: r6 = var_i
-	load: r26 = [r6]
-	addi: r5 = r26, 1
-	movi: r9 = var_i
-	store: [r9] = r5
-	bi: L0
-L1:
-	movi: r12 = var_k
-	load: r8 = [r12]
-	mov: r0 = r8
-	bi: minloc_epilogue
-	bi: minloc_epilogue
-	bi: minloc_epilogue
-minloc_epilogue:
-	b: r30
-
-sort:
-	movi: r14 = var_low
-	load: r13 = [r14]
-	movi: r15 = var_i
-	store: [r15] = r13
-L4:
-	movi: r17 = var_i
-	load: r16 = [r17]
-	movi: r19 = var_high
-	load: r18 = [r19]
-	subi: r20 = r18, 1
-	subs: r0 = r16, r20
-	bilteq: L5
-	movi: r23 = var_a
-	load: r22 = [r23]
-	mov: r1 = r22
-	movi: r25 = var_i
-	load: r24 = [r25]
-	mov: r2 = r24
-	movi: r27 = var_high
-	load: r26 = [r27]
-	mov: r3 = r26
-	bl: minloc
-	mov: r5 = r0
-	movi: r6 = var_k
-	store: [r6] = r5
-	movi: r8 = var_k
-	load: r7 = [r8]
-	muli: r9 = r7, 4
-	movi: r10 = var_a
-	add: r11 = r10, r9
-	store: [r12] = r11
-	movi: r13 = var_i
-	load: r14 = [r13]
-	muli: r15 = r14, 4
-	movi: r17 = var_a
-	add: r16 = r17, r15
-	movi: r18 = var_k
-	load: r19 = [r18]
-	muli: r23 = r19, 4
-	movi: r22 = var_a
-	add: r25 = r22, r23
-	store: [r25] = r16
-	movi: r26 = var_i
-	load: r27 = [r26]
-	muli: r5 = r27, 4
-	movi: r6 = var_a
-	add: r8 = r6, r5
-	store: [r8] = r24
-	movi: r11 = var_i
-	load: r7 = [r11]
-	addi: r12 = r7, 1
-	movi: r13 = var_i
-	store: [r13] = r12
-	bi: L4
-L5:
-	bi: sort_epilogue
-	bi: sort_epilogue
-sort_epilogue:
-	b: r30
-
 main:
-	movi: r13 = 0
-	movi: r14 = var_i
+	in: r13
+	movi: r14 = var_x
 	store: [r14] = r13
-L6:
-	movi: r16 = var_i
+	movi: r16 = var_x
 	load: r15 = [r16]
-	movi: r17 = 10
-	subs: r0 = r15, r17
-	bilteq: L7
-	in: r19
-	movi: r21 = var_i
-	load: r20 = [r21]
-	muli: r22 = r20, 4
-	movi: r23 = var_vet
-	add: r24 = r23, r22
-	store: [r24] = r19
-	movi: r26 = var_i
-	load: r25 = [r26]
-	addi: r27 = r25, 1
-	movi: r5 = var_i
-	store: [r5] = r27
-	bi: L6
-L7:
-	movi: r7 = var_vet
-	load: r6 = [r7]
-	mov: r1 = r6
-	movi: r8 = 0
-	mov: r2 = r8
-	movi: r9 = 10
-	mov: r3 = r9
-	bl: sort
-	movi: r10 = 0
-	movi: r11 = var_i
-	store: [r11] = r10
-L8:
-	movi: r14 = var_i
-	load: r12 = [r14]
-	movi: r16 = 10
-	subs: r0 = r12, r16
-	bilteq: L9
-	movi: r20 = var_i
-	load: r21 = [r20]
-	muli: r19 = r21, 4
-	movi: r24 = var_vet
-	add: r26 = r24, r19
+	mov: r1 = r15
+	out: r1
+	movi: r17 = 2
+	movi: r18 = var_y
+	store: [r18] = r17
+	movi: r20 = var_x
+	load: r19 = [r20]
+	movi: r22 = var_y
+	load: r21 = [r22]
+	subs: r0 = r19, r21
+	bilteq: L0
+	movi: r25 = var_x
+	load: r24 = [r25]
+	mov: r1 = r24
+	out: r1
+	bi: L1
+L0:
+	movi: r27 = var_y
+	load: r26 = [r27]
 	mov: r1 = r26
-	mov: r4 = r1
-	movi: r27 = var_i
-	load: r25 = [r27]
-	addi: r5 = r25, 1
-	movi: r7 = var_i
-	store: [r7] = r5
-	bi: L8
-L9:
+	out: r1
+L1:
 	bi: main_epilogue
 	bi: main_epilogue
 main_epilogue:
@@ -187,11 +36,5 @@ main_epilogue:
 
 .data
 var__: .word 0
-var_a: .word 0
-var_high: .word 0
-var_i: .word 0
-var_k: .word 0
-var_low: .word 0
-var_t: .word 0
-var_vet: .word 0
 var_x: .word 0
+var_y: .word 0

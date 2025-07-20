@@ -8,7 +8,7 @@ instructions = {
     # Data-Processing (Type 00)
     'add': '0000', 'sub': '0001', 'mul': '0010', 'div': '0011',
     'and': '0100', 'or':  '0101', 'xor': '0110', 'not': '0111',
-    'mov': '1000', 'in': '1001',
+    'mov': '1000', 'in': '1001', 'out': '1010',
     
     # Load/Store (Type 01)
     'store': '0000', 'load': '0001',
@@ -18,7 +18,7 @@ instructions = {
 }
 
 type_codes = {
-    '00': ['add', 'sub', 'mul', 'div', 'and', 'or', 'xor', 'not', 'mov', 'in'],
+    '00': ['add', 'sub', 'mul', 'div', 'and', 'or', 'xor', 'not', 'mov', 'in', 'out'],
     '01': ['load', 'store'],
     '11': ['b', 'bl', 'ret', 'bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq']
 }
@@ -109,7 +109,10 @@ class Instruction:
         op_part = op_part.strip()
         print(f"[DISASSEMBLE] -> Parte do opcode: '{op_part}', Parte dos operandos: '{rest_part}'")
 
-        branch_ops = ['bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq', 'bi']
+        branch_ops = [
+            'bli', 'blieq', 'blineq', 'bligt', 'bligteq', 'blilt', 'blilteq',
+            'bi', 'bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq'
+            ]
         if op_part in branch_ops:
             print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
             details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
@@ -119,7 +122,23 @@ class Instruction:
             details['op2'] = rest_part       # O alvo do desvio
             return details
         
-        branch_ops = ['b', 'beq', 'bneq', 'bgt', 'bgteq', 'blt', 'blteq', 'b']
+        if 'out' in op_part:
+            print(f"[DISASSEMBLE] -> Instrução 'out' identificada.")
+            details['opcode'] = 'out'
+            details['type'] = '00'
+            extra = op_part.replace('out', '').strip()
+            support_codes = ['na', 'i', 's', 'is', 'si']
+            supp = support_codes.index(extra) if extra in support_codes else 0
+            details['supp'] = support_codes[supp]
+            details['cond'] = extra.replace(support_codes[supp], '').strip() or 'do'
+            details['rd'] = 'r0'
+            details['rh'] = 'r0'
+            details['op2'] = rest_part.strip() if rest_part else 'r0'
+            return details
+        
+        branch_ops = [
+            'b',  'beq', 'bneq', 'bgt', 'bgteq', 'blt', 'blteq'
+            ]
         if op_part in branch_ops:
             print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
             details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
@@ -128,6 +147,19 @@ class Instruction:
             details['supp'] = 'na' 
             details['op2'] = rest_part       # O alvo do desvio
             return details
+        
+        branchlink_ops = [
+            'bl', 'bleq', 'blneq', 'blgt', 'blgteq', 'bllt', 'bllteq'
+        ]
+        if op_part in branchlink_ops:
+            print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
+            details['opcode'] = 'bl'          # A instrução base é sempre 'b' (branch)
+            details['cond'] = op_part[2:] if len(op_part) > 2 else 'do'   # A condição são os últimos caracteres (ex: 'lteq')
+            details['type'] = '11'
+            details['supp'] = 'na' 
+            details['op2'] = rest_part       # O alvo do desvio
+            return details
+        
         
         if op_part.endswith(('is', 'si')):
             details['supp'] = 'is'
@@ -275,7 +307,7 @@ class Instruction:
         supp_bin = support_bits_map[d['supp']]
 
         base_opcode = d['opcode']
-        if base_opcode == 'b':
+        if base_opcode == 'b' or base_opcode == 'bl':
             print(f"[ENCODE] -> Instrução de branch detectada: {base_opcode} com condição {d['cond']}")
             aux_cond = condition_setting['complex'].get(d['cond'], 'na')
             cond_bin = aux_cond if aux_cond != 'na' else condition_setting['simple'].get(d['cond'], 'error')
@@ -292,18 +324,41 @@ class Instruction:
             debug += "operand[-1]"
             return binary, debug
         
+        if base_opcode == 'out':
+            print("[ENCODE] -> Instrução 'out' detectada.")
+            rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
+            rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
+            debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
+            op2_str = d.get('op2', '0')
+            if op2_str.startswith('r'):
+                ro_num_str = op2_str.replace('r', '')
+                ro_bin = self.get_signed_binary(ro_num_str, 5)
+                op2_bin = ro_bin + '00000'
+                debug += f"Ro[{ro_bin}] pad[00000] (Out sem imediato)"
+            else:
+                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
+                imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
+                op2_bin = self.get_signed_binary(str(imm_val), 10)
+                debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
+            binary += rd_bin + rh_bin + op2_bin
+            return binary, debug
+        
         if d['type'] == '11': # Branch
             try:
                 target = d['op2']
                 offset = 0
                 
                 next_instruction_address = self.current_address + (2 if is_pseudo else 1)
+                print(f"[ENCODE] -> Próximo endereço de instrução: {next_instruction_address}")
                 if 'bl' in d['opcode']:
+                    print("[ENCODE] -> Instrução de branch com link detectada.")
                     if target in self.symbol_table:
                         # offset = destino - (PC + 1)
                         offset = self.symbol_table[target] - next_instruction_address
+                        print(f"[ENCODE] -> Offset calculado: {offset} (destino: {self.symbol_table[target]}, PC + 1: {next_instruction_address})")
                     else:
                         offset = int(target)
+                        print(f"[ENCODE] -> Offset direto: {offset} (valor imediato)")
                 elif 'i' in d['supp']:
                     if target in self.symbol_table:
                         # offset = destino - (PC + 1)
@@ -431,26 +486,20 @@ class FullCode:
                 continue
             
             details = self._disassemble_for_pass1(line)
-            size = 1  # 1. Começamos assumindo que toda instrução tem tamanho 1.
+            size = 1
             
-            # 2. A lógica de tamanho 2 só se aplica a 'movi'.
             if details.get('opcode') == 'mov' and details.get('supp') == 'i':
                 op2_str = details.get('op2', '0')
                 
-                # 3. VERIFICAMOS PRIMEIRO SE O OPERANDO É UM NÚMERO.
-                #    Isso evita o erro com símbolos como 'var_x'.
                 is_numeric = op2_str.isdigit() or (op2_str.startswith('-') and op2_str[1:].isdigit())
                 
                 if is_numeric:
                     imm_val = int(op2_str)
                     
-                    # 4. Se for um número, verificamos se ele é grande demais.
                     if not (-512 <= imm_val <= 511):
-                        # Só aqui definimos o tamanho como 2.
                         size = 2
                         print(f"[PASS 1] -> Linha {i+1} ('{line}') é uma pseudo-instrução (tamanho 2).")
                         
-            # 5. Atribuímos o tamanho calculado (1 ou 2) à instrução.
             instruction_sizes[i] = size
                 
         print("\n[DEBUG PASS 1] Tabela de Símbolos Final:")
@@ -458,7 +507,6 @@ class FullCode:
         print(json.dumps(self.symbol_table, indent=2))
         print("--- Fim do Debug ---\n")
         
-        # ETAPA 2: Construir tabela de símbolos para rótulos de CÓDIGO
         print("\n[PASS 1] Etapa 2: Mapeando os rótulos de código para endereços...")
         current_address = 0
         in_text_section = True
@@ -478,11 +526,9 @@ class FullCode:
             elif i in instruction_sizes:
                 current_address += instruction_sizes[i]
         
-        # ETAPA 3: Definir o início da seção de dados
         self.data_section_start_address = current_address
         print(f"\n[PASS 1] Etapa 3: A seção de código termina no endereço {current_address - 1}. A seção .data começará em {self.data_section_start_address}.")
         
-        # ETAPA 4: Mapear rótulos de DADOS
         print("\n[PASS 1] Etapa 4: Mapeando os rótulos da seção .data...")
         data_base_address = self.data_section_start_address
         in_data_section = False
@@ -519,6 +565,10 @@ class FullCode:
                 if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
                     continue
                 details = self._disassemble_for_pass1(line)
+                if details.get('opcode') == 'out':
+                    print(f"[PASS 2] -> Linha {i+1} ('{line.strip()}') é uma instrução 'out'. Ignorando para literais.")
+                    continue
+                
                 if details.get('opcode') == 'mov' and details.get('supp') == 'i':
                     try:
                         imm_val_str = details.get('op2', '0')
@@ -598,12 +648,19 @@ class FullCode:
             op_part = op_part.strip()
             details['supp'] = 'i' if 'i' in op_part else 'na'
             op_part_no_cond = op_part
-            for cond in condition_setting["complex"]:
-                if op_part_no_cond.endswith(cond):
-                    op_part_no_cond = op_part_no_cond[:-len(cond)]
-            for cond in condition_setting["simple"]:
-                if op_part_no_cond.endswith(cond):
-                    op_part_no_cond = op_part_no_cond[:-len(cond)]
+            cond_found = False
+            for i, char in enumerate(op_part):
+                if op_part[-i:-1] in condition_setting['complex']:
+                    op_part_no_cond = op_part[:-i]
+                    details['cond'] = condition_setting['complex'][op_part[-i:-1]]
+                    cond_found = True
+                    break
+            if not cond_found:
+                for i, char in enumerate(op_part):
+                    if op_part[-i:-1] in condition_setting['complex']:
+                        op_part_no_cond = op_part[:-i]
+                        details['cond'] = condition_setting['complex'][op_part[-i:-1]]
+                        break
             details['opcode'] = op_part_no_cond.rstrip('is')
             if '=' in rest_part:
                 dest, source = map(str.strip, rest_part.split('=', 1))
@@ -615,6 +672,10 @@ class FullCode:
                     details['rd'] = 'r0'
                     details['op2'] = dest.strip('[]')
                     details['rh'] = source.strip(' ')
+                elif 'in' in details['opcode']:
+                    details['rd'] = dest
+                    details['rh'] = 'r0'
+                    details['op2'] = '0'
                 else:
                     details['op2'] = source.split(',')[0].strip()
         except ValueError:
@@ -634,7 +695,7 @@ class FullCode:
     def decode_machine_code(self):
         print("\n--- Iniciando a Decodificação do Código de Máquina ---")
         decoded_lines = []
-        for line in self.full_code.splitlines():
+        for lineno, line in enumerate(self.full_code.splitlines()):
             if not line.strip():
                 continue
             if len(line) != 32:
@@ -667,6 +728,8 @@ class FullCode:
             rh = int(line[17:22], 2)
             rh_decoded = f"r{rh}"
             op2 = int(line[22:], 2)
+            if op2 > 523:  # Verifica se é um imediato de 10 bits
+                op2 = op2 - (1 << 10)  # Ajusta para complemento de dois
             if type_code == '11':
                 opcode_decoded = 'b  ' if opcode == '0000' else 'bl' if opcode == '1000' else 'ret'
                 if 'b' in opcode_decoded:
@@ -676,10 +739,14 @@ class FullCode:
             elif type_code == '01':
                 if opcode_decoded == 'sub':
                     opcode_decoded = 'load'
-                    op2_decoded = f"null [r{op2}]"
+                    op2_decoded = f"null [rX]"
                 elif opcode_decoded == 'add':
                     opcode_decoded = 'store'
-                    op2_decoded = f"null [r{op2}]"
+                    if 'i' in supp:
+                        op2_decoded = f"immediate {op2}"
+                    else:
+                        ro_reg = int(line[22:27], 2)
+                        op2_decoded = f"r{ro_reg}"
                 else:
                     op2_decoded = f"immediate {op2}"
             else: # Data-Processing
@@ -696,9 +763,10 @@ class FullCode:
                     ro_reg = int(line[22:27], 2)
                     op2_decoded = f"r{ro_reg}"
             
-            
-            decoded_line = f"Type: {type_decoded} \tCond: {cond_decoded} \tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= (Rh) {rh_decoded} \tOperand: {op2_decoded}"
+            decoded_line = f"Line {lineno+1} - Type: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= (Rh) {rh_decoded} \tOperand: {op2_decoded}"
             decoded_lines.append(decoded_line)
+            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd_decoded})  \t  Rh({rh_decoded}) \tOp2({op2_decoded})"
+            decoded_lines.append(decode_line)
             
         print("--- Decodificação Concluída ---")
         return "\n".join(decoded_lines)

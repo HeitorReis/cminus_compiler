@@ -1,174 +1,62 @@
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r14 	= (Rh) r0 	Operand: immediate 170
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r13 	= (Rh) r0 	Operand: null [r448]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r15 	= (Rh) r0 	Operand: immediate 169
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r13 	Operand: null [r480]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r17 	= (Rh) r0 	Operand: immediate 170
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r16 	= (Rh) r0 	Operand: null [r544]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r18 	= (Rh) r16 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r19 	= (Rh) r0 	Operand: immediate 166
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r20 	= (Rh) r19 	Operand: r18
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r21 	= (Rh) r0 	Operand: immediate 173
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r20 	Operand: null [r672]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r23 	= (Rh) r0 	Operand: immediate 170
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r22 	= (Rh) r0 	Operand: null [r736]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: add  	Rd:  r24 	= (Rh) r22 	Operand: immediate 1
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r25 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r24 	Operand: null [r800]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r27 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r26 	= (Rh) r0 	Operand: null [r864]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r6 	= (Rh) r0 	Operand: immediate 167
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r5 	= (Rh) r0 	Operand: null [r192]
-Type: Data-Processing. 	Cond: do 	Support: s  	Opcode: sub  	Rd:  r0 	= (Rh) r26 	Operand: r5
-Type: Branch . . . . . 	Cond: lteq 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 27
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r9 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r8 	= (Rh) r0 	Operand: null [r288]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r10 	= (Rh) r8 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r11 	= (Rh) r0 	Operand: immediate 166
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r12 	= (Rh) r11 	Operand: r10
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r13 	= (Rh) r0 	Operand: immediate 173
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r14 	= (Rh) r0 	Operand: null [r416]
-Type: Data-Processing. 	Cond: do 	Support: s  	Opcode: sub  	Rd:  r0 	= (Rh) r12 	Operand: r14
-Type: Branch . . . . . 	Cond: lteq 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 12
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r16 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r17 	= (Rh) r0 	Operand: null [r512]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r20 	= (Rh) r17 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r21 	= (Rh) r0 	Operand: immediate 166
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r23 	= (Rh) r21 	Operand: r20
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r22 	= (Rh) r0 	Operand: immediate 173
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r23 	Operand: null [r704]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r25 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r24 	= (Rh) r0 	Operand: null [r800]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r27 	= (Rh) r0 	Operand: immediate 169
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r24 	Operand: null [r864]
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r6 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r26 	= (Rh) r0 	Operand: null [r192]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: add  	Rd:  r5 	= (Rh) r26 	Operand: immediate 1
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r9 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r5 	Operand: null [r288]
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r31 	= (Rh) r31 	Operand: branch target 991
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r12 	= (Rh) r0 	Operand: immediate 169
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r8 	= (Rh) r0 	Operand: null [r384]
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r0 	= (Rh) r8 	Operand: r0
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 2
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 1
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
-Type: Branch . . . . . 	Cond: do 	Support: na  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 30
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r14 	= (Rh) r0 	Operand: immediate 170
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r13 	= (Rh) r0 	Operand: null [r448]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r15 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r13 	Operand: null [r480]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r17 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r16 	= (Rh) r0 	Operand: null [r544]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r19 	= (Rh) r0 	Operand: immediate 167
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r18 	= (Rh) r0 	Operand: null [r608]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: sub  	Rd:  r20 	= (Rh) r18 	Operand: immediate 1
-Type: Data-Processing. 	Cond: do 	Support: s  	Opcode: sub  	Rd:  r0 	= (Rh) r16 	Operand: r20
-Type: Branch . . . . . 	Cond: lteq 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 42
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r23 	= (Rh) r0 	Operand: immediate 166
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r22 	= (Rh) r0 	Operand: null [r736]
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r22 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r25 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r24 	= (Rh) r0 	Operand: null [r800]
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r2 	= (Rh) r24 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r27 	= (Rh) r0 	Operand: immediate 167
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r26 	= (Rh) r0 	Operand: null [r864]
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r3 	= (Rh) r26 	Operand: r0
-Type: Branch . . . . . 	Cond: do 	Support: na  	Opcode: bl  	Rd:  r31 	= (Rh) r31 	Operand: branch target 947
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r5 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r6 	= (Rh) r0 	Operand: immediate 169
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r5 	Operand: null [r192]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r8 	= (Rh) r0 	Operand: immediate 169
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r7 	= (Rh) r0 	Operand: null [r256]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r9 	= (Rh) r7 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r10 	= (Rh) r0 	Operand: immediate 166
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r11 	= (Rh) r10 	Operand: r9
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r11 	Operand: null [r384]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r13 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r14 	= (Rh) r0 	Operand: null [r416]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r15 	= (Rh) r14 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r17 	= (Rh) r0 	Operand: immediate 166
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r16 	= (Rh) r17 	Operand: r15
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r18 	= (Rh) r0 	Operand: immediate 169
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r19 	= (Rh) r0 	Operand: null [r576]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r23 	= (Rh) r19 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r22 	= (Rh) r0 	Operand: immediate 166
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r25 	= (Rh) r22 	Operand: r23
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r16 	Operand: null [r800]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r26 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r27 	= (Rh) r0 	Operand: null [r832]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r5 	= (Rh) r27 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r6 	= (Rh) r0 	Operand: immediate 166
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r8 	= (Rh) r6 	Operand: r5
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r24 	Operand: null [r256]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r11 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r7 	= (Rh) r0 	Operand: null [r352]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: add  	Rd:  r12 	= (Rh) r7 	Operand: immediate 1
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r13 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r12 	Operand: null [r416]
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r31 	= (Rh) r31 	Operand: branch target 975
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 1
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
-Type: Branch . . . . . 	Cond: do 	Support: na  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 30
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r13 	= (Rh) r0 	Operand: immediate 0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r14 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r13 	Operand: null [r448]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r16 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r15 	= (Rh) r0 	Operand: null [r512]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r17 	= (Rh) r0 	Operand: immediate 10
-Type: Data-Processing. 	Cond: do 	Support: s  	Opcode: sub  	Rd:  r0 	= (Rh) r15 	Operand: r17
-Type: Branch . . . . . 	Cond: lteq 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 13
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: in  	Rd:  r19 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r21 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r20 	= (Rh) r0 	Operand: null [r672]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r22 	= (Rh) r20 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r23 	= (Rh) r0 	Operand: immediate 172
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r24 	= (Rh) r23 	Operand: r22
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r19 	Operand: null [r768]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r26 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r25 	= (Rh) r0 	Operand: null [r832]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: add  	Rd:  r27 	= (Rh) r25 	Operand: immediate 1
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r5 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r27 	Operand: null [r160]
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r31 	= (Rh) r31 	Operand: branch target 1006
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r7 	= (Rh) r0 	Operand: immediate 172
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r6 	= (Rh) r0 	Operand: null [r224]
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r6 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r8 	= (Rh) r0 	Operand: immediate 0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r2 	= (Rh) r8 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r9 	= (Rh) r0 	Operand: immediate 10
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r3 	= (Rh) r9 	Operand: r0
-Type: Branch . . . . . 	Cond: do 	Support: na  	Opcode: bl  	Rd:  r31 	= (Rh) r31 	Operand: branch target 939
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r10 	= (Rh) r0 	Operand: immediate 0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r11 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r10 	Operand: null [r352]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r14 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r12 	= (Rh) r0 	Operand: null [r448]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r16 	= (Rh) r0 	Operand: immediate 10
-Type: Data-Processing. 	Cond: do 	Support: s  	Opcode: sub  	Rd:  r0 	= (Rh) r12 	Operand: r16
-Type: Branch . . . . . 	Cond: lteq 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 13
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r20 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r21 	= (Rh) r0 	Operand: null [r640]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mul  	Rd:  r19 	= (Rh) r21 	Operand: immediate 4
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r24 	= (Rh) r0 	Operand: immediate 172
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r26 	= (Rh) r24 	Operand: r19
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r26 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: mov  	Rd:  r4 	= (Rh) r1 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r27 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: load  	Rd:  r25 	= (Rh) r0 	Operand: null [r864]
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: add  	Rd:  r5 	= (Rh) r25 	Operand: immediate 1
-Type: Data-Processing. 	Cond: do 	Support: i  	Opcode: mov  	Rd:  r7 	= (Rh) r0 	Operand: immediate 168
-Type: Load / Store . . 	Cond: do 	Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r5 	Operand: null [r224]
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r31 	= (Rh) r31 	Operand: branch target 1006
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 1
-Type: Branch . . . . . 	Cond: do 	Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
-Type: Branch . . . . . 	Cond: do 	Support: na  	Opcode: ret  	Rd:  r31 	= (Rh) r31 	Operand: immediate 1023
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
-Type: Data-Processing. 	Cond: do 	Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
+Line 1 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: in  	Rd:  r13 	= (Rh) r0 	Operand: r0
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1001) 	Rd(r13)  	  Rh(r0) 	Op2(r0)
+Line 2 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r14 	= (Rh) r0 	Operand: immediate 29
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r14)  	  Rh(r0) 	Op2(immediate 29)
+Line 3 - Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r13 	Operand: r14
+	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0000) 	Rd(r0)  	  Rh(r13) 	Op2(r14)
+Line 4 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r16 	= (Rh) r0 	Operand: immediate 29
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r16)  	  Rh(r0) 	Op2(immediate 29)
+Line 5 - Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r15 	= (Rh) r0 	Operand: null [rX]
+	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(r15)  	  Rh(r0) 	Op2(null [rX])
+Line 6 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r15 	Operand: r0
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r1)  	  Rh(r15) 	Op2(r0)
+Line 7 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: out  	Rd:  r0 	= (Rh) r0 	Operand: r1
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1010) 	Rd(r0)  	  Rh(r0) 	Op2(r1)
+Line 8 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r17 	= (Rh) r0 	Operand: immediate 2
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r17)  	  Rh(r0) 	Op2(immediate 2)
+Line 9 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r18 	= (Rh) r0 	Operand: immediate 30
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r18)  	  Rh(r0) 	Op2(immediate 30)
+Line 10 - Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: store  	Rd:  r0 	= (Rh) r17 	Operand: r18
+	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0000) 	Rd(r0)  	  Rh(r17) 	Op2(r18)
+Line 11 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r20 	= (Rh) r0 	Operand: immediate 29
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r20)  	  Rh(r0) 	Op2(immediate 29)
+Line 12 - Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r19 	= (Rh) r0 	Operand: null [rX]
+	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(r19)  	  Rh(r0) 	Op2(null [rX])
+Line 13 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r22 	= (Rh) r0 	Operand: immediate 30
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r22)  	  Rh(r0) 	Op2(immediate 30)
+Line 14 - Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r21 	= (Rh) r0 	Operand: null [rX]
+	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(r21)  	  Rh(r0) 	Op2(null [rX])
+Line 15 - Type: Data-Processing. 	Cond: do 		Support: s  	Opcode: sub  	Rd:  r0 	= (Rh) r19 	Operand: r21
+	Binary: Type(00) 				Cond(0000) 		Supp(01) 		Opcode(0001) 	Rd(r0)  	  Rh(r19) 	Op2(r21)
+Line 16 - Type: Branch . . . . . 	Cond: lteq 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 5
+	Binary: Type(11) 				Cond(0110) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 5)
+Line 17 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r25 	= (Rh) r0 	Operand: immediate 29
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r25)  	  Rh(r0) 	Op2(immediate 29)
+Line 18 - Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r24 	= (Rh) r0 	Operand: null [rX]
+	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(r24)  	  Rh(r0) 	Op2(null [rX])
+Line 19 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r24 	Operand: r0
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r1)  	  Rh(r24) 	Op2(r0)
+Line 20 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: out  	Rd:  r0 	= (Rh) r0 	Operand: r1
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1010) 	Rd(r0)  	  Rh(r0) 	Op2(r1)
+Line 21 - Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 4
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 4)
+Line 22 - Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r27 	= (Rh) r0 	Operand: immediate 30
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r27)  	  Rh(r0) 	Op2(immediate 30)
+Line 23 - Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r26 	= (Rh) r0 	Operand: null [rX]
+	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(r26)  	  Rh(r0) 	Op2(null [rX])
+Line 24 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r26 	Operand: r0
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r1)  	  Rh(r26) 	Op2(r0)
+Line 25 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: out  	Rd:  r0 	= (Rh) r0 	Operand: r1
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1010) 	Rd(r0)  	  Rh(r0) 	Op2(r1)
+Line 26 - Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 1
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 1)
+Line 27 - Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 0)
+Line 28 - Type: Branch . . . . . 	Cond: do 		Support: na  	Opcode: ret  	Rd:  r31 	= (Rh) r31 	Operand: immediate -1
+	Binary: Type(11) 				Cond(0000) 		Supp(00) 		Opcode(1111) 	Rd(r31)  	  Rh(r31) 	Op2(immediate -1)
+Line 29 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(r0)
+Line 30 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(r0)
+Line 31 - Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: add  	Rd:  r0 	= (Rh) r0 	Operand: r0
+	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(r0)
