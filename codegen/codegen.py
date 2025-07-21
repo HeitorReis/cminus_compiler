@@ -44,6 +44,11 @@ class RegisterAllocator:
         self.lru_order = collections.deque()
         self.dirty_regs = set()
         self.spilled_temps = {}
+        
+        # Mapas para reutilização de registradores
+        self.const_to_reg = {}
+        self.reg_to_const = {}
+        
         print(f"[ALLOC_INIT] Estado inicial: {len(self.free_regs)} registradores livres.")
 
     def ensure_var_in_reg(self, var_name):
@@ -71,11 +76,18 @@ class RegisterAllocator:
             self.dirty_regs.add(reg)
             return reg
 
-        # Se for uma constante numérica, move o valor para um novo registrador.
+        # Se for uma constante numérica, reutiliza registrador se já carregado.
         if var_name.isdigit() or (var_name.startswith('-') and var_name[1:].isdigit()):
+            if var_name in self.const_to_reg:
+                reg = self.const_to_reg[var_name]
+                self._mark_as_used(reg)
+                print(f"[ENSURE] -> Constante '{var_name}' já está em {reg}.")
+                return reg
             reg = self._get_free_reg()
             print(f"[ENSURE] -> Alocando {reg} para a constante '{var_name}'.")
             self.func_context.add_instruction(f"\tmovi: {reg} = {var_name}")
+            self.const_to_reg[var_name] = reg
+            self.reg_to_const[reg] = var_name
             return reg
         
         if var_name.startswith('t'):
@@ -231,6 +243,11 @@ class RegisterAllocator:
             if var_name in self.var_to_reg:
                 del self.var_to_reg[var_name]
             print(f"[UNASSIGN_REG] Desmapeado {reg} de '{var_name}'.")
+        elif reg in self.reg_to_const:
+            const_value = self.reg_to_const.pop(reg)
+            if self.const_to_reg.get(const_value) == reg:
+                del self.const_to_reg[const_value]
+            print(f"[UNASSIGN_REG] Desmapeado {reg} de constante '{const_value}'.")
         else:
             print(f"[UNASSIGN_REG] {reg} já estava desmapeado.")
 
@@ -295,7 +312,7 @@ def translate_instruction(instr_parts, func_ctx):
             reg1 = alloc.ensure_var_in_reg(arg1)
             reg2 = alloc.ensure_var_in_reg(arg2)
             
-            func_ctx.add_instruction(f"\tsubs: r0 = {reg1}, {reg2}")
+            func_ctx.add_instruction(f"\tsubs: {SPECIAL_REGS['retval']} = {reg1}, {reg2}")
             
             func_ctx.last_comparison = op_str 
             
