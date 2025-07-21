@@ -527,9 +527,21 @@ def generate_assembly(ir_list):
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
         
+        # --- Function Prologue ---
+        frame_size = -func_ctx.spill_offset + 8
+        final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, {frame_size}")
+        final_code.append(f"\tstorei: [{SPECIAL_REGS['sp']}, #0] = {SPECIAL_REGS['lr']}")
+        final_code.append(f"\tstorei: [{SPECIAL_REGS['sp']}, #4] = {SPECIAL_REGS['fp']}")
+        final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
+        
         final_code.extend(func_ctx.instructions)
         
         final_code.append(f"{func_name}_epilogue:")
+        
+        # --- Function Epilogue ---
+        final_code.append(f"\tloadi: {SPECIAL_REGS['fp']} = [{SPECIAL_REGS['sp']}, #4]")
+        final_code.append(f"\tloadi: {SPECIAL_REGS['lr']} = [{SPECIAL_REGS['sp']}, #0]")
+        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, {frame_size}")
         
         if func_name == 'main':
             final_code.append("\tret:")
