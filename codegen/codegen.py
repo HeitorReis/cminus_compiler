@@ -541,7 +541,9 @@ def generate_assembly(ir_list):
         
         final_code.extend(func_ctx.instructions)
         
-        final_code.append(f"\tbi: {func_name}_epilogue")
+        if not func_ctx.instructions or func_ctx.instructions[-1].strip() != f"bi: {func_name}_epilogue":
+            final_code.append(f"\tbi: {func_name}_epilogue")
+        
         final_code.append(f"{func_name}_epilogue:")
         
         if len(functions.values()) > 1:

@@ -762,6 +762,8 @@ class FullCode:
             type_code = line[4:6]
             type_decoded = type_names.get(type_code, ['unknown'])
             supp = line[6:8]
+            if supp[0] == '1':
+                is_immediate = True
             for supp_key, supp_value in support_bits_map.items():
                 if supp == supp_value:
                     supp_decoded = supp_key
@@ -772,22 +774,30 @@ class FullCode:
             rd_decoded = f"r{rd}"
             rh = int(line[17:22], 2)
             rh_decoded = f"r{rh}"
-            op2 = int(line[22:], 2)
-            if op2 > 523:  # Verifica se é um imediato de 10 bits
-                op2 = op2 - (1 << 10)  # Ajusta para complemento de dois
+            ro = line[22:27]
+            ro_decoded = int(ro, 2)
+            op2 = line[22:]
+            op2 = int(op2, 2)
+            if op2 > 1 << 19:  # Verifica se é um imediato de 10 bits
+                op2 -= 1 << 20  # ajusta para complemento de dois
             if type_code == '11':
+                rd = ''; rh = ''; ro = ''
+                rd_decoded = 'na'; rh_decoded = 'na'; ro_decoded = 'na'
                 opcode_decoded = 'b  ' if opcode == '0000' else 'bl' if opcode == '1000' else 'ret'
-                if 'b' in opcode_decoded:
-                    op2_decoded = "branch: Program Counter "+("+" if op2 >= 0 else "")+f"{op2}"
+                if not is_immediate and opcode != '1000':
+                    op2_decoded = f"ProgramCounter <= r{ro_decoded}"
                 else:
-                    op2_decoded = f"immediate {op2}"
+                    op2 = line[12:]; op2_decoded = int(op2, 2)
+                    if op2_decoded > 1 << 19:
+                        op2_decoded -= 1 << 20
+                    op2_decoded = "ProgramCounter"+("+" if op2_decoded >= 0 else "")+f"{op2_decoded}"
             elif type_code == '01':
                 if opcode_decoded == 'sub':
                     opcode_decoded = 'load'
                     op2_decoded = f"immediate {op2}" if 'i' in supp else f"reg_addr: r{int(line[22:27], 2)}"
                 elif opcode_decoded == 'add':
                     opcode_decoded = 'store'
-                    if 'i' in supp:
+                    if is_immediate:
                         op2_decoded = f"immediate {op2}"
                     else:
                         ro_reg = int(line[22:27], 2)
@@ -810,7 +820,7 @@ class FullCode:
             
             decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} \t= (Rh) {rh_decoded} \tOperand: {op2_decoded}"
             decoded_lines.append(decoded_line)
-            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd_decoded})  \t  Rh({rh_decoded}) \tOp2({op2_decoded})\n"
+            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd_decoded})  \t  Rh({rh_decoded}) \tOp2({op2})\n"
             decoded_lines.append(decode_line)
             
         print("--- Decodificação Concluída ---")
