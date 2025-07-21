@@ -11,11 +11,21 @@ IR_TO_ASSEMBLY_BRANCH = {
     '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
 }
 
-LINK_STACK_SIZE = 32  # Espaço reservado para a pilha de chamadas
-DATA_MEMORY_SIZE = 64  # Tamanho da memória de dados (exemplo)
 # Mapeamento de nomes simbólicos para registradores físicos
-SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
+<<<<<<< Updated upstream
+SPECIAL_REGS = { 'lr': 'r0', 'fp': 'r31', 'retval': 'r0'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
+=======
+SPECIAL_REGS = {  
+    'retval': 'r0',     # Retorno de funções
+    'cmp': 'r26',       # Comparações
+    'pseudo': 'r27',    # Pseudo-instruções
+    'lr': 'r28',        # Link Register
+    'sp': 'r29',        # Stack Pointer
+    'spill': 'r30',     # Spill Register
+    'fp': 'r31'         # Frame Pointer
+    }
+>>>>>>> Stashed changes
 ARG_REGS = ['r1', 'r2', 'r3']
 
 class RegisterAllocator:
@@ -29,11 +39,11 @@ class RegisterAllocator:
 
         # Prioriza o uso de registradores Callee-Saved para variáveis locais
         # e Caller-Saved para cálculos rápidos e temporários.
-        self.callee_saved_pool = [f"r{i}" for i in range(12, 27)]
-        self.caller_saved_pool = [f"r{i}" for i in range(4, 12)]
+        self.callee_saved_pool = [f"r{i}" for i in range(13, 30)]  # r13 a r27 (15 regs)
+        self.caller_saved_pool = [f"r{i}" for i in range(4, 13)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
-        self.SPILL_TEMP_REG = SPECIAL_REGS['spill']  # Registrador para spill temporário 
+        self.SPILL_TEMP_REG = "r28" 
         print(f"[ALLOC_INIT] Pool de registradores definido: {self.reg_pool}")
         print(f"[ALLOC_INIT] Registrador de spill reservado: {self.SPILL_TEMP_REG}")
         
@@ -44,11 +54,6 @@ class RegisterAllocator:
         self.lru_order = collections.deque()
         self.dirty_regs = set()
         self.spilled_temps = {}
-        
-        # Mapas para reutilização de registradores
-        self.const_to_reg = {}
-        self.reg_to_const = {}
-        
         print(f"[ALLOC_INIT] Estado inicial: {len(self.free_regs)} registradores livres.")
 
     def ensure_var_in_reg(self, var_name):
@@ -76,18 +81,11 @@ class RegisterAllocator:
             self.dirty_regs.add(reg)
             return reg
 
-        # Se for uma constante numérica, reutiliza registrador se já carregado.
+        # Se for uma constante numérica, move o valor para um novo registrador.
         if var_name.isdigit() or (var_name.startswith('-') and var_name[1:].isdigit()):
-            if var_name in self.const_to_reg:
-                reg = self.const_to_reg[var_name]
-                self._mark_as_used(reg)
-                print(f"[ENSURE] -> Constante '{var_name}' já está em {reg}.")
-                return reg
             reg = self._get_free_reg()
             print(f"[ENSURE] -> Alocando {reg} para a constante '{var_name}'.")
             self.func_context.add_instruction(f"\tmovi: {reg} = {var_name}")
-            self.const_to_reg[var_name] = reg
-            self.reg_to_const[reg] = var_name
             return reg
         
         if var_name.startswith('t'):
@@ -243,11 +241,6 @@ class RegisterAllocator:
             if var_name in self.var_to_reg:
                 del self.var_to_reg[var_name]
             print(f"[UNASSIGN_REG] Desmapeado {reg} de '{var_name}'.")
-        elif reg in self.reg_to_const:
-            const_value = self.reg_to_const.pop(reg)
-            if self.const_to_reg.get(const_value) == reg:
-                del self.const_to_reg[const_value]
-            print(f"[UNASSIGN_REG] Desmapeado {reg} de constante '{const_value}'.")
         else:
             print(f"[UNASSIGN_REG] {reg} já estava desmapeado.")
 
@@ -312,7 +305,11 @@ def translate_instruction(instr_parts, func_ctx):
             reg1 = alloc.ensure_var_in_reg(arg1)
             reg2 = alloc.ensure_var_in_reg(arg2)
             
-            func_ctx.add_instruction(f"\tsubs: {SPECIAL_REGS['retval']} = {reg1}, {reg2}")
+<<<<<<< Updated upstream
+            func_ctx.add_instruction(f"\tsubs: r0 = {reg1}, {reg2}")
+=======
+            func_ctx.add_instruction(f"\tsubs: {SPECIAL_REGS['cmp']} = {reg1}, {reg2}")            
+>>>>>>> Stashed changes
             
             func_ctx.last_comparison = op_str 
             
@@ -391,27 +388,28 @@ def translate_instruction(instr_parts, func_ctx):
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
             func_ctx.arg_count = 0
+        
+        elif opcode == "if_false":
+            print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
+            target_label = instr_parts[3]
+            
+            if not hasattr(func_ctx, 'last_comparison'):
+                print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
+                return
+            
+            original_op = func_ctx.last_comparison
+            branch_instruction = IR_TO_ASSEMBLY_BRANCH[original_op]
+            
+            func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
+            
+            del func_ctx.last_comparison 
+            return
+            
             
         else:
             print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
             alloc.update_var_from_reg(dest, reg_src)
-    
-    elif opcode == "if_false":
-        print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
-        target_label = instr_parts[3]
-        
-        if not hasattr(func_ctx, 'last_comparison'):
-            print("[TRANSLATE_ERROR] -> Erro: Desvio condicional sem comparação anterior.")
-            return
-        
-        original_op = func_ctx.last_comparison
-        branch_instruction = IR_TO_ASSEMBLY_BRANCH.get(original_op)
-        
-        func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
-        
-        del func_ctx.last_comparison 
-        return
 
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento (sem retorno)")
@@ -445,6 +443,13 @@ def translate_instruction(instr_parts, func_ctx):
         alloc.spill_all_dirty()
         func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
         return 
+
+    elif opcode == 'if_false':
+        print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
+        cond_var = instr_parts[1]
+        target_label = instr_parts[3]
+        cond_reg = alloc.ensure_var_in_reg(cond_var)
+        func_ctx.add_instruction(f"\tbilteq: {target_label}")
 
 def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
@@ -509,53 +514,25 @@ def generate_assembly(ir_list):
 
     print("--- Montagem Final: Construindo o arquivo assembly completo ---")
     final_code = [".text", ".global main", ""]
-    first_func = True
+    
     for func_name, func_ctx in functions.items():
+<<<<<<< Updated upstream
+=======
         print(f"[Montagem] Processando função '{func_name}' com {len(func_ctx.instructions)} instruções.")
         
-        if first_func:
+        if first_func and len(functions.values()) > 1:
             print("[Montagem] Adicionando código de inicialização (ida para a função 'main').")
             first_func = False
             final_code.append(f"\tbi: main")
             
+>>>>>>> Stashed changes
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
         
-        if len(functions.values()) > 1:
-            if func_name == 'main':
-                final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space") # Começa a pilha no final da memória de dados
-            
-            # Prólogo: empilha lr e fp atualiza o frame pointer
-                # Stack Pointer aponta para o próximo elemento da pilha 
-                # (se é o primeiro, ele entra no primeiro endereço [64 vira 63])
-            final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
-                # Salva o Link Register (lr) na pilha (endereço apontado por sp)
-            final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}") 
-                # Stack Pointer aponta para o próximo elemento
-            final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
-                # Salva o Frame Pointer (fp) na pilha (endereço apontado por sp))
-            final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['fp']}")
-                # Salva o endereço do topo da pilha no Frame Pointer (fp)
-                # Isso permite navegar com sp enquanto fp aponta para o topo do frame atual
-            final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
-        
         final_code.extend(func_ctx.instructions)
         
-        final_code.append(f"\tbi: {func_name}_epilogue")
+        final_code.append(f"\tbi: {func_name}_epilogue") 
         final_code.append(f"{func_name}_epilogue:")
-        
-        if len(functions.values()) > 1:
-            # Epílogo: restaura fp e lr e desfaz o frame atual
-                # Move o Stack Pointer (sp) para o topo do frame atual
-            final_code.append(f"\tmov: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['fp']}")
-                # Restaura o Frame Pointer (fp) do topo da pilha (estamos descendo na pilha)
-            final_code.append(f"\tload: {SPECIAL_REGS['fp']} = [{SPECIAL_REGS['sp']}]")
-                # Stack Pointer aponta para o próximo elemento da pilha
-            final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
-                # Restaura o Link Register (lr) do topo da pilha (estamos descendo na pilha)
-            final_code.append(f"\tload: {SPECIAL_REGS['lr']} = [{SPECIAL_REGS['sp']}]")
-                # Stack Pointer aponta para o próximo elemento da pilha
-            final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
         
         if func_name == 'main':
             final_code.append("\tret:")
@@ -566,7 +543,6 @@ def generate_assembly(ir_list):
 
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
-    final_code.append(f"stack_space: .space {DATA_MEMORY_SIZE}")  # Espaço para a pilha
     func_names = set(functions.keys())
     var_names = sorted([var for var in all_vars if var not in func_names and not (var.startswith('t') and var[1:].isdigit())])
     print(f"[Montagem] -> Variáveis a serem declaradas: {var_names}")
