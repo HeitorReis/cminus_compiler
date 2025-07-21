@@ -3,6 +3,8 @@
 import re
 import collections
 
+DATA_MEMORY_SIZE = 64
+
 # Dicionários de mapeamento da arquitetura do processador
 instructions = {
     # Data-Processing (Type 00)
@@ -545,11 +547,10 @@ class FullCode:
             elif i in instruction_sizes:
                 current_address += instruction_sizes[i]
         
-        self.data_section_start_address = current_address
-        print(f"\n[PASS 1] Etapa 3: A seção de código termina no endereço {current_address - 1}. A seção .data começará em {self.data_section_start_address}.")
+        print(f"\n[PASS 1] Etapa 3: A seção de código termina no endereço {current_address - 1}. A seção .data começará em [0].")
         
         print("\n[PASS 1] Etapa 4: Mapeando os rótulos da seção .data...")
-        data_base_address = self.data_section_start_address
+        data_base_address = 0
         in_data_section = False
         for line in self.assembly_list:
             if line.startswith(".data"):
@@ -573,6 +574,9 @@ class FullCode:
                         self.response = f"Error: Invalid size '{size}' in directive '{directive}'"
                         return
                     data_base_address += amount
+                if data_base_address > DATA_MEMORY_SIZE:
+                    self.response = "Error: DATA_MEMORY_SIZE exceeded"
+                    return
         print("--- Fim da Primeira Passagem ---")
 
     def second_pass(self):
