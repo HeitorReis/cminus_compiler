@@ -382,6 +382,37 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
     return result_op;
 }
 
+// Libera a memória de uma única instrução
+static void free_ir_instr(IRInstruction* instr) {
+    if (!instr) return;
+    if ((instr->result.kind == OPERAND_NAME || instr->result.kind == OPERAND_LABEL) && instr->result.data.name)
+        free(instr->result.data.name);
+    if ((instr->arg1.kind == OPERAND_NAME || instr->arg1.kind == OPERAND_LABEL) && instr->arg1.data.name)
+        free(instr->arg1.data.name);
+    if ((instr->arg2.kind == OPERAND_NAME || instr->arg2.kind == OPERAND_LABEL) && instr->arg2.data.name)
+        free(instr->arg2.data.name);
+    free(instr);
+}
+
+// Remove instruções que estão após um retorno ou goto até o próximo rótulo
+static void remove_unreachable_code(IRList* list) {
+    if (!list) return;
+    IRInstruction* instr = list->head;
+    while (instr) {
+        if (instr->opcode == IR_GOTO || instr->opcode == IR_RETURN) {
+            IRInstruction* next = instr->next;
+            while (next && next->opcode != IR_LABEL) {
+                IRInstruction* to_delete = next;
+                next = next->next;
+                free_ir_instr(to_delete);
+            }
+            instr->next = next;
+            if (!next) list->tail = instr;
+        }
+        instr = instr->next;
+    }
+}
+
 // --- Public Functions ---
 
 IRList* generate_ir(AstNode* root, SymbolTable* symtab) {
@@ -396,6 +427,10 @@ IRList* generate_ir(AstNode* root, SymbolTable* symtab) {
     label_counter = 0;
     
     generate_ir_for_node(root, list, symtab);
+
+    // Remove trechos inalcançáveis gerados após saltos
+    // incondicionais ou instruções de retorno.
+    remove_unreachable_code(list);
     
     printf("[IR_DBG] === Finished IR Generation ===\n");
     return list;
