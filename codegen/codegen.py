@@ -391,28 +391,26 @@ def translate_instruction(instr_parts, func_ctx):
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
             func_ctx.arg_count = 0
-        
-        elif opcode == "if_false":
-            print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
-            target_label = instr_parts[3]
-            
-            if not hasattr(func_ctx, 'last_comparison'):
-                print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
-                return
-            
-            original_op = func_ctx.last_comparison
-            branch_instruction = IR_TO_ASSEMBLY_BRANCH[original_op]
-            
-            func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
-            
-            del func_ctx.last_comparison 
-            return
-            
             
         else:
             print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
             alloc.update_var_from_reg(dest, reg_src)
+    elif opcode == "if_false":
+        print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
+        target_label = instr_parts[3]
+        
+        if not hasattr(func_ctx, 'last_comparison'):
+            print("[TRANSLATE_ERROR] -> Erro: Desvio condicional sem comparação anterior.")
+            return
+        
+        original_op = func_ctx.last_comparison
+        branch_instruction = IR_TO_ASSEMBLY_BRANCH.get(original_op)
+        
+        func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
+        
+        del func_ctx.last_comparison 
+        return
 
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento (sem retorno)")

@@ -569,10 +569,10 @@ class FullCode:
                     size = directive.split('.space')[1].strip()
                     try:
                         amount = int(size, 0)
-                        data_base_address += amount
                     except ValueError:
                         self.response = f"Error: Invalid size '{size}' in directive '{directive}'"
                         return
+                    data_base_address += amount
         print("--- Fim da Primeira Passagem ---")
 
     def second_pass(self):
