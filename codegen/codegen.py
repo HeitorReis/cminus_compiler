@@ -14,7 +14,7 @@ IR_TO_ASSEMBLY_BRANCH = {
 LINK_STACK_SIZE = 32  # Espaço reservado para a pilha de chamadas
 DATA_MEMORY_SIZE = 64  # Tamanho da memória de dados (exemplo)
 # Mapeamento de nomes simbólicos para registradores físicos
-SPECIAL_REGS = { 'lr': 'r0', 'sp': 'r29','spill': 'r30', 'fp': 'r31', 'retval': 'r0'}
+SPECIAL_REGS = {  'retval': 'r0', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -29,7 +29,7 @@ class RegisterAllocator:
 
         # Prioriza o uso de registradores Callee-Saved para variáveis locais
         # e Caller-Saved para cálculos rápidos e temporários.
-        self.callee_saved_pool = [f"r{i}" for i in range(12, 29)]  # r13 a r27 (15 regs)
+        self.callee_saved_pool = [f"r{i}" for i in range(12, 28)]  # r13 a r27 (15 regs)
         self.caller_saved_pool = [f"r{i}" for i in range(4, 11)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
@@ -505,39 +505,41 @@ def generate_assembly(ir_list):
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
         
-        if func_name == 'main':
-            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space") # Começa a pilha no final da memória de dados
+        if len(functions.values()) > 1:
+            if func_name == 'main':
+                final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space") # Começa a pilha no final da memória de dados
             
-        # Prólogo: empilha lr e fp atualiza o frame pointer
-            # Stack Pointer aponta para o próximo elemento da pilha 
-            # (se é o primeiro, ele entra no primeiro endereço [64 vira 63])
-        final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
-            # Salva o Link Register (lr) na pilha (endereço apontado por sp)
-        final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}") 
-            # Stack Pointer aponta para o próximo elemento
-        final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
-            # Salva o Frame Pointer (fp) na pilha (endereço apontado por sp))
-        final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['fp']}")
-            # Salva o endereço do topo da pilha no Frame Pointer (fp)
-            # Isso permite navegar com sp enquanto fp aponta para o topo do frame atual
-        final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
+            # Prólogo: empilha lr e fp atualiza o frame pointer
+                # Stack Pointer aponta para o próximo elemento da pilha 
+                # (se é o primeiro, ele entra no primeiro endereço [64 vira 63])
+            final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
+                # Salva o Link Register (lr) na pilha (endereço apontado por sp)
+            final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}") 
+                # Stack Pointer aponta para o próximo elemento
+            final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
+                # Salva o Frame Pointer (fp) na pilha (endereço apontado por sp))
+            final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['fp']}")
+                # Salva o endereço do topo da pilha no Frame Pointer (fp)
+                # Isso permite navegar com sp enquanto fp aponta para o topo do frame atual
+            final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
         
         final_code.extend(func_ctx.instructions)
         
         final_code.append(f"\tbi: {func_name}_epilogue")
         final_code.append(f"{func_name}_epilogue:")
         
-        # Epílogo: restaura fp e lr e desfaz o frame atual
-            # Move o Stack Pointer (sp) para o topo do frame atual
-        final_code.append(f"\tmov: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['fp']}")
-            # Restaura o Frame Pointer (fp) do topo da pilha (estamos descendo na pilha)
-        final_code.append(f"\tload: {SPECIAL_REGS['fp']} = [{SPECIAL_REGS['sp']}]")
-            # Stack Pointer aponta para o próximo elemento da pilha
-        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
-            # Restaura o Link Register (lr) do topo da pilha (estamos descendo na pilha)
-        final_code.append(f"\tload: {SPECIAL_REGS['lr']} = [{SPECIAL_REGS['sp']}]")
-            # Stack Pointer aponta para o próximo elemento da pilha
-        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
+        if len(functions.values()) > 1:
+            # Epílogo: restaura fp e lr e desfaz o frame atual
+                # Move o Stack Pointer (sp) para o topo do frame atual
+            final_code.append(f"\tmov: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['fp']}")
+                # Restaura o Frame Pointer (fp) do topo da pilha (estamos descendo na pilha)
+            final_code.append(f"\tload: {SPECIAL_REGS['fp']} = [{SPECIAL_REGS['sp']}]")
+                # Stack Pointer aponta para o próximo elemento da pilha
+            final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
+                # Restaura o Link Register (lr) do topo da pilha (estamos descendo na pilha)
+            final_code.append(f"\tload: {SPECIAL_REGS['lr']} = [{SPECIAL_REGS['sp']}]")
+                # Stack Pointer aponta para o próximo elemento da pilha
+            final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
         
         if func_name == 'main':
             final_code.append("\tret:")
