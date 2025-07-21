@@ -500,9 +500,15 @@ def generate_assembly(ir_list):
 
     print("--- Montagem Final: Construindo o arquivo assembly completo ---")
     final_code = [".text", ".global main", ""]
-    final_code.append(f"\tbi: main")
-    
+    first_func = True
     for func_name, func_ctx in functions.items():
+        print(f"[Montagem] Processando função '{func_name}' com {len(func_ctx.instructions)} instruções.")
+        
+        if first_func:
+            print("[Montagem] Adicionando código de inicialização (ida para a função 'main').")
+            first_func = False
+            final_code.append(f"\tbi: main")
+            
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
         
