@@ -21,7 +21,7 @@ ARG_REGS = ['r1', 'r2', 'r3']
 class DataMemoryManager:
     """
     Gerencia alocação de endereços na seção .data para variáveis definidas no IR.
-
+    
     Cada variável recebe um endereço único em memória de dados, com base
     em um ponteiro de base que avança conforme definimos novos símbolos.
     """
@@ -32,31 +32,31 @@ class DataMemoryManager:
         self.next_offset = 0
         # Mapeamento de nome de variável -> endereço absoluto
         self.var_to_address = {}
-
+        
     def register_variable(self, var_name, size=1):
         """
         Registra uma variável na seção de dados.
-
+        
         :param var_name: Nome simbólico da variável (string).
         :param size: Número de palavras ocupadas por esta variável.
         :return: Endereço (int) onde a variável começa.
         """
         if var_name in self.var_to_address:
             return self.var_to_address[var_name]
-
+        
         address = self.base_address + self.next_offset
         self.var_to_address[var_name] = address
         # Avança o ponteiro de offset pelo tamanho da variável
         self.next_offset += size
         return address
-
+    
     def get_address(self, var_name):
         """
         Retorna o endereço previamente registrado de uma variável.
         Levanta KeyError se a variável não tiver sido registrada.
         """
         return self.var_to_address[var_name]
-
+    
     def generate_data_directives(self):
         """
         Gera listas de diretivas .word ou .space para inclusão na seção .data.
@@ -65,17 +65,8 @@ class DataMemoryManager:
         directives = []
         for name, addr in sorted(self.var_to_address.items(), key=lambda kv: kv[1]):
             # Podemos inferir tamanho como diferença até próxima ou usar size fixa
-            directives.append(f"{name}: .word 0  # endereço {addr}")
+            directives.append(f"var_{name}: .word {addr}")
         return directives
-
-# Exemplo de uso:
-# data_mgr = DataMemoryManager(base_address=100)
-# data_mgr.register_variable('x')            # aloca em endereço 100
-# data_mgr.register_variable('array', size=4) # aloca em 101..104
-# addr_x = data_mgr.get_address('x')        # retorna 100
-# directives = data_mgr.generate_data_directives()
-# print('\n'.join(directives))
-
 
 class RegisterAllocator:
     """
@@ -147,23 +138,29 @@ class RegisterAllocator:
         print(f"[ENSURE] -> Variável '{var_name}' não está em um registrador. Carregando da memória.")
         reg = self._get_free_reg()
         addr_reg = self._get_free_reg()
-        print(f"[ENSURE] -> Usando {reg} para o valor e {addr_reg} para o endereço.")
-        self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+        
+        # Pega nome da variável
+        addr = self.func_context.data_manager.get_address(var_name)
+        # Coleta endereço da variável para a memória 
+        self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
+        print(f"[ENSURE] -> Usando {reg} para o valor e {addr_reg} para o endereço {addr}.")
+        
         self.func_context.add_instruction(f"\tload: {reg} = [{addr_reg}]")
         self._assign_reg_to_var(reg, var_name)
         self._unassign_reg(addr_reg) # Libera o registrador de endereço
         return reg
-        
+    
     def get_address_in_reg(self, var_name):
         """
         Garante que o ENDEREÇO de uma variável esteja em um registrador.
         """
         print(f"[GET_ADDR] Obtendo endereço para '{var_name}'.")
         addr_reg = self._get_free_reg()
-        self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
-        print(f"[GET_ADDR] -> Endereço de '{var_name}' carregado em {addr_reg}.")
+        addr = self.func_context.data_manager.get_address(var_name)
+        self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
+        print(f"[GET_ADDR] -> Endereço de '{var_name}' ({addr}) carregado em {addr_reg}.")
         return addr_reg
-
+    
     def get_reg_for_temp(self, temp_name):
         """
         Aloca um registrador para uma nova variável temporária (ex: 't2').
@@ -174,7 +171,7 @@ class RegisterAllocator:
         self.dirty_regs.add(reg)
         print(f"[GET_TEMP] -> '{temp_name}' alocado no registrador {reg}.")
         return reg
-
+    
     def free_reg_if_temp(self, reg):
         """
         Libera um registrador se ele contiver uma temporária.
@@ -183,14 +180,14 @@ class RegisterAllocator:
         if var_name and var_name.startswith('t'):
             print(f"[FREE_TEMP] Liberando registrador {reg} que continha o temporário '{var_name}'.")
             self._unassign_reg(reg)
-
+    
     def update_var_from_reg(self, dest_var, src_reg):
         """
         Atualiza o mapeamento para refletir uma atribuição (mov).
         """
         print(f"[UPDATE_MAP] Mapeando '{dest_var}' para o registrador {src_reg} (que contém o valor de origem).")
         self._assign_reg_to_var(src_reg, dest_var)
-
+    
     def spill_all_dirty(self):
         """
         Força o salvamento de todas as variáveis "reais" antes de chamadas de função.
@@ -200,11 +197,20 @@ class RegisterAllocator:
             var_name = self.reg_to_var.get(reg)
             if var_name and not var_name.startswith('t'):
                 addr_reg = self.SPILL_TEMP_REG
+                addr = self.func_context.data_manager.get_address(var_name)
                 print(f"[SPILL_ALL] -> Salvando variável real '{var_name}' do registrador {reg} na memória.")
-                self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+                self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
                 self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
                 self.dirty_regs.discard(reg)
-
+    
+    def invalidate_vars(self, var_names):
+        """Remove o mapeamento de registradores para as variáveis fornecidas."""
+        for var in var_names:
+            if var in self.var_to_reg:
+                reg = self.var_to_reg[var]
+                self._unassign_reg(reg)
+                self.dirty_regs.discard(reg)
+    
     def _get_free_reg(self):
         """
         Obtém um registrador livre ou derrama um, se necessário.
@@ -232,7 +238,7 @@ class RegisterAllocator:
                 print(f"[GET_FREE] -> Nenhum candidato ideal para spill. Forçando o spill do menos usado: {reg_to_spill}.")
             else:
                 raise Exception("Erro de alocação: LRU vazia e sem registradores livres. Impossível continuar.")
-
+        
         self._spill_reg(reg_to_spill)
         self._mark_as_used(reg_to_spill)
         return reg_to_spill
@@ -250,8 +256,9 @@ class RegisterAllocator:
         if reg in self.dirty_regs:
             if not var_name.startswith('t'):
                 addr_reg = self.SPILL_TEMP_REG
+                addr = self.func_context.data_manager.get_address(var_name)
                 print(f"[SPILL] -> '{var_name}' é uma variável real. Salvando em .data.")
-                self.func_context.add_instruction(f"\tmovi: {addr_reg} = var_{var_name}")
+                self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
                 self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
             else:
                 self.func_context.spill_offset -= 4 
@@ -306,11 +313,13 @@ class RegisterAllocator:
         self.lru_order.append(reg)
 
 class FunctionContext:
-    def __init__(self, name):
+    def __init__(self, name, data_manager):
         self.name = name
         self.instructions = []
+        self.data_manager = data_manager
         self.allocator = RegisterAllocator(self)
         self.arg_count = 0
+        self.arg_vars = []
         self.spill_offset = 0
         self.last_comparison = None
         self.label_counter = 0
@@ -391,7 +400,8 @@ def translate_instruction(instr_parts, func_ctx):
             print("[TRANSLATE] -> Caminho: Obter Endereço (&)")
             var_name = expr_parts[0][1:]
             dest_reg = alloc.get_reg_for_temp(dest)
-            func_ctx.add_instruction(f"\tmovi: {dest_reg} = var_{var_name}")
+            addr = func_ctx.data_manager.get_address(var_name)
+            func_ctx.add_instruction(f"\tmovi: {dest_reg} = {addr}")
 
         elif expr_parts[0].startswith('*'):
             print("[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)")
@@ -439,6 +449,9 @@ def translate_instruction(instr_parts, func_ctx):
             else:
                 return_label = func_ctx.new_label()
                 ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
+                # Adicionar uma iteração aqui com for que passe por todos os argumentos definidos em "call {func_name}, {number_of_args}" e inicie-os na memória, guardando seus valores iniciais lá e salvando com nomes de variáveis únicos para o contexto da função que será chamada agora. 
+                # Lembre-se que cada função pode ser chamada dentro dela várias vezes então deve haver uma verificação se a função já foi alocada na memória. Se sim, aloque uma nova seção para as variáveis com um index adicionado ao nome das variáveis.
+                # Exemplo de nome: {func_name}{index}_{var_name}
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
                 func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
                 func_ctx.add_instruction(f"\tbl: {func_name}")
@@ -446,6 +459,8 @@ def translate_instruction(instr_parts, func_ctx):
                 func_ctx.add_instruction(f"{return_label}:")
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+            alloc.invalidate_vars(func_ctx.arg_vars)
+            func_ctx.arg_vars.clear()
             func_ctx.arg_count = 0
         
         elif opcode == "if_false":
@@ -483,6 +498,8 @@ def translate_instruction(instr_parts, func_ctx):
             func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {return_label}")
             func_ctx.add_instruction(f"\tbl: {func_name}")
             func_ctx.add_instruction(f"{return_label}:")
+        alloc.invalidate_vars(func_ctx.arg_vars)
+        func_ctx.arg_vars.clear()
         func_ctx.arg_count = 0
     
     
@@ -492,6 +509,7 @@ def translate_instruction(instr_parts, func_ctx):
             src_reg = alloc.ensure_var_in_reg(instr_parts[1])
             dest_reg = ARG_REGS[func_ctx.arg_count]
             func_ctx.add_instruction(f"\tmov: {dest_reg} = {src_reg}")
+            func_ctx.arg_vars.append(instr_parts[1])
             func_ctx.arg_count += 1
         else:
             print(f"[TRANSLATE_WARN] -> Aviso: Mais de {len(ARG_REGS)} argumentos. Passagem pela pilha não implementada.")
@@ -526,6 +544,7 @@ def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
     functions = collections.OrderedDict()
     all_vars = set()
+    data_manager = DataMemoryManager(base_address=0)
     
     print("\n--- Passagem 1: Coletando funções e variáveis globais do IR ---")
     for i, line in enumerate(ir_list):
@@ -546,11 +565,16 @@ def generate_assembly(ir_list):
             if not func_name.startswith('L'):
                 if func_name not in functions:
                     print(f"[Passagem 1] Função encontrada: '{func_name}'")
-                    functions[func_name] = FunctionContext(func_name)
+                    functions[func_name] = FunctionContext(func_name, data_manager)
 
     if not functions and any(ir_list):
         print("[Passagem 1] Nenhuma função explícita encontrada. Assumindo função 'main'.")
-        functions['main'] = FunctionContext('main')
+        functions['main'] = FunctionContext('main', data_manager)
+
+    # Registra todas as variáveis descobertas no gerenciador de memória
+    for var in all_vars:
+        if var not in functions and not (var.startswith('t') and var[1:].isdigit()):
+            data_manager.register_variable(var)
     print(f"--- Fim da Passagem 1: {len(functions)} funções e {len(all_vars)} variáveis encontradas. ---\n")
 
     print("--- Passagem 2: Traduzindo o IR para cada função ---")
@@ -648,11 +672,9 @@ def generate_assembly(ir_list):
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
     final_code.append(f"stack_space: .space {DATA_MEMORY_SIZE}")  # Espaço para a pilha
-    func_names = set(functions.keys())
-    var_names = sorted([var for var in all_vars if var not in func_names and not (var.startswith('t') and var[1:].isdigit())])
-    print(f"[Montagem] -> Variáveis a serem declaradas: {var_names}")
-    for var in var_names:
-        final_code.append(f"var_{var}: .word 0")
+    directives = data_manager.generate_data_directives()
+    print(f"[Montagem] -> Variáveis a serem declaradas: {list(data_manager.var_to_address.keys())}")
+    final_code.extend(directives)
     
     print("=== GERAÇÃO DE ASSEMBLY CONCLUÍDA ===")
     return "\n".join(final_code)
