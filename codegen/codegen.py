@@ -452,6 +452,8 @@ def translate_instruction(instr_parts, func_ctx):
                 # Adicionar uma iteração aqui com for que passe por todos os argumentos definidos em "call {func_name}, {number_of_args}" e inicie-os na memória, guardando seus valores iniciais lá e salvando com nomes de variáveis únicos para o contexto da função que será chamada agora. 
                 # Lembre-se que cada função pode ser chamada dentro dela várias vezes então deve haver uma verificação se a função já foi alocada na memória. Se sim, aloque uma nova seção para as variáveis com um index adicionado ao nome das variáveis.
                 # Exemplo de nome: {func_name}{index}_{var_name}
+                # Fazer isso sempre que houver um call
+                # Lembre-se de conferir se no prólogo das funções esses valores estão sendo devidamente chamados.
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
                 func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
                 func_ctx.add_instruction(f"\tbl: {func_name}")
