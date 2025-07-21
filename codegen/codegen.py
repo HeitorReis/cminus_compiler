@@ -38,7 +38,7 @@ class RegisterAllocator:
         self.caller_saved_pool = [f"r{i}" for i in range(4, 13)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
-        self.SPILL_TEMP_REG = "r28" 
+        self.SPILL_TEMP_REG = SPECIAL_REGS['spill']
         print(f"[ALLOC_INIT] Pool de registradores definido: {self.reg_pool}")
         print(f"[ALLOC_INIT] Registrador de spill reservado: {self.SPILL_TEMP_REG}")
         
@@ -448,27 +448,44 @@ def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
     functions = collections.OrderedDict()
     all_vars = set()
+    func_arg_counts = {}
     
     print("\n--- Passagem 1: Coletando funções e variáveis globais do IR ---")
+    variable_pattern = re.compile(r'\b(?!t\d+\b|L\d+\b)([a-zA-Z_]\w*)\b')
+    keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output'}
+
+    current_func = None
+    func_locals = collections.defaultdict(set)
     for i, line in enumerate(ir_list):
         parts = line.strip().split()
-        if not parts: continue
         
-        variable_pattern = re.compile(r'\b(?!t\d+\b|L\d+\b)([a-zA-Z_]\w*)\b')
-        keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output'}
+        if not parts:
+            continue
+        
+        if parts[0].endswith(':') and not parts[0].startswith('L'):
+            current_func = parts[0][:-1]
+            if current_func not in functions:
+                print(f"[Passagem 1] Função encontrada: '{current_func}'")
+                functions[current_func] = FunctionContext(current_func)
+            continue
+        
+        if 'call' in parts:
+            idx = parts.index('call')
+            func_name = parts[idx + 1].replace(',', '')
+            arg_count = int(parts[idx + 2])
+            prev = func_arg_counts.get(func_name, 0)
+            func_arg_counts[func_name] = max(prev, arg_count)
+            
         matches = variable_pattern.findall(line)
         for var_name in matches:
-            if var_name not in keywords and not (var_name.startswith('t') and var_name[1:].isdigit()):
+            if var_name in keywords or (var_name.startswith('t') and var_name[1:].isdigit()):
+                continue
+            if current_func is None:                
                 if var_name not in all_vars:
                     print(f"[Passagem 1] Variável global encontrada: '{var_name}' na linha {i+1}")
                     all_vars.add(var_name)
-
-        if parts[0].endswith(':'):
-            func_name = parts[0][:-1]
-            if not func_name.startswith('L'):
-                if func_name not in functions:
-                    print(f"[Passagem 1] Função encontrada: '{func_name}'")
-                    functions[func_name] = FunctionContext(func_name)
+            else:
+                func_locals[current_func].add(var_name)
 
     if not functions and any(ir_list):
         print("[Passagem 1] Nenhuma função explícita encontrada. Assumindo função 'main'.")
@@ -491,13 +508,36 @@ def generate_assembly(ir_list):
             if stripped.endswith(':') and not stripped.startswith('L'):
                 if stripped[:-1] in functions and stripped[:-1] != func_name:
                     in_func = False
-
+                    
             if in_func:
                 func_ir.append(stripped)
         
         print(f"-> IR isolado para '{func_name}' contém {len(func_ir)} instruções.")
         
         func_ctx.instructions.clear()
+        assigned = set()
+        for line in func_ir:
+            if ':=' in line:
+                dest = line.split(':=', 1)[0].strip().lstrip('*')
+                assigned.add(dest)
+                
+        param_names = []
+        for name in func_locals.get(func_name, set()):
+            if name not in assigned:
+                param_names.append(name)
+        param_names = param_names[:func_arg_counts.get(func_name, 0)]
+        
+        alloc = func_ctx.allocator
+        for idx, pname in enumerate(param_names):
+            if idx >= len(ARG_REGS):
+                break
+            reg = ARG_REGS[idx]
+            func_ctx.add_instruction(f"\tmovi: {alloc.SPILL_TEMP_REG} = var_{pname}")
+            func_ctx.add_instruction(f"\tstore: [{alloc.SPILL_TEMP_REG}] = {reg}")
+            alloc._assign_reg_to_var(reg, pname)
+            if pname in all_vars:
+                all_vars.remove(pname)
+                
         for line in func_ir:
             translate_instruction(line.split(), func_ctx)
         

@@ -1,4 +1,7 @@
 bi: main -> {'supp': 'i', 'opcode': 'b'}
+subi: r29 = r29, 8 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 8'}
+storei: [r29, #0] = r28 -> {'supp': 'i', 'opcode': 'store', 'op2': '[r29, #0]'}
+storei: [r29, #4] = r31 -> {'supp': 'i', 'opcode': 'store', 'op2': '[r29, #4]'}
 movi: r14 = var_number -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r14', 'rh': 'r0', 'op2': 'var_number'}
 load: r13 = [r14] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r14]'}
 movi: r15 = 0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r15', 'rh': 'r0', 'op2': '0'}
@@ -11,11 +14,20 @@ movi: r20 = var_number -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r20', 'rh': 'r0'
 load: r19 = [r20] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r20]'}
 subi: r21 = r19, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r19, 1'}
 bl: count -> {'supp': 'na', 'opcode': 'bl'}
+loadi: r31 = [r29, #4] -> {'supp': 'i', 'opcode': 'load', 'op2': '[r29, #4]'}
+loadi: r28 = [r29, #0] -> {'supp': 'i', 'opcode': 'load', 'op2': '[r29, #0]'}
+addi: r29 = r29, 8 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 8'}
 b: r28 -> {'supp': 'na', 'opcode': 'b'}
+subi: r29 = r29, 8 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 8'}
+storei: [r29, #0] = r28 -> {'supp': 'i', 'opcode': 'store', 'op2': '[r29, #0]'}
+storei: [r29, #4] = r31 -> {'supp': 'i', 'opcode': 'store', 'op2': '[r29, #4]'}
 in: r13 -> {'supp': 'i', 'opcode': 'in'}
 movi: r14 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r14', 'rh': 'r0', 'op2': 'var_x'}
 store: [r14] = r13 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r14', 'rh': 'r13'}
 movi: r16 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': 'var_x'}
 load: r15 = [r16] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r16]'}
 bl: count -> {'supp': 'na', 'opcode': 'bl'}
+loadi: r31 = [r29, #4] -> {'supp': 'i', 'opcode': 'load', 'op2': '[r29, #4]'}
+loadi: r28 = [r29, #0] -> {'supp': 'i', 'opcode': 'load', 'op2': '[r29, #0]'}
+addi: r29 = r29, 8 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 8'}
 ret: -> {'supp': 'na', 'opcode': 'ret'}

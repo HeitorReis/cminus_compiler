@@ -3,6 +3,10 @@
 
 	bi: main
 count:
+	subi: r29 = r29, 8
+	storei: [r29, #0] = r28
+	storei: [r29, #4] = r31
+	mov: r31 = r29
 	movi: r14 = var_number
 	load: r13 = [r14]
 	movi: r15 = 0
@@ -21,9 +25,16 @@ L1:
 	mov: r1 = r21
 	bl: count
 count_epilogue:
+	loadi: r31 = [r29, #4]
+	loadi: r28 = [r29, #0]
+	addi: r29 = r29, 8
 	b: r28
 
 main:
+	subi: r29 = r29, 8
+	storei: [r29, #0] = r28
+	storei: [r29, #4] = r31
+	mov: r31 = r29
 	in: r13
 	movi: r14 = var_x
 	store: [r14] = r13
@@ -32,9 +43,9 @@ main:
 	mov: r1 = r15
 	bl: count
 main_epilogue:
+	loadi: r31 = [r29, #4]
+	loadi: r28 = [r29, #0]
+	addi: r29 = r29, 8
 	ret:
 
 .data
-var__: .word 0
-var_number: .word 0
-var_x: .word 0
