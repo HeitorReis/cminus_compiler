@@ -305,11 +305,7 @@ def translate_instruction(instr_parts, func_ctx):
             reg1 = alloc.ensure_var_in_reg(arg1)
             reg2 = alloc.ensure_var_in_reg(arg2)
             
-<<<<<<< Updated upstream
-            func_ctx.add_instruction(f"\tsubs: r0 = {reg1}, {reg2}")
-=======
             func_ctx.add_instruction(f"\tsubs: {SPECIAL_REGS['cmp']} = {reg1}, {reg2}")            
->>>>>>> Stashed changes
             
             func_ctx.last_comparison = op_str 
             
