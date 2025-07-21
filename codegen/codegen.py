@@ -370,6 +370,7 @@ def translate_instruction(instr_parts, func_ctx):
                 print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
                 func_ctx.add_instruction(f"\tout: {hit_reg}")
             else:
+                func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = ") # Adicionar lógica aqui
                 func_ctx.add_instruction(f"\tbl: {func_name}")
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
@@ -526,7 +527,6 @@ def generate_assembly(ir_list):
                 final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space") # Começa a pilha no final da memória de dados
                 # Inicializa o ponteiro de pilha na primeira execução e
                 # posiciona o frame pointer sem salvar registradores sem valor
-                final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space")
                 final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
             else:
                 # Prólogo: empilha lr e fp atualiza o frame pointer

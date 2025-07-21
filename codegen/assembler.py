@@ -316,6 +316,7 @@ class Instruction:
             print(f"[ENCODE] -> Instrução de branch detectada: {base_opcode} com condição {d['cond']}")
             aux_cond = condition_setting['complex'].get(d['cond'], 'na')
             cond_bin = aux_cond if aux_cond != 'na' else condition_setting['simple'].get(d['cond'], 'error')
+            
         
         funct_bin = instructions.get(base_opcode)
         if funct_bin is None:
@@ -579,7 +580,6 @@ class FullCode:
         all_lines_data = []
         current_address = 0
         
-        # ETAPA 1: Atribuir endereços aos literais
         print("[PASS 2] Etapa 1: Coletando literais grandes e atribuindo endereços a eles...")
         literal_address = max(self.symbol_table.values(), default=-1) + 1
         in_text_section = True
@@ -618,8 +618,6 @@ class FullCode:
             print(f"[PASS 2] -> Pool de literais final: {self.literal_pool}")
         else:
             print("[PASS 2] -> Nenhum literal grande encontrado.")
-
-        # ETAPA 2: Codificar as instruções
         print("\n[PASS 2] Etapa 2: Codificando cada linha de instrução para binário...")
         in_text_section = True
         for line_num, line in enumerate(self.assembly_list):
@@ -762,8 +760,7 @@ class FullCode:
             type_code = line[4:6]
             type_decoded = type_names.get(type_code, ['unknown'])
             supp = line[6:8]
-            if supp[0] == '1':
-                is_immediate = True
+            is_immediate = True if supp[0] == '1' else False
             for supp_key, supp_value in support_bits_map.items():
                 if supp == supp_value:
                     supp_decoded = supp_key
@@ -777,12 +774,10 @@ class FullCode:
             ro = line[22:27]
             ro_decoded = int(ro, 2)
             op2 = line[22:]
-            op2 = int(op2, 2)
-            if op2 > 1 << 19:  # Verifica se é um imediato de 10 bits
-                op2 -= 1 << 20  # ajusta para complemento de dois
+            op2_decoded = int(op2, 2)
             if type_code == '11':
-                rd = ''; rh = ''; ro = ''
-                rd_decoded = 'na'; rh_decoded = 'na'; ro_decoded = 'na'
+                rd = '  '; rh = '  '
+                rd_decoded = 'na'; rh_decoded = 'na'
                 opcode_decoded = 'b  ' if opcode == '0000' else 'bl' if opcode == '1000' else 'ret'
                 if not is_immediate and opcode != '1000':
                     op2_decoded = f"ProgramCounter <= r{ro_decoded}"
@@ -794,33 +789,32 @@ class FullCode:
             elif type_code == '01':
                 if opcode_decoded == 'sub':
                     opcode_decoded = 'load'
-                    op2_decoded = f"immediate {op2}" if 'i' in supp else f"reg_addr: r{int(line[22:27], 2)}"
+                    op2_decoded = f"immediate {op2_decoded}" if 'i' in supp else f"reg_addr: r{int(line[22:27], 2)}"
                 elif opcode_decoded == 'add':
                     opcode_decoded = 'store'
                     if is_immediate:
-                        op2_decoded = f"immediate {op2}"
+                        op2_decoded = f"immediate {op2_decoded}"
                     else:
-                        ro_reg = int(line[22:27], 2)
-                        op2_decoded = f"r{ro_reg}"
+                        op2_decoded = f"r{ro_decoded}"
                 else:
-                    op2_decoded = f"immediate {op2}"
+                    op2_decoded = f"immediate {op2_decoded}"
             else: # Data-Processing
-                is_immediate = supp[0] == '1' # Verifica o bit 'i' no campo de suporte (bits 25-24)
                 if is_immediate:
                     # Se for imediato, converte de binário de 10 bits para inteiro com sinal
                     if line[22] == '1': # Se for negativo (complemento de dois)
-                        op2_val = op2 - (1 << 10)
+                        op2_val = op2_decoded - (1 << 10)
                     else:
-                        op2_val = op2
+                        op2_val = op2_decoded
                     op2_decoded = f"immediate {op2_val}"
                 else:
                     # Se não for imediato, os 5 bits mais altos são o registrador Ro
                     ro_reg = int(line[22:27], 2)
                     op2_decoded = f"r{ro_reg}"
+                    op2 = ro
             
             decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
             decoded_lines.append(decoded_line)
-            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd_decoded})  \t  Rh({rh_decoded}) \tOp2({op2})\n"
+            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
             decoded_lines.append(decode_line)
             
         print("--- Decodificação Concluída ---")

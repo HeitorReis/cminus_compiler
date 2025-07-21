@@ -37,10 +37,6 @@ count_epilogue:
 
 main:
 	movi: r29 = stack_space
-	subi: r29 = r29, 1
-	store: [r29] = r28
-	subi: r29 = r29, 1
-	store: [r29] = r31
 	mov: r31 = r29
 	in: r12
 	movi: r13 = var_x
