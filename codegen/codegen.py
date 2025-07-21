@@ -524,20 +524,24 @@ def generate_assembly(ir_list):
         if len(functions.values()) > 1:
             if func_name == 'main':
                 final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space") # Começa a pilha no final da memória de dados
-            
-            # Prólogo: empilha lr e fp atualiza o frame pointer
-                # Stack Pointer aponta para o próximo elemento da pilha 
-                # (se é o primeiro, ele entra no primeiro endereço [64 vira 63])
-            final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
-                # Salva o Link Register (lr) na pilha (endereço apontado por sp)
-            final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}") 
-                # Stack Pointer aponta para o próximo elemento
-            final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
-                # Salva o Frame Pointer (fp) na pilha (endereço apontado por sp))
-            final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['fp']}")
-                # Salva o endereço do topo da pilha no Frame Pointer (fp)
-                # Isso permite navegar com sp enquanto fp aponta para o topo do frame atual
-            final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
+                # Inicializa o ponteiro de pilha na primeira execução e
+                # posiciona o frame pointer sem salvar registradores sem valor
+                final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space")
+                final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
+            else:
+                # Prólogo: empilha lr e fp atualiza o frame pointer
+                    # Stack Pointer aponta para o próximo elemento da pilha 
+                    # (se é o primeiro, ele entra no primeiro endereço [64 vira 63])
+                final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
+                    # Salva o Link Register (lr) na pilha (endereço apontado por sp)
+                final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}") 
+                    # Stack Pointer aponta para o próximo elemento
+                final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
+                    # Salva o Frame Pointer (fp) na pilha (endereço apontado por sp))
+                final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['fp']}")
+                    # Salva o endereço do topo da pilha no Frame Pointer (fp)
+                    # Isso permite navegar com sp enquanto fp aponta para o topo do frame atual
+                final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
         
         final_code.extend(func_ctx.instructions)
         
