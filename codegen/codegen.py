@@ -387,16 +387,15 @@ def translate_instruction(instr_parts, func_ctx):
             print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
             target_label = instr_parts[3]
             
-            if not hasattr(func_ctx, 'last_comparison'):
-                print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
-                return
-            
-            original_op = func_ctx.last_comparison
-            branch_instruction = IR_TO_ASSEMBLY_BRANCH[original_op]
-            
-            func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
-            
-            del func_ctx.last_comparison 
+            if hasattr(func_ctx, 'last_comparison'):
+                original_op = func_ctx.last_comparison
+                branch_instruction = IR_TO_ASSEMBLY_BRANCH.get(original_op, 'bilteq')
+                func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
+                del func_ctx.last_comparison
+            else:
+                cond_var = instr_parts[1]
+                alloc.ensure_var_in_reg(cond_var)
+                func_ctx.add_instruction(f"\tbieq: {target_label}")
             return
             
             
