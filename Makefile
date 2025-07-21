@@ -78,7 +78,7 @@ $(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS)
 	$(CXX) $(CFLAGS) $(OBJECTS) -o $(EXEC) $(LDFLAGS)
 
 # Run with test files based on the user-specified TEST variable
-run: clean $(EXEC)
+run: $(EXEC)
 ifeq ($(TEST),1)
 	$(EXEC) $(DOCS_DIR)/teste.txt
 else ifeq ($(TEST),2)

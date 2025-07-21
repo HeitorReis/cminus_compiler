@@ -1,68 +1,40 @@
 .text
 .global main
 
+	bi: main
+count:
+	movi: r14 = var_number
+	load: r13 = [r14]
+	movi: r15 = 0
+	subs: r26 = r13, r15
+	bilteq: L0
+	bi: count_epilogue
+L0:
+L1:
+	movi: r18 = var_number
+	load: r17 = [r18]
+	mov: r1 = r17
+	out: r1
+	movi: r20 = var_number
+	load: r19 = [r20]
+	subi: r21 = r19, 1
+	mov: r1 = r21
+	bl: count
+count_epilogue:
+	b: r28
+
 main:
-<<<<<<< Updated upstream
 	in: r13
 	movi: r14 = var_x
 	store: [r14] = r13
 	movi: r16 = var_x
 	load: r15 = [r16]
 	mov: r1 = r15
-	out: r1
-	movi: r17 = 4
-	movi: r18 = var_y
-	store: [r18] = r17
-	movi: r20 = var_x
-	load: r19 = [r20]
-	movi: r22 = var_y
-	load: r21 = [r22]
-	subs: r0 = r19, r21
-	bilteq: L0
-	movi: r25 = var_x
-	load: r24 = [r25]
-	mov: r1 = r24
-	out: r1
-	bi: L1
-L0:
-	movi: r27 = var_y
-	load: r26 = [r27]
-	mov: r1 = r26
-=======
-	in: r12
-	movi: r13 = var_x
-	store: [r13] = r12
-	movi: r15 = var_x
-	load: r14 = [r15]
-	mov: r1 = r14
-	out: r1
-	movi: r16 = 4
-	movi: r17 = var_y
-	store: [r17] = r16
-	movi: r19 = var_x
-	load: r18 = [r19]
-	movi: r21 = var_y
-	load: r20 = [r21]
-	subs: r0 = r18, r20
-	bilteq: L0
-	movi: r23 = var_x
-	load: r22 = [r23]
-	mov: r1 = r22
-	out: r1
-	bi: L1
-L0:
-	movi: r25 = var_y
-	load: r24 = [r25]
-	mov: r1 = r24
->>>>>>> Stashed changes
-	out: r1
-L1:
-	bi: main_epilogue
-	bi: main_epilogue
+	bl: count
 main_epilogue:
 	ret:
 
 .data
 var__: .word 0
+var_number: .word 0
 var_x: .word 0
-var_y: .word 0

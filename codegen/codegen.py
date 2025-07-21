@@ -136,6 +136,9 @@ class RegisterAllocator:
         """
         print(f"[UPDATE_MAP] Mapeando '{dest_var}' para o registrador {src_reg} (que contém o valor de origem).")
         self._assign_reg_to_var(src_reg, dest_var)
+        # O registrador agora contém um valor mais recente do que o salvo na memória
+        # e precisa ser marcado como "sujo" para que seja escrito de volta quando necessário.
+        self.dirty_regs.add(src_reg)
 
     def spill_all_dirty(self):
         """
@@ -511,6 +514,7 @@ def generate_assembly(ir_list):
 
     print("--- Montagem Final: Construindo o arquivo assembly completo ---")
     final_code = [".text", ".global main", ""]
+    first_func = True
     
     for func_name, func_ctx in functions.items():
         print(f"[Montagem] Processando função '{func_name}' com {len(func_ctx.instructions)} instruções.")
@@ -533,23 +537,7 @@ def generate_assembly(ir_list):
             final_code.append(f"\tb: {SPECIAL_REGS['lr']}") 
             
         final_code.append("")
-    
-    # Remoção de saltos redundantes: se um "bi: LABEL" é seguido
-    # imediatamente pelo próprio rótulo, o desvio não tem efeito.
-    cleaned_code = []
-    index = 0
-    while index < len(final_code):
-        if line.strip().startswith("bi:"):
-            target = line.split(":", 1)[1].strip()
-            j = index + 1
-            if j < len(final_code) and final_code[j].strip() == f"{target}:":
-                index += 1
-                next
-                continue
-        final_code = cleaned_code
-        i += 1
-    final_code = cleaned_code
-
+        
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
     func_names = set(functions.keys())
