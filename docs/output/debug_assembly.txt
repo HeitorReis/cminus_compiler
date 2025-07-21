@@ -1,5 +1,6 @@
+bi: main -> {'supp': 'i', 'opcode': 'b'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
-store: [r29] = r0 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r0'}
+store: [r29] = r28 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r31 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
 movi: r13 = var_number -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': 'var_number'}
@@ -19,12 +20,12 @@ bi: count_epilogue -> {'supp': 'i', 'opcode': 'b'}
 bi: count_epilogue -> {'supp': 'i', 'opcode': 'b'}
 load: r31 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
 addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
-load: r0 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
+load: r28 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
 addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
-b: r0 -> {'supp': 'na', 'opcode': 'b'}
+b: r28 -> {'supp': 'na', 'opcode': 'b'}
 movi: r29 = stack_space -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r29', 'rh': 'r0', 'op2': 'stack_space'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
-store: [r29] = r0 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r0'}
+store: [r29] = r28 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r31 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
 in: r12 -> {'supp': 'i', 'opcode': 'in'}
@@ -37,6 +38,6 @@ bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
 bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
 load: r31 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
 addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
-load: r0 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
+load: r28 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
 addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
 ret: -> {'supp': 'na', 'opcode': 'ret'}

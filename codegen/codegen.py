@@ -500,6 +500,7 @@ def generate_assembly(ir_list):
 
     print("--- Montagem Final: Construindo o arquivo assembly completo ---")
     final_code = [".text", ".global main", ""]
+    final_code.append(f"\tbi: main")
     
     for func_name, func_ctx in functions.items():
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")

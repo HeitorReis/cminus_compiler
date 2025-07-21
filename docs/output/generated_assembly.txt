@@ -1,9 +1,10 @@
 .text
 .global main
 
+	bi: main
 count:
 	subi: r29 = r29, 1
-	store: [r29] = r0
+	store: [r29] = r28
 	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
@@ -31,14 +32,14 @@ count_epilogue:
 	mov: r29 = r31
 	load: r31 = [r29]
 	addi: r29 = r29, 1
-	load: r0 = [r29]
+	load: r28 = [r29]
 	addi: r29 = r29, 1
-	b: r0
+	b: r28
 
 main:
 	movi: r29 = stack_space
 	subi: r29 = r29, 1
-	store: [r29] = r0
+	store: [r29] = r28
 	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
@@ -55,7 +56,7 @@ main_epilogue:
 	mov: r29 = r31
 	load: r31 = [r29]
 	addi: r29 = r29, 1
-	load: r0 = [r29]
+	load: r28 = [r29]
 	addi: r29 = r29, 1
 	ret:
 
