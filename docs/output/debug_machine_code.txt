@@ -1,5 +1,5 @@
-Line 0 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 29
-	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 29)
+Line 0 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +29
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +29)
 
 Line 1 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: sub  	Rd:  r29 	= (Rh) r29 	Operand: immediate 1
 	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(0001) 	Rd(r29)  	  Rh(r29) 	Op2(immediate 1)
@@ -28,14 +28,14 @@ Line 8 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r14 
 Line 9 -	Type: Data-Processing. 	Cond: do 		Support: s  	Opcode: sub  	Rd:  r0 	= (Rh) r12 	Operand: r14
 	Binary: Type(00) 				Cond(0000) 		Supp(01) 		Opcode(0001) 	Rd(r0)  	  Rh(r12) 	Op2(r14)
 
-Line 10 -	Type: Branch . . . . . 	Cond: lteq 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 2
-	Binary: Type(11) 				Cond(0110) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 2)
+Line 10 -	Type: Branch . . . . . 	Cond: lteq 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +2
+	Binary: Type(11) 				Cond(0110) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +2)
 
-Line 11 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 12
-	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 12)
+Line 11 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +12
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +12)
 
-Line 12 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
-	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 0)
+Line 12 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +0
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +0)
 
 Line 13 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r17 	= (Rh) r0 	Operand: immediate 52
 	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r17)  	  Rh(r0) 	Op2(immediate 52)
@@ -61,14 +61,14 @@ Line 19 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: sub  	Rd:  r20
 Line 20 -	Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r0 	Operand: r20
 	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r1)  	  Rh(r0) 	Op2(r20)
 
-Line 21 -	Type: Branch . . . . . 	Cond: do 		Support: na  	Opcode: bl  	Rd:  r31 	= (Rh) r31 	Operand: branch target -21
-	Binary: Type(11) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r31)  	  Rh(r31) 	Op2(branch target -21)
+Line 21 -	Type: Branch . . . . . 	Cond: do 		Support: na  	Opcode: bl  	Rd:  r31 	= (Rh) r31 	Operand: branch: Program Counter -21
+	Binary: Type(11) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r31)  	  Rh(r31) 	Op2(branch: Program Counter -21)
 
-Line 22 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 1
-	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 1)
+Line 22 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +1
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +1)
 
-Line 23 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
-	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 0)
+Line 23 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +0
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +0)
 
 Line 24 -	Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r29 	= (Rh) r0 	Operand: r31
 	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r29)  	  Rh(r0) 	Op2(r31)
@@ -85,8 +85,8 @@ Line 27 -	Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r
 Line 28 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: add  	Rd:  r29 	= (Rh) r29 	Operand: immediate 1
 	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r29)  	  Rh(r29) 	Op2(immediate 1)
 
-Line 29 -	Type: Branch . . . . . 	Cond: do 		Support: na  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 28
-	Binary: Type(11) 				Cond(0000) 		Supp(00) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 28)
+Line 29 -	Type: Branch . . . . . 	Cond: do 		Support: na  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +28
+	Binary: Type(11) 				Cond(0000) 		Supp(00) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +28)
 
 Line 30 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r29 	= (Rh) r0 	Operand: immediate 51
 	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(r29)  	  Rh(r0) 	Op2(immediate 51)
@@ -124,14 +124,14 @@ Line 40 -	Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r
 Line 41 -	Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r1 	= (Rh) r0 	Operand: r14
 	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r1)  	  Rh(r0) 	Op2(r14)
 
-Line 42 -	Type: Branch . . . . . 	Cond: do 		Support: na  	Opcode: bl  	Rd:  r31 	= (Rh) r31 	Operand: branch target -42
-	Binary: Type(11) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r31)  	  Rh(r31) 	Op2(branch target -42)
+Line 42 -	Type: Branch . . . . . 	Cond: do 		Support: na  	Opcode: bl  	Rd:  r31 	= (Rh) r31 	Operand: branch: Program Counter -42
+	Binary: Type(11) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r31)  	  Rh(r31) 	Op2(branch: Program Counter -42)
 
-Line 43 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 1
-	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 1)
+Line 43 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +1
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +1)
 
-Line 44 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch target 0
-	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch target 0)
+Line 44 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  r0 	= (Rh) r0 	Operand: branch: Program Counter +0
+	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(r0)  	  Rh(r0) 	Op2(branch: Program Counter +0)
 
 Line 45 -	Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r29 	= (Rh) r0 	Operand: r31
 	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(r29)  	  Rh(r0) 	Op2(r31)

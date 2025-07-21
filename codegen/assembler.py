@@ -778,7 +778,7 @@ class FullCode:
             if type_code == '11':
                 opcode_decoded = 'b  ' if opcode == '0000' else 'bl' if opcode == '1000' else 'ret'
                 if 'b' in opcode_decoded:
-                    op2_decoded = f"branch target {op2}"
+                    op2_decoded = "branch: Program Counter "+("+" if op2 >= 0 else "")+f"{op2}"
                 else:
                     op2_decoded = f"immediate {op2}"
             elif type_code == '01':

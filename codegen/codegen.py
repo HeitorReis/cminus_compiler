@@ -432,10 +432,19 @@ def translate_instruction(instr_parts, func_ctx):
 
     elif opcode == 'if_false':
         print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
-        cond_var = instr_parts[1]
         target_label = instr_parts[3]
-        cond_reg = alloc.ensure_var_in_reg(cond_var)
-        func_ctx.add_instruction(f"\tbilteq: {target_label}")
+        
+        if not hasattr(func_ctx, 'last_comparison'):
+            print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
+            return
+        
+        original_op = func_ctx.last_comparison
+        branch_instruction = IR_TO_ASSEMBLY_BRANCH[original_op]
+        
+        func_ctx.add_instruction(f"\t{branch_instruction}: {target_label}")
+        
+        del func_ctx.last_comparison
+        return
 
 def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
