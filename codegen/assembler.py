@@ -565,6 +565,13 @@ class FullCode:
                 print(f"[PASS 1] -> Rótulo de dados '{label}' mapeado para o endereço {data_base_address}.")
                 if '.word' in directive:
                     data_base_address += 1
+                elif '.space' in directive:
+                    size = directive.split('.space')[1].strip()
+                    try:
+                        amount = int(size, 0)
+                    except ValueError:
+                        self.response = f"Error: Invalid size '{size}' in directive '{directive}'"
+                        return
         print("--- Fim da Primeira Passagem ---")
 
     def second_pass(self):
@@ -650,6 +657,17 @@ class FullCode:
                 label = line.split(':')[0]
                 val_str = line.split('.word')[1].strip()
                 data_vars[self.symbol_table[label]] = val_str
+            elif '.space' in line:
+                label = line.split(':')[0]
+                size_str = line.split('.space')[1].strip()
+                try:
+                    size = int(size_str, 0)
+                except ValueError:
+                    self.response = f"Error: Invalid size '{size_str}' in directive '{line}'"
+                    return
+                base_addr = self.symbol_table.get(label, len(self.full_code) // 32)
+                for offset in range(size):
+                    data_vars[base_addr + offset] = '0'
         
         for label, value in self.literal_pool.items():
             data_vars[self.symbol_table[label]] = str(value)

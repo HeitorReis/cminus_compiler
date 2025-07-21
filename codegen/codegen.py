@@ -29,8 +29,8 @@ class RegisterAllocator:
 
         # Prioriza o uso de registradores Callee-Saved para variáveis locais
         # e Caller-Saved para cálculos rápidos e temporários.
-        self.callee_saved_pool = [f"r{i}" for i in range(12, 27)]  # r13 a r27 (15 regs)
-        self.caller_saved_pool = [f"r{i}" for i in range(4, 11)]   # r4 a r12 (9 regs)
+        self.callee_saved_pool = [f"r{i}" for i in range(12, 27)]
+        self.caller_saved_pool = [f"r{i}" for i in range(4, 12)]
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
         self.SPILL_TEMP_REG = SPECIAL_REGS['spill']  # Registrador para spill temporário 
