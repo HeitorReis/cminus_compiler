@@ -18,6 +18,9 @@ SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spi
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
+# Inicialização da lista de variáveis declaradas
+ARG_REG_MAP = { f'arg{i+1}': ARG_REGS[i] for i in range(len(ARG_REGS)) }
+
 class RegisterAllocator:
     """
     Gerencia o uso de registradores de forma inteligente, distinguindo entre
@@ -366,7 +369,9 @@ def translate_instruction(instr_parts, func_ctx):
         elif 'call' in expr_parts:
             print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
             func_name = expr_parts[1].replace(',', '')
+            
             alloc.spill_all_dirty()
+            
             if func_name == 'input':
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tin: {dest_reg}")
@@ -379,8 +384,8 @@ def translate_instruction(instr_parts, func_ctx):
                 return_label = func_ctx.new_label()
                 ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
-                func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {ret_reg}")
-                func_ctx.add_instruction(f"\tbi: {func_name}")
+                func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
+                func_ctx.add_instruction(f"\tbl: {func_name}")
                 alloc.free_reg_if_temp(ret_reg)
                 func_ctx.add_instruction(f"{return_label}:")
                 dest_reg = alloc.get_reg_for_temp(dest)
