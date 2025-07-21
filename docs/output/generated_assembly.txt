@@ -3,10 +3,9 @@
 
 main:
 	movi: r29 = stack_space
-	addi: r29 = r29, 512
-	addi: r29 = r29, -4
+	subi: r29 = r29, 1
 	store: [r29] = r0
-	addi: r29 = r29, -4
+	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
 	in: r12
@@ -41,13 +40,13 @@ L1:
 main_epilogue:
 	mov: r29 = r31
 	load: r31 = [r29]
-	addi: r29 = r29, 4
+	addi: r29 = r29, 1
 	load: r0 = [r29]
-	addi: r29 = r29, 4
+	addi: r29 = r29, 1
 	ret:
 
 .data
-stack_space: .space 512
+stack_space: .space 63
 var__: .word 0
 var_x: .word 0
 var_y: .word 0

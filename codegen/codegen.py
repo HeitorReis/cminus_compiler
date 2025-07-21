@@ -11,7 +11,8 @@ IR_TO_ASSEMBLY_BRANCH = {
     '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
 }
 
-LINK_STACK_SPACE = 512  # Espaço reservado para a pilha de chamadas
+LINK_STACK_SIZE = 32  # Espaço reservado para a pilha de chamadas
+DATA_MEMORY_SIZE = 64  # Tamanho da memória de dados (exemplo)
 # Mapeamento de nomes simbólicos para registradores físicos
 SPECIAL_REGS = { 'lr': 'r0', 'sp': 'r29','spill': 'r30', 'fp': 'r31', 'retval': 'r0'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
@@ -505,14 +506,20 @@ def generate_assembly(ir_list):
         final_code.append(f"{func_name}:")
         
         if func_name == 'main':
-            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space")
-            final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, {LINK_STACK_SPACE}")  # Reservando espaço na pilha
+            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space") # Começa a pilha no final da memória de dados
             
         # Prólogo: empilha lr e fp atualiza o frame pointer
-        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, -4")
-        final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}")
-        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, -4")
+            # Stack Pointer aponta para o próximo elemento da pilha 
+            # (se é o primeiro, ele entra no primeiro endereço [64 vira 63])
+        final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
+            # Salva o Link Register (lr) na pilha (endereço apontado por sp)
+        final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['lr']}") 
+            # Stack Pointer aponta para o próximo elemento
+        final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
+            # Salva o Frame Pointer (fp) na pilha (endereço apontado por sp))
         final_code.append(f"\tstore: [{SPECIAL_REGS['sp']}] = {SPECIAL_REGS['fp']}")
+            # Salva o endereço do topo da pilha no Frame Pointer (fp)
+            # Isso permite navegar com sp enquanto fp aponta para o topo do frame atual
         final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
         
         final_code.extend(func_ctx.instructions)
@@ -521,11 +528,16 @@ def generate_assembly(ir_list):
         final_code.append(f"{func_name}_epilogue:")
         
         # Epílogo: restaura fp e lr e desfaz o frame atual
+            # Move o Stack Pointer (sp) para o topo do frame atual
         final_code.append(f"\tmov: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['fp']}")
+            # Restaura o Frame Pointer (fp) do topo da pilha (estamos descendo na pilha)
         final_code.append(f"\tload: {SPECIAL_REGS['fp']} = [{SPECIAL_REGS['sp']}]")
-        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 4")
+            # Stack Pointer aponta para o próximo elemento da pilha
+        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
+            # Restaura o Link Register (lr) do topo da pilha (estamos descendo na pilha)
         final_code.append(f"\tload: {SPECIAL_REGS['lr']} = [{SPECIAL_REGS['sp']}]")
-        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 4")
+            # Stack Pointer aponta para o próximo elemento da pilha
+        final_code.append(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
         
         if func_name == 'main':
             final_code.append("\tret:")
@@ -536,7 +548,7 @@ def generate_assembly(ir_list):
 
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
-    final_code.append(f"stack_space: .space {LINK_STACK_SPACE}")  # Espaço para a pilha
+    final_code.append(f"stack_space: .space {DATA_MEMORY_SIZE}")  # Espaço para a pilha
     func_names = set(functions.keys())
     var_names = sorted([var for var in all_vars if var not in func_names and not (var.startswith('t') and var[1:].isdigit())])
     print(f"[Montagem] -> Variáveis a serem declaradas: {var_names}")

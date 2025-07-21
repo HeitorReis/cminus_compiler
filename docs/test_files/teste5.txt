@@ -1,5 +1,5 @@
 void count (int number) {
-  if(count == 0) return;
+  if(number == 0) return;
   output (number);
   count (number - 1);
 }
