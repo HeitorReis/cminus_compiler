@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 in: r13 -> {'supp': 'i', 'opcode': 'in'}
 movi: r14 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r14', 'rh': 'r0', 'op2': 'var_x'}
 store: [r14] = r13 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r14', 'rh': 'r13'}
@@ -17,6 +18,27 @@ load: r24 = [r25] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r25]'}
 bi: L1 -> {'supp': 'i', 'opcode': 'b'}
 movi: r27 = var_y -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r27', 'rh': 'r0', 'op2': 'var_y'}
 load: r26 = [r27] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r27]'}
+=======
+in: r12 -> {'supp': 'i', 'opcode': 'in'}
+movi: r13 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': 'var_x'}
+store: [r13] = r12 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r13', 'rh': 'r12'}
+movi: r15 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r15', 'rh': 'r0', 'op2': 'var_x'}
+load: r14 = [r15] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r15]'}
+movi: r16 = 4 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': '4'}
+movi: r17 = var_y -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r17', 'rh': 'r0', 'op2': 'var_y'}
+store: [r17] = r16 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r17', 'rh': 'r16'}
+movi: r19 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r19', 'rh': 'r0', 'op2': 'var_x'}
+load: r18 = [r19] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r19]'}
+movi: r21 = var_y -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r21', 'rh': 'r0', 'op2': 'var_y'}
+load: r20 = [r21] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r21]'}
+subs: r0 = r18, r20 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r18, r20'}
+bilteq: L0 -> {'supp': 'i', 'opcode': 'bilteq'}
+movi: r23 = var_x -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r23', 'rh': 'r0', 'op2': 'var_x'}
+load: r22 = [r23] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r23]'}
+bi: L1 -> {'supp': 'i', 'opcode': 'b'}
+movi: r25 = var_y -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r25', 'rh': 'r0', 'op2': 'var_y'}
+load: r24 = [r25] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r25]'}
+>>>>>>> Stashed changes
 bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
 bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
 ret: -> {'supp': 'na', 'opcode': 'ret'}

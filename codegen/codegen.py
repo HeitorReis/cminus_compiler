@@ -12,8 +12,20 @@ IR_TO_ASSEMBLY_BRANCH = {
 }
 
 # Mapeamento de nomes simbólicos para registradores físicos
+<<<<<<< Updated upstream
 SPECIAL_REGS = { 'lr': 'r0', 'fp': 'r31', 'retval': 'r0'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
+=======
+SPECIAL_REGS = {  
+    'retval': 'r0',     # Retorno de funções
+    'cmp': 'r26',       # Comparações
+    'pseudo': 'r27',    # Pseudo-instruções
+    'lr': 'r28',        # Link Register
+    'sp': 'r29',        # Stack Pointer
+    'spill': 'r30',     # Spill Register
+    'fp': 'r31'         # Frame Pointer
+    }
+>>>>>>> Stashed changes
 ARG_REGS = ['r1', 'r2', 'r3']
 
 class RegisterAllocator:
@@ -293,7 +305,11 @@ def translate_instruction(instr_parts, func_ctx):
             reg1 = alloc.ensure_var_in_reg(arg1)
             reg2 = alloc.ensure_var_in_reg(arg2)
             
+<<<<<<< Updated upstream
             func_ctx.add_instruction(f"\tsubs: r0 = {reg1}, {reg2}")
+=======
+            func_ctx.add_instruction(f"\tsubs: {SPECIAL_REGS['cmp']} = {reg1}, {reg2}")            
+>>>>>>> Stashed changes
             
             func_ctx.last_comparison = op_str 
             
@@ -500,6 +516,16 @@ def generate_assembly(ir_list):
     final_code = [".text", ".global main", ""]
     
     for func_name, func_ctx in functions.items():
+<<<<<<< Updated upstream
+=======
+        print(f"[Montagem] Processando função '{func_name}' com {len(func_ctx.instructions)} instruções.")
+        
+        if first_func and len(functions.values()) > 1:
+            print("[Montagem] Adicionando código de inicialização (ida para a função 'main').")
+            first_func = False
+            final_code.append(f"\tbi: main")
+            
+>>>>>>> Stashed changes
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
         

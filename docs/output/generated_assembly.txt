@@ -2,6 +2,7 @@
 .global main
 
 main:
+<<<<<<< Updated upstream
 	in: r13
 	movi: r14 = var_x
 	store: [r14] = r13
@@ -27,6 +28,33 @@ L0:
 	movi: r27 = var_y
 	load: r26 = [r27]
 	mov: r1 = r26
+=======
+	in: r12
+	movi: r13 = var_x
+	store: [r13] = r12
+	movi: r15 = var_x
+	load: r14 = [r15]
+	mov: r1 = r14
+	out: r1
+	movi: r16 = 4
+	movi: r17 = var_y
+	store: [r17] = r16
+	movi: r19 = var_x
+	load: r18 = [r19]
+	movi: r21 = var_y
+	load: r20 = [r21]
+	subs: r0 = r18, r20
+	bilteq: L0
+	movi: r23 = var_x
+	load: r22 = [r23]
+	mov: r1 = r22
+	out: r1
+	bi: L1
+L0:
+	movi: r25 = var_y
+	load: r24 = [r25]
+	mov: r1 = r24
+>>>>>>> Stashed changes
 	out: r1
 L1:
 	bi: main_epilogue
