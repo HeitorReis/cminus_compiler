@@ -366,19 +366,7 @@ def translate_instruction(instr_parts, func_ctx):
         elif 'call' in expr_parts:
             print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
             func_name = expr_parts[1].replace(',', '')
-            
-            arg_index = 0
-            for part in expr_parts[2:]:
-                cleaned = part.replace(',', '')
-                if cleaned == 'call' or cleaned.isdigit():
-                    continue
-                if arg_index < len(ARG_REGS):
-                    reg_arg = alloc.ensure_var_in_reg(cleaned)
-                    func_ctx.add_instruction(f"\tmov: {ARG_REGS[arg_index]} = {reg_arg}")
-                    arg_index += 1
-            
             alloc.spill_all_dirty()
-            
             if func_name == 'input':
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tin: {dest_reg}")
