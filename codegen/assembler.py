@@ -272,9 +272,9 @@ class Instruction:
                     if literal_label is None:
                         return f"Error: Literal for value {numeric_val} not found in pool", ""
                     
-                    print(f"[ENCODE] -> Gerando pseudo-instrução: movi r12, {literal_label} (load do valor)")
+                    print(f"[ENCODE] -> Gerando pseudo-instrução: movi r27, {literal_label} (load do valor)")
                     movi_details = d.copy()
-                    movi_details['rd'] = 'r12'  # Usamos r12 como registrador de rascunho
+                    movi_details['rd'] = 'r27'  # Usamos r27 como registrador de rascunho
                     movi_details['op2'] = literal_label
                     
                     bin1, deb1 = self._encode_single_instruction(movi_details)
@@ -283,11 +283,11 @@ class Instruction:
                         return None, None
                     self.binary32_lines.append(bin1)
                     self.debug_lines.append(f"{self.assembly_line} -> (Pseudo) {deb1}")
-                    print(f"[ENCODE] -> Gerando segunda parte: load {d['rd']}, [r12]")
+                    print(f"[ENCODE] -> Gerando segunda parte: load {d['rd']}, [r27")
                     
                     load_details = {
                         'opcode': 'load', 'type': '01', 'cond': d['cond'],
-                        'supp': 'na', 'rd': d['rd'], 'rh': 'r12', 'op2': '0'
+                        'supp': 'na', 'rd': d['rd'], 'rh': 'r27', 'op2': '0'
                     }
                     bin2, deb2 = self._encode_single_instruction(load_details, is_pseudo=True)
                     if "Error" in bin2:

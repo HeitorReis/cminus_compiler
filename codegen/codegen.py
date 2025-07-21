@@ -14,7 +14,7 @@ IR_TO_ASSEMBLY_BRANCH = {
 LINK_STACK_SIZE = 32  # Espaço reservado para a pilha de chamadas
 DATA_MEMORY_SIZE = 64  # Tamanho da memória de dados (exemplo)
 # Mapeamento de nomes simbólicos para registradores físicos
-SPECIAL_REGS = {  'retval': 'r0', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
+SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -29,7 +29,7 @@ class RegisterAllocator:
 
         # Prioriza o uso de registradores Callee-Saved para variáveis locais
         # e Caller-Saved para cálculos rápidos e temporários.
-        self.callee_saved_pool = [f"r{i}" for i in range(12, 28)]  # r13 a r27 (15 regs)
+        self.callee_saved_pool = [f"r{i}" for i in range(12, 27)]  # r13 a r27 (15 regs)
         self.caller_saved_pool = [f"r{i}" for i in range(4, 11)]   # r4 a r12 (9 regs)
 
         self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
