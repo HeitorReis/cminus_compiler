@@ -18,8 +18,64 @@ SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spi
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
-# Inicialização da lista de variáveis declaradas
-ARG_REG_MAP = { f'arg{i+1}': ARG_REGS[i] for i in range(len(ARG_REGS)) }
+class DataMemoryManager:
+    """
+    Gerencia alocação de endereços na seção .data para variáveis definidas no IR.
+
+    Cada variável recebe um endereço único em memória de dados, com base
+    em um ponteiro de base que avança conforme definimos novos símbolos.
+    """
+    def __init__(self, base_address=0):
+        # Endereço inicial da seção de dados (em palavras)
+        self.base_address = base_address
+        # Próximo offset livre (em palavras)
+        self.next_offset = 0
+        # Mapeamento de nome de variável -> endereço absoluto
+        self.var_to_address = {}
+
+    def register_variable(self, var_name, size=1):
+        """
+        Registra uma variável na seção de dados.
+
+        :param var_name: Nome simbólico da variável (string).
+        :param size: Número de palavras ocupadas por esta variável.
+        :return: Endereço (int) onde a variável começa.
+        """
+        if var_name in self.var_to_address:
+            return self.var_to_address[var_name]
+
+        address = self.base_address + self.next_offset
+        self.var_to_address[var_name] = address
+        # Avança o ponteiro de offset pelo tamanho da variável
+        self.next_offset += size
+        return address
+
+    def get_address(self, var_name):
+        """
+        Retorna o endereço previamente registrado de uma variável.
+        Levanta KeyError se a variável não tiver sido registrada.
+        """
+        return self.var_to_address[var_name]
+
+    def generate_data_directives(self):
+        """
+        Gera listas de diretivas .word ou .space para inclusão na seção .data.
+        Exemplo: ['var_x: .word 0', 'var_arr: .space 4']
+        """
+        directives = []
+        for name, addr in sorted(self.var_to_address.items(), key=lambda kv: kv[1]):
+            # Podemos inferir tamanho como diferença até próxima ou usar size fixa
+            directives.append(f"{name}: .word 0  # endereço {addr}")
+        return directives
+
+# Exemplo de uso:
+# data_mgr = DataMemoryManager(base_address=100)
+# data_mgr.register_variable('x')            # aloca em endereço 100
+# data_mgr.register_variable('array', size=4) # aloca em 101..104
+# addr_x = data_mgr.get_address('x')        # retorna 100
+# directives = data_mgr.generate_data_directives()
+# print('\n'.join(directives))
+
 
 class RegisterAllocator:
     """
