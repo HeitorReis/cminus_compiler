@@ -12,10 +12,6 @@ IR_TO_ASSEMBLY_BRANCH = {
 }
 
 # Mapeamento de nomes simbólicos para registradores físicos
-<<<<<<< Updated upstream
-SPECIAL_REGS = { 'lr': 'r0', 'fp': 'r31', 'retval': 'r0'}
-# r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
-=======
 SPECIAL_REGS = {  
     'retval': 'r0',     # Retorno de funções
     'cmp': 'r26',       # Comparações
@@ -25,7 +21,6 @@ SPECIAL_REGS = {
     'spill': 'r30',     # Spill Register
     'fp': 'r31'         # Frame Pointer
     }
->>>>>>> Stashed changes
 ARG_REGS = ['r1', 'r2', 'r3']
 
 class RegisterAllocator:
