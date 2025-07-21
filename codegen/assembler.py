@@ -812,10 +812,17 @@ class FullCode:
                     op2_decoded = f"r{ro_reg}"
                     op2 = ro
             
-            decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
-            decoded_lines.append(decoded_line)
-            decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
-            decoded_lines.append(decode_line)
+            version = 1
+            if version == 1:
+                decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
+                decoded_lines.append(decoded_line)
+                decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
+                decoded_lines.append(decode_line)
+            else:
+                decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
+                decoded_lines.append(decoded_line)
+                decode_line = f"\tBinary: Type({type_code}) \tCond({cond}) \tSupp({supp}) \tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
+                decoded_lines.append(decode_line)
             
         print("--- Decodificação Concluída ---")
         return "\n".join(decoded_lines)

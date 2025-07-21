@@ -25,7 +25,9 @@ L1:
 	load: r17 = [r18]
 	subi: r19 = r17, 1
 	mov: r1 = r19
+	movi: r28 = count_Lret0
 	bl: count
+count_Lret0:
 	bi: count_epilogue
 count_epilogue:
 	mov: r29 = r31
@@ -44,7 +46,9 @@ main:
 	movi: r15 = var_x
 	load: r14 = [r15]
 	mov: r1 = r14
+	movi: r28 = main_Lret0
 	bl: count
+main_Lret0:
 	bi: main_epilogue
 main_epilogue:
 	mov: r29 = r31

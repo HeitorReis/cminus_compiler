@@ -254,11 +254,17 @@ class FunctionContext:
         self.arg_count = 0
         self.spill_offset = 0
         self.last_comparison = None
+        self.label_counter = 0
         print(f"[FUNC_CTX] Contexto para a função '{name}' criado.")
 
     def add_instruction(self, instruction):
         print(f"[ADD_INSTR] Adicionando instrução para '{self.name}': {instruction.strip()}")
         self.instructions.append(instruction)
+    
+    def new_label(self, prefix="Lret"):
+        label = f"{self.name}_{prefix}{self.label_counter}"
+        self.label_counter += 1
+        return label
 
 IR_BRANCH_COND = {'>': 'bigt', '<': 'bilt', '==': 'bieq', '!=': 'bineq', '>=': 'bigteq', '<=': 'bilteq'}
 
@@ -360,7 +366,19 @@ def translate_instruction(instr_parts, func_ctx):
         elif 'call' in expr_parts:
             print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
             func_name = expr_parts[1].replace(',', '')
+            
+            arg_index = 0
+            for part in expr_parts[2:]:
+                cleaned = part.replace(',', '')
+                if cleaned == 'call' or cleaned.isdigit():
+                    continue
+                if arg_index < len(ARG_REGS):
+                    reg_arg = alloc.ensure_var_in_reg(cleaned)
+                    func_ctx.add_instruction(f"\tmov: {ARG_REGS[arg_index]} = {reg_arg}")
+                    arg_index += 1
+            
             alloc.spill_all_dirty()
+            
             if func_name == 'input':
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tin: {dest_reg}")
@@ -370,8 +388,13 @@ def translate_instruction(instr_parts, func_ctx):
                 print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
                 func_ctx.add_instruction(f"\tout: {hit_reg}")
             else:
-                func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = ") # Adicionar lógica aqui
-                func_ctx.add_instruction(f"\tbl: {func_name}")
+                return_label = func_ctx.new_label()
+                ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
+                func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
+                func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {ret_reg}")
+                func_ctx.add_instruction(f"\tbi: {func_name}")
+                alloc.free_reg_if_temp(ret_reg)
+                func_ctx.add_instruction(f"{return_label}:")
                 dest_reg = alloc.get_reg_for_temp(dest)
                 func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
             func_ctx.arg_count = 0
@@ -399,7 +422,7 @@ def translate_instruction(instr_parts, func_ctx):
             alloc.update_var_from_reg(dest, reg_src)
 
     elif opcode == 'call':
-        print("[TRANSLATE] -> Caminho: Chamada de Procedimento (sem retorno)")
+        print("[TRANSLATE] -> Caminho: Chamada de Procedimento")
         func_name = instr_parts[1].replace(',', '')
         alloc.spill_all_dirty()
         if func_name == 'output':
@@ -407,7 +430,10 @@ def translate_instruction(instr_parts, func_ctx):
             
             func_ctx.add_instruction(f"\tout: {output_reg}")
         else:
+            return_label = func_ctx.new_label()
+            func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {return_label}")
             func_ctx.add_instruction(f"\tbl: {func_name}")
+            func_ctx.add_instruction(f"{return_label}:")
         func_ctx.arg_count = 0
     
     
