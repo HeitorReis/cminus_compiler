@@ -506,14 +506,18 @@ def generate_assembly(ir_list):
         
         print(f"-> Finalizando a função '{func_name}', fazendo spill de todos os registradores sujos.")
         func_ctx.allocator.spill_all_dirty()
+        
+        # Se a última instrução for um salto direto para o epílogo logo adiante,
+        # remova-a para evitar um branch que apenas salta para a próxima linha.
+        if func_ctx.instructions and func_ctx.instructions[-1].strip() == f"bi: {func_name}_epilogue":
+            func_ctx.instructions.pop()
+            
     print("--- Fim da Passagem 2 ---\n")
 
     print("--- Montagem Final: Construindo o arquivo assembly completo ---")
     final_code = [".text", ".global main", ""]
     
     for func_name, func_ctx in functions.items():
-<<<<<<< Updated upstream
-=======
         print(f"[Montagem] Processando função '{func_name}' com {len(func_ctx.instructions)} instruções.")
         
         if first_func and len(functions.values()) > 1:
@@ -521,13 +525,11 @@ def generate_assembly(ir_list):
             first_func = False
             final_code.append(f"\tbi: main")
             
->>>>>>> Stashed changes
         print(f"[Montagem] Adicionando código para a função '{func_name}'.")
         final_code.append(f"{func_name}:")
         
         final_code.extend(func_ctx.instructions)
         
-        final_code.append(f"\tbi: {func_name}_epilogue") 
         final_code.append(f"{func_name}_epilogue:")
         
         if func_name == 'main':
@@ -536,6 +538,22 @@ def generate_assembly(ir_list):
             final_code.append(f"\tb: {SPECIAL_REGS['lr']}") 
             
         final_code.append("")
+    
+    # Remoção de saltos redundantes: se um "bi: LABEL" é seguido
+    # imediatamente pelo próprio rótulo, o desvio não tem efeito.
+    cleaned_code = []
+    index = 0
+    while index < len(final_code):
+        if line.strip().startswith("bi:"):
+            target = line.split(":", 1)[1].strip()
+            j = index + 1
+            if j < len(final_code) and final_code[j].strip() == f"{target}:":
+                index += 1
+                next
+                continue
+        final_code = cleaned_code
+        i += 1
+    final_code = cleaned_code
 
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
