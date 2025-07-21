@@ -396,6 +396,7 @@ def translate_instruction(instr_parts, func_ctx):
             print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
             alloc.update_var_from_reg(dest, reg_src)
+    
     elif opcode == "if_false":
         print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
         target_label = instr_parts[3]
@@ -444,13 +445,6 @@ def translate_instruction(instr_parts, func_ctx):
         alloc.spill_all_dirty()
         func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
         return 
-
-    elif opcode == 'if_false':
-        print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
-        cond_var = instr_parts[1]
-        target_label = instr_parts[3]
-        cond_reg = alloc.ensure_var_in_reg(cond_var)
-        func_ctx.add_instruction(f"\tbilteq: {target_label}")
 
 def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
