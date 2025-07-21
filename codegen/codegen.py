@@ -18,6 +18,9 @@ SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spi
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
+# Contador para alocar regiões únicas de memória para cada chamada de função
+CALL_ALLOC_COUNTER = collections.defaultdict(int)
+
 class DataMemoryManager:
     """
     Gerencia alocação de endereços na seção .data para variáveis definidas no IR.
@@ -334,6 +337,21 @@ class FunctionContext:
         self.label_counter += 1
         return label
 
+def _initialize_call_args(func_ctx, func_name, num_args):
+    """Aloca espaço único para os argumentos de uma chamada e salva os valores atuais."""
+    call_index = CALL_ALLOC_COUNTER[func_name]
+    for idx in range(num_args):
+        arg_name = func_ctx.arg_vars[idx] if idx < len(func_ctx.arg_vars) else f"arg{idx}"
+        sanitized = re.sub(r"\W", "_", arg_name)
+        unique_var = f"{func_name}{call_index}_{sanitized}"
+        func_ctx.data_manager.register_variable(unique_var)
+        addr_reg = func_ctx.allocator.get_address_in_reg(unique_var)
+        if idx < len(ARG_REGS):
+            src_reg = ARG_REGS[idx]
+            func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
+        func_ctx.allocator._unassign_reg(addr_reg)
+    CALL_ALLOC_COUNTER[func_name] += 1
+
 IR_BRANCH_COND = {'>': 'bigt', '<': 'bilt', '==': 'bieq', '!=': 'bineq', '>=': 'bigteq', '<=': 'bilteq'}
 
 def translate_instruction(instr_parts, func_ctx):
@@ -449,11 +467,7 @@ def translate_instruction(instr_parts, func_ctx):
             else:
                 return_label = func_ctx.new_label()
                 ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
-                # Adicionar uma iteração aqui com for que passe por todos os argumentos definidos em "call {func_name}, {number_of_args}" e inicie-os na memória, guardando seus valores iniciais lá e salvando com nomes de variáveis únicos para o contexto da função que será chamada agora. 
-                # Lembre-se que cada função pode ser chamada dentro dela várias vezes então deve haver uma verificação se a função já foi alocada na memória. Se sim, aloque uma nova seção para as variáveis com um index adicionado ao nome das variáveis.
-                # Exemplo de nome: {func_name}{index}_{var_name}
-                # Fazer isso sempre que houver um call
-                # Lembre-se de conferir se no prólogo das funções esses valores estão sendo devidamente chamados.
+                _initialize_call_args(func_ctx, func_name, int(expr_parts[2]))
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
                 func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
                 func_ctx.add_instruction(f"\tbl: {func_name}")
@@ -490,6 +504,8 @@ def translate_instruction(instr_parts, func_ctx):
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento")
         func_name = instr_parts[1].replace(',', '')
+        num_args = int(instr_parts[2]) if len(instr_parts) > 2 else 0
+        _initialize_call_args(func_ctx, func_name, num_args)
         alloc.spill_all_dirty()
         if func_name == 'output':
             output_reg = ARG_REGS[0]  
@@ -546,7 +562,7 @@ def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
     functions = collections.OrderedDict()
     all_vars = set()
-    data_manager = DataMemoryManager(base_address=0)
+    data_manager = DataMemoryManager(base_address=int(DATA_MEMORY_SIZE/2))
     
     print("\n--- Passagem 1: Coletando funções e variáveis globais do IR ---")
     for i, line in enumerate(ir_list):
