@@ -264,8 +264,12 @@ class RegisterAllocator:
                 self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
                 self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
             else:
-                self.func_context.spill_offset -= 4 
-                offset = self.func_context.spill_offset
+                if var_name not in self.func_context.stack_layout:
+                    self.func_context.stack_layout[var_name] = self.func_context.next_stack_slot
+                    self.func_context.next_stack_slot -= 1 
+                
+                offset = self.func_context.stack_layout[var_name]
+                
                 self.spilled_temps[var_name] = offset
                 print(f"[SPILL] -> '{var_name}' é um temporário. Salvando na pilha em [fp, #{offset}].")
                 self.func_context.add_instruction(f"\tstorei: [fp, #{offset}] = {reg}")
@@ -323,8 +327,10 @@ class FunctionContext:
         self.allocator = RegisterAllocator(self)
         self.arg_count = 0
         self.arg_vars = []
-        self.spill_offset = 0
+        self.param_names = [] 
         self.local_stack_size = 0
+        self.stack_layout = {}
+        self.next_stack_slot = -1
         self.last_comparison = None
         self.label_counter = 0
         print(f"[FUNC_CTX] Contexto para a função '{name}' criado.")
@@ -578,24 +584,71 @@ def generate_assembly(ir_list):
                 if var_name not in all_vars:
                     print(f"[Passagem 1] Variável global encontrada: '{var_name}' na linha {i+1}")
                     all_vars.add(var_name)
-
+        
         if parts[0].endswith(':'):
             func_name = parts[0][:-1]
             if not func_name.startswith('L'):
                 if func_name not in functions:
                     print(f"[Passagem 1] Função encontrada: '{func_name}'")
                     functions[func_name] = FunctionContext(func_name, data_manager)
-
+    
     if not functions and any(ir_list):
         print("[Passagem 1] Nenhuma função explícita encontrada. Assumindo função 'main'.")
         functions['main'] = FunctionContext('main', data_manager)
-
-    # Registra todas as variáveis descobertas no gerenciador de memória
+    
+    keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output', '_'}
+    func_names = set(functions.keys())
+    all_params = set()
+    
+    for func_name, func_ctx in functions.items():
+        func_ir = []
+        in_func = False
+        for line in ir_list:
+            stripped = line.strip()
+            if not stripped: continue
+            if stripped.startswith(func_name + ':'): in_func = True; continue
+            if stripped.endswith(':') and not stripped.startswith('L'):
+                if stripped[:-1] in functions and stripped[:-1] != func_name:
+                    in_func = False
+            if in_func: func_ir.append(stripped)
+        
+        defined_vars = set()
+        used_vars_in_order = []
+        
+        for line in func_ir:
+            if ':=' in line:
+                dest = line.split(':=')[0].strip()
+                dest_var = re.sub(r'^\*', '', dest).strip()
+                defined_vars.add(dest_var)
+            
+            matches = re.findall(r'\b([a-zA-Z_]\w*)\b', line)
+            for var in matches:
+                if var not in keywords and var not in func_names and not (var.startswith('t') and var[1:].isdigit()):
+                    if var not in used_vars_in_order:
+                        used_vars_in_order.append(var)
+        
+        params = [var for var in used_vars_in_order if var not in defined_vars]
+        func_ctx.param_names = params
+        all_params.update(params)
+        print(f"-> Função '{func_name}' tem os parâmetros: {params}")
+    
+    for i, line in enumerate(ir_list):
+        parts = line.strip().split()
+        if not parts: continue
+        
+        variable_pattern = re.compile(r'\b(?!t\d+\b|L\d+\b)([a-zA-Z_]\w*)\b')
+        matches = variable_pattern.findall(line)
+        for var_name in matches:
+            if var_name not in keywords and not (
+                var_name.startswith('t') and var_name[1:].isdigit()
+                ) and var_name not in func_names and var_name not in all_params:
+                if var_name not in all_vars:
+                    print(f"[Passagem 1] Variável global encontrada: '{var_name}' na linha {i+1}")
+                    all_vars.add(var_name) 
+    
     for var in all_vars:
-        if var not in functions and not (var.startswith('t') and var[1:].isdigit()):
-            data_manager.register_variable(var)
-    print(f"--- Fim da Passagem 1: {len(functions)} funções e {len(all_vars)} variáveis encontradas. ---\n")
-
+        data_manager.register_variable(var)
+    
     print("--- Passagem 2: Traduzindo o IR para cada função ---")
     for func_name, func_ctx in functions.items():
         print(f"\n[Processando Função] -> '{func_name}'")
