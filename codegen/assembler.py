@@ -359,7 +359,7 @@ class Instruction:
                 op2_bin = ro_bin + '00000'
                 debug += f"Ro[{ro_bin}] pad[00000] (Out sem imediato)"
             else:
-                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('
+                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '').replace('r', '')
                 imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
                 op2_bin = self.get_signed_binary(str(imm_val), 10)
                 debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
@@ -417,7 +417,7 @@ class Instruction:
                     op2_bin = ro_bin + '00000'
                     debug += f"Ro[{ro_bin}] pad[00000] (Load sem imediato)"
                 else:
-                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('
+                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '').replace('r', '')
                     imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
                     op2_bin = self.get_signed_binary(str(imm_val), 10)
                     debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
@@ -437,7 +437,7 @@ class Instruction:
                     debug += f"Ro[{ro_bin}] pad[00000] (Store sem imediato)"
                     print(f"[ENCODE] -> Op2 é um registrador: {op2_str}, convertido para binário: {op2_bin}")
                 else:
-                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('
+                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '').replace('r', '')
                     imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
                     op2_bin = self.get_signed_binary(str(imm_val), 10)
                     debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
@@ -453,7 +453,7 @@ class Instruction:
             is_immediate = 'i' in d['supp']
 
             if is_immediate:
-                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('
+                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '').replace('r', '')
                 imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
                 op2_bin = self.get_signed_binary(str(imm_val), 10)
                 debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
@@ -468,7 +468,7 @@ class Instruction:
                     op2_bin = ro_bin + '00000'
                     debug += f"Ro[{ro_bin}] pad[00000] (Mov sem imediato)"
                 else:
-                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('
+                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '').replace('r', '')
                     imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
                     op2_bin = self.get_signed_binary(str(imm_val), 10)
                     debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
