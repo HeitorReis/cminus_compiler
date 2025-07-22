@@ -2,38 +2,150 @@
 .global main
 
 	bi: main
-count:
+minloc:
 	subi: r29 = r29, 1
 	store: [r29] = r28
 	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
-	movi: r13 = 33
+	movi: r13 = 35
 	load: r12 = [r13]
-	movi: r14 = 0
-	subs: r0 = r12, r14
-	bineq: L0
-	bi: count_epilogue
-	bi: L1
-L0:
-L1:
-	movi: r16 = 33
+	movi: r14 = 38
+	store: [r14] = r12
+	movi: r16 = 35
 	load: r15 = [r16]
-	mov: r1 = r15
-	movi: r17 = 35
-	store: [r17] = r1
-	out: r1
-	movi: r19 = 33
-	load: r18 = [r19]
-	subi: r20 = r18, 1
+	muli: r17 = r15, 4
+	movi: r18 = 33
+	add: r19 = r18, r17
+	movi: r20 = 36
+	store: [r20] = r19
+	movi: r22 = 35
+	load: r21 = [r22]
+	addi: r23 = r21, 1
+	movi: r24 = 39
+	store: [r24] = r23
+L0:
+	movi: r26 = 39
+	load: r25 = [r26]
+	movi: r5 = 40
+	load: r4 = [r5]
+	subs: r0 = r25, r4
+	bigteq: L1
+	movi: r7 = 39
+	load: r6 = [r7]
+	muli: r8 = r6, 4
+	movi: r9 = 33
+	add: r10 = r9, r8
+	movi: r13 = 36
+	load: r11 = [r13]
+	subs: r0 = r10, r11
+	bigteq: L2
+	movi: r14 = 39
+	load: r12 = [r14]
+	muli: r16 = r12, 4
+	movi: r15 = 33
+	add: r19 = r15, r16
+	movi: r20 = 36
+	store: [r20] = r19
+	movi: r21 = 39
+	load: r22 = [r21]
+	movi: r23 = 38
+	store: [r23] = r22
+	bi: L3
+L2:
+L3:
+	movi: r26 = 39
+	load: r24 = [r26]
+	addi: r25 = r24, 1
+	movi: r5 = 39
+	store: [r5] = r25
+	bi: L0
+L1:
+	movi: r7 = 38
+	load: r4 = [r7]
+	mov: r0 = r4
+	bi: minloc_epilogue
+	bi: minloc_epilogue
+minloc_epilogue:
+	mov: r29 = r31
+	load: r31 = [r29]
+	addi: r29 = r29, 1
+	load: r28 = [r29]
+	addi: r29 = r29, 1
+	b: r28
+
+sort:
+	subi: r29 = r29, 1
+	store: [r29] = r28
+	subi: r29 = r29, 1
+	store: [r29] = r31
+	mov: r31 = r29
+	movi: r13 = 35
+	load: r12 = [r13]
+	movi: r14 = 39
+	store: [r14] = r12
+L4:
+	movi: r16 = 39
+	load: r15 = [r16]
+	movi: r18 = 40
+	load: r17 = [r18]
+	subi: r19 = r17, 1
+	subs: r0 = r15, r19
+	bigteq: L5
+	movi: r21 = 33
+	load: r20 = [r21]
 	mov: r1 = r20
-	movi: r21 = 36
-	store: [r21] = r1
-	movi: r28 = count_Lret0
-	bl: count
-count_Lret0:
-	bi: count_epilogue
-count_epilogue:
+	movi: r23 = 39
+	load: r22 = [r23]
+	mov: r2 = r22
+	movi: r25 = 40
+	load: r24 = [r25]
+	mov: r3 = r24
+	movi: r4 = 35
+	store: [r4] = r1
+	movi: r5 = 33
+	store: [r5] = r2
+	movi: r6 = 40
+	store: [r6] = r3
+	movi: r26 = sort_Lret0
+	mov: r28 = r26
+	bl: minloc
+sort_Lret0:
+	mov: r7 = r0
+	movi: r8 = 38
+	store: [r8] = r7
+	movi: r10 = 38
+	load: r9 = [r10]
+	muli: r11 = r9, 4
+	movi: r13 = 33
+	add: r12 = r13, r11
+	store: [r14] = r12
+	movi: r15 = 39
+	load: r16 = [r15]
+	muli: r18 = r16, 4
+	movi: r17 = 33
+	add: r21 = r17, r18
+	movi: r23 = 38
+	load: r20 = [r23]
+	muli: r22 = r20, 4
+	movi: r25 = 33
+	add: r24 = r25, r22
+	store: [r24] = r21
+	movi: r6 = 39
+	load: r5 = [r6]
+	muli: r26 = r5, 4
+	movi: r7 = 33
+	add: r8 = r7, r26
+	store: [r8] = r4
+	movi: r9 = 39
+	load: r10 = [r9]
+	addi: r12 = r10, 1
+	movi: r14 = 39
+	store: [r14] = r12
+	bi: L4
+L5:
+	bi: sort_epilogue
+sort_epilogue:
 	mov: r29 = r31
 	load: r31 = [r29]
 	addi: r29 = r29, 1
@@ -44,17 +156,68 @@ count_epilogue:
 main:
 	movi: r29 = stack_space
 	mov: r31 = r29
-	in: r12
-	movi: r13 = 32
+	movi: r12 = 0
+	movi: r13 = 39
 	store: [r13] = r12
-	movi: r15 = 32
+L6:
+	movi: r15 = 39
 	load: r14 = [r15]
-	mov: r1 = r14
-	movi: r16 = 37
-	store: [r16] = r1
+	movi: r16 = 10
+	subs: r0 = r14, r16
+	bigteq: L7
+	in: r17
+	movi: r19 = 39
+	load: r18 = [r19]
+	muli: r20 = r18, 4
+	movi: r21 = 34
+	add: r22 = r21, r20
+	store: [r22] = r17
+	movi: r24 = 39
+	load: r23 = [r24]
+	addi: r25 = r23, 1
+	movi: r26 = 39
+	store: [r26] = r25
+	bi: L6
+L7:
+	movi: r5 = 34
+	load: r4 = [r5]
+	mov: r1 = r4
+	movi: r6 = 0
+	mov: r2 = r6
+	movi: r7 = 10
+	mov: r3 = r7
+	movi: r8 = 35
+	store: [r8] = r1
+	movi: r9 = 40
+	store: [r9] = r2
+	movi: r10 = 33
+	store: [r10] = r3
 	movi: r28 = main_Lret0
-	bl: count
+	bl: sort
 main_Lret0:
+	movi: r11 = 0
+	movi: r13 = 39
+	store: [r13] = r11
+L8:
+	movi: r14 = 39
+	load: r15 = [r14]
+	movi: r19 = 10
+	subs: r0 = r15, r19
+	bigteq: L9
+	movi: r17 = 39
+	load: r18 = [r17]
+	muli: r22 = r18, 4
+	movi: r24 = 34
+	add: r23 = r24, r22
+	mov: r1 = r23
+	out: r1
+	movi: r26 = 39
+	load: r25 = [r26]
+	addi: r5 = r25, 1
+	movi: r4 = 39
+	store: [r4] = r5
+	bi: L8
+L9:
 	bi: main_epilogue
 main_epilogue:
 	mov: r29 = r31
@@ -66,9 +229,12 @@ main_epilogue:
 
 .data
 stack_space: .space 64
-var_x: .word 32
-var_number: .word 33
-var__: .word 34
-var_output0_t2: .word 35
-var_count0_t4: .word 36
-var_count1_t6: .word 37
+var__: .word 32
+var_a: .word 33
+var_vet: .word 34
+var_low: .word 35
+var_x: .word 36
+var_t: .word 37
+var_k: .word 38
+var_i: .word 39
+var_high: .word 40
