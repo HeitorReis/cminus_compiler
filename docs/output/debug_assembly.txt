@@ -3,18 +3,18 @@ subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r28 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r31 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
-movi: r13 = 32 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': '32'}
+movi: r13 = 33 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': '33'}
 load: r12 = [r13] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r13]'}
 movi: r14 = 0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r14', 'rh': 'r0', 'op2': '0'}
 subs: r0 = r12, r14 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r12, r14'}
 bineq: L0 -> {'supp': 'i', 'opcode': 'bineq'}
 bi: count_epilogue -> {'supp': 'i', 'opcode': 'b'}
 bi: L1 -> {'supp': 'i', 'opcode': 'b'}
-movi: r16 = 32 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': '32'}
+movi: r16 = 33 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': '33'}
 load: r15 = [r16] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r16]'}
 movi: r17 = 35 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r17', 'rh': 'r0', 'op2': '35'}
 store: [r17] = r1 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r17', 'rh': 'r1'}
-movi: r19 = 32 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r19', 'rh': 'r0', 'op2': '32'}
+movi: r19 = 33 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r19', 'rh': 'r0', 'op2': '33'}
 load: r18 = [r19] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r19]'}
 subi: r20 = r18, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r18, 1'}
 movi: r21 = 36 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r21', 'rh': 'r0', 'op2': '36'}
@@ -29,9 +29,9 @@ addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
 b: r28 -> {'supp': 'na', 'opcode': 'b'}
 movi: r29 = stack_space -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r29', 'rh': 'r0', 'op2': 'stack_space'}
 in: r12 -> {'supp': 'i', 'opcode': 'in'}
-movi: r13 = 34 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': '34'}
+movi: r13 = 32 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': '32'}
 store: [r13] = r12 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r13', 'rh': 'r12'}
-movi: r15 = 34 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r15', 'rh': 'r0', 'op2': '34'}
+movi: r15 = 32 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r15', 'rh': 'r0', 'op2': '32'}
 load: r14 = [r15] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r15]'}
 movi: r16 = 37 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': '37'}
 store: [r16] = r1 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r16', 'rh': 'r1'}

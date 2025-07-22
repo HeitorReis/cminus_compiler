@@ -80,19 +80,19 @@ $(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS)
 # Run with test files based on the user-specified TEST variable
 run: clean $(EXEC)
 ifeq ($(TEST),1)
-	$(EXEC) $(DOCS_DIR)/teste.txt
+	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),2)
-	$(EXEC) $(DOCS_DIR)/teste2.txt
+	$(EXEC) $(DOCS_DIR)/teste2.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),3)
-	$(EXEC) $(DOCS_DIR)/teste3.txt
+	$(EXEC) $(DOCS_DIR)/teste3.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),4)
-	$(EXEC) $(DOCS_DIR)/teste4.txt
+	$(EXEC) $(DOCS_DIR)/teste4.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),5)
-	$(EXEC) $(DOCS_DIR)/teste5.txt
+	$(EXEC) $(DOCS_DIR)/teste5.txt > docs/output/log_compiler.txt
 else
-	$(EXEC) $(DOCS_DIR)/teste.txt
+	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
 endif
-	python3.10 -u codegen/main.py
+	python3.10 -u codegen/main.py > docs/output/log_codegen.txt
 
 # Cleanup intermediate files and binary
 clean:

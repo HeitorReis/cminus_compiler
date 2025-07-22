@@ -1,0 +1,1221 @@
+
+
+=== INICIANDO GERAÇÃO DE ASSEMBLY ===
+
+--- Passagem 1: Coletando funções e variáveis globais do IR ---
+[Passagem 1] Variável global encontrada: 'count' na linha 1
+[Passagem 1] Função encontrada: 'count'
+[ALLOC_INIT] Inicializando alocador para a função 'count'
+[ALLOC_INIT] Pool de registradores definido: ['r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11']
+[ALLOC_INIT] Registrador de spill reservado: r30
+[ALLOC_INIT] Estado inicial: 23 registradores livres.
+[FUNC_CTX] Contexto para a função 'count' criado.
+[Passagem 1] Variável global encontrada: 'number' na linha 2
+[Passagem 1] Variável global encontrada: '_' na linha 5
+[Passagem 1] Variável global encontrada: 'main' na linha 17
+[Passagem 1] Função encontrada: 'main'
+[ALLOC_INIT] Inicializando alocador para a função 'main'
+[ALLOC_INIT] Pool de registradores definido: ['r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11']
+[ALLOC_INIT] Registrador de spill reservado: r30
+[ALLOC_INIT] Estado inicial: 23 registradores livres.
+[FUNC_CTX] Contexto para a função 'main' criado.
+[Passagem 1] Variável global encontrada: 'x' na linha 19
+--- Fim da Passagem 1: 2 funções e 5 variáveis encontradas. ---
+
+--- Passagem 2: Traduzindo o IR para cada função ---
+
+[Processando Função] -> 'count'
+-> IR isolado para 'count' contém 15 instruções.
+
+--- [TRANSLATE] Processando IR: t0 := *number ---
+[TRANSLATE] -> Detalhes: Destino='t0', Expressão='*number'
+[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
+[ENSURE] Tentando garantir 'number' em um registrador.
+[ENSURE] -> Variável 'number' não está em um registrador. Carregando da memória.
+[GET_FREE] -> Encontrado registrador livre: r12. Restantes: 22.
+[GET_FREE] -> Encontrado registrador livre: r13. Restantes: 21.
+[ADD_INSTR] Adicionando instrução para 'count': movi: r13 = 33
+[ENSURE] -> Usando r12 para o valor e r13 para o endereço 33.
+[ADD_INSTR] Adicionando instrução para 'count': load: r12 = [r13]
+[ASSIGN_REG] Mapeando 'number' para r12.
+[UNASSIGN_REG] r13 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'number': 'r12'}
+[UPDATE_MAP] Mapeando 't0' para o registrador r12 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 't0' para r12.
+[ASSIGN_REG] -> Registrador r12 já continha 'number'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r12 de 'number'.
+[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
+[TRANSLATE] -> Valor de 'number' agora em r12, mapeado para 't0'.
+
+--- [TRANSLATE] Processando IR: t1 := t0 == 0 ---
+[TRANSLATE] -> Detalhes: Destino='t1', Expressão='t0 == 0'
+[TRANSLATE] -> Caminho: Comparação (condicional)
+[ENSURE] Tentando garantir 't0' em um registrador.
+[ENSURE] -> Sucesso! 't0' já está em r12.
+[ENSURE] Tentando garantir '0' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r14. Restantes: 22.
+[ENSURE] -> Alocando r14 para a constante '0'.
+[ADD_INSTR] Adicionando instrução para 'count': movi: r14 = 0
+[ADD_INSTR] Adicionando instrução para 'count': subs: r0 = r12, r14
+
+--- [TRANSLATE] Processando IR: if_false t1 goto L0 ---
+[TRANSLATE] -> Caminho: Desvio Condicional (if_false)
+[ADD_INSTR] Adicionando instrução para 'count': bineq: L0
+
+--- [TRANSLATE] Processando IR: return _ ---
+[TRANSLATE] -> Caminho: Retorno de Função
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'count': bi: count_epilogue
+
+--- [TRANSLATE] Processando IR: goto L1 ---
+[TRANSLATE] -> Desvio incondicional detectado: L1
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'count': bi: L1
+
+--- [TRANSLATE] Processando IR: L0: ---
+[TRANSLATE] -> Rótulo detectado: L0:
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'count': L0:
+
+--- [TRANSLATE] Processando IR: L1: ---
+[TRANSLATE] -> Rótulo detectado: L1:
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'count': L1:
+
+--- [TRANSLATE] Processando IR: t2 := *number ---
+[TRANSLATE] -> Detalhes: Destino='t2', Expressão='*number'
+[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
+[ENSURE] Tentando garantir 'number' em um registrador.
+[ENSURE] -> Variável 'number' não está em um registrador. Carregando da memória.
+[GET_FREE] -> Encontrado registrador livre: r15. Restantes: 21.
+[GET_FREE] -> Encontrado registrador livre: r16. Restantes: 20.
+[ADD_INSTR] Adicionando instrução para 'count': movi: r16 = 33
+[ENSURE] -> Usando r15 para o valor e r16 para o endereço 33.
+[ADD_INSTR] Adicionando instrução para 'count': load: r15 = [r16]
+[ASSIGN_REG] Mapeando 'number' para r15.
+[UNASSIGN_REG] r16 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'t0': 'r12', 'number': 'r15'}
+[UPDATE_MAP] Mapeando 't2' para o registrador r15 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 't2' para r15.
+[ASSIGN_REG] -> Registrador r15 já continha 'number'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r15 de 'number'.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'t0': 'r12'}
+[TRANSLATE] -> Valor de 'number' agora em r15, mapeado para 't2'.
+
+--- [TRANSLATE] Processando IR: arg t2 ---
+[TRANSLATE] -> Caminho: Passagem de Argumento (arg 1)
+[ENSURE] Tentando garantir 't2' em um registrador.
+[ENSURE] -> Sucesso! 't2' já está em r15.
+[ADD_INSTR] Adicionando instrução para 'count': mov: r1 = r15
+
+--- [TRANSLATE] Processando IR: call output, 1 ---
+[TRANSLATE] -> Caminho: Chamada de Procedimento
+[GET_ADDR] Obtendo endereço para 'output0_t2'.
+[GET_FREE] -> Encontrado registrador livre: r17. Restantes: 21.
+[ADD_INSTR] Adicionando instrução para 'count': movi: r17 = 35
+[GET_ADDR] -> Endereço de 'output0_t2' (35) carregado em r17.
+[ADD_INSTR] Adicionando instrução para 'count': store: [r17] = r1
+[UNASSIGN_REG] r17 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'t0': 'r12', 't2': 'r15'}
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'count': out: r1
+[UNASSIGN_REG] Desmapeado r15 de 't2'.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'t0': 'r12'}
+
+--- [TRANSLATE] Processando IR: t3 := *number ---
+[TRANSLATE] -> Detalhes: Destino='t3', Expressão='*number'
+[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
+[ENSURE] Tentando garantir 'number' em um registrador.
+[ENSURE] -> Variável 'number' não está em um registrador. Carregando da memória.
+[GET_FREE] -> Encontrado registrador livre: r18. Restantes: 21.
+[GET_FREE] -> Encontrado registrador livre: r19. Restantes: 20.
+[ADD_INSTR] Adicionando instrução para 'count': movi: r19 = 33
+[ENSURE] -> Usando r18 para o valor e r19 para o endereço 33.
+[ADD_INSTR] Adicionando instrução para 'count': load: r18 = [r19]
+[ASSIGN_REG] Mapeando 'number' para r18.
+[UNASSIGN_REG] r19 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'t0': 'r12', 'number': 'r18'}
+[UPDATE_MAP] Mapeando 't3' para o registrador r18 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 't3' para r18.
+[ASSIGN_REG] -> Registrador r18 já continha 'number'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r18 de 'number'.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'t0': 'r12'}
+[TRANSLATE] -> Valor de 'number' agora em r18, mapeado para 't3'.
+
+--- [TRANSLATE] Processando IR: t4 := t3 - 1 ---
+[TRANSLATE] -> Detalhes: Destino='t4', Expressão='t3 - 1'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't3' em um registrador.
+[ENSURE] -> Sucesso! 't3' já está em r18.
+[TRANSLATE] -> Operando 2 é um imediato: 1
+[GET_TEMP] Solicitando registrador para o temporário 't4'.
+[GET_FREE] -> Encontrado registrador livre: r20. Restantes: 21.
+[ASSIGN_REG] Mapeando 't4' para r20.
+[GET_TEMP] -> 't4' alocado no registrador r20.
+[ADD_INSTR] Adicionando instrução para 'count': subi: r20 = r18, 1
+
+--- [TRANSLATE] Processando IR: arg t4 ---
+[TRANSLATE] -> Caminho: Passagem de Argumento (arg 1)
+[ENSURE] Tentando garantir 't4' em um registrador.
+[ENSURE] -> Sucesso! 't4' já está em r20.
+[ADD_INSTR] Adicionando instrução para 'count': mov: r1 = r20
+
+--- [TRANSLATE] Processando IR: call count, 1 ---
+[TRANSLATE] -> Caminho: Chamada de Procedimento
+[GET_ADDR] Obtendo endereço para 'count0_t4'.
+[GET_FREE] -> Encontrado registrador livre: r21. Restantes: 20.
+[ADD_INSTR] Adicionando instrução para 'count': movi: r21 = 36
+[GET_ADDR] -> Endereço de 'count0_t4' (36) carregado em r21.
+[ADD_INSTR] Adicionando instrução para 'count': store: [r21] = r1
+[UNASSIGN_REG] r21 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'t0': 'r12', 't3': 'r18', 't4': 'r20'}
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: {'r20'}
+[ADD_INSTR] Adicionando instrução para 'count': movi: r28 = count_Lret0
+[ADD_INSTR] Adicionando instrução para 'count': bl: count
+[ADD_INSTR] Adicionando instrução para 'count': count_Lret0:
+[UNASSIGN_REG] Desmapeado r20 de 't4'.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'t0': 'r12', 't3': 'r18'}
+
+--- [TRANSLATE] Processando IR: return _ ---
+[TRANSLATE] -> Caminho: Retorno de Função
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'count': bi: count_epilogue
+-> Finalizando a função 'count', fazendo spill de todos os registradores sujos.
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+
+[Processando Função] -> 'main'
+-> IR isolado para 'main' contém 6 instruções.
+
+--- [TRANSLATE] Processando IR: t5 := call input, 0 ---
+[TRANSLATE] -> Detalhes: Destino='t5', Expressão='call input, 0'
+[TRANSLATE] -> Caminho: Chamada de Função com Retorno
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[GET_TEMP] Solicitando registrador para o temporário 't5'.
+[GET_FREE] -> Encontrado registrador livre: r12. Restantes: 22.
+[ASSIGN_REG] Mapeando 't5' para r12.
+[GET_TEMP] -> 't5' alocado no registrador r12.
+[ADD_INSTR] Adicionando instrução para 'main': in: r12
+
+--- [TRANSLATE] Processando IR: *x := t5 ---
+[TRANSLATE] -> Detalhes: Destino='*x', Expressão='t5'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir 't5' em um registrador.
+[ENSURE] -> Sucesso! 't5' já está em r12.
+[TRANSLATE] -> Endereço de destino é uma variável real. Obtendo endereço em registrador.
+[GET_ADDR] Obtendo endereço para 'x'.
+[GET_FREE] -> Encontrado registrador livre: r13. Restantes: 21.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r13 = 32
+[GET_ADDR] -> Endereço de 'x' (32) carregado em r13.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r13] = r12
+[FREE_TEMP] Liberando registrador r12 que continha o temporário 't5'.
+[UNASSIGN_REG] Desmapeado r12 de 't5'.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {}
+[UNASSIGN_REG] r13 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: t6 := *x ---
+[TRANSLATE] -> Detalhes: Destino='t6', Expressão='*x'
+[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
+[ENSURE] Tentando garantir 'x' em um registrador.
+[ENSURE] -> Variável 'x' não está em um registrador. Carregando da memória.
+[GET_FREE] -> Encontrado registrador livre: r14. Restantes: 22.
+[GET_FREE] -> Encontrado registrador livre: r15. Restantes: 21.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r15 = 32
+[ENSURE] -> Usando r14 para o valor e r15 para o endereço 32.
+[ADD_INSTR] Adicionando instrução para 'main': load: r14 = [r15]
+[ASSIGN_REG] Mapeando 'x' para r14.
+[UNASSIGN_REG] r15 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'x': 'r14'}
+[UPDATE_MAP] Mapeando 't6' para o registrador r14 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 't6' para r14.
+[ASSIGN_REG] -> Registrador r14 já continha 'x'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r14 de 'x'.
+[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
+[TRANSLATE] -> Valor de 'x' agora em r14, mapeado para 't6'.
+
+--- [TRANSLATE] Processando IR: arg t6 ---
+[TRANSLATE] -> Caminho: Passagem de Argumento (arg 1)
+[ENSURE] Tentando garantir 't6' em um registrador.
+[ENSURE] -> Sucesso! 't6' já está em r14.
+[ADD_INSTR] Adicionando instrução para 'main': mov: r1 = r14
+
+--- [TRANSLATE] Processando IR: call count, 1 ---
+[TRANSLATE] -> Caminho: Chamada de Procedimento
+[GET_ADDR] Obtendo endereço para 'count1_t6'.
+[GET_FREE] -> Encontrado registrador livre: r16. Restantes: 22.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r16 = 37
+[GET_ADDR] -> Endereço de 'count1_t6' (37) carregado em r16.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r16] = r1
+[UNASSIGN_REG] r16 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {'t6': 'r14'}
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: {'r12'}
+[ADD_INSTR] Adicionando instrução para 'main': movi: r28 = main_Lret0
+[ADD_INSTR] Adicionando instrução para 'main': bl: count
+[ADD_INSTR] Adicionando instrução para 'main': main_Lret0:
+[UNASSIGN_REG] Desmapeado r14 de 't6'.
+[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: return _ ---
+[TRANSLATE] -> Caminho: Retorno de Função
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: {'r12'}
+[ADD_INSTR] Adicionando instrução para 'main': bi: main_epilogue
+-> Finalizando a função 'main', fazendo spill de todos os registradores sujos.
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: {'r12'}
+--- Fim da Passagem 2 ---
+
+--- Montagem Final: Construindo o arquivo assembly completo ---
+[Montagem] Processando função 'count' com 25 instruções.
+[Montagem] Adicionando código de inicialização (ida para a função 'main').
+[Montagem] Adicionando código para a função 'count'.
+[Montagem] Processando função 'main' com 12 instruções.
+[Montagem] Adicionando código para a função 'main'.
+[Montagem] Adicionando a seção .data.
+[Montagem] -> Variáveis a serem declaradas: ['x', 'number', '_', 'output0_t2', 'count0_t4', 'count1_t6']
+=== GERAÇÃO DE ASSEMBLY CONCLUÍDA ===
+--- ASSEMBLY CODE READY FOR YOUR ASSEMBLER ---
+.text
+.global main
+
+	bi: main
+count:
+	subi: r29 = r29, 1
+	store: [r29] = r28
+	subi: r29 = r29, 1
+	store: [r29] = r31
+	mov: r31 = r29
+	movi: r13 = 33
+	load: r12 = [r13]
+	movi: r14 = 0
+	subs: r0 = r12, r14
+	bineq: L0
+	bi: count_epilogue
+	bi: L1
+L0:
+L1:
+	movi: r16 = 33
+	load: r15 = [r16]
+	mov: r1 = r15
+	movi: r17 = 35
+	store: [r17] = r1
+	out: r1
+	movi: r19 = 33
+	load: r18 = [r19]
+	subi: r20 = r18, 1
+	mov: r1 = r20
+	movi: r21 = 36
+	store: [r21] = r1
+	movi: r28 = count_Lret0
+	bl: count
+count_Lret0:
+	bi: count_epilogue
+count_epilogue:
+	mov: r29 = r31
+	load: r31 = [r29]
+	addi: r29 = r29, 1
+	load: r28 = [r29]
+	addi: r29 = r29, 1
+	b: r28
+
+main:
+	movi: r29 = stack_space
+	mov: r31 = r29
+	in: r12
+	movi: r13 = 32
+	store: [r13] = r12
+	movi: r15 = 32
+	load: r14 = [r15]
+	mov: r1 = r14
+	movi: r16 = 37
+	store: [r16] = r1
+	movi: r28 = main_Lret0
+	bl: count
+main_Lret0:
+	bi: main_epilogue
+main_epilogue:
+	mov: r29 = r31
+	load: r31 = [r29]
+	addi: r29 = r29, 1
+	load: r28 = [r29]
+	addi: r29 = r29, 1
+	ret:
+
+.data
+stack_space: .space 64
+var_x: .word 32
+var_number: .word 33
+var__: .word 34
+var_output0_t2: .word 35
+var_count0_t4: .word 36
+var_count1_t6: .word 37
+---------------------------------------------
+
+
+=== INICIANDO PROCESSO DE MONTAGEM (FullCode) ===
+[INIT] Executando a primeira passagem para construir a tabela de símbolos...
+
+--- [PASS 1] Iniciando a Primeira Passagem ---
+[PASS 1] Etapa 1: Prevendo o tamanho de cada instrução na seção .text...
+
+[DEBUG PASS 1] Tabela de Símbolos Final:
+{
+  "output": 1
+}
+--- Fim do Debug ---
+
+
+[PASS 1] Etapa 2: Mapeando os rótulos de código para endereços...
+[PASS 1] -> Rótulo 'count' mapeado para o endereço 1.
+[PASS 1] -> Rótulo 'L0' mapeado para o endereço 13.
+[PASS 1] -> Rótulo 'L1' mapeado para o endereço 13.
+[PASS 1] -> Rótulo 'count_Lret0' mapeado para o endereço 27.
+[PASS 1] -> Rótulo 'count_epilogue' mapeado para o endereço 28.
+[PASS 1] -> Rótulo 'main' mapeado para o endereço 34.
+[PASS 1] -> Rótulo 'main_Lret0' mapeado para o endereço 46.
+[PASS 1] -> Rótulo 'main_epilogue' mapeado para o endereço 47.
+
+[PASS 1] Etapa 3: A seção de código termina no endereço 52. A seção .data começará em 53.
+
+[PASS 1] Etapa 4: Mapeando os rótulos da seção .data...
+[PASS 1] -> Rótulo de dados 'stack_space' mapeado para o endereço 53.
+[PASS 1] -> Rótulo de dados 'var_x' mapeado para o endereço 53.
+[PASS 1] -> Rótulo de dados 'var_number' mapeado para o endereço 54.
+[PASS 1] -> Rótulo de dados 'var__' mapeado para o endereço 55.
+[PASS 1] -> Rótulo de dados 'var_output0_t2' mapeado para o endereço 56.
+[PASS 1] -> Rótulo de dados 'var_count0_t4' mapeado para o endereço 57.
+[PASS 1] -> Rótulo de dados 'var_count1_t6' mapeado para o endereço 58.
+--- Fim da Primeira Passagem ---
+[INIT] Tabela de símbolos após a primeira passagem: {'output': 1, 'count': 1, 'L0': 13, 'L1': 13, 'count_Lret0': 27, 'count_epilogue': 28, 'main': 34, 'main_Lret0': 46, 'main_epilogue': 47, 'stack_space': 53, 'var_x': 53, 'var_number': 54, 'var__': 55, 'var_output0_t2': 56, 'var_count0_t4': 57, 'var_count1_t6': 58}
+[INIT] Executando a segunda passagem para codificar as instruções...
+
+--- [PASS 2] Iniciando a Segunda Passagem ---
+[PASS 2] Etapa 1: Coletando literais grandes e atribuindo endereços a eles...
+[PASS 2] -> Linha 9 ('mov: r31 = r29') é uma instrução 'mov' sem imediato. Ignorando para literais.
+[PASS 2] -> Linha 21 ('mov: r1 = r15') é uma instrução 'mov' sem imediato. Ignorando para literais.
+[PASS 2] -> Linha 24 ('out: r1') é uma instrução 'out'. Ignorando para literais.
+[PASS 2] -> Linha 28 ('mov: r1 = r20') é uma instrução 'mov' sem imediato. Ignorando para literais.
+[PASS 2] -> Linha 36 ('mov: r29 = r31') é uma instrução 'mov' sem imediato. Ignorando para literais.
+[PASS 2] -> Linha 44 ('mov: r31 = r29') é uma instrução 'mov' sem imediato. Ignorando para literais.
+[PASS 2] -> Linha 50 ('mov: r1 = r14') é uma instrução 'mov' sem imediato. Ignorando para literais.
+[PASS 2] -> Linha 58 ('mov: r29 = r31') é uma instrução 'mov' sem imediato. Ignorando para literais.
+[PASS 2] -> Nenhum literal grande encontrado.
+
+[PASS 2] Etapa 2: Codificando cada linha de instrução para binário...
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bi: main' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bi: main'
+[DISASSEMBLE] -> Parte do opcode: 'bi', Parte dos operandos: 'main'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bi'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'main'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'main'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'main'}
+[ENCODE] -> Instrução de branch detectada: b com condição do
+[ENCODE] -> Próximo endereço de instrução: 1
+[INSTRUCTION] -> Codificação concluída. Binário: 00001110000000000000000000100001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'subi: r29 = r29, 1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'subi: r29 = r29, 1'
+[DISASSEMBLE] -> Parte do opcode: 'subi', Parte dos operandos: 'r29 = r29, 1'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'sub'
+[DISASSEMBLE] -> Opcode final: 'sub', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r29', Origem: 'r29, 1'
+[DISASSEMBLE] -> Operandos finais: Rd='r29', Rh='r29', Op2='1'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010000111101111010000000001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'store: [r29] = r28' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'store: [r29] = r28'
+[DISASSEMBLE] -> Parte do opcode: 'store', Parte dos operandos: '[r29] = r28'
+[DISASSEMBLE] -> Opcode final: 'store', Tipo: 01
+[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: [r29]. Source detectado: 'r28'
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
+[ENCODE] -> Instrução Store detectada.
+[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:00000 e Rh(r28)=:11100
+[ENCODE] -> Op2 é um registrador: r29, convertido para binário: 1110100000
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000000000111001110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'subi: r29 = r29, 1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'subi: r29 = r29, 1'
+[DISASSEMBLE] -> Parte do opcode: 'subi', Parte dos operandos: 'r29 = r29, 1'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'sub'
+[DISASSEMBLE] -> Opcode final: 'sub', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r29', Origem: 'r29, 1'
+[DISASSEMBLE] -> Operandos finais: Rd='r29', Rh='r29', Op2='1'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010000111101111010000000001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'store: [r29] = r31' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'store: [r29] = r31'
+[DISASSEMBLE] -> Parte do opcode: 'store', Parte dos operandos: '[r29] = r31'
+[DISASSEMBLE] -> Opcode final: 'store', Tipo: 01
+[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: [r29]. Source detectado: 'r31'
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
+[ENCODE] -> Instrução Store detectada.
+[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:00000 e Rh(r31)=:11111
+[ENCODE] -> Op2 é um registrador: r29, convertido para binário: 1110100000
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000000000111111110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'mov: r31 = r29' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'mov: r31 = r29'
+[DISASSEMBLE] -> Parte do opcode: 'mov', Parte dos operandos: 'r31 = r29'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r31', Origem: 'r29'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100011111000001110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r13 = 33' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r13 = 33'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r13 = 33'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r13', Origem: '33'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r13', 'rh': 'r0', 'op2': '33'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r13', 'rh': 'r0', 'op2': '33'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r13', 'rh': 'r0', 'op2': '33'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100001101000000000100001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r12 = [r13]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r12 = [r13]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r12 = [r13]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r12', 'rh': 'r0', 'op2': 'r13'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r12', 'rh': 'r0', 'op2': 'r13'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r12', 'rh': 'r0', 'op2': 'r13'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000101100000000110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r14 = 0' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r14 = 0'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r14 = 0'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r14', Origem: '0'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r14', 'rh': 'r0', 'op2': '0'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r14', 'rh': 'r0', 'op2': '0'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r14', 'rh': 'r0', 'op2': '0'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100001110000000000000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'subs: r0 = r12, r14' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'subs: r0 = r12, r14'
+[DISASSEMBLE] -> Parte do opcode: 'subs', Parte dos operandos: 'r0 = r12, r14'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 's'. Opcode final é 'sub'
+[DISASSEMBLE] -> Opcode final: 'sub', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r0', Origem: 'r12, r14'
+[DISASSEMBLE] -> Operandos finais: Rd='r0', Rh='r12', Op2='r14'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 's', 'opcode': 'sub', 'type': '00', 'rd': 'r0', 'rh': 'r12', 'op2': 'r14'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 's', 'opcode': 'sub', 'type': '00', 'rd': 'r0', 'rh': 'r12', 'op2': 'r14'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 's', 'opcode': 'sub', 'type': '00', 'rd': 'r0', 'rh': 'r12', 'op2': 'r14'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000001000100000011000111000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bineq: L0' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bineq: L0'
+[DISASSEMBLE] -> Parte do opcode: 'bineq', Parte dos operandos: 'L0'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bineq'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'neq', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'L0'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'neq', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'L0'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'neq', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'L0'}
+[ENCODE] -> Instrução de branch detectada: b com condição neq
+[ENCODE] -> Próximo endereço de instrução: 11
+[INSTRUCTION] -> Codificação concluída. Binário: 00101110000000000000000000000010
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bi: count_epilogue' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bi: count_epilogue'
+[DISASSEMBLE] -> Parte do opcode: 'bi', Parte dos operandos: 'count_epilogue'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bi'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'count_epilogue'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'count_epilogue'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'count_epilogue'}
+[ENCODE] -> Instrução de branch detectada: b com condição do
+[ENCODE] -> Próximo endereço de instrução: 12
+[INSTRUCTION] -> Codificação concluída. Binário: 00001110000000000000000000010000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bi: L1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bi: L1'
+[DISASSEMBLE] -> Parte do opcode: 'bi', Parte dos operandos: 'L1'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bi'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'L1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'L1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'L1'}
+[ENCODE] -> Instrução de branch detectada: b com condição do
+[ENCODE] -> Próximo endereço de instrução: 13
+[INSTRUCTION] -> Codificação concluída. Binário: 00001110000000000000000000000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r16 = 33' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r16 = 33'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r16 = 33'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r16', Origem: '33'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r16', 'rh': 'r0', 'op2': '33'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r16', 'rh': 'r0', 'op2': '33'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r16', 'rh': 'r0', 'op2': '33'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100010000000000000100001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r15 = [r16]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r15 = [r16]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r15 = [r16]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r15', 'rh': 'r0', 'op2': 'r16'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r15', 'rh': 'r0', 'op2': 'r16'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r15', 'rh': 'r0', 'op2': 'r16'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000101111000001000000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'mov: r1 = r15' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'mov: r1 = r15'
+[DISASSEMBLE] -> Parte do opcode: 'mov', Parte dos operandos: 'r1 = r15'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r1', Origem: 'r15'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r15'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r15'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r15'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100000001000000111100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r17 = 35' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r17 = 35'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r17 = 35'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r17', Origem: '35'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r17', 'rh': 'r0', 'op2': '35'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r17', 'rh': 'r0', 'op2': '35'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r17', 'rh': 'r0', 'op2': '35'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100010001000000000100011
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'store: [r17] = r1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'store: [r17] = r1'
+[DISASSEMBLE] -> Parte do opcode: 'store', Parte dos operandos: '[r17] = r1'
+[DISASSEMBLE] -> Opcode final: 'store', Tipo: 01
+[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: [r17]. Source detectado: 'r1'
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r17', 'rh': 'r1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r17', 'rh': 'r1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r17', 'rh': 'r1'}
+[ENCODE] -> Instrução Store detectada.
+[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:00000 e Rh(r1)=:00001
+[ENCODE] -> Op2 é um registrador: r17, convertido para binário: 1000100000
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000000000000011000100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'out: r1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'out: r1'
+[DISASSEMBLE] -> Parte do opcode: 'out', Parte dos operandos: 'r1'
+[DISASSEMBLE] -> Instrução 'out' identificada.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'out', 'type': '00', 'rd': 'r0', 'rh': 'r0', 'op2': 'r1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'out', 'type': '00', 'rd': 'r0', 'rh': 'r0', 'op2': 'r1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'out', 'type': '00', 'rd': 'r0', 'rh': 'r0', 'op2': 'r1'}
+[ENCODE] -> Instrução 'out' detectada.
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000101000000000000000100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r19 = 33' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r19 = 33'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r19 = 33'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r19', Origem: '33'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r19', 'rh': 'r0', 'op2': '33'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r19', 'rh': 'r0', 'op2': '33'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r19', 'rh': 'r0', 'op2': '33'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100010011000000000100001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r18 = [r19]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r18 = [r19]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r18 = [r19]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r18', 'rh': 'r0', 'op2': 'r19'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r18', 'rh': 'r0', 'op2': 'r19'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r18', 'rh': 'r0', 'op2': 'r19'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000110010000001001100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'subi: r20 = r18, 1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'subi: r20 = r18, 1'
+[DISASSEMBLE] -> Parte do opcode: 'subi', Parte dos operandos: 'r20 = r18, 1'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'sub'
+[DISASSEMBLE] -> Opcode final: 'sub', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r20', Origem: 'r18, 1'
+[DISASSEMBLE] -> Operandos finais: Rd='r20', Rh='r18', Op2='1'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r20', 'rh': 'r18', 'op2': '1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r20', 'rh': 'r18', 'op2': '1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'sub', 'type': '00', 'rd': 'r20', 'rh': 'r18', 'op2': '1'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010000110100100100000000001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'mov: r1 = r20' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'mov: r1 = r20'
+[DISASSEMBLE] -> Parte do opcode: 'mov', Parte dos operandos: 'r1 = r20'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r1', Origem: 'r20'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r20'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r20'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r20'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100000001000001010000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r21 = 36' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r21 = 36'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r21 = 36'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r21', Origem: '36'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r21', 'rh': 'r0', 'op2': '36'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r21', 'rh': 'r0', 'op2': '36'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r21', 'rh': 'r0', 'op2': '36'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100010101000000000100100
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'store: [r21] = r1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'store: [r21] = r1'
+[DISASSEMBLE] -> Parte do opcode: 'store', Parte dos operandos: '[r21] = r1'
+[DISASSEMBLE] -> Opcode final: 'store', Tipo: 01
+[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: [r21]. Source detectado: 'r1'
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r21', 'rh': 'r1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r21', 'rh': 'r1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r21', 'rh': 'r1'}
+[ENCODE] -> Instrução Store detectada.
+[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:00000 e Rh(r1)=:00001
+[ENCODE] -> Op2 é um registrador: r21, convertido para binário: 1010100000
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000000000000011010100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r28 = count_Lret0' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r28 = count_Lret0'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r28 = count_Lret0'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r28', Origem: 'count_Lret0'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r28', 'rh': 'r0', 'op2': 'count_Lret0'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r28', 'rh': 'r0', 'op2': 'count_Lret0'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r28', 'rh': 'r0', 'op2': 'count_Lret0'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100011100000000000011011
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bl: count' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bl: count'
+[DISASSEMBLE] -> Parte do opcode: 'bl', Parte dos operandos: 'count'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bl'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'bl', 'type': '11', 'op2': 'count'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'bl', 'type': '11', 'op2': 'count'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'bl', 'type': '11', 'op2': 'count'}
+[ENCODE] -> Instrução de branch detectada: bl com condição do
+[ENCODE] -> Próximo endereço de instrução: 27
+[ENCODE] -> Instrução de branch com link detectada.
+[ENCODE] -> Offset calculado: -26 (destino: 1, PC + 1: 27)
+[INSTRUCTION] -> Codificação concluída. Binário: 00001100100011111111111111100110
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bi: count_epilogue' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bi: count_epilogue'
+[DISASSEMBLE] -> Parte do opcode: 'bi', Parte dos operandos: 'count_epilogue'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bi'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'count_epilogue'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'count_epilogue'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'count_epilogue'}
+[ENCODE] -> Instrução de branch detectada: b com condição do
+[ENCODE] -> Próximo endereço de instrução: 28
+[INSTRUCTION] -> Codificação concluída. Binário: 00001110000000000000000000000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'mov: r29 = r31' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'mov: r29 = r31'
+[DISASSEMBLE] -> Parte do opcode: 'mov', Parte dos operandos: 'r29 = r31'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r29', Origem: 'r31'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'r31'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'r31'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'r31'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100011101000001111100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r31 = [r29]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r31 = [r29]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r31 = [r29]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000111111000001110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'addi: r29 = r29, 1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'addi: r29 = r29, 1'
+[DISASSEMBLE] -> Parte do opcode: 'addi', Parte dos operandos: 'r29 = r29, 1'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'add'
+[DISASSEMBLE] -> Opcode final: 'add', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r29', Origem: 'r29, 1'
+[DISASSEMBLE] -> Operandos finais: Rd='r29', Rh='r29', Op2='1'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010000011101111010000000001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r28 = [r29]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r28 = [r29]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r28 = [r29]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r28', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r28', 'rh': 'r0', 'op2': 'r29'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r28', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000111100000001110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'addi: r29 = r29, 1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'addi: r29 = r29, 1'
+[DISASSEMBLE] -> Parte do opcode: 'addi', Parte dos operandos: 'r29 = r29, 1'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'add'
+[DISASSEMBLE] -> Opcode final: 'add', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r29', Origem: 'r29, 1'
+[DISASSEMBLE] -> Operandos finais: Rd='r29', Rh='r29', Op2='1'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010000011101111010000000001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'b: r28' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'b: r28'
+[DISASSEMBLE] -> Parte do opcode: 'b', Parte dos operandos: 'r28'
+[DISASSEMBLE] -> Instrução de branch identificada: 'b'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'b', 'type': '11', 'op2': 'r28'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'b', 'type': '11', 'op2': 'r28'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'b', 'type': '11', 'op2': 'r28'}
+[ENCODE] -> Instrução de branch detectada: b com condição do
+[ENCODE] -> Próximo endereço de instrução: 34
+[INSTRUCTION] -> Codificação concluída. Binário: 00001100000000000000000000011100
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r29 = stack_space' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r29 = stack_space'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r29 = stack_space'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r29', Origem: 'stack_space'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'stack_space'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'stack_space'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'stack_space'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100011101000000000110101
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'mov: r31 = r29' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'mov: r31 = r29'
+[DISASSEMBLE] -> Parte do opcode: 'mov', Parte dos operandos: 'r31 = r29'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r31', Origem: 'r29'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100011111000001110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'in: r12' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'in: r12'
+[DISASSEMBLE] -> Parte do opcode: 'in', Parte dos operandos: 'r12'
+[DISASSEMBLE] -> Opcode final: 'in', Tipo: 00
+[DISASSEMBLE] -> Instrução de operando único. Rd: 'r12'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'in', 'type': '00', 'rd': 'r12', 'rh': 'r0', 'op2': '0'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'in', 'type': '00', 'rd': 'r12', 'rh': 'r0', 'op2': '0'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'in', 'type': '00', 'rd': 'r12', 'rh': 'r0', 'op2': '0'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100101100000000000000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r13 = 32' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r13 = 32'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r13 = 32'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r13', Origem: '32'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r13', 'rh': 'r0', 'op2': '32'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r13', 'rh': 'r0', 'op2': '32'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r13', 'rh': 'r0', 'op2': '32'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100001101000000000100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'store: [r13] = r12' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'store: [r13] = r12'
+[DISASSEMBLE] -> Parte do opcode: 'store', Parte dos operandos: '[r13] = r12'
+[DISASSEMBLE] -> Opcode final: 'store', Tipo: 01
+[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: [r13]. Source detectado: 'r12'
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r13', 'rh': 'r12'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r13', 'rh': 'r12'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r13', 'rh': 'r12'}
+[ENCODE] -> Instrução Store detectada.
+[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:00000 e Rh(r12)=:01100
+[ENCODE] -> Op2 é um registrador: r13, convertido para binário: 0110100000
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000000000011000110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r15 = 32' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r15 = 32'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r15 = 32'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r15', Origem: '32'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r15', 'rh': 'r0', 'op2': '32'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r15', 'rh': 'r0', 'op2': '32'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r15', 'rh': 'r0', 'op2': '32'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100001111000000000100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r14 = [r15]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r14 = [r15]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r14 = [r15]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r14', 'rh': 'r0', 'op2': 'r15'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r14', 'rh': 'r0', 'op2': 'r15'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r14', 'rh': 'r0', 'op2': 'r15'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000101110000000111100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'mov: r1 = r14' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'mov: r1 = r14'
+[DISASSEMBLE] -> Parte do opcode: 'mov', Parte dos operandos: 'r1 = r14'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r1', Origem: 'r14'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r14'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r14'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r1', 'rh': 'r0', 'op2': 'r14'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100000001000000111000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r16 = 37' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r16 = 37'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r16 = 37'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r16', Origem: '37'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r16', 'rh': 'r0', 'op2': '37'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r16', 'rh': 'r0', 'op2': '37'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r16', 'rh': 'r0', 'op2': '37'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100010000000000000100101
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'store: [r16] = r1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'store: [r16] = r1'
+[DISASSEMBLE] -> Parte do opcode: 'store', Parte dos operandos: '[r16] = r1'
+[DISASSEMBLE] -> Opcode final: 'store', Tipo: 01
+[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: [r16]. Source detectado: 'r1'
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r16', 'rh': 'r1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r16', 'rh': 'r1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'store', 'type': '01', 'rd': 'r0', 'op2': 'r16', 'rh': 'r1'}
+[ENCODE] -> Instrução Store detectada.
+[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:00000 e Rh(r1)=:00001
+[ENCODE] -> Op2 é um registrador: r16, convertido para binário: 1000000000
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000000000000011000000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'movi: r28 = main_Lret0' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'movi: r28 = main_Lret0'
+[DISASSEMBLE] -> Parte do opcode: 'movi', Parte dos operandos: 'r28 = main_Lret0'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'mov'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r28', Origem: 'main_Lret0'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r28', 'rh': 'r0', 'op2': 'main_Lret0'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r28', 'rh': 'r0', 'op2': 'main_Lret0'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'mov', 'type': '00', 'rd': 'r28', 'rh': 'r0', 'op2': 'main_Lret0'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010100011100000000000101110
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bl: count' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bl: count'
+[DISASSEMBLE] -> Parte do opcode: 'bl', Parte dos operandos: 'count'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bl'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'bl', 'type': '11', 'op2': 'count'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'bl', 'type': '11', 'op2': 'count'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'bl', 'type': '11', 'op2': 'count'}
+[ENCODE] -> Instrução de branch detectada: bl com condição do
+[ENCODE] -> Próximo endereço de instrução: 46
+[ENCODE] -> Instrução de branch com link detectada.
+[ENCODE] -> Offset calculado: -45 (destino: 1, PC + 1: 46)
+[INSTRUCTION] -> Codificação concluída. Binário: 00001100100011111111111111010011
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'bi: main_epilogue' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'bi: main_epilogue'
+[DISASSEMBLE] -> Parte do opcode: 'bi', Parte dos operandos: 'main_epilogue'
+[DISASSEMBLE] -> Instrução de branch identificada: 'bi'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'main_epilogue'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'main_epilogue'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'b', 'type': '11', 'op2': 'main_epilogue'}
+[ENCODE] -> Instrução de branch detectada: b com condição do
+[ENCODE] -> Próximo endereço de instrução: 47
+[INSTRUCTION] -> Codificação concluída. Binário: 00001110000000000000000000000000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'mov: r29 = r31' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'mov: r29 = r31'
+[DISASSEMBLE] -> Parte do opcode: 'mov', Parte dos operandos: 'r29 = r31'
+[DISASSEMBLE] -> Opcode final: 'mov', Tipo: 00
+[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: 'r29', Origem: 'r31'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'r31'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'r31'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'mov', 'type': '00', 'rd': 'r29', 'rh': 'r0', 'op2': 'r31'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000000100011101000001111100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r31 = [r29]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r31 = [r29]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r31 = [r29]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r31', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000111111000001110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'addi: r29 = r29, 1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'addi: r29 = r29, 1'
+[DISASSEMBLE] -> Parte do opcode: 'addi', Parte dos operandos: 'r29 = r29, 1'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'add'
+[DISASSEMBLE] -> Opcode final: 'add', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r29', Origem: 'r29, 1'
+[DISASSEMBLE] -> Operandos finais: Rd='r29', Rh='r29', Op2='1'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010000011101111010000000001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'load: r28 = [r29]' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'load: r28 = [r29]'
+[DISASSEMBLE] -> Parte do opcode: 'load', Parte dos operandos: 'r28 = [r29]'
+[DISASSEMBLE] -> Opcode final: 'load', Tipo: 01
+[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r28', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r28', 'rh': 'r0', 'op2': 'r29'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'load', 'type': '01', 'rd': 'r28', 'rh': 'r0', 'op2': 'r29'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000100000111100000001110100000
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'addi: r29 = r29, 1' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'addi: r29 = r29, 1'
+[DISASSEMBLE] -> Parte do opcode: 'addi', Parte dos operandos: 'r29 = r29, 1'
+[DISASSEMBLE] -> Sufixo de suporte encontrado: 'i'. Opcode final é 'add'
+[DISASSEMBLE] -> Opcode final: 'add', Tipo: 00
+[DISASSEMBLE] -> Instrução com atribuição. Destino: 'r29', Origem: 'r29, 1'
+[DISASSEMBLE] -> Operandos finais: Rd='r29', Rh='r29', Op2='1'
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'i', 'opcode': 'add', 'type': '00', 'rd': 'r29', 'rh': 'r29', 'op2': '1'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00000010000011101111010000000001
+
+--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: 'ret:' ---
+[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...
+[DISASSEMBLE] Analisando: 'ret:'
+[DISASSEMBLE] -> Instrução 'ret' identificada.
+[INSTRUCTION] -> Desmontagem concluída. Detalhes: {'cond': 'do', 'supp': 'na', 'opcode': 'ret', 'type': '11'}
+[INSTRUCTION] -> Passo 2: Codificando para binário...
+[ENCODE] Iniciando codificação para a instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'ret', 'type': '11'}
+[ENCODE] -> Tratando como instrução normal.
+[ENCODE] -> Codificando instrução: {'cond': 'do', 'supp': 'na', 'opcode': 'ret', 'type': '11'}
+[INSTRUCTION] -> Codificação concluída. Binário: 00001100111111111111111111111111
+
+[PASS 2] -> 53 linhas de código de máquina geradas.
+
+[PASS 2] Etapa 3: Adicionando a seção de dados e literais ao código de máquina final...
+[PASS 2] -> Dados a serem adicionados (endereço: valor): [(53, '32'), (54, '33'), (55, '34'), (56, '35'), (57, '36'), (58, '37'), (59, '0'), (60, '0'), (61, '0'), (62, '0'), (63, '0'), (64, '0'), (65, '0'), (66, '0'), (67, '0'), (68, '0'), (69, '0'), (70, '0'), (71, '0'), (72, '0'), (73, '0'), (74, '0'), (75, '0'), (76, '0'), (77, '0'), (78, '0'), (79, '0'), (80, '0'), (81, '0'), (82, '0'), (83, '0'), (84, '0'), (85, '0'), (86, '0'), (87, '0'), (88, '0'), (89, '0'), (90, '0'), (91, '0'), (92, '0'), (93, '0'), (94, '0'), (95, '0'), (96, '0'), (97, '0'), (98, '0'), (99, '0'), (100, '0'), (101, '0'), (102, '0'), (103, '0'), (104, '0'), (105, '0'), (106, '0'), (107, '0'), (108, '0'), (109, '0'), (110, '0'), (111, '0'), (112, '0'), (113, '0'), (114, '0'), (115, '0'), (116, '0')]
+--- Fim da Segunda Passagem ---
+=== PROCESSO DE MONTAGEM CONCLUÍDO ===
+--- DEBUG OUTPUT ---
+00001110000000000000000000100001 -> cond[0000] type[11] supp[10] op[0000] offset_calc[(34 - 1) = 33]->bin[00000000000000100001]
+00000010000111101111010000000001 -> cond[0000] type[00] supp[10] op[0001] Rd[11101] Rh[11101] imm[1=1]->[0000000001]
+00000100000000000111001110100000 -> cond[0000] type[01] supp[00] op[0000] Rd[00000] Rh[11100] Ro[11101] pad[00000] (Store sem imediato)
+00000010000111101111010000000001 -> cond[0000] type[00] supp[10] op[0001] Rd[11101] Rh[11101] imm[1=1]->[0000000001]
+00000100000000000111111110100000 -> cond[0000] type[01] supp[00] op[0000] Rd[00000] Rh[11111] Ro[11101] pad[00000] (Store sem imediato)
+00000000100011111000001110100000 -> cond[0000] type[00] supp[00] op[1000] Rd[11111] Rh[00000] Ro[11101] pad[00000] (Mov sem imediato)
+00000010100001101000000000100001 -> cond[0000] type[00] supp[10] op[1000] Rd[01101] Rh[00000] imm[33=33]->[0000100001]
+00000100000101100000000110100000 -> cond[0000] type[01] supp[00] op[0001] Rd[01100] Rh[00000] Ro[01101] pad[00000] (Load sem imediato)
+00000010100001110000000000000000 -> cond[0000] type[00] supp[10] op[1000] Rd[01110] Rh[00000] imm[0=0]->[0000000000]
+00000001000100000011000111000000 -> cond[0000] type[00] supp[01] op[0001] Rd[00000] Rh[01100] Ro[01110] pad[00000]
+00101110000000000000000000000010 -> cond[0010] type[11] supp[10] op[0000] offset_calc[(13 - 11) = 2]->bin[00000000000000000010]
+00001110000000000000000000010000 -> cond[0000] type[11] supp[10] op[0000] offset_calc[(28 - 12) = 16]->bin[00000000000000010000]
+00001110000000000000000000000000 -> cond[0000] type[11] supp[10] op[0000] offset_calc[(13 - 13) = 0]->bin[00000000000000000000]
+00000010100010000000000000100001 -> cond[0000] type[00] supp[10] op[1000] Rd[10000] Rh[00000] imm[33=33]->[0000100001]
+00000100000101111000001000000000 -> cond[0000] type[01] supp[00] op[0001] Rd[01111] Rh[00000] Ro[10000] pad[00000] (Load sem imediato)
+00000000100000001000000111100000 -> cond[0000] type[00] supp[00] op[1000] Rd[00001] Rh[00000] Ro[01111] pad[00000] (Mov sem imediato)
+00000010100010001000000000100011 -> cond[0000] type[00] supp[10] op[1000] Rd[10001] Rh[00000] imm[35=35]->[0000100011]
+00000100000000000000011000100000 -> cond[0000] type[01] supp[00] op[0000] Rd[00000] Rh[00001] Ro[10001] pad[00000] (Store sem imediato)
+00000000101000000000000000100000 -> cond[0000] type[00] supp[00] op[1010] Rd[00000] Rh[00000] Ro[00001] pad[00000] (Out sem imediato)
+00000010100010011000000000100001 -> cond[0000] type[00] supp[10] op[1000] Rd[10011] Rh[00000] imm[33=33]->[0000100001]
+00000100000110010000001001100000 -> cond[0000] type[01] supp[00] op[0001] Rd[10010] Rh[00000] Ro[10011] pad[00000] (Load sem imediato)
+00000010000110100100100000000001 -> cond[0000] type[00] supp[10] op[0001] Rd[10100] Rh[10010] imm[1=1]->[0000000001]
+00000000100000001000001010000000 -> cond[0000] type[00] supp[00] op[1000] Rd[00001] Rh[00000] Ro[10100] pad[00000] (Mov sem imediato)
+00000010100010101000000000100100 -> cond[0000] type[00] supp[10] op[1000] Rd[10101] Rh[00000] imm[36=36]->[0000100100]
+00000100000000000000011010100000 -> cond[0000] type[01] supp[00] op[0000] Rd[00000] Rh[00001] Ro[10101] pad[00000] (Store sem imediato)
+00000010100011100000000000011011 -> cond[0000] type[00] supp[10] op[1000] Rd[11100] Rh[00000] imm[count_Lret0=27]->[0000011011]
+00001100100011111111111111100110 -> cond[0000] type[11] supp[00] op[1000] offset_calc[(1 - 27) = -26]->bin[11111111111111100110]
+00001110000000000000000000000000 -> cond[0000] type[11] supp[10] op[0000] offset_calc[(28 - 28) = 0]->bin[00000000000000000000]
+00000000100011101000001111100000 -> cond[0000] type[00] supp[00] op[1000] Rd[11101] Rh[00000] Ro[11111] pad[00000] (Mov sem imediato)
+00000100000111111000001110100000 -> cond[0000] type[01] supp[00] op[0001] Rd[11111] Rh[00000] Ro[11101] pad[00000] (Load sem imediato)
+00000010000011101111010000000001 -> cond[0000] type[00] supp[10] op[0000] Rd[11101] Rh[11101] imm[1=1]->[0000000001]
+00000100000111100000001110100000 -> cond[0000] type[01] supp[00] op[0001] Rd[11100] Rh[00000] Ro[11101] pad[00000] (Load sem imediato)
+00000010000011101111010000000001 -> cond[0000] type[00] supp[10] op[0000] Rd[11101] Rh[11101] imm[1=1]->[0000000001]
+00001100000000000000000000011100 -> cond[0000] type[11] supp[00] op[0000] offset_calc[(imm - 34) = 28]->bin[00000000000000011100]
+00000010100011101000000000110101 -> cond[0000] type[00] supp[10] op[1000] Rd[11101] Rh[00000] imm[stack_space=53]->[0000110101]
+00000000100011111000001110100000 -> cond[0000] type[00] supp[00] op[1000] Rd[11111] Rh[00000] Ro[11101] pad[00000] (Mov sem imediato)
+00000000100101100000000000000000 -> cond[0000] type[00] supp[00] op[1001] Rd[01100] Rh[00000] Ro[00000] pad[00000]
+00000010100001101000000000100000 -> cond[0000] type[00] supp[10] op[1000] Rd[01101] Rh[00000] imm[32=32]->[0000100000]
+00000100000000000011000110100000 -> cond[0000] type[01] supp[00] op[0000] Rd[00000] Rh[01100] Ro[01101] pad[00000] (Store sem imediato)
+00000010100001111000000000100000 -> cond[0000] type[00] supp[10] op[1000] Rd[01111] Rh[00000] imm[32=32]->[0000100000]
+00000100000101110000000111100000 -> cond[0000] type[01] supp[00] op[0001] Rd[01110] Rh[00000] Ro[01111] pad[00000] (Load sem imediato)
+00000000100000001000000111000000 -> cond[0000] type[00] supp[00] op[1000] Rd[00001] Rh[00000] Ro[01110] pad[00000] (Mov sem imediato)
+00000010100010000000000000100101 -> cond[0000] type[00] supp[10] op[1000] Rd[10000] Rh[00000] imm[37=37]->[0000100101]
+00000100000000000000011000000000 -> cond[0000] type[01] supp[00] op[0000] Rd[00000] Rh[00001] Ro[10000] pad[00000] (Store sem imediato)
+00000010100011100000000000101110 -> cond[0000] type[00] supp[10] op[1000] Rd[11100] Rh[00000] imm[main_Lret0=46]->[0000101110]
+00001100100011111111111111010011 -> cond[0000] type[11] supp[00] op[1000] offset_calc[(1 - 46) = -45]->bin[11111111111111010011]
+00001110000000000000000000000000 -> cond[0000] type[11] supp[10] op[0000] offset_calc[(47 - 47) = 0]->bin[00000000000000000000]
+00000000100011101000001111100000 -> cond[0000] type[00] supp[00] op[1000] Rd[11101] Rh[00000] Ro[11111] pad[00000] (Mov sem imediato)
+00000100000111111000001110100000 -> cond[0000] type[01] supp[00] op[0001] Rd[11111] Rh[00000] Ro[11101] pad[00000] (Load sem imediato)
+00000010000011101111010000000001 -> cond[0000] type[00] supp[10] op[0000] Rd[11101] Rh[11101] imm[1=1]->[0000000001]
+00000100000111100000001110100000 -> cond[0000] type[01] supp[00] op[0001] Rd[11100] Rh[00000] Ro[11101] pad[00000] (Load sem imediato)
+00000010000011101111010000000001 -> cond[0000] type[00] supp[10] op[0000] Rd[11101] Rh[11101] imm[1=1]->[0000000001]
+00001100111111111111111111111111 -> cond[0000] type[11] supp[00] op[1111] operand[-1]
+
+Código de máquina gerado com sucesso em: docs/output/generated_machine_code.txt
+
+--- Iniciando a Decodificação do Código de Máquina ---
+--- Decodificação Concluída ---
+--- MACHINE CODE DECODED ---
