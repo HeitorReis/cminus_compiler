@@ -117,8 +117,8 @@ class RegisterAllocator:
         if var_name in self.spilled_temps:
             reg = self._get_free_reg()
             offset = self.spilled_temps[var_name]
-            self.func_context.add_instruction(f"\tloadi: {reg} = [fp,
-            print(f"[ENSURE] -> Recuperando '{var_name}' da pilha [fp,
+            self.func_context.add_instruction(f"\tloadi: {reg} = [fp, #{offset}]")
+            print(f"[ENSURE] -> Recuperando '{var_name}' da pilha [fp, #{offset}] para {reg}.")
             del self.spilled_temps[var_name]
             self._assign_reg_to_var(reg, var_name)
             self.dirty_regs.add(reg)
@@ -267,8 +267,9 @@ class RegisterAllocator:
                 self.func_context.spill_offset -= 4
                 offset = self.func_context.spill_offset
                 self.spilled_temps[var_name] = offset
-                print(f"[SPILL] -> '{var_name}' é um temporário. Salvando na pilha em [fp,
-                self.func_context.add_instruction(f"\tstorei: [fp,
+                print(f"[SPILL] -> '{var_name}' é um temporário. Salvando na pilha em [fp, #{offset}].")
+                self.func_context.add_instruction(f"\tstorei: [fp, #{offset}] = {reg}")
+            
 
             self.dirty_regs.discard(reg)
         else:
