@@ -16,8 +16,8 @@ Line 4 -	Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: store  	Rd:  r
 Line 5 -	Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: mov  	Rd:  r31 = 	 (Rh) r0 	Operand: r29
 	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1000) 	Rd(31)   	 Rh(0) 	Op2(11101)
 
-Line 6 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r13 = 	 (Rh) r0 	Operand: immediate 33
-	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(13)   	 Rh(0) 	Op2(0000100001)
+Line 6 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r13 = 	 (Rh) r0 	Operand: immediate 34
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(13)   	 Rh(0) 	Op2(0000100010)
 
 Line 7 -	Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r12 = 	 (Rh) r0 	Operand: reg_addr: r13
 	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(12)   	 Rh(0) 	Op2(0110100000)
@@ -37,8 +37,8 @@ Line 11 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  na 
 Line 12 -	Type: Branch . . . . . 	Cond: do 		Support: i  	Opcode: b    	Rd:  na = 	 (Rh) na 	Operand: ProgramCounter+0
 	Binary: Type(11) 				Cond(0000) 		Supp(10) 		Opcode(0000) 	Rd(  )   	 Rh(  ) 	Op2(00000000000000000000)
 
-Line 13 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r16 = 	 (Rh) r0 	Operand: immediate 33
-	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(16)   	 Rh(0) 	Op2(0000100001)
+Line 13 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r16 = 	 (Rh) r0 	Operand: immediate 34
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(16)   	 Rh(0) 	Op2(0000100010)
 
 Line 14 -	Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r15 = 	 (Rh) r0 	Operand: reg_addr: r16
 	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(15)   	 Rh(0) 	Op2(1000000000)
@@ -55,8 +55,8 @@ Line 17 -	Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: store  	Rd:  
 Line 18 -	Type: Data-Processing. 	Cond: do 		Support: na  	Opcode: out  	Rd:  r0 = 	 (Rh) r0 	Operand: r1
 	Binary: Type(00) 				Cond(0000) 		Supp(00) 		Opcode(1010) 	Rd(0)   	 Rh(0) 	Op2(00001)
 
-Line 19 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r19 = 	 (Rh) r0 	Operand: immediate 33
-	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(19)   	 Rh(0) 	Op2(0000100001)
+Line 19 -	Type: Data-Processing. 	Cond: do 		Support: i  	Opcode: mov  	Rd:  r19 = 	 (Rh) r0 	Operand: immediate 34
+	Binary: Type(00) 				Cond(0000) 		Supp(10) 		Opcode(1000) 	Rd(19)   	 Rh(0) 	Op2(0000100010)
 
 Line 20 -	Type: Load / Store . . 	Cond: do 		Support: na  	Opcode: load  	Rd:  r18 = 	 (Rh) r0 	Operand: reg_addr: r19
 	Binary: Type(01) 				Cond(0000) 		Supp(00) 		Opcode(0001) 	Rd(18)   	 Rh(0) 	Op2(1001100000)

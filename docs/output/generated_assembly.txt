@@ -8,7 +8,7 @@ count:
 	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
-	movi: r13 = 33
+	movi: r13 = 34
 	load: r12 = [r13]
 	movi: r14 = 0
 	subs: r0 = r12, r14
@@ -17,13 +17,13 @@ count:
 	bi: L1
 L0:
 L1:
-	movi: r16 = 33
+	movi: r16 = 34
 	load: r15 = [r16]
 	mov: r1 = r15
 	movi: r17 = 35
 	store: [r17] = r1
 	out: r1
-	movi: r19 = 33
+	movi: r19 = 34
 	load: r18 = [r19]
 	subi: r20 = r18, 1
 	mov: r1 = r20
@@ -67,8 +67,8 @@ main_epilogue:
 .data
 stack_space: .space 64
 var_x: .word 32
-var_number: .word 33
-var__: .word 34
+var__: .word 33
+var_number: .word 34
 var_output0_t2: .word 35
 var_count0_t4: .word 36
 var_count1_t6: .word 37

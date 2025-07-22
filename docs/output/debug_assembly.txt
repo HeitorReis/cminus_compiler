@@ -3,18 +3,18 @@ subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r28 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r31 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
-movi: r13 = 33 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': '33'}
+movi: r13 = 34 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r13', 'rh': 'r0', 'op2': '34'}
 load: r12 = [r13] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r13]'}
 movi: r14 = 0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r14', 'rh': 'r0', 'op2': '0'}
 subs: r0 = r12, r14 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r12, r14'}
 bineq: L0 -> {'supp': 'i', 'opcode': 'bineq'}
 bi: count_epilogue -> {'supp': 'i', 'opcode': 'b'}
 bi: L1 -> {'supp': 'i', 'opcode': 'b'}
-movi: r16 = 33 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': '33'}
+movi: r16 = 34 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r16', 'rh': 'r0', 'op2': '34'}
 load: r15 = [r16] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r16]'}
 movi: r17 = 35 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r17', 'rh': 'r0', 'op2': '35'}
 store: [r17] = r1 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r17', 'rh': 'r1'}
-movi: r19 = 33 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r19', 'rh': 'r0', 'op2': '33'}
+movi: r19 = 34 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r19', 'rh': 'r0', 'op2': '34'}
 load: r18 = [r19] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r19]'}
 subi: r20 = r18, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r18, 1'}
 movi: r21 = 36 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r21', 'rh': 'r0', 'op2': '36'}
