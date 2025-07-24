@@ -489,37 +489,6 @@ State 28
     type_specifier      go to state 33
     local_declarations  go to state 34
 
-    shift/reduce conflict on token INT:
-       21 local_declarations: ε •
-        8 type_specifier: • INT
-      Example: • INT ID SEMICOLON
-      Shift derivation
-        local_declarations
-        ↳ 20: var_declaration
-              ↳ 6: type_specifier ID SEMICOLON
-                   ↳ 8: • INT
-      Reduce derivation
-        local_declarations
-        ↳ 19: local_declarations var_declaration
-              ↳ 21: ε •          ↳ 6: type_specifier ID SEMICOLON
-                                      ↳ 8: INT
-
-    shift/reduce conflict on token VOID:
-       21 local_declarations: ε •
-        9 type_specifier: • VOID
-      Example: • VOID ID SEMICOLON
-      Shift derivation
-        local_declarations
-        ↳ 20: var_declaration
-              ↳ 6: type_specifier ID SEMICOLON
-                   ↳ 9: • VOID
-      Reduce derivation
-        local_declarations
-        ↳ 19: local_declarations var_declaration
-              ↳ 21: ε •          ↳ 6: type_specifier ID SEMICOLON
-                                      ↳ 9: VOID
-
-
 
 State 29
 

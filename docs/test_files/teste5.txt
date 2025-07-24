@@ -1,6 +1,6 @@
 void count (int number) {
-  if(number == 0) return;
   output (number);
+  if(number == 0) return;
   count (number - 1);
 }
 

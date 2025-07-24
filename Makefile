@@ -31,13 +31,12 @@ LDFLAGS := -lfl
 
 # === Source list ===
 SRC_FILES := main.c \
-             $(SRC_DIR)/semantic.c \
-             $(SRC_DIR)/symbol_table.c \
-             $(SRC_DIR)/syntax_tree.c \
-             $(SRC_DIR)/utils.c \
-						 $(SRC_DIR)/ir.c \
-						#  $(SRC_DIR)/codegen.c
-
+            $(SRC_DIR)/semantic.c \
+            $(SRC_DIR)/symbol_table.c \
+            $(SRC_DIR)/syntax_tree.c \
+            $(SRC_DIR)/utils.c \
+			$(SRC_DIR)/ir.c \
+			
 # === Rules ===
 
 all: clean run
@@ -48,7 +47,7 @@ $(BUILD_DIR) $(BIN_DIR):
 
 # Generate parser using bison with flags -d -v -g
 $(YACC_C) $(YACC_H): $(YACC_FILE) | $(BUILD_DIR)
-	bison -d -v -g -Wcounterexamples $(YACC_FILE)
+	bison -d -v -g $(YACC_FILE)
 	mv -f parser.tab.c $(BUILD_DIR)/
 	mv -f parser.tab.h $(BUILD_DIR)/
 
@@ -74,7 +73,7 @@ $(BUILD_DIR)/lex.yy.o: $(LEX_C)
 	$(CC) $(CFLAGS) -c $(LEX_C) -o $@
 
 # Link all object files using g++ with the -lfl flag
-$(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS)
+$(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS) 
 	$(CXX) $(CFLAGS) $(OBJECTS) -o $(EXEC) $(LDFLAGS)
 
 # Run with test files based on the user-specified TEST variable

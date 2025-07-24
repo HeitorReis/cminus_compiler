@@ -1,14 +1,14 @@
 count:
   t0 := *number
-  t1 := t0 == 0
-  if_false t1 goto L0
+  arg t0
+  call output, 1
+  t1 := *number
+  t2 := t1 == 0
+  if_false t2 goto L0
   return _
   goto L1
 L0:
 L1:
-  t2 := *number
-  arg t2
-  call output, 1
   t3 := *number
   t4 := t3 - 1
   arg t4

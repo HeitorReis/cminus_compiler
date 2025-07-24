@@ -68,7 +68,6 @@ class Instruction:
         print("[INSTRUCTION] -> Passo 2: Codificando para binário...")
         result = self.encode()
         if result is None:
-            # Pseudo-instrução foi tratada dentro do encode
             if self.binary32_lines:
                 print(f"[INSTRUCTION] -> Codificação de pseudo-instrução concluída. Gerou {len(self.binary32_lines)} linhas binárias.")
             return
@@ -118,7 +117,7 @@ class Instruction:
             details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
             details['cond'] = op_part[2:] if len(op_part) > 2 else 'do'    # A condição são os últimos caracteres (ex: 'lteq')
             details['type'] = '11'
-            details['supp'] = 'i' # A lógica de branch não precisa de 'i' aqui.
+            details['supp'] = 'i' 
             details['op2'] = rest_part       # O alvo do desvio
             return details
         
@@ -152,12 +151,22 @@ class Instruction:
             'bl', 'bleq', 'blneq', 'blgt', 'blgteq', 'bllt', 'bllteq'
         ]
         if op_part in branchlink_ops:
-            print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
-            details['opcode'] = 'bl'          # A instrução base é sempre 'b' (branch)
-            details['cond'] = op_part[2:] if len(op_part) > 2 else 'do'   # A condição são os últimos caracteres (ex: 'lteq')
+            print(f"[DISASSEMBLE] -> Instrução de branch com link identificada: '{op_part}'")
+            details['opcode'] = 'bl'
+            details['cond'] = op_part[2:] if len(op_part) > 2 else 'do'
             details['type'] = '11'
-            details['supp'] = 'na' 
-            details['op2'] = rest_part       # O alvo do desvio
+            
+            # Verifica se o alvo do branch é um registrador ou um label/imediato
+            is_register_target = rest_part.strip().lower().startswith('r')
+            
+            if is_register_target:
+                # Se for um registrador (ex: bl: r14), o bit 'I' é 0
+                details['supp'] = 'na'
+            else:
+                # Se for um label (ex: bl: count), o bit 'I' deve ser 1
+                details['supp'] = 'i'
+                
+            details['op2'] = rest_part
             return details
         
         
@@ -352,33 +361,45 @@ class Instruction:
         if d['type'] == '11': # Branch
             try:
                 target = d['op2']
-                offset = 0
-                
-                next_instruction_address = self.current_address + (2 if is_pseudo else 1)
-                print(f"[ENCODE] -> Próximo endereço de instrução: {next_instruction_address}")
-                if 'bl' in d['opcode']:
-                    print("[ENCODE] -> Instrução de branch com link detectada.")
-                    if target in self.symbol_table:
-                        # offset = destino - (PC + 1)
-                        offset = self.symbol_table[target] - next_instruction_address
-                        print(f"[ENCODE] -> Offset calculado: {offset} (destino: {self.symbol_table[target]}, PC + 1: {next_instruction_address})")
-                    else:
-                        offset = int(target)
-                        print(f"[ENCODE] -> Offset direto: {offset} (valor imediato)")
-                elif 'i' in d['supp']:
-                    if target in self.symbol_table:
-                        # offset = destino - (PC + 1)
-                        offset = self.symbol_table[target] - next_instruction_address
-                    else:
-                        offset = int(target)
+                offset_bin = ""
+
+                # ------------------- INÍCIO DA CORREÇÃO -------------------
+                # Nova lógica para diferenciar branch para registrador vs. label
+
+                if target.startswith('r'):
+                    # CASO 1: O alvo é um registrador (ex: r28)
+                    print(f"[ENCODE] -> Branch para registrador detectado: {target}")
+                    
+                    # Extrai o número do registrador e converte para 5 bits
+                    reg_num_str = target.replace('r', '')
+                    ro_bin = self.get_signed_binary(reg_num_str, 5)
+                    if 'Error' in ro_bin: return ro_bin, ""
+                    
+                    # Monta o campo de 20 bits como você especificou:
+                    # 10 bits zerados | 5 bits do registrador | 5 bits zerados
+                    # Isso coloca o número do registrador nos bits [9:5] do operando.
+                    offset_bin = '0000000000' + ro_bin + '00000'
+                    
+                    debug += f"reg_target[{target}]->bin[{offset_bin}]"
+
                 else:
-                    offset = d['op2'].replace('r', '')
+                    # CASO 2: O alvo é um label (lógica que você já tinha e funciona)
+                    offset = 0
+                    next_instruction_address = self.current_address + (2 if is_pseudo else 1)
+                    
+                    if target in self.symbol_table:
+                        offset = self.symbol_table[target] - next_instruction_address
+                    else:
+                        offset = int(target)
+                    
+                    offset_bin = self.get_signed_binary(str(offset), 20)
+                    if 'Error' in offset_bin: return offset_bin, ""
+                    debug += f"offset_calc[({self.symbol_table.get(target, 'imm')} - {next_instruction_address}) = {offset}]->bin[{offset_bin}]"
                 
-                offset_val = offset
-                offset_bin = self.get_signed_binary(str(offset_val), 20)
-                if 'Error' in offset_bin: return offset_bin, ""
+                # ------------------- FIM DA CORREÇÃO -------------------
+                
                 binary += offset_bin
-                debug += f"offset_calc[({self.symbol_table.get(target, 'imm')} - {next_instruction_address}) = {offset_val}]->bin[{offset_bin}]"
+
             except (ValueError, KeyError) as e:
                 return f"Error resolving branch target '{d['op2']}': {e}", ""
         elif d['type'] == '01':
@@ -812,17 +833,22 @@ class FullCode:
                     op2_decoded = f"r{ro_reg}"
                     op2 = ro
             
-            version = 1
+            version = 2
             if version == 1:
                 decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
                 decoded_lines.append(decoded_line)
                 decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
-                decoded_lines.append(decode_line)
+                decoded_lines.append(decoded_line)
+            elif version == 2:
+                decoded_line = f"Line {lineno}: {opcode_decoded} {supp_decoded} {cond_decoded} {rd_decoded} = {rh_decoded}, {op2_decoded}"
+                decoded_lines.append(decoded_line)
+                decoded_line = f"Line {lineno}: {opcode} {supp} {cond} {rd} = {rh}, {op2}\n"
+                decoded_lines.append(decoded_line)
             else:
                 decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
                 decoded_lines.append(decoded_line)
                 decode_line = f"\tBinary: Type({type_code}) \tCond({cond}) \tSupp({supp}) \tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
-                decoded_lines.append(decode_line)
+                decoded_lines.append(decoded_line)
             
         print("--- Decodificação Concluída ---")
         return "\n".join(decoded_lines)
