@@ -1,5 +1,6 @@
 import collections
 import re
+from symbol_table import Type, IntegerType, ArrayType, Symbol, SymbolTable # <-- ADICIONE ESTA LINHA
 
 IR_TO_ASSEMBLY_BRANCH = {
     # IR op: Assembly branch instruction
@@ -62,13 +63,26 @@ class DataMemoryManager:
     
     def generate_data_directives(self):
         """
-        Gera listas de diretivas .word ou .space para inclusão na seção .data.
-        Exemplo: ['var_x: .word 0', 'var_arr: .space 4']
+        Gera listas de diretivas .word ou .space para inclusão na seção .data,
+        usando a SymbolTable para determinar o tipo de cada variável.
         """
         directives = []
-        for name, addr in sorted(self.var_to_address.items(), key=lambda kv: kv[1]):
-            # Podemos inferir tamanho como diferença até próxima ou usar size fixa
-            directives.append(f"var_{name}: .word {addr}")
+        
+        # Filtra apenas os símbolos que são variáveis globais para evitar processar funções, etc.
+        global_vars = [s for s in symbol_table.symbols.values() if s.scope == "global" and isinstance(s.type, (IntegerType, ArrayType))]
+        
+        # Ordena os símbolos pelo seu endereço de memória para manter a ordem no arquivo .data
+        sorted_symbols = sorted(global_vars, key=lambda s: s.address)
+
+        for symbol in sorted_symbols:
+            if isinstance(symbol.type, ArrayType):
+                # Se for um vetor, gera a diretiva .space com o seu tamanho
+                directives.append(f"var_{symbol.name}: .space {symbol.type.num_elements}")
+            elif isinstance(symbol.type, IntegerType):
+                # Se for um inteiro simples, gera a diretiva .word
+                # O valor inicial 0 é um padrão seguro.
+                directives.append(f"var_{symbol.name}: .word 0")
+                
         return directives
 
 class RegisterAllocator:
@@ -137,22 +151,15 @@ class RegisterAllocator:
             print(f"[ENSURE] -> Variável temporária '{var_name}' alocada em {reg}.")
             return reg
         
-        if var_name in self.func_context.param_names:
-            print(f"[ENSURE] -> '{var_name}' é um parâmetro. Carregando da pilha.")
+        if var_name in self.func_context.stack_layout:
+            print(f"[ENSURE] -> '{var_name}' é uma variável da pilha. Carregando...")
             offset = self.func_context.stack_layout[var_name]
-            
             reg = self._get_free_reg()
             
-            scratch_reg = self.SPILL_TEMP_REG  # Usamos r30 como rascunho para o endereço
-            fp_reg = SPECIAL_REGS['fp']          # r31
-            
-            addr_calc_instr = f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}"
-            
-            load_instr = f"\tload: {reg} = [{scratch_reg}]"
-            
-            self.func_context.add_instruction(addr_calc_instr)
-            self.func_context.add_instruction(load_instr)
-            print(f"--> Pseudo-instrução para carregar '{var_name}' expandida.")
+            # Expande a pseudo-instrução: reg = [fp + offset]
+            scratch_reg, fp_reg = self.SPILL_TEMP_REG, SPECIAL_REGS['fp']
+            self.func_context.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
+            self.func_context.add_instruction(f"\tload: {reg} = [{scratch_reg}]")
             
             self._assign_reg_to_var(reg, var_name)
             return reg
@@ -175,13 +182,24 @@ class RegisterAllocator:
     
     def get_address_in_reg(self, var_name):
         """
-        Garante que o ENDEREÇO de uma variável esteja em um registrador.
+        Garante que o ENDEREÇO de uma variável (global ou da pilha)
+        esteja em um registrador.
         """
         print(f"[GET_ADDR] Obtendo endereço para '{var_name}'.")
         addr_reg = self._get_free_reg()
-        addr = self.func_context.data_manager.get_address(var_name)
-        self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
-        print(f"[GET_ADDR] -> Endereço de '{var_name}' ({addr}) carregado em {addr_reg}.")
+        
+        if var_name in self.func_context.stack_layout:
+            # A variável está na pilha. Seu endereço é "fp + offset".
+            offset = self.func_context.stack_layout[var_name]
+            fp_reg = SPECIAL_REGS['fp']
+            print(f"[GET_ADDR] -> '{var_name}' está na pilha. Calculando endereço [fp, #{offset}].")
+            self.func_context.add_instruction(f"\tsubi: {addr_reg} = {fp_reg}, {-offset}")
+        else:
+            # A variável é global. Pega o endereço do DataManager.
+            addr = self.func_context.data_manager.get_address(var_name)
+            self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
+            print(f"[GET_ADDR] -> Endereço de '{var_name}' ({addr}) carregado em {addr_reg}.")
+            
         return addr_reg
     
     def get_reg_for_temp(self, temp_name):
@@ -347,7 +365,8 @@ class FunctionContext:
         self.allocator = RegisterAllocator(self)
         self.arg_count = 0
         self.arg_vars = []
-        self.param_names = [] 
+        self.param_names = []  
+        self.local_vars = []
         self.local_stack_size = 0
         self.stack_layout = {}
         self.next_stack_slot = -1
@@ -441,13 +460,16 @@ def translate_instruction(instr_parts, func_ctx):
 
         elif expr_parts[0].startswith('*'):
             print("[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)")
-            var_name_to_load_from = expr_parts[0][1:]
             
-            src_reg_with_value = alloc.ensure_var_in_reg(var_name_to_load_from)
+            ptr_name = expr_parts[0][1:] 
             
-            alloc.update_var_from_reg(dest, src_reg_with_value)
+            reg_ptr = alloc.ensure_var_in_reg(ptr_name)
             
-            print(f"[TRANSLATE] -> Valor de '{var_name_to_load_from}' agora em {src_reg_with_value}, mapeado para '{dest}'.")
+            reg_dest = alloc.get_reg_for_temp(dest)
+            
+            func_ctx.add_instruction(f"\tload: {reg_dest} = [{reg_ptr}]")
+            
+            alloc.free_reg_if_temp(reg_ptr)
 
         elif dest.startswith('*'):
             print("[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)")
@@ -579,7 +601,8 @@ def generate_assembly(ir_list):
     functions = collections.OrderedDict()
     data_manager = DataMemoryManager(base_address=int(DATA_MEMORY_SIZE/2))
     
-    # --- Etapa 1: Análise Estática (Passes 1A, 1B, 1C) ---
+    # --- Etapa 1: Análise Estática ---
+
     # 1A: Descobre todas as funções primeiro para ter um contexto completo.
     print("\n--- Passagem 1A: Coletando definições de funções ---")
     for i, line in enumerate(ir_list):
@@ -596,59 +619,33 @@ def generate_assembly(ir_list):
         print("[Passagem 1A] Nenhuma função explícita encontrada. Assumindo função 'main'.")
         functions['main'] = FunctionContext('main', data_manager)
 
-    # 1B: Descobre os parâmetros de cada função.
-    print("\n--- Passagem 1B: Descobrindo parâmetros de cada função ---")
-    keywords = {'call', 'goto', 'arg', 'return', 'if_false', 'input', 'output', '_'}
-    func_names = set(functions.keys())
-    all_params = set()
+    # 1B: Constrói a Tabela de Símbolos a partir das declarações da IR
+    print("\n--- Passagem 1B: Construindo a Tabela de Símbolos ---")
+    symbol_table = SymbolTable()
 
-    for func_name, func_ctx in functions.items():
-        func_ir = []
-        in_func = False
-        for line in ir_list:
-            stripped = line.strip()
-            if not stripped: continue
-            if stripped.startswith(func_name + ':'): in_func = True; continue
-            if stripped.endswith(':') and not stripped.startswith('L'):
-                if stripped[:-1] in functions and stripped[:-1] != func_name: in_func = False
-            if in_func: func_ir.append(stripped)
-        
-        defined_vars = set()
-        used_vars_in_order = []
-        for line in func_ir:
-            if ':=' in line:
-                dest = line.split(':=')[0].strip(); dest_var = re.sub(r'^\*', '', dest).strip(); defined_vars.add(dest_var)
-            matches = re.findall(r'\b([a-zA-Z_]\w*)\b', line)
-            for var in matches:
-                if var not in keywords and var not in func_names and not (var.startswith('t') and var[1:].isdigit()) and not var.startswith('L'):
-                    if var not in used_vars_in_order: used_vars_in_order.append(var)
+    for line in ir_list:
+        parts = [p.strip() for p in line.strip().split(',')]
+        if len(parts) == 3 and parts[1].strip() in ['.space', '.word']:
+            var_name, directive, size_str = parts
+            symbol_type = None
+            allocated_size = 0
 
-        params = [var for var in used_vars_in_order if var not in defined_vars]
-        func_ctx.param_names = params
-        all_params.update(params)
-        print(f"-> Função '{func_name}' tem os parâmetros: {params}")
+            if directive == '.space':
+                array_size = int(size_str)
+                print(f"[Passagem 1B] Declaração de Vetor encontrada: '{var_name}' de tamanho {array_size}")
+                symbol_type = ArrayType(IntegerType(), array_size)
+                allocated_size = symbol_type.size
+            elif directive == '.word':
+                print(f"[Passagem 1B] Declaração de Inteiro encontrada: '{var_name}'")
+                symbol_type = IntegerType()
+                allocated_size = symbol_type.size
 
-    # 1C: Descobre apenas as variáveis globais, ignorando parâmetros.
-    print("\n--- Passagem 1C: Coletando variáveis GLOBAIS do IR ---")
-    all_vars = set()
-    for i, line in enumerate(ir_list):
-        parts = line.strip().split()
-        if not parts: continue
-        
-        variable_pattern = re.compile(r'\b(?!t\d+\b|L\d+\b)([a-zA-Z_]\w*)\b')
-        matches = variable_pattern.findall(line)
-        for var_name in matches:
-            if var_name not in keywords and \
-               not (var_name.startswith('t') and var_name[1:].isdigit()) and \
-               var_name not in func_names and \
-               var_name not in all_params:
-                if var_name not in all_vars:
-                    print(f"[Passagem 1C] Variável global encontrada: '{var_name}'")
-                    all_vars.add(var_name)
+            if symbol_type:
+                addr = data_manager.register_variable(var_name, size=allocated_size)
+                symbol = Symbol(var_name, symbol_type, "global", address=addr)
+                symbol_table.add_symbol(symbol)
     
-    for var in all_vars:
-        data_manager.register_variable(var)
-    print(f"--- Fim da Passagem 1: {len(functions)} funções, {len(all_params)} params, e {len(all_vars)} globais encontradas. ---\n")
+    print(f"--- Fim da Passagem 1: {len(symbol_table.symbols)} símbolos globais encontrados. ---\n")
 
     # --- Etapa 2: Geração de Código para cada função ---
     print("--- Passagem 2: Traduzindo o IR para cada função ---")
@@ -666,37 +663,63 @@ def generate_assembly(ir_list):
         
         print(f"-> IR isolado para '{func_name}' contém {len(func_ir)} instruções.")
         
-        # Calcula o tamanho do frame (parâmetros + temporários)
-        local_vars_and_temps = set()
+        # 2A: Descobre parâmetros e variáveis locais da função
+        defined_vars = set()
+        all_vars_in_func = set()
+        var_pattern = re.compile(r'\b([a-zA-Z_]\w*)\b')
+
+        for line in func_ir:
+            if ':=' in line:
+                dest = line.split(':=')[0].strip()
+                dest_var = re.sub(r'^\*', '', dest).strip()
+                if not dest_var.startswith('t'):
+                    defined_vars.add(dest_var)
+            
+            matches = var_pattern.findall(line)
+            for var in matches:
+                if var not in functions and not var.startswith('t') and var not in ['if_false', 'goto', 'call', 'arg', 'return']:
+                    all_vars_in_func.add(var)
+
+        func_ctx.param_names = [var for var in all_vars_in_func if var not in defined_vars]
+        print(f"--> Parâmetros para '{func_name}': {func_ctx.param_names}")
+
+        local_vars = {var for var in all_vars_in_func if var not in func_ctx.param_names and not symbol_table.get_symbol(var)}
+        func_ctx.local_vars = list(local_vars)
+        print(f"--> Variáveis Locais para '{func_name}': {func_ctx.local_vars}")
+
+        # 2B: Atribui um offset na pilha para cada parâmetro e variável local
+        print(f"--> Criando o layout da pilha para '{func_name}'...")
+        current_offset = -1
+        for var_name in (func_ctx.param_names + func_ctx.local_vars):
+            if var_name not in func_ctx.stack_layout:
+                func_ctx.stack_layout[var_name] = current_offset
+                print(f"    -> Mapeando '{var_name}' para o offset [fp, #{current_offset}]")
+                current_offset -= 1
+                
+        # 2C: Calcula o tamanho total do frame (parâmetros + locais + temporários)
+        all_stack_vars = set()
         for line in func_ir:
             matches = re.findall(r'\b(t\d+)\b', line)
-            for var in matches: local_vars_and_temps.add(var)
+            for var in matches: all_stack_vars.add(var)
         
-        if func_ctx.param_names:
-            local_vars_and_temps.update(func_ctx.param_names) 
+        all_stack_vars.update(func_ctx.param_names)
+        all_stack_vars.update(func_ctx.local_vars)
             
-        func_ctx.local_stack_size = len(local_vars_and_temps)
+        func_ctx.local_stack_size = len(all_stack_vars)
         print(f"--> Tamanho total do frame para '{func_name}': {func_ctx.local_stack_size} palavras.")
         
-        # Inicia a geração de código para a função
+        # Inicia a geração de código
         func_ctx.instructions.clear()
         
         # Gera o código para salvar os parâmetros na pilha
-        print(f"--> Gerando código para salvar parâmetros de '{func_name}' na pilha.")
         for idx, param_name in enumerate(func_ctx.param_names):
             if idx < len(ARG_REGS):
                 arg_reg = ARG_REGS[idx]
-                if param_name not in func_ctx.stack_layout:
-                    func_ctx.stack_layout[param_name] = func_ctx.next_stack_slot
-                    func_ctx.next_stack_slot -= 1
                 offset = func_ctx.stack_layout[param_name]
+                scratch_reg, fp_reg = SPECIAL_REGS['spill'], SPECIAL_REGS['fp']
                 
-                scratch_reg = SPECIAL_REGS['spill']; fp_reg = SPECIAL_REGS['fp']
-                addr_calc_instr = f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}"
-                store_instr = f"\tstore: [{scratch_reg}] = {arg_reg}"
-                func_ctx.add_instruction(addr_calc_instr)
-                func_ctx.add_instruction(store_instr)
-                print(f"--> Pseudo-instrução para salvar '{param_name}' expandida.")
+                func_ctx.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
+                func_ctx.add_instruction(f"\tstore: [{scratch_reg}] = {arg_reg}")
         
         # Traduz o resto do corpo da função a partir do IR
         for line in func_ir:
@@ -719,9 +742,8 @@ def generate_assembly(ir_list):
             
         final_code.append(f"{func_name}:")
         
-        # Gera o prólogo
         if func_name == 'main':
-            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = stack_space")
+            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = {DATA_MEMORY_SIZE - 1}")
             final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
         else:
             final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
@@ -733,13 +755,11 @@ def generate_assembly(ir_list):
         if func_ctx.local_stack_size > 0:
             final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, {func_ctx.local_stack_size}")
         
-        # Adiciona o corpo da função
         final_code.extend(func_ctx.instructions)
         
         if not func_ctx.instructions or func_ctx.instructions[-1].strip() != f"bi: {func_name}_epilogue":
             final_code.append(f"\tbi: {func_name}_epilogue")
         
-        # Gera o epílogo
         final_code.append(f"{func_name}_epilogue:")
         if func_name != 'main':
             final_code.append(f"\tmov: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['fp']}")
@@ -755,12 +775,11 @@ def generate_assembly(ir_list):
             
         final_code.append("")
 
-    # Gera a seção de dados
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
     final_code.append(f"stack_space: .space {DATA_MEMORY_SIZE}")
-    directives = data_manager.generate_data_directives()
-    print(f"[Montagem] -> Variáveis a serem declaradas: {list(data_manager.var_to_address.keys())}")
+    directives = data_manager.generate_data_directives(symbol_table)
+    print(f"[Montagem] -> Variáveis a serem declaradas: {[s.name for s in symbol_table.symbols.values()]}")
     final_code.extend(directives)
     
     print("=== GERAÇÃO DE ASSEMBLY CONCLUÍDA ===")

@@ -1,7 +1,18 @@
-int main(void) {
-    int x; int y;
-    x = input();
-    y = x * 2;
-    output(y);
-    return 1;
+int vec[3];
+
+void main(void) {
+    
+    int i; int gap;
+    
+    i = 0; 
+    gap = input();
+
+    vec[i] = gap;
+    output(vec[i]);
+    i = i + 1;
+    vec[i] = vec[i-1] + gap;
+    output(vec[i]);
+    i = i + gap;
+    vec[i] = vec[i-1] + gap;
+    output(vec[i]);
 }

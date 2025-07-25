@@ -3,18 +3,6 @@
 === INICIANDO GERAÇÃO DE ASSEMBLY ===
 
 --- Passagem 1A: Coletando definições de funções ---
-[Passagem 1A] Função encontrada: 'minloc'
-[ALLOC_INIT] Inicializando alocador para a função 'minloc'
-[ALLOC_INIT] Pool de registradores definido: ['r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11']
-[ALLOC_INIT] Registrador de spill reservado: r30
-[ALLOC_INIT] Estado inicial: 23 registradores livres.
-[FUNC_CTX] Contexto para a função 'minloc' criado.
-[Passagem 1A] Função encontrada: 'sort'
-[ALLOC_INIT] Inicializando alocador para a função 'sort'
-[ALLOC_INIT] Pool de registradores definido: ['r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11']
-[ALLOC_INIT] Registrador de spill reservado: r30
-[ALLOC_INIT] Estado inicial: 23 registradores livres.
-[FUNC_CTX] Contexto para a função 'sort' criado.
 [Passagem 1A] Função encontrada: 'main'
 [ALLOC_INIT] Inicializando alocador para a função 'main'
 [ALLOC_INIT] Pool de registradores definido: ['r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26', 'r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11']
@@ -22,90 +10,107 @@
 [ALLOC_INIT] Estado inicial: 23 registradores livres.
 [FUNC_CTX] Contexto para a função 'main' criado.
 
---- Passagem 1B: Descobrindo parâmetros de cada função ---
--> Função 'minloc' tem os parâmetros: ['low', 'a', 'high']
--> Função 'sort' tem os parâmetros: ['low', 'high', 'a']
--> Função 'main' tem os parâmetros: ['vet']
-
---- Passagem 1C: Coletando variáveis GLOBAIS do IR ---
-[Passagem 1C] Variável global encontrada: 'space'
-[Passagem 1C] Variável global encontrada: 'k'
-[Passagem 1C] Variável global encontrada: 'x'
-[Passagem 1C] Variável global encontrada: 'i'
-[Passagem 1C] Variável global encontrada: 't'
---- Fim da Passagem 1: 3 funções, 4 params, e 5 globais encontradas. ---
+--- Passagem 1B: Construindo a Tabela de Símbolos ---
+--- Fim da Passagem 1: 0 símbolos globais encontrados. ---
 
 --- Passagem 2: Traduzindo o IR para cada função ---
 
-[Processando Função] -> 'minloc'
--> IR isolado para 'minloc' contém 40 instruções.
---> Tamanho total do frame para 'minloc': 27 palavras.
---> Gerando código para salvar parâmetros de 'minloc' na pilha.
-[ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 1
-[ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r1
---> Pseudo-instrução para salvar 'low' expandida.
-[ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 2
-[ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r2
---> Pseudo-instrução para salvar 'a' expandida.
-[ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 3
-[ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r3
---> Pseudo-instrução para salvar 'high' expandida.
+[Processando Função] -> 'main'
+-> IR isolado para 'main' contém 56 instruções.
+--> Parâmetros para 'main': ['input', '_', 'vec', 'output']
+--> Variáveis Locais para 'main': ['i', 'gap']
+--> Criando o layout da pilha para 'main'...
+    -> Mapeando 'input' para o offset [fp, #-1]
+    -> Mapeando '_' para o offset [fp, #-2]
+    -> Mapeando 'vec' para o offset [fp, #-3]
+    -> Mapeando 'output' para o offset [fp, #-4]
+    -> Mapeando 'i' para o offset [fp, #-5]
+    -> Mapeando 'gap' para o offset [fp, #-6]
+--> Tamanho total do frame para 'main': 48 palavras.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r1
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r2
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r3
 
---- [TRANSLATE] Processando IR: t0 := *low ---
-[TRANSLATE] -> Detalhes: Destino='t0', Expressão='*low'
-[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
-[ENSURE] Tentando garantir 'low' em um registrador.
-[ENSURE] -> 'low' é um parâmetro. Carregando da pilha.
+--- [TRANSLATE] Processando IR: *i := 0 ---
+[TRANSLATE] -> Detalhes: Destino='*i', Expressão='0'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '0' em um registrador.
 [GET_FREE] -> Encontrado registrador livre: r12. Restantes: 22.
-[ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 1
-[ADD_INSTR] Adicionando instrução para 'minloc': load: r12 = [r30]
---> Pseudo-instrução para carregar 'low' expandida.
-[ASSIGN_REG] Mapeando 'low' para r12.
-[UPDATE_MAP] Mapeando 't0' para o registrador r12 (que contém o valor de origem).
-[ASSIGN_REG] Mapeando 't0' para r12.
-[ASSIGN_REG] -> Registrador r12 já continha 'low'. Liberando o mapeamento antigo.
-[UNASSIGN_REG] Desmapeado r12 de 'low'.
-[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
-[TRANSLATE] -> Valor de 'low' agora em r12, mapeado para 't0'.
+[ENSURE] -> Alocando r12 para a constante '0'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r12 = 0
+[TRANSLATE] -> Endereço de destino é uma variável real. Obtendo endereço em registrador.
+[GET_ADDR] Obtendo endereço para 'i'.
+[GET_FREE] -> Encontrado registrador livre: r13. Restantes: 21.
+[GET_ADDR] -> 'i' está na pilha. Calculando endereço [fp, #-5].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r13 = r31, 5
+[ADD_INSTR] Adicionando instrução para 'main': store: [r13] = r12
+[UNASSIGN_REG] r13 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {}
 
---- [TRANSLATE] Processando IR: *k := t0 ---
-[TRANSLATE] -> Detalhes: Destino='*k', Expressão='t0'
+--- [TRANSLATE] Processando IR: t0 := call input, 0 ---
+[TRANSLATE] -> Detalhes: Destino='t0', Expressão='call input, 0'
+[TRANSLATE] -> Caminho: Chamada de Função com Retorno
+[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: set()
+[GET_TEMP] Solicitando registrador para o temporário 't0'.
+[GET_FREE] -> Encontrado registrador livre: r14. Restantes: 21.
+[ASSIGN_REG] Mapeando 't0' para r14.
+[GET_TEMP] -> 't0' alocado no registrador r14.
+[ADD_INSTR] Adicionando instrução para 'main': in: r14
+
+--- [TRANSLATE] Processando IR: *gap := t0 ---
+[TRANSLATE] -> Detalhes: Destino='*gap', Expressão='t0'
 [TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
 [ENSURE] Tentando garantir 't0' em um registrador.
-[ENSURE] -> Sucesso! 't0' já está em r12.
+[ENSURE] -> Sucesso! 't0' já está em r14.
 [TRANSLATE] -> Endereço de destino é uma variável real. Obtendo endereço em registrador.
-[GET_ADDR] Obtendo endereço para 'k'.
-[GET_FREE] -> Encontrado registrador livre: r13. Restantes: 22.
-[ADD_INSTR] Adicionando instrução para 'minloc': movi: r13 = 34
-[GET_ADDR] -> Endereço de 'k' (34) carregado em r13.
-[ADD_INSTR] Adicionando instrução para 'minloc': store: [r13] = r12
-[FREE_TEMP] Liberando registrador r12 que continha o temporário 't0'.
-[UNASSIGN_REG] Desmapeado r12 de 't0'.
+[GET_ADDR] Obtendo endereço para 'gap'.
+[GET_FREE] -> Encontrado registrador livre: r15. Restantes: 20.
+[GET_ADDR] -> 'gap' está na pilha. Calculando endereço [fp, #-6].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r15 = r31, 6
+[ADD_INSTR] Adicionando instrução para 'main': store: [r15] = r14
+[FREE_TEMP] Liberando registrador r14 que continha o temporário 't0'.
+[UNASSIGN_REG] Desmapeado r14 de 't0'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {}
+[UNASSIGN_REG] r15 já estava desmapeado.
 [UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {}
-[UNASSIGN_REG] r13 já estava desmapeado.
-[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
 
---- [TRANSLATE] Processando IR: t1 := *low ---
-[TRANSLATE] -> Detalhes: Destino='t1', Expressão='*low'
+--- [TRANSLATE] Processando IR: t1 := *gap ---
+[TRANSLATE] -> Detalhes: Destino='t1', Expressão='*gap'
 [TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
-[ENSURE] Tentando garantir 'low' em um registrador.
-[ENSURE] -> 'low' é um parâmetro. Carregando da pilha.
-[GET_FREE] -> Encontrado registrador livre: r14. Restantes: 22.
-[ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 1
-[ADD_INSTR] Adicionando instrução para 'minloc': load: r14 = [r30]
---> Pseudo-instrução para carregar 'low' expandida.
-[ASSIGN_REG] Mapeando 'low' para r14.
-[UPDATE_MAP] Mapeando 't1' para o registrador r14 (que contém o valor de origem).
-[ASSIGN_REG] Mapeando 't1' para r14.
-[ASSIGN_REG] -> Registrador r14 já continha 'low'. Liberando o mapeamento antigo.
-[UNASSIGN_REG] Desmapeado r14 de 'low'.
-[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
-[TRANSLATE] -> Valor de 'low' agora em r14, mapeado para 't1'.
+[ENSURE] Tentando garantir 'gap' em um registrador.
+[ENSURE] -> 'gap' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r16. Restantes: 21.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 6
+[ADD_INSTR] Adicionando instrução para 'main': load: r16 = [r30]
+[ASSIGN_REG] Mapeando 'gap' para r16.
+[GET_TEMP] Solicitando registrador para o temporário 't1'.
+[GET_FREE] -> Encontrado registrador livre: r17. Restantes: 20.
+[ASSIGN_REG] Mapeando 't1' para r17.
+[GET_TEMP] -> 't1' alocado no registrador r17.
+[ADD_INSTR] Adicionando instrução para 'main': load: r17 = [r16]
 
---- [TRANSLATE] Processando IR: t2 := &a ---
-[TRANSLATE] -> Detalhes: Destino='t2', Expressão='&a'
-[TRANSLATE] -> Caminho: Obter Endereço (&)
+--- [TRANSLATE] Processando IR: t2 := *i ---
+[TRANSLATE] -> Detalhes: Destino='t2', Expressão='*i'
+[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
+[ENSURE] Tentando garantir 'i' em um registrador.
+[ENSURE] -> 'i' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r18. Restantes: 19.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 5
+[ADD_INSTR] Adicionando instrução para 'main': load: r18 = [r30]
+[ASSIGN_REG] Mapeando 'i' para r18.
 [GET_TEMP] Solicitando registrador para o temporário 't2'.
-[GET_FREE] -> Encontrado registrador livre: r15. Restantes: 22.
-[ASSIGN_REG] Mapeando 't2' para r15.
-[GET_TEMP] -> 't2' alocado no registrador r15.
+[GET_FREE] -> Encontrado registrador livre: r19. Restantes: 18.
+[ASSIGN_REG] Mapeando 't2' para r19.
+[GET_TEMP] -> 't2' alocado no registrador r19.
+[ADD_INSTR] Adicionando instrução para 'main': load: r19 = [r18]
+
+--- [TRANSLATE] Processando IR: t3 := &vec ---
+[TRANSLATE] -> Detalhes: Destino='t3', Expressão='&vec'
+[TRANSLATE] -> Caminho: Obter Endereço (&)
+[GET_TEMP] Solicitando registrador para o temporário 't3'.
+[GET_FREE] -> Encontrado registrador livre: r20. Restantes: 17.
+[ASSIGN_REG] Mapeando 't3' para r20.
+[GET_TEMP] -> 't3' alocado no registrador r20.
