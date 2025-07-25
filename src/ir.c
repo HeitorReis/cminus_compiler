@@ -199,7 +199,15 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
             generate_ir_for_expr(node, list, symtab);
             break;
 
-        case AST_VAR_DECL:
+        case AST_VAR_DECL: {
+            printf("[IR_DBG]   Processing declaration for '%s'\n", node->name);
+            // Usamos o campo 'array_size' que definimos no Passo 1.
+            if (node->array_size > 0) {
+                // É um vetor: Gera a diretiva .space com seu tamanho.
+                emit(list, IR_DEC, new_name(node->name), new_name(".space"), new_const(node->array_size));
+            }
+            break;
+        }
         case AST_PARAM:
         case AST_PARAM_LIST:
         case AST_PARAM_ARRAY:
@@ -263,7 +271,7 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
                 // A lógica de cálculo de endereço é a mesma do LOAD
                 Operand index_op = generate_ir_for_expr(index_node, list, symtab);
                 Operand offset_op = new_temp();
-                emit(list, IR_MUL, offset_op, index_op, new_const(4));
+                emit(list, IR_MUL, offset_op, index_op, new_const(1));
                 Operand base_addr_op = new_temp();
                 emit(list, IR_ADDR, base_addr_op, new_name(lhs->name), (Operand){.kind=OPERAND_EMPTY});
                 Operand final_addr_op = new_temp();
@@ -352,9 +360,9 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             // 1. Gera IR para o índice e obtém o operando temporário (ex: t_idx)
             Operand index_op = generate_ir_for_expr(index_node, list, symtab);
 
-            // 2. Calcula o offset em bytes (índice * 4, pois C-minus só tem int)
+            // 2. Calcula o offset em bytes
             Operand offset_op = new_temp();
-            emit(list, IR_MUL, offset_op, index_op, new_const(4));
+            emit(list, IR_MUL, offset_op, index_op, new_const(1));
 
             // 3. Obtém o endereço base do vetor
             Operand base_addr_op = new_temp();
@@ -427,6 +435,7 @@ static void print_instruction_to_stream(FILE* out, IRInstruction* instr) {
         case IR_LOAD:    fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := *"); print_operand(out, instr->arg1); break;
         case IR_STORE:   fprintf(out, "  *"); print_operand(out, instr->result); fprintf(out, " := "); print_operand(out, instr->arg1); break;
         case IR_ADDR:    fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := &"); print_operand(out, instr->arg1); break;
+        case IR_DEC: fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, ", "); print_operand(out, instr->arg1); fprintf(out, ", "); print_operand(out, instr->arg2); break;
         default: {
             const char* op_str = "?";
             switch(instr->opcode) {

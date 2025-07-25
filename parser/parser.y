@@ -116,30 +116,41 @@ var_declaration:
             currentScope, 
             SYMBOL_VAR, 
             yylineno, 
-            $1
+            $1,
+            0
         );
         AstNode *n = newNode(AST_VAR_DECL);
         n->name = strdup($2);
         n->lineno = yylineno; // Set the line number manually
+        n->array_size = 0;
         $$ = n;
+        printf(
+            "[PARSER DBG] var_declaration: name=%s, not a vector\n",
+            $2
+        );
         free($2);
     }
-    | type_specifier ID LBRACK NUM RBRACK SEMICOLON  /* <-- Adicione esta regra */
+    | type_specifier ID LBRACK NUM RBRACK SEMICOLON
     {
-        // Ação para declarar um vetor
         declareSymbol(
             &symtab,
             $2,
             currentScope,
-            SYMBOL_VAR, // Pode querer um SYMBOL_ARRAY no futuro
+            SYMBOL_VAR, 
             yylineno,
-            $1
+            $1,
+            $4
         );
-        AstNode *n = newNode(AST_VAR_DECL); // Ou um novo AST_ARRAY_DECL
+        AstNode *n = newNode(AST_VAR_DECL);
         n->name = strdup($2);
-        n->value = $4; // Guarda o tamanho do vetor
         n->lineno = yylineno;
+        n->array_size = $4;
         $$ = n;
+        printf(
+            "[PARSER DBG] var_declaration: name=%s, array_size=%i\n",
+            $2,
+            $4
+        );
         free($2);
     } ;
 
@@ -232,7 +243,8 @@ param:
             currentScope,
             SYMBOL_VAR,
             yylineno,
-            $1
+            $1,
+            0
         );
         $$ = newNode(AST_PARAM);
         $$->name = strdup($2); // parameter name
@@ -246,7 +258,8 @@ param:
             currentScope,
             SYMBOL_VAR,
             yylineno,
-            $1
+            $1,
+            0
         );
         $$ = newNode(AST_PARAM_ARRAY);
         $$->name = strdup($2); // parameter name

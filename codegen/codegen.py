@@ -12,7 +12,8 @@ IR_TO_ASSEMBLY_BRANCH = {
 }
 
 LINK_STACK_SIZE = 32  # Espaço reservado para a pilha de chamadas
-DATA_MEMORY_SIZE = 64  # Tamanho da memória de dados (exemplo)
+DATA_MEMORY_SIZE = 64
+LINK_STACK_HEAD = (DATA_MEMORY_SIZE - LINK_STACK_SIZE) 
 # Mapeamento de nomes simbólicos para registradores físicos
 SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
 # r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
@@ -577,7 +578,7 @@ def translate_instruction(instr_parts, func_ctx):
 def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
     functions = collections.OrderedDict()
-    data_manager = DataMemoryManager(base_address=int(DATA_MEMORY_SIZE/2))
+    data_manager = DataMemoryManager(base_address=int(LINK_STACK_HEAD))
     
     # --- Etapa 1: Análise Estática (Passes 1A, 1B, 1C) ---
     # 1A: Descobre todas as funções primeiro para ter um contexto completo.
@@ -758,7 +759,7 @@ def generate_assembly(ir_list):
     # Gera a seção de dados
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
-    final_code.append(f"stack_space: .space {DATA_MEMORY_SIZE}")
+    final_code.append(f"stack_space: .space {LINK_STACK_HEAD}")
     directives = data_manager.generate_data_directives()
     print(f"[Montagem] -> Variáveis a serem declaradas: {list(data_manager.var_to_address.keys())}")
     final_code.extend(directives)

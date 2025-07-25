@@ -1,23 +1,130 @@
-count:
-  t0 := *number
-  arg t0
-  call output, 1
-  t1 := *number
-  t2 := t1 == 0
-  if_false t2 goto L0
-  return _
-  goto L1
+  vet, .space, 10
+minloc:
+  t0 := *low
+  *k := t0
+  t1 := *low
+  t2 := t1 * 1
+  t3 := &a
+  t4 := t3 + t2
+  t5 := *t4
+  *x := t5
+  t6 := *low
+  t7 := t6 + 1
+  *i := t7
 L0:
+  t8 := *i
+  t9 := *high
+  t10 := t8 < t9
+  if_false t10 goto L1
+  t11 := *i
+  t12 := t11 * 1
+  t13 := &a
+  t14 := t13 + t12
+  t15 := *t14
+  t16 := *x
+  t17 := t15 < t16
+  if_false t17 goto L2
+  t18 := *i
+  t19 := t18 * 1
+  t20 := &a
+  t21 := t20 + t19
+  t22 := *t21
+  *x := t22
+  t23 := *i
+  *k := t23
+  goto L3
+L2:
+L3:
+  t24 := *i
+  t25 := t24 + 1
+  *i := t25
+  goto L0
 L1:
-  t3 := *number
-  t4 := t3 - 1
-  arg t4
-  call count, 1
+  t26 := *k
+  return t26
+  return _
+sort:
+  t27 := *low
+  *i := t27
+L4:
+  t28 := *i
+  t29 := *high
+  t30 := t29 - 1
+  t31 := t28 < t30
+  if_false t31 goto L5
+  t32 := *a
+  arg t32
+  t33 := *i
+  arg t33
+  t34 := *high
+  arg t34
+  t35 := call minloc, 3
+  *k := t35
+  t36 := *k
+  t37 := t36 * 1
+  t38 := &a
+  t39 := t38 + t37
+  t40 := *t39
+  *t := t40
+  t41 := *i
+  t42 := t41 * 1
+  t43 := &a
+  t44 := t43 + t42
+  t45 := *t44
+  t46 := *k
+  t47 := t46 * 1
+  t48 := &a
+  t49 := t48 + t47
+  *t49 := t45
+  t50 := *t
+  t51 := *i
+  t52 := t51 * 1
+  t53 := &a
+  t54 := t53 + t52
+  *t54 := t50
+  t55 := *i
+  t56 := t55 + 1
+  *i := t56
+  goto L4
+L5:
   return _
 main:
-  t5 := call input, 0
-  *x := t5
-  t6 := *x
-  arg t6
-  call count, 1
+  *i := 0
+L6:
+  t57 := *i
+  t58 := t57 < 10
+  if_false t58 goto L7
+  t59 := call input, 0
+  t60 := *i
+  t61 := t60 * 1
+  t62 := &vet
+  t63 := t62 + t61
+  *t63 := t59
+  t64 := *i
+  t65 := t64 + 1
+  *i := t65
+  goto L6
+L7:
+  t66 := *vet
+  arg t66
+  arg 0
+  arg 10
+  call sort, 3
+  *i := 0
+L8:
+  t67 := *i
+  t68 := t67 < 10
+  if_false t68 goto L9
+  t69 := *i
+  t70 := t69 * 1
+  t71 := &vet
+  t72 := t71 + t70
+  t73 := *t72
+  arg t73
+  call output, 1
+  t74 := *i
+  t75 := t74 + 1
+  *i := t75
+  goto L8
+L9:
   return _

@@ -6,6 +6,7 @@
 
 #define TYPE_INT 1
 #define TYPE_VOID 2
+#define TYPE_ARRAY 3
 
 static Symbol *findSymbol(
     SymbolTable *table, 
@@ -43,7 +44,8 @@ void declareSymbol(
     const char  *scope,
     SymbolKind   kind,
     int          declLine,
-    int          dataType
+    int          dataType,
+    int         array_size
 ) {
     Symbol *sym = getSymbol(table, name, scope);
     if (sym) {
@@ -56,7 +58,14 @@ void declareSymbol(
         sym->name     = strdup(name);
         sym->scope    = strdup(scope);
         sym->kind     = kind;
-        sym->dataType = dataType;
+        sym->array_size = array_size;
+        if (array_size > 0) {
+            sym->dataType = TYPE_ARRAY; // O tipo principal é VETOR
+            sym->baseType = dataType;   // O tipo base é o que foi passado (INT)
+        } else {
+            sym->dataType = dataType;   // O tipo principal é o que foi passado (INT)
+            sym->baseType = 0;          // Não aplicável para não-vetores
+        }
         /* first declLines node */
         LineNode *dln = malloc(sizeof(*dln));
         if (!dln) { perror("malloc"); exit(1); }
@@ -152,26 +161,21 @@ void printSymbolTable(const SymbolTable *table) {
 
     for (Symbol *s = table->head; s; s = s->next) {
         kindStr = (s->kind == SYMBOL_VAR ? "VAR" : "FUNC");
-        typeStr = (s->dataType == TYPE_INT ? "INT" : "VOID");
 
         /* Print basic info */
         printf("%-15s %-10s %-6s ", s->name, s->scope, kindStr);
-
-        /* Print all declaration lines as comma-separated */
-        for (LineNode *ln = s->declLines; ln; ln = ln->next) {
-            printf("%d", ln->line);
-            if (ln->next) printf(",");
-        }
-
         printf(" \t");
 
-        /* Print all use lines as comma-separated */
-        for (LineNode *ln = s->useLines; ln; ln = ln->next) {
-            printf("%d", ln->line);
-            if (ln->next) printf(",");
-        }
 
-        printf(" \t%-6s\n", typeStr);
+        if (s->dataType == TYPE_ARRAY) {
+            const char* baseTypeStr = (s->baseType == TYPE_INT) ? "INT" : "?";
+            // Imprime no formato "ARRAY(10, INT)"
+            printf("ARRAY(%d, %s)\n", s->array_size, baseTypeStr);
+        } else {
+            // Comportamento antigo para INT e VOID
+            const char *typeStr = (s->dataType == TYPE_INT ? "INT" : "VOID");
+            printf("%-6s\n", typeStr);
+        }
     }
 
     puts("======= END OF TABLE =======");
