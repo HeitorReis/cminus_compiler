@@ -32,6 +32,7 @@ typedef enum {
     IR_LOAD,        // result = *arg1 (load from address)
     IR_STORE,       // *result = arg1 (store to address)
     IR_ADDR,       // result = &arg1 (get address of variable) 
+    IR_DEC,
 
     // Arithmetic Operations
     IR_ADD,         // result = arg1 + arg2

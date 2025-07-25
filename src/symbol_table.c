@@ -6,6 +6,7 @@
 
 #define TYPE_INT 1
 #define TYPE_VOID 2
+#define TYPE_ARRAY 3
 
 static Symbol *findSymbol(
     SymbolTable *table, 
@@ -43,7 +44,8 @@ void declareSymbol(
     const char  *scope,
     SymbolKind   kind,
     int          declLine,
-    int          dataType
+    int          dataType,
+    int          array_size
 ) {
     Symbol *sym = getSymbol(table, name, scope);
     if (sym) {
@@ -56,8 +58,22 @@ void declareSymbol(
         sym->name     = strdup(name);
         sym->scope    = strdup(scope);
         sym->kind     = kind;
-        sym->dataType = dataType;
-        /* first declLines node */
+        
+        sym->array_size = array_size;
+        
+        if (kind == SYMBOL_FUNC) {
+            sym->dataType = dataType; // Para funções, dataType é o tipo de retorno
+            sym->baseType = 0;        // Não se aplica
+        } else { // kind == SYMBOL_VAR
+            if (array_size != 0) { // Lida com vetores declarados (>0) e parâmetros de vetor (-1)
+                sym->dataType = TYPE_ARRAY; // O tipo principal é VETOR
+                sym->baseType = dataType;   // O tipo base é INT
+            } else {
+                sym->dataType = dataType;   // O tipo principal é INT
+                sym->baseType = 0;          // Não se aplica
+            }
+        }
+        
         LineNode *dln = malloc(sizeof(*dln));
         if (!dln) { perror("malloc"); exit(1); }
         dln->line = declLine;
@@ -109,6 +125,7 @@ void setFunctionParams(
     sym->paramCount = paramCount;
     sym->paramTypes = malloc(paramCount * sizeof(int));
     if (!sym->paramTypes) { perror("malloc"); exit(1); }
+    sym->array_size = 0;
     memcpy(sym->paramTypes, paramTypes, paramCount * sizeof(int));
     printf(
         "[SYM_TABLE DBG] setFunctionParams: '%s' in scope '%s' with %d params\n",
@@ -170,8 +187,18 @@ void printSymbolTable(const SymbolTable *table) {
             printf("%d", ln->line);
             if (ln->next) printf(",");
         }
+        
+        printf(" \t");
 
-        printf(" \t%-6s\n", typeStr);
+        if (s->dataType == TYPE_ARRAY) {
+            const char* baseTypeStr = (s->baseType == TYPE_INT) ? "INT" : "?";
+            // Imprime no formato "ARRAY(10, INT)"
+            printf("ARRAY(%d, %s)\n", s->array_size, baseTypeStr);
+        } else {
+            // Comportamento antigo para INT e VOID
+            const char *typeStr = (s->dataType == TYPE_INT ? "INT" : "VOID");
+            printf("%-6s\n", typeStr);
+        }
     }
 
     puts("======= END OF TABLE =======");

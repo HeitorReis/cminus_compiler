@@ -75,16 +75,33 @@ static void analyzeDeclaration(AstNode *decl, SemanticContext *ctx) {
     printf(" line=%d\n", decl->lineno);
 
     switch (decl->kind) {
-    case AST_VAR_DECL:
-        AstNode *typeNode = decl->firstChild;
-        const char *typeName = typeNode ? typeNode->name : "unknown";
-        printf(
-            "[Semantic DBG]   VarDecl: type=%s name=%s\n",
-            typeName, 
-            decl->name
-        );
+    case AST_VAR_DECL: {
+        // Pega o símbolo que o parser já inseriu na tabela
+        Symbol *sym = getSymbol(ctx->symtab, decl->name, currentScope);
+        if (!sym) {
+            // Isso não deveria acontecer se o parser funcionou, mas é uma boa verificação
+            semanticError(decl->lineno, ctx, "Erro interno: símbolo '%s' não encontrado", decl->name);
+            break;
+        }
 
-        if (strcmp(typeName, "void") == 0) {
+        // Verifica o nó da AST para ver se é um vetor, usando o campo 'array_size'
+        if (decl->array_size > 0) {
+            // Se for um vetor, atualiza o tipo do símbolo na tabela
+            printf("[Semantic DBG]   VarDecl: Found array '%s' of size %d\n", decl->name, decl->array_size);
+            sym->dataType = TYPE_ARRAY;
+            sym->baseType = TYPE_INT; // Define que é um vetor de inteiros
+            sym->array_size = decl->array_size;
+        } else {
+            printf("[Semantic DBG]   VarDecl: Found simple var '%s'\n", decl->name);
+            // Para uma variável simples, o tipo INT que o parser atribuiu já está correto.
+            // Apenas garantimos que os campos de vetor estejam zerados para consistência.
+            sym->array_size = 0;
+            sym->baseType = 0;
+        }
+
+        // Verificação de segurança: variáveis não podem ser do tipo VOID
+        // (O tipo original, INT ou VOID, foi salvo em `dataType` pelo parser)
+        if (sym->dataType != TYPE_ARRAY && sym->dataType == TYPE_VOID) {
             semanticError(
                 decl->lineno, 
                 ctx,
@@ -93,6 +110,7 @@ static void analyzeDeclaration(AstNode *decl, SemanticContext *ctx) {
             );
         }
         break;
+    }
 
     case AST_FUN_DECL:
         printf(
@@ -287,9 +305,18 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
                         expr->name);
             result = TYPE_ERROR;
         } else {
-            result = (
-                s->dataType == TYPE_INT ? 
-                TYPE_INT : TYPE_VOID);
+            if (s->dataType == TYPE_INT) {
+                // Se for uma variável inteira, o tipo é INT.
+                result = TYPE_INT;
+            } else if (s->dataType == TYPE_ARRAY) {
+                // Se for um vetor, o uso de seu nome em uma expressão
+                // resulta em um ponteiro (endereço), que tratamos como INT.
+                result = TYPE_INT;
+            } else {
+                // Caso contrário, o tipo é VOID (ex: nome de uma função sem retorno).
+                result = TYPE_VOID;
+            }
+            // --- FIM DA CORREÇÃO ---
         }
         break;
     }

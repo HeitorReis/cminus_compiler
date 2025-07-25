@@ -66,10 +66,10 @@ int main(int argc, char **argv) {
 }
 
 void declareBuiltins(SymbolTable *table) {
-    declareSymbol(table, "input",  "global", SYMBOL_FUNC, 0, TYPE_INT);
+    declareSymbol(table, "input",  "global", SYMBOL_FUNC, 0, TYPE_INT, 0);
     setFunctionParams(table, "input",  "global", 0, NULL);
 
-    declareSymbol(table, "output", "global", SYMBOL_FUNC, 0, TYPE_VOID);
+    declareSymbol(table, "output", "global", SYMBOL_FUNC, 0, TYPE_VOID, 0);
     int p[1] = { TYPE_INT };
     setFunctionParams(table, "output", "global", 1, p);
 }

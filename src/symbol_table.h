@@ -19,7 +19,9 @@ typedef struct Symbol {
     char        *name;      /* identifier */
     char        *scope;     /* e.g. "global" or function name */
     SymbolKind   kind;      /* var or func */
-    int          dataType;  /* TYPE_INT or TYPE_VOID */
+    int          dataType;  /* TYPE_INT or TYPE_VOID */  
+    int         array_size;
+    int         baseType;
     LineNode    *declLines; /* lines where it was declared */
     LineNode    *useLines;  /* lines where it was used */
     int          paramCount; /* number of parameters (for functions) */
@@ -66,7 +68,8 @@ void declareSymbol(
     const char  *scope,
     SymbolKind   kind,
     int          declLine,
-    int          dataType
+    int          dataType,
+    int          array_size
 );
 void useSymbol(
     SymbolTable *table,
