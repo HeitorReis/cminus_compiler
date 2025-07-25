@@ -466,7 +466,7 @@ static void print_instruction_to_stream(FILE* out, IRInstruction* instr) {
             switch(instr->opcode) {
                 case IR_ADD: op_str = "+"; break; case IR_SUB: op_str = "-"; break; case IR_MUL: op_str = "*"; break; case IR_DIV: op_str = "/"; break;
                 case IR_EQ:  op_str = "=="; break; case IR_NEQ: op_str = "!="; break; case IR_LT:  op_str = "<"; break; case IR_LTE: op_str = "<="; break;
-                case IR_GT:  op_str = ">"; break; case IR_GTE: op_str = ">="; break;
+                case IR_GT:  op_str = ">"; break; case IR_GTE: op_str = ">="; break; case IR_DEC: op_str = ",";
                 default: break;
             }
             fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := "); print_operand(out, instr->arg1); fprintf(out, " %s ", op_str); print_operand(out, instr->arg2); break;

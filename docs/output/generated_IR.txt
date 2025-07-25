@@ -1,4 +1,4 @@
-  vec := .space ? 3
+  vec := .space , 3
 main:
   *i := 0
   t0 := call input, 0

@@ -61,7 +61,7 @@ class DataMemoryManager:
         """
         return self.var_to_address[var_name]
     
-    def generate_data_directives(self):
+    def generate_data_directives(self, symbol_table):
         """
         Gera listas de diretivas .word ou .space para inclusão na seção .data,
         usando a SymbolTable para determinar o tipo de cada variável.
@@ -603,9 +603,8 @@ def generate_assembly(ir_list):
     
     # --- Etapa 1: Análise Estática ---
 
-    # 1A: Descobre todas as funções primeiro para ter um contexto completo.
     print("\n--- Passagem 1A: Coletando definições de funções ---")
-    for i, line in enumerate(ir_list):
+    for line in ir_list:
         parts = line.strip().split()
         if not parts: continue
         if parts[0].endswith(':'):
@@ -616,30 +615,50 @@ def generate_assembly(ir_list):
                     functions[func_name] = FunctionContext(func_name, data_manager)
 
     if not functions and any(ir_list):
-        print("[Passagem 1A] Nenhuma função explícita encontrada. Assumindo função 'main'.")
         functions['main'] = FunctionContext('main', data_manager)
 
-    # 1B: Constrói a Tabela de Símbolos a partir das declarações da IR
-    print("\n--- Passagem 1B: Construindo a Tabela de Símbolos ---")
+    # 1B: Constrói a Tabela de Símbolos para variáveis GLOBAIS.
+    print("\n--- Passagem 1B: Construindo a Tabela de Símbolos Globais ---")
     symbol_table = SymbolTable()
 
+    # Itera sobre a IR para encontrar todas as declarações de dados globais.
     for line in ir_list:
-        parts = [p.strip() for p in line.strip().split(',')]
-        if len(parts) == 3 and parts[1].strip() in ['.space', '.word']:
-            var_name, directive, size_str = parts
+        # Pula linhas que não são de atribuição/declaração
+        if ':=' not in line:
+            continue
+
+        # Separa o nome da variável do resto da instrução
+        parts = [p.strip() for p in line.strip().split(':=', 1)]
+        var_name = parts[0]
+        declaration_part = parts[1]
+
+        # Verifica se é uma diretiva de declaração (.space ou .word)
+        if '.space' in declaration_part or '.word' in declaration_part:
+            # Separa a diretiva do tamanho
+            decl_parts = [p.strip() for p in declaration_part.split(',')]
+            directive = decl_parts[0]
+            size_str = decl_parts[1]
+            
+            # Garante que estamos processando apenas globais (não dentro de uma função)
+            is_global = True
+            for func_name in functions:
+                if f'{func_name}:' in ir_list[:ir_list.index(line)]:
+                    is_global = False
+                    break
+            if not is_global: continue
+
             symbol_type = None
-            allocated_size = 0
+            allocated_size = 1 # Padrão para .word
 
             if directive == '.space':
                 array_size = int(size_str)
-                print(f"[Passagem 1B] Declaração de Vetor encontrada: '{var_name}' de tamanho {array_size}")
+                print(f"[Passagem 1B] Declaração de Vetor Global encontrada: '{var_name}' de tamanho {array_size}")
                 symbol_type = ArrayType(IntegerType(), array_size)
                 allocated_size = symbol_type.size
             elif directive == '.word':
-                print(f"[Passagem 1B] Declaração de Inteiro encontrada: '{var_name}'")
+                print(f"[Passagem 1B] Declaração de Inteiro Global encontrada: '{var_name}'")
                 symbol_type = IntegerType()
-                allocated_size = symbol_type.size
-
+            
             if symbol_type:
                 addr = data_manager.register_variable(var_name, size=allocated_size)
                 symbol = Symbol(var_name, symbol_type, "global", address=addr)
