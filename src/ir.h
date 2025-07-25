@@ -52,7 +52,6 @@ typedef enum {
     IR_GOTO,        // goto result
     IR_IF_GOTO,     // if (arg1) goto result
     IR_RETURN,      // return result
-    IR_DEC,
 
     // Function Calls
     IR_ARG,         // Push an argument for a function call

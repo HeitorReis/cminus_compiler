@@ -45,9 +45,9 @@ main:
 	mov: r31 = r29
 	subi: r29 = r29, 2
 	in: r12
-	movi: r13 = 32
+	movi: r13 = 128
 	store: [r13] = r12
-	movi: r15 = 32
+	movi: r15 = 128
 	load: r14 = [r15]
 	mov: r1 = r14
 	movi: r28 = main_Lret0
@@ -58,5 +58,5 @@ main_epilogue:
 	ret:
 
 .data
-stack_space: .space 32
-var_x: .word 32
+stack_space: .space 256
+var_x: .word 128

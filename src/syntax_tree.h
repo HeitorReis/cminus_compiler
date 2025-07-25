@@ -32,7 +32,6 @@ typedef struct AstNode {
     AstNodeKind kind;
     char       *name;         /* identifier name or NULL */
     int         value;        /* literal value for NUM or 0 */
-    int         array_size;
     int         lineno;
     struct AstNode *firstChild;
     struct AstNode *nextSibling;

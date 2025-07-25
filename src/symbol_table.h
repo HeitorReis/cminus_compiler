@@ -24,8 +24,6 @@ typedef struct Symbol {
     LineNode    *useLines;  /* lines where it was used */
     int          paramCount; /* number of parameters (for functions) */
     int         *paramTypes; /* array of parameter types (for functions) */
-    int         array_size;
-    int         baseType;
     struct Symbol *next;    /* next symbol in table */
 } Symbol;
 
@@ -68,10 +66,8 @@ void declareSymbol(
     const char  *scope,
     SymbolKind   kind,
     int          declLine,
-    int          dataType,
-    int          array_size
+    int          dataType
 );
-
 void useSymbol(
     SymbolTable *table,
     const char  *name,
