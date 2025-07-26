@@ -1,18 +1,12 @@
-int vec[3];
+int vec_a[3];
+int vec_b[3];
+int result_vec[3];
 
 void main(void) {
-    
-    int i; int gap;
-    
-    i = 0; 
-    gap = input();
+  vec_a[1] = 50;
+  vec_b[2] = 25;
 
-    vec[i] = gap;
-    output(vec[i]);
-    i = i + 1;
-    vec[i] = vec[i-1] + gap;
-    output(vec[i]);
-    i = i + gap;
-    vec[i] = vec[i-1] + gap;
-    output(vec[i]);
+  result_vec[0] = vec_a[1] + vec_b[2];
+
+  output(result_vec[0]);
 }

@@ -9,296 +9,123 @@ Parsing 'docs/test_files/teste4.txt'...
 [LEX][1] NUM      -> '3' (3)
 [LEX][1] RBRACK   -> ']'
 [LEX][1] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x572627801790
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5dc5079ad790
 [PARSER DBG] var_declaration (vector): name=vec, size=0x3[LEX][3] VOID     -> 'void'
 [LEX][3] ID       -> 'main'
 [LEX][3] LPAREN   -> '('
 [LEX][3] VOID     -> 'void'
 [LEX][3] RPAREN   -> ')'
 [LEX][3] LBRACE   -> '{'
-[LEX][5] INT      -> 'int'
-[LEX][5] ID       -> 'i'
+[LEX][4] INT      -> 'int'
+[LEX][4] ID       -> 'gap'
+[LEX][4] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5dc5079ad990
+[PARSER DBG] var_declaration: name=gap[LEX][5] ID       -> 'gap'
+[LEX][5] ASSIGN   -> '='
+[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 5
+[AST DBG] newNode kind=AST_ID -> 0x5dc5079ada10
+[AST DBG] newIdNode("gap") -> 0x5dc5079ada10
+[LEX][5] ID       -> 'input'
+[LEX][5] LPAREN   -> '('
+[LEX][5] RPAREN   -> ')'
+[SYM_TABLE DBG] useSymbol: 'input' in scope 'main' at line 5
+[AST DBG] newNode kind=AST_CALL -> 0x5dc5079ada90
 [LEX][5] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x572627801990
-[PARSER DBG] var_declaration: name=i[LEX][5] INT      -> 'int'
-[LEX][5] ID       -> 'gap'
-[LEX][5] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x572627801aa0
-[PARSER DBG] var_declaration: name=gap[LEX][7] ID       -> 'i'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5dc5079adaf0
+[AST DBG] addChild parent=0x5dc5079adaf0(AST_ASSIGN, lineno=5) child=0x5dc5079ada10(AST_ID, lineno=5)
+[AST DBG] addChild parent=0x5dc5079adaf0(AST_ASSIGN, lineno=5) child=0x5dc5079ada90(AST_CALL, lineno=5)
+[PARSER DBG] assignment: var=0x5dc5079ada10 expr=0x5dc5079ada90
+[LEX][7] ID       -> 'vec'
+[LEX][7] LBRACK   -> '['
+[LEX][7] NUM      -> '2' (2)
+[AST DBG] newNode kind=AST_NUM -> 0x5dc5079adb30
+[AST DBG] newNumNode(2) -> 0x5dc5079adb30
+[LEX][7] RBRACK   -> ']'
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5dc5079adb70
+[AST DBG] addChild parent=0x5dc5079adb70(AST_ARRAY_ACCESS, lineno=7) child=0x5dc5079adb30(AST_NUM, lineno=7)
+[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 7
 [LEX][7] ASSIGN   -> '='
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 7
-[AST DBG] newNode kind=AST_ID -> 0x572627801b20
-[AST DBG] newIdNode("i") -> 0x572627801b20
-[LEX][7] NUM      -> '0' (0)
-[AST DBG] newNode kind=AST_NUM -> 0x572627801b80
-[AST DBG] newNumNode(0) -> 0x572627801b80
+[LEX][7] ID       -> 'gap'
+[LEX][7] MINUS    -> '-'
+[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 7
+[AST DBG] newNode kind=AST_ID -> 0x5dc5079adc10
+[AST DBG] newIdNode("gap") -> 0x5dc5079adc10
+[AST DBG] newNode kind=AST_BINOP -> 0x5dc5079adc70
+[LEX][7] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x5dc5079adcb0
+[AST DBG] newNumNode(1) -> 0x5dc5079adcb0
 [LEX][7] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x572627801bc0
-[AST DBG] addChild parent=0x572627801bc0(AST_ASSIGN, lineno=7) child=0x572627801b20(AST_ID, lineno=7)
-[AST DBG] addChild parent=0x572627801bc0(AST_ASSIGN, lineno=7) child=0x572627801b80(AST_NUM, lineno=7)
-[PARSER DBG] assignment: var=0x572627801b20 expr=0x572627801b80
-[LEX][8] ID       -> 'gap'
+[AST DBG] newNode kind=AST_BINOP -> 0x5dc5079adcf0
+[AST DBG] addChild parent=0x5dc5079adcf0(AST_BINOP, lineno=0) child=0x5dc5079adc10(AST_ID, lineno=7)
+[AST DBG] addChild parent=0x5dc5079adcf0(AST_BINOP, lineno=0) child=0x5dc5079adc70(AST_BINOP, lineno=7)
+[AST DBG] addChild parent=0x5dc5079adcf0(AST_BINOP, lineno=0) child=0x5dc5079adcb0(AST_NUM, lineno=7)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5dc5079add30
+[AST DBG] addChild parent=0x5dc5079add30(AST_ASSIGN, lineno=7) child=0x5dc5079adb70(AST_ARRAY_ACCESS, lineno=7)
+[AST DBG] addChild parent=0x5dc5079add30(AST_ASSIGN, lineno=7) child=0x5dc5079adcf0(AST_BINOP, lineno=0)
+[PARSER DBG] assignment: var=0x5dc5079adb70 expr=0x5dc5079adcf0
+[LEX][8] ID       -> 'vec'
+[LEX][8] LBRACK   -> '['
+[LEX][8] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5dc5079add90
+[AST DBG] newNumNode(0) -> 0x5dc5079add90
+[LEX][8] RBRACK   -> ']'
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5dc5079addd0
+[AST DBG] addChild parent=0x5dc5079addd0(AST_ARRAY_ACCESS, lineno=8) child=0x5dc5079add90(AST_NUM, lineno=8)
+[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 8
 [LEX][8] ASSIGN   -> '='
-[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 8
-[AST DBG] newNode kind=AST_ID -> 0x572627801c20
-[AST DBG] newIdNode("gap") -> 0x572627801c20
-[LEX][8] ID       -> 'input'
-[LEX][8] LPAREN   -> '('
-[LEX][8] RPAREN   -> ')'
-[SYM_TABLE DBG] useSymbol: 'input' in scope 'main' at line 8
-[AST DBG] newNode kind=AST_CALL -> 0x572627801ca0
+[LEX][8] ID       -> 'gap'
 [LEX][8] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x572627801d00
-[AST DBG] addChild parent=0x572627801d00(AST_ASSIGN, lineno=8) child=0x572627801c20(AST_ID, lineno=8)
-[AST DBG] addChild parent=0x572627801d00(AST_ASSIGN, lineno=8) child=0x572627801ca0(AST_CALL, lineno=8)
-[PARSER DBG] assignment: var=0x572627801c20 expr=0x572627801ca0
+[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 8
+[AST DBG] newNode kind=AST_ID -> 0x5dc5079ade70
+[AST DBG] newIdNode("gap") -> 0x5dc5079ade70
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5dc5079aded0
+[AST DBG] addChild parent=0x5dc5079aded0(AST_ASSIGN, lineno=8) child=0x5dc5079addd0(AST_ARRAY_ACCESS, lineno=8)
+[AST DBG] addChild parent=0x5dc5079aded0(AST_ASSIGN, lineno=8) child=0x5dc5079ade70(AST_ID, lineno=8)
+[PARSER DBG] assignment: var=0x5dc5079addd0 expr=0x5dc5079ade70
+[LEX][10] ID       -> 'output'
+[LEX][10] LPAREN   -> '('
 [LEX][10] ID       -> 'vec'
 [LEX][10] LBRACK   -> '['
-[LEX][10] ID       -> 'i'
+[LEX][10] NUM      -> '2' (2)
+[AST DBG] newNode kind=AST_NUM -> 0x5dc5079adf30
+[AST DBG] newNumNode(2) -> 0x5dc5079adf30
 [LEX][10] RBRACK   -> ']'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 10
-[AST DBG] newNode kind=AST_ID -> 0x572627801d80
-[AST DBG] newIdNode("i") -> 0x572627801d80
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x572627801de0
-[AST DBG] addChild parent=0x572627801de0(AST_ARRAY_ACCESS, lineno=10) child=0x572627801d80(AST_ID, lineno=10)
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5dc5079adf70
+[AST DBG] addChild parent=0x5dc5079adf70(AST_ARRAY_ACCESS, lineno=10) child=0x5dc5079adf30(AST_NUM, lineno=10)
 [SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 10
-[LEX][10] ASSIGN   -> '='
-[LEX][10] ID       -> 'gap'
+[LEX][10] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x5dc5079adff0
+[AST DBG] addChild parent=0x5dc5079adff0(AST_ARG_LIST, lineno=10) child=0x5dc5079adf70(AST_ARRAY_ACCESS, lineno=10)
+[SYM_TABLE DBG] useSymbol: 'output' in scope 'main' at line 10
+[AST DBG] newNode kind=AST_CALL -> 0x5dc5079ae030
+[AST DBG] addChild parent=0x5dc5079ae030(AST_CALL, lineno=10) child=0x5dc5079adff0(AST_ARG_LIST, lineno=10)
 [LEX][10] SEMI     -> ';'
-[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 10
-[AST DBG] newNode kind=AST_ID -> 0x572627801e60
-[AST DBG] newIdNode("gap") -> 0x572627801e60
-[AST DBG] newNode kind=AST_ASSIGN -> 0x572627801ec0
-[AST DBG] addChild parent=0x572627801ec0(AST_ASSIGN, lineno=10) child=0x572627801de0(AST_ARRAY_ACCESS, lineno=10)
-[AST DBG] addChild parent=0x572627801ec0(AST_ASSIGN, lineno=10) child=0x572627801e60(AST_ID, lineno=10)
-[PARSER DBG] assignment: var=0x572627801de0 expr=0x572627801e60
-[LEX][11] ID       -> 'output'
-[LEX][11] LPAREN   -> '('
-[LEX][11] ID       -> 'vec'
-[LEX][11] LBRACK   -> '['
-[LEX][11] ID       -> 'i'
-[LEX][11] RBRACK   -> ']'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 11
-[AST DBG] newNode kind=AST_ID -> 0x572627801f60
-[AST DBG] newIdNode("i") -> 0x572627801f60
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x572627801fc0
-[AST DBG] addChild parent=0x572627801fc0(AST_ARRAY_ACCESS, lineno=11) child=0x572627801f60(AST_ID, lineno=11)
-[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 11
-[LEX][11] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x572627802020
-[AST DBG] addChild parent=0x572627802020(AST_ARG_LIST, lineno=11) child=0x572627801fc0(AST_ARRAY_ACCESS, lineno=11)
-[SYM_TABLE DBG] useSymbol: 'output' in scope 'main' at line 11
-[AST DBG] newNode kind=AST_CALL -> 0x572627802060
-[AST DBG] addChild parent=0x572627802060(AST_CALL, lineno=11) child=0x572627802020(AST_ARG_LIST, lineno=11)
-[LEX][11] SEMI     -> ';'
-[LEX][12] ID       -> 'i'
-[LEX][12] ASSIGN   -> '='
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 12
-[AST DBG] newNode kind=AST_ID -> 0x5726278020e0
-[AST DBG] newIdNode("i") -> 0x5726278020e0
-[LEX][12] ID       -> 'i'
-[LEX][12] PLUS     -> '+'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 12
-[AST DBG] newNode kind=AST_ID -> 0x572627802160
-[AST DBG] newIdNode("i") -> 0x572627802160
-[AST DBG] newNode kind=AST_BINOP -> 0x5726278021c0
-[LEX][12] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x572627802200
-[AST DBG] newNumNode(1) -> 0x572627802200
-[LEX][12] SEMI     -> ';'
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802240
-[AST DBG] addChild parent=0x572627802240(AST_BINOP, lineno=0) child=0x572627802160(AST_ID, lineno=12)
-[AST DBG] addChild parent=0x572627802240(AST_BINOP, lineno=0) child=0x5726278021c0(AST_BINOP, lineno=12)
-[AST DBG] addChild parent=0x572627802240(AST_BINOP, lineno=0) child=0x572627802200(AST_NUM, lineno=12)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x572627802280
-[AST DBG] addChild parent=0x572627802280(AST_ASSIGN, lineno=12) child=0x5726278020e0(AST_ID, lineno=12)
-[AST DBG] addChild parent=0x572627802280(AST_ASSIGN, lineno=12) child=0x572627802240(AST_BINOP, lineno=0)
-[PARSER DBG] assignment: var=0x5726278020e0 expr=0x572627802240
-[LEX][13] ID       -> 'vec'
-[LEX][13] LBRACK   -> '['
-[LEX][13] ID       -> 'i'
-[LEX][13] RBRACK   -> ']'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 13
-[AST DBG] newNode kind=AST_ID -> 0x572627802320
-[AST DBG] newIdNode("i") -> 0x572627802320
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x572627802380
-[AST DBG] addChild parent=0x572627802380(AST_ARRAY_ACCESS, lineno=13) child=0x572627802320(AST_ID, lineno=13)
-[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 13
-[LEX][13] ASSIGN   -> '='
-[LEX][13] ID       -> 'vec'
-[LEX][13] LBRACK   -> '['
-[LEX][13] ID       -> 'i'
-[LEX][13] MINUS    -> '-'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 13
-[AST DBG] newNode kind=AST_ID -> 0x572627802420
-[AST DBG] newIdNode("i") -> 0x572627802420
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802480
-[LEX][13] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x5726278024c0
-[AST DBG] newNumNode(1) -> 0x5726278024c0
-[LEX][13] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802500
-[AST DBG] addChild parent=0x572627802500(AST_BINOP, lineno=0) child=0x572627802420(AST_ID, lineno=13)
-[AST DBG] addChild parent=0x572627802500(AST_BINOP, lineno=0) child=0x572627802480(AST_BINOP, lineno=13)
-[AST DBG] addChild parent=0x572627802500(AST_BINOP, lineno=0) child=0x5726278024c0(AST_NUM, lineno=13)
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x572627802540
-[AST DBG] addChild parent=0x572627802540(AST_ARRAY_ACCESS, lineno=13) child=0x572627802500(AST_BINOP, lineno=0)
-[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 13
-[LEX][13] PLUS     -> '+'
-[AST DBG] newNode kind=AST_BINOP -> 0x5726278025c0
-[LEX][13] ID       -> 'gap'
-[LEX][13] SEMI     -> ';'
-[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 13
-[AST DBG] newNode kind=AST_ID -> 0x572627802640
-[AST DBG] newIdNode("gap") -> 0x572627802640
-[AST DBG] newNode kind=AST_BINOP -> 0x5726278026a0
-[AST DBG] addChild parent=0x5726278026a0(AST_BINOP, lineno=0) child=0x572627802540(AST_ARRAY_ACCESS, lineno=13)
-[AST DBG] addChild parent=0x5726278026a0(AST_BINOP, lineno=0) child=0x5726278025c0(AST_BINOP, lineno=13)
-[AST DBG] addChild parent=0x5726278026a0(AST_BINOP, lineno=0) child=0x572627802640(AST_ID, lineno=13)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5726278026e0
-[AST DBG] addChild parent=0x5726278026e0(AST_ASSIGN, lineno=13) child=0x572627802380(AST_ARRAY_ACCESS, lineno=13)
-[AST DBG] addChild parent=0x5726278026e0(AST_ASSIGN, lineno=13) child=0x5726278026a0(AST_BINOP, lineno=0)
-[PARSER DBG] assignment: var=0x572627802380 expr=0x5726278026a0
-[LEX][14] ID       -> 'output'
-[LEX][14] LPAREN   -> '('
-[LEX][14] ID       -> 'vec'
-[LEX][14] LBRACK   -> '['
-[LEX][14] ID       -> 'i'
-[LEX][14] RBRACK   -> ']'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 14
-[AST DBG] newNode kind=AST_ID -> 0x572627802780
-[AST DBG] newIdNode("i") -> 0x572627802780
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5726278027e0
-[AST DBG] addChild parent=0x5726278027e0(AST_ARRAY_ACCESS, lineno=14) child=0x572627802780(AST_ID, lineno=14)
-[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 14
-[LEX][14] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x572627802840
-[AST DBG] addChild parent=0x572627802840(AST_ARG_LIST, lineno=14) child=0x5726278027e0(AST_ARRAY_ACCESS, lineno=14)
-[SYM_TABLE DBG] useSymbol: 'output' in scope 'main' at line 14
-[AST DBG] newNode kind=AST_CALL -> 0x572627802880
-[AST DBG] addChild parent=0x572627802880(AST_CALL, lineno=14) child=0x572627802840(AST_ARG_LIST, lineno=14)
-[LEX][14] SEMI     -> ';'
-[LEX][15] ID       -> 'i'
-[LEX][15] ASSIGN   -> '='
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 15
-[AST DBG] newNode kind=AST_ID -> 0x572627802900
-[AST DBG] newIdNode("i") -> 0x572627802900
-[LEX][15] ID       -> 'i'
-[LEX][15] PLUS     -> '+'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 15
-[AST DBG] newNode kind=AST_ID -> 0x572627802980
-[AST DBG] newIdNode("i") -> 0x572627802980
-[AST DBG] newNode kind=AST_BINOP -> 0x5726278029e0
-[LEX][15] ID       -> 'gap'
-[LEX][15] SEMI     -> ';'
-[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 15
-[AST DBG] newNode kind=AST_ID -> 0x572627802a60
-[AST DBG] newIdNode("gap") -> 0x572627802a60
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802ac0
-[AST DBG] addChild parent=0x572627802ac0(AST_BINOP, lineno=0) child=0x572627802980(AST_ID, lineno=15)
-[AST DBG] addChild parent=0x572627802ac0(AST_BINOP, lineno=0) child=0x5726278029e0(AST_BINOP, lineno=15)
-[AST DBG] addChild parent=0x572627802ac0(AST_BINOP, lineno=0) child=0x572627802a60(AST_ID, lineno=15)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x572627802b00
-[AST DBG] addChild parent=0x572627802b00(AST_ASSIGN, lineno=15) child=0x572627802900(AST_ID, lineno=15)
-[AST DBG] addChild parent=0x572627802b00(AST_ASSIGN, lineno=15) child=0x572627802ac0(AST_BINOP, lineno=0)
-[PARSER DBG] assignment: var=0x572627802900 expr=0x572627802ac0
-[LEX][16] ID       -> 'vec'
-[LEX][16] LBRACK   -> '['
-[LEX][16] ID       -> 'i'
-[LEX][16] RBRACK   -> ']'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 16
-[AST DBG] newNode kind=AST_ID -> 0x572627802b80
-[AST DBG] newIdNode("i") -> 0x572627802b80
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x572627802be0
-[AST DBG] addChild parent=0x572627802be0(AST_ARRAY_ACCESS, lineno=16) child=0x572627802b80(AST_ID, lineno=16)
-[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 16
-[LEX][16] ASSIGN   -> '='
-[LEX][16] ID       -> 'vec'
-[LEX][16] LBRACK   -> '['
-[LEX][16] ID       -> 'i'
-[LEX][16] MINUS    -> '-'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 16
-[AST DBG] newNode kind=AST_ID -> 0x572627802c80
-[AST DBG] newIdNode("i") -> 0x572627802c80
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802ce0
-[LEX][16] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x572627802d20
-[AST DBG] newNumNode(1) -> 0x572627802d20
-[LEX][16] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802d60
-[AST DBG] addChild parent=0x572627802d60(AST_BINOP, lineno=0) child=0x572627802c80(AST_ID, lineno=16)
-[AST DBG] addChild parent=0x572627802d60(AST_BINOP, lineno=0) child=0x572627802ce0(AST_BINOP, lineno=16)
-[AST DBG] addChild parent=0x572627802d60(AST_BINOP, lineno=0) child=0x572627802d20(AST_NUM, lineno=16)
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x572627802da0
-[AST DBG] addChild parent=0x572627802da0(AST_ARRAY_ACCESS, lineno=16) child=0x572627802d60(AST_BINOP, lineno=0)
-[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 16
-[LEX][16] PLUS     -> '+'
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802e20
-[LEX][16] ID       -> 'gap'
-[LEX][16] SEMI     -> ';'
-[SYM_TABLE DBG] useSymbol: 'gap' in scope 'main' at line 16
-[AST DBG] newNode kind=AST_ID -> 0x572627802ea0
-[AST DBG] newIdNode("gap") -> 0x572627802ea0
-[AST DBG] newNode kind=AST_BINOP -> 0x572627802f00
-[AST DBG] addChild parent=0x572627802f00(AST_BINOP, lineno=0) child=0x572627802da0(AST_ARRAY_ACCESS, lineno=16)
-[AST DBG] addChild parent=0x572627802f00(AST_BINOP, lineno=0) child=0x572627802e20(AST_BINOP, lineno=16)
-[AST DBG] addChild parent=0x572627802f00(AST_BINOP, lineno=0) child=0x572627802ea0(AST_ID, lineno=16)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x572627802f40
-[AST DBG] addChild parent=0x572627802f40(AST_ASSIGN, lineno=16) child=0x572627802be0(AST_ARRAY_ACCESS, lineno=16)
-[AST DBG] addChild parent=0x572627802f40(AST_ASSIGN, lineno=16) child=0x572627802f00(AST_BINOP, lineno=0)
-[PARSER DBG] assignment: var=0x572627802be0 expr=0x572627802f00
-[LEX][17] ID       -> 'output'
-[LEX][17] LPAREN   -> '('
-[LEX][17] ID       -> 'vec'
-[LEX][17] LBRACK   -> '['
-[LEX][17] ID       -> 'i'
-[LEX][17] RBRACK   -> ']'
-[SYM_TABLE DBG] useSymbol: 'i' in scope 'main' at line 17
-[AST DBG] newNode kind=AST_ID -> 0x572627802fe0
-[AST DBG] newIdNode("i") -> 0x572627802fe0
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x572627803040
-[AST DBG] addChild parent=0x572627803040(AST_ARRAY_ACCESS, lineno=17) child=0x572627802fe0(AST_ID, lineno=17)
-[SYM_TABLE DBG] useSymbol: 'vec' in scope 'main' at line 17
-[LEX][17] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x5726278030a0
-[AST DBG] addChild parent=0x5726278030a0(AST_ARG_LIST, lineno=17) child=0x572627803040(AST_ARRAY_ACCESS, lineno=17)
-[SYM_TABLE DBG] useSymbol: 'output' in scope 'main' at line 17
-[AST DBG] newNode kind=AST_CALL -> 0x5726278030e0
-[AST DBG] addChild parent=0x5726278030e0(AST_CALL, lineno=17) child=0x5726278030a0(AST_ARG_LIST, lineno=17)
-[LEX][17] SEMI     -> ';'
-[LEX][18] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x572627803140
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627801990(AST_VAR_DECL, lineno=5)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627801bc0(AST_ASSIGN, lineno=7)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627801d00(AST_ASSIGN, lineno=8)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627801ec0(AST_ASSIGN, lineno=10)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627802060(AST_CALL, lineno=11)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627802280(AST_ASSIGN, lineno=12)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x5726278026e0(AST_ASSIGN, lineno=13)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627802880(AST_CALL, lineno=14)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627802b00(AST_ASSIGN, lineno=15)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x572627802f40(AST_ASSIGN, lineno=16)
-[AST DBG] addChild parent=0x572627803140(AST_BLOCK, lineno=18) child=0x5726278030e0(AST_CALL, lineno=17)
-[PARSER DBG] compound_stmt: decls=0x572627801990 stmts=0x572627801bc0
-[AST DBG] newNode kind=AST_FUN_DECL -> 0x572627803180
-[AST DBG] addChild parent=0x572627803180(AST_FUN_DECL, lineno=3) child=0x572627803140(AST_BLOCK, lineno=18)
+[LEX][11] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x5dc5079ae090
+[AST DBG] addChild parent=0x5dc5079ae090(AST_BLOCK, lineno=11) child=0x5dc5079ad990(AST_VAR_DECL, lineno=4)
+[AST DBG] addChild parent=0x5dc5079ae090(AST_BLOCK, lineno=11) child=0x5dc5079adaf0(AST_ASSIGN, lineno=5)
+[AST DBG] addChild parent=0x5dc5079ae090(AST_BLOCK, lineno=11) child=0x5dc5079add30(AST_ASSIGN, lineno=7)
+[AST DBG] addChild parent=0x5dc5079ae090(AST_BLOCK, lineno=11) child=0x5dc5079aded0(AST_ASSIGN, lineno=8)
+[AST DBG] addChild parent=0x5dc5079ae090(AST_BLOCK, lineno=11) child=0x5dc5079ae030(AST_CALL, lineno=10)
+[PARSER DBG] compound_stmt: decls=0x5dc5079ad990 stmts=0x5dc5079adaf0
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x5dc5079ae0d0
+[AST DBG] addChild parent=0x5dc5079ae0d0(AST_FUN_DECL, lineno=3) child=0x5dc5079ae090(AST_BLOCK, lineno=11)
 [SYM_TABLE DBG] setFunctionParams: 'main' in scope 'main' with 0 params
-[PARSER DBG] fun_declaration: name=�`�U#W, params=(nil), body=0x572627803140
+[PARSER DBG] fun_declaration: name=����], params=(nil), body=0x5dc5079ae090
 [PARSER DBG] declaration_list: added main
-[LEX][18] EOF
-[AST DBG] newNode kind=AST_PROGRAM -> 0x5726278031e0
-[AST DBG] addChild parent=0x5726278031e0(AST_PROGRAM, lineno=0) child=0x572627801790(AST_VAR_DECL, lineno=1)
-[AST DBG] addChild parent=0x5726278031e0(AST_PROGRAM, lineno=0) child=0x572627803180(AST_FUN_DECL, lineno=3)
+[LEX][11] EOF
+[AST DBG] newNode kind=AST_PROGRAM -> 0x5dc5079ae130
+[AST DBG] addChild parent=0x5dc5079ae130(AST_PROGRAM, lineno=0) child=0x5dc5079ad790(AST_VAR_DECL, lineno=1)
+[AST DBG] addChild parent=0x5dc5079ae130(AST_PROGRAM, lineno=0) child=0x5dc5079ae0d0(AST_FUN_DECL, lineno=3)
 Parse successful.
 ======= SYMBOL TABLE =======
 Name            Scope      Kind   Decl Lines           Use Lines            Type  
 --------------------------------------------------------------------------
-gap             main       VAR    5 	16,15,13,10,8 	INT   
-i               main       VAR    5 	17,16,16,15,15,14,13,13,12,12,11,10,7 	INT   
+gap             main       VAR    4 	8,7,5 	INT   
 main            global     FUNC   3 	 	VOID  
-vec             global     VAR    1 	17,16,16,14,13,13,11,10 	ARRAY(3, INT)
-output          global     FUNC   0 	17,14,11 	VOID  
-input           global     FUNC   0 	8 	INT   
+vec             global     VAR    1 	10,8,7 	ARRAY(3, INT)
+output          global     FUNC   0 	10 	VOID  
+input           global     FUNC   0 	5 	INT   
 ======= END OF TABLE =======
 Symbol table printed successfully.
 
@@ -306,65 +133,26 @@ Symbol table printed successfully.
 Program (lineno=0)
   VarDecl(name=vec, lineno=1)
   FunDecl(name=main, lineno=3)
-    Block (lineno=18)
-      VarDecl(name=i, lineno=5)
-      VarDecl(name=gap, lineno=5)
+    Block (lineno=11)
+      VarDecl(name=gap, lineno=4)
+      Assign (lineno=5)
+        Id(name=gap, lineno=5)
+        Call(name=input, lineno=5)
       Assign (lineno=7)
-        Id(name=i, lineno=7)
-        Num(value=0, lineno=7)
+        ArrayAccess(name=vec, lineno=7)
+          Num(value=2, lineno=7)
+        BinOp (lineno=0)
+          Id(name=gap, lineno=7)
+          BinOp(op='-', lineno=7)
+          Num(value=1, lineno=7)
       Assign (lineno=8)
+        ArrayAccess(name=vec, lineno=8)
+          Num(value=0, lineno=8)
         Id(name=gap, lineno=8)
-        Call(name=input, lineno=8)
-      Assign (lineno=10)
-        ArrayAccess(name=vec, lineno=10)
-          Id(name=i, lineno=10)
-        Id(name=gap, lineno=10)
-      Call(name=output, lineno=11)
-        ArgList (lineno=11)
-          ArrayAccess(name=vec, lineno=11)
-            Id(name=i, lineno=11)
-      Assign (lineno=12)
-        Id(name=i, lineno=12)
-        BinOp (lineno=0)
-          Id(name=i, lineno=12)
-          BinOp(op='+', lineno=12)
-          Num(value=1, lineno=12)
-      Assign (lineno=13)
-        ArrayAccess(name=vec, lineno=13)
-          Id(name=i, lineno=13)
-        BinOp (lineno=0)
-          ArrayAccess(name=vec, lineno=13)
-            BinOp (lineno=0)
-              Id(name=i, lineno=13)
-              BinOp(op='-', lineno=13)
-              Num(value=1, lineno=13)
-          BinOp(op='+', lineno=13)
-          Id(name=gap, lineno=13)
-      Call(name=output, lineno=14)
-        ArgList (lineno=14)
-          ArrayAccess(name=vec, lineno=14)
-            Id(name=i, lineno=14)
-      Assign (lineno=15)
-        Id(name=i, lineno=15)
-        BinOp (lineno=0)
-          Id(name=i, lineno=15)
-          BinOp(op='+', lineno=15)
-          Id(name=gap, lineno=15)
-      Assign (lineno=16)
-        ArrayAccess(name=vec, lineno=16)
-          Id(name=i, lineno=16)
-        BinOp (lineno=0)
-          ArrayAccess(name=vec, lineno=16)
-            BinOp (lineno=0)
-              Id(name=i, lineno=16)
-              BinOp(op='-', lineno=16)
-              Num(value=1, lineno=16)
-          BinOp(op='+', lineno=16)
-          Id(name=gap, lineno=16)
-      Call(name=output, lineno=17)
-        ArgList (lineno=17)
-          ArrayAccess(name=vec, lineno=17)
-            Id(name=i, lineno=17)
+      Call(name=output, lineno=10)
+        ArgList (lineno=10)
+          ArrayAccess(name=vec, lineno=10)
+            Num(value=2, lineno=10)
 [Semantic DBG] analyzeProgram: entering program node
 [Semantic DBG] declaration: kind=2 name="vec" at line 1
 [Semantic DBG] analyzeDeclaration: kind=2 name="vec" line=1
@@ -376,129 +164,45 @@ Program (lineno=0)
 [Semantic DBG]  switched currentScope = main
 [Semantic DBG]   No parameters, just a block
 [Semantic DBG] analyzeBlock: scope="main"
-[Semantic DBG] analyzeDeclaration: kind=2 name="i" line=5
-[Semantic DBG]   VarDecl: Found simple var 'i'
-[Semantic DBG] analyzeDeclaration: kind=2 name="gap" line=5
+[Semantic DBG] analyzeDeclaration: kind=2 name="gap" line=4
 [Semantic DBG]   VarDecl: Found simple var 'gap'
+[Semantic DBG]   Statement: kind=11 line=5
+[Semantic DBG] → analyzeStatement(stmt=0x5dc5079adaf0, kind=11, line=5)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079adaf0, kind=11, line=5)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079ada90, kind=13, line=5)
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079ada90) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079adaf0) returns 1
+[Semantic DBG] ← analyzeStatement(stmt=0x5dc5079adaf0)
 [Semantic DBG]   Statement: kind=11 line=7
-[Semantic DBG] → analyzeStatement(stmt=0x572627801bc0, kind=11, line=7)
-[Semantic DBG] → analyzeExpression(expr=0x572627801bc0, kind=11, line=7)
-[Semantic DBG] → analyzeExpression(expr=0x572627801b80, kind=15, line=7)
-[Semantic DBG] ← analyzeExpression(expr=0x572627801b80) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627801bc0) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x572627801bc0)
+[Semantic DBG] → analyzeStatement(stmt=0x5dc5079add30, kind=11, line=7)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079add30, kind=11, line=7)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079adcf0, kind=12, line=0)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079adc10, kind=14, line=7)
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079adc10) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079adcb0, kind=15, line=7)
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079adcb0) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079adcf0) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079add30) returns 1
+[Semantic DBG] ← analyzeStatement(stmt=0x5dc5079add30)
 [Semantic DBG]   Statement: kind=11 line=8
-[Semantic DBG] → analyzeStatement(stmt=0x572627801d00, kind=11, line=8)
-[Semantic DBG] → analyzeExpression(expr=0x572627801d00, kind=11, line=8)
-[Semantic DBG] → analyzeExpression(expr=0x572627801ca0, kind=13, line=8)
-[Semantic DBG] ← analyzeExpression(expr=0x572627801ca0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627801d00) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x572627801d00)
-[Semantic DBG]   Statement: kind=11 line=10
-[Semantic DBG] → analyzeStatement(stmt=0x572627801ec0, kind=11, line=10)
-[Semantic DBG] → analyzeExpression(expr=0x572627801ec0, kind=11, line=10)
-[Semantic DBG] → analyzeExpression(expr=0x572627801e60, kind=14, line=10)
-[Semantic DBG] ← analyzeExpression(expr=0x572627801e60) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627801ec0) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x572627801ec0)
-[Semantic DBG]   Statement: kind=13 line=11
-[Semantic DBG] → analyzeStatement(stmt=0x572627802060, kind=13, line=11)
-[Semantic DBG] → analyzeExpression(expr=0x572627802060, kind=13, line=11)
-[Semantic DBG] → analyzeExpression(expr=0x572627801fc0, kind=16, line=11)
-[Semantic DBG]   Case AST_ARRAY_ACCESS for 'vec' at line 11
+[Semantic DBG] → analyzeStatement(stmt=0x5dc5079aded0, kind=11, line=8)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079aded0, kind=11, line=8)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079ade70, kind=14, line=8)
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079ade70) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079aded0) returns 1
+[Semantic DBG] ← analyzeStatement(stmt=0x5dc5079aded0)
+[Semantic DBG]   Statement: kind=13 line=10
+[Semantic DBG] → analyzeStatement(stmt=0x5dc5079ae030, kind=13, line=10)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079ae030, kind=13, line=10)
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079adf70, kind=16, line=10)
+[Semantic DBG]   Case AST_ARRAY_ACCESS for 'vec' at line 10
 [Semantic DBG]   Analyzing index expression for 'vec'
-[Semantic DBG] → analyzeExpression(expr=0x572627801f60, kind=14, line=11)
-[Semantic DBG] ← analyzeExpression(expr=0x572627801f60) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x5dc5079adf30, kind=15, line=10)
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079adf30) returns 1
 [Semantic DBG]   Array access is valid, returning TYPE_INT.
-[Semantic DBG] ← analyzeExpression(expr=0x572627801fc0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802060) returns 2
-[Semantic DBG] ← analyzeStatement(stmt=0x572627802060)
-[Semantic DBG]   Statement: kind=11 line=12
-[Semantic DBG] → analyzeStatement(stmt=0x572627802280, kind=11, line=12)
-[Semantic DBG] → analyzeExpression(expr=0x572627802280, kind=11, line=12)
-[Semantic DBG] → analyzeExpression(expr=0x572627802240, kind=12, line=0)
-[Semantic DBG] → analyzeExpression(expr=0x572627802160, kind=14, line=12)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802160) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x572627802200, kind=15, line=12)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802200) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802240) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802280) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x572627802280)
-[Semantic DBG]   Statement: kind=11 line=13
-[Semantic DBG] → analyzeStatement(stmt=0x5726278026e0, kind=11, line=13)
-[Semantic DBG] → analyzeExpression(expr=0x5726278026e0, kind=11, line=13)
-[Semantic DBG] → analyzeExpression(expr=0x5726278026a0, kind=12, line=0)
-[Semantic DBG] → analyzeExpression(expr=0x572627802540, kind=16, line=13)
-[Semantic DBG]   Case AST_ARRAY_ACCESS for 'vec' at line 13
-[Semantic DBG]   Analyzing index expression for 'vec'
-[Semantic DBG] → analyzeExpression(expr=0x572627802500, kind=12, line=0)
-[Semantic DBG] → analyzeExpression(expr=0x572627802420, kind=14, line=13)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802420) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x5726278024c0, kind=15, line=13)
-[Semantic DBG] ← analyzeExpression(expr=0x5726278024c0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802500) returns 1
-[Semantic DBG]   Array access is valid, returning TYPE_INT.
-[Semantic DBG] ← analyzeExpression(expr=0x572627802540) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x572627802640, kind=14, line=13)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802640) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5726278026a0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5726278026e0) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x5726278026e0)
-[Semantic DBG]   Statement: kind=13 line=14
-[Semantic DBG] → analyzeStatement(stmt=0x572627802880, kind=13, line=14)
-[Semantic DBG] → analyzeExpression(expr=0x572627802880, kind=13, line=14)
-[Semantic DBG] → analyzeExpression(expr=0x5726278027e0, kind=16, line=14)
-[Semantic DBG]   Case AST_ARRAY_ACCESS for 'vec' at line 14
-[Semantic DBG]   Analyzing index expression for 'vec'
-[Semantic DBG] → analyzeExpression(expr=0x572627802780, kind=14, line=14)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802780) returns 1
-[Semantic DBG]   Array access is valid, returning TYPE_INT.
-[Semantic DBG] ← analyzeExpression(expr=0x5726278027e0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802880) returns 2
-[Semantic DBG] ← analyzeStatement(stmt=0x572627802880)
-[Semantic DBG]   Statement: kind=11 line=15
-[Semantic DBG] → analyzeStatement(stmt=0x572627802b00, kind=11, line=15)
-[Semantic DBG] → analyzeExpression(expr=0x572627802b00, kind=11, line=15)
-[Semantic DBG] → analyzeExpression(expr=0x572627802ac0, kind=12, line=0)
-[Semantic DBG] → analyzeExpression(expr=0x572627802980, kind=14, line=15)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802980) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x572627802a60, kind=14, line=15)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802a60) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802ac0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802b00) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x572627802b00)
-[Semantic DBG]   Statement: kind=11 line=16
-[Semantic DBG] → analyzeStatement(stmt=0x572627802f40, kind=11, line=16)
-[Semantic DBG] → analyzeExpression(expr=0x572627802f40, kind=11, line=16)
-[Semantic DBG] → analyzeExpression(expr=0x572627802f00, kind=12, line=0)
-[Semantic DBG] → analyzeExpression(expr=0x572627802da0, kind=16, line=16)
-[Semantic DBG]   Case AST_ARRAY_ACCESS for 'vec' at line 16
-[Semantic DBG]   Analyzing index expression for 'vec'
-[Semantic DBG] → analyzeExpression(expr=0x572627802d60, kind=12, line=0)
-[Semantic DBG] → analyzeExpression(expr=0x572627802c80, kind=14, line=16)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802c80) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x572627802d20, kind=15, line=16)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802d20) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802d60) returns 1
-[Semantic DBG]   Array access is valid, returning TYPE_INT.
-[Semantic DBG] ← analyzeExpression(expr=0x572627802da0) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x572627802ea0, kind=14, line=16)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802ea0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802f00) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x572627802f40) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x572627802f40)
-[Semantic DBG]   Statement: kind=13 line=17
-[Semantic DBG] → analyzeStatement(stmt=0x5726278030e0, kind=13, line=17)
-[Semantic DBG] → analyzeExpression(expr=0x5726278030e0, kind=13, line=17)
-[Semantic DBG] → analyzeExpression(expr=0x572627803040, kind=16, line=17)
-[Semantic DBG]   Case AST_ARRAY_ACCESS for 'vec' at line 17
-[Semantic DBG]   Analyzing index expression for 'vec'
-[Semantic DBG] → analyzeExpression(expr=0x572627802fe0, kind=14, line=17)
-[Semantic DBG] ← analyzeExpression(expr=0x572627802fe0) returns 1
-[Semantic DBG]   Array access is valid, returning TYPE_INT.
-[Semantic DBG] ← analyzeExpression(expr=0x572627803040) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5726278030e0) returns 2
-[Semantic DBG] ← analyzeStatement(stmt=0x5726278030e0)
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079adf70) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x5dc5079ae030) returns 2
+[Semantic DBG] ← analyzeStatement(stmt=0x5dc5079ae030)
 [Semantic DBG]   currentScope restored to global
 Semantic analysis completed successfully with no errors.
 
@@ -517,25 +221,13 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG]   Case AST_FUN_DECL for 'main'
 [IR_DBG] Creating new name operand: main
 [IR_DBG] Emitting instruction with opcode 15
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 18
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 11
 [IR_DBG]   Case AST_BLOCK
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 7
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 5
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 7
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 5
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 7
-[IR_DBG]    Case AST_NUM
-[IR_DBG] Creating new constant: 0
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 2
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
-[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 8
-[IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 8
-[IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 8
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 5
 [IR_DBG]    Case AST_CALL for function 'input'
 [IR_DBG] Creating new temporary: t0
 [IR_DBG] Creating new constant: 0
@@ -546,23 +238,31 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 2
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 10
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 7
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 10
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 7
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 10
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '-'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 7
 [IR_DBG]    Case AST_ID
 [IR_DBG] Creating new temporary: t1
 [IR_DBG] Creating new name operand: gap
 [IR_DBG] Emitting instruction with opcode 1
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG]      Assigning to Array Access
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 10
-[IR_DBG]    Case AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 7
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
 [IR_DBG] Creating new temporary: t2
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 6
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG]      Assigning to Array Access
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 7
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 2
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
 [IR_DBG] Creating new temporary: t3
 [IR_DBG] Creating new name operand: vec
 [IR_DBG] Emitting instruction with opcode 3
@@ -571,240 +271,45 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 2
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 11
-[IR_DBG]   Case AST_CALL (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 11
-[IR_DBG]    Case AST_CALL for function 'output'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind UNKNOWN at line 11
-[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 11
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 8
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 8
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 8
 [IR_DBG]    Case AST_ID
 [IR_DBG] Creating new temporary: t5
-[IR_DBG] Creating new name operand: i
+[IR_DBG] Creating new name operand: gap
 [IR_DBG] Emitting instruction with opcode 1
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG]      Assigning to Array Access
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 8
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
 [IR_DBG] Creating new temporary: t6
 [IR_DBG] Creating new name operand: vec
 [IR_DBG] Emitting instruction with opcode 3
 [IR_DBG] Creating new temporary: t7
 [IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] Emitting instruction with opcode 2
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 10
+[IR_DBG]   Case AST_CALL (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 10
+[IR_DBG]    Case AST_CALL for function 'output'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind UNKNOWN at line 10
+[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 10
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 2
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
 [IR_DBG] Creating new temporary: t8
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind UNKNOWN
-[IR_DBG] Emitting instruction with opcode 19
-[IR_DBG] Creating new constant: 1
-[IR_DBG] Creating new name operand: output
-[IR_DBG] Emitting instruction with opcode 20
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
-[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 12
-[IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 12
-[IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
-[IR_DBG]    Case AST_BINOP
-[IR_DBG]      Operator: '+'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 12
-[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: vec
+[IR_DBG] Emitting instruction with opcode 3
 [IR_DBG] Creating new temporary: t9
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 12
-[IR_DBG]    Case AST_NUM
-[IR_DBG] Creating new constant: 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Emitting instruction with opcode 5
 [IR_DBG] Creating new temporary: t10
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 2
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
-[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 13
-[IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 13
-[IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
-[IR_DBG]    Case AST_BINOP
-[IR_DBG]      Operator: '+'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind UNKNOWN at line 13
-[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
-[IR_DBG]    Case AST_BINOP
-[IR_DBG]      Operator: '-'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 13
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t11
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 13
-[IR_DBG]    Case AST_NUM
-[IR_DBG] Creating new constant: 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
-[IR_DBG] Creating new temporary: t12
-[IR_DBG] Emitting instruction with opcode 6
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
-[IR_DBG] Creating new temporary: t13
-[IR_DBG] Creating new name operand: vec
-[IR_DBG] Emitting instruction with opcode 3
-[IR_DBG] Creating new temporary: t14
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] Creating new temporary: t15
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind UNKNOWN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 13
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t16
-[IR_DBG] Creating new name operand: gap
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] Creating new temporary: t17
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
-[IR_DBG]      Assigning to Array Access
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 13
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t18
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] Creating new temporary: t19
-[IR_DBG] Creating new name operand: vec
-[IR_DBG] Emitting instruction with opcode 3
-[IR_DBG] Creating new temporary: t20
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] Emitting instruction with opcode 2
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
-[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 14
-[IR_DBG]   Case AST_CALL (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 14
-[IR_DBG]    Case AST_CALL for function 'output'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind UNKNOWN at line 14
-[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 14
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t21
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] Creating new temporary: t22
-[IR_DBG] Creating new name operand: vec
-[IR_DBG] Emitting instruction with opcode 3
-[IR_DBG] Creating new temporary: t23
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] Creating new temporary: t24
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind UNKNOWN
-[IR_DBG] Emitting instruction with opcode 19
-[IR_DBG] Creating new constant: 1
-[IR_DBG] Creating new name operand: output
-[IR_DBG] Emitting instruction with opcode 20
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
-[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 15
-[IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 15
-[IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
-[IR_DBG]    Case AST_BINOP
-[IR_DBG]      Operator: '+'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 15
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t25
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 15
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t26
-[IR_DBG] Creating new name operand: gap
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] Creating new temporary: t27
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 2
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
-[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 16
-[IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 16
-[IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
-[IR_DBG]    Case AST_BINOP
-[IR_DBG]      Operator: '+'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind UNKNOWN at line 16
-[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
-[IR_DBG]    Case AST_BINOP
-[IR_DBG]      Operator: '-'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 16
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t28
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 16
-[IR_DBG]    Case AST_NUM
-[IR_DBG] Creating new constant: 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
-[IR_DBG] Creating new temporary: t29
-[IR_DBG] Emitting instruction with opcode 6
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
-[IR_DBG] Creating new temporary: t30
-[IR_DBG] Creating new name operand: vec
-[IR_DBG] Emitting instruction with opcode 3
-[IR_DBG] Creating new temporary: t31
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] Creating new temporary: t32
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind UNKNOWN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 16
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t33
-[IR_DBG] Creating new name operand: gap
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] Creating new temporary: t34
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
-[IR_DBG]      Assigning to Array Access
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 16
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t35
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] Creating new temporary: t36
-[IR_DBG] Creating new name operand: vec
-[IR_DBG] Emitting instruction with opcode 3
-[IR_DBG] Creating new temporary: t37
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] Emitting instruction with opcode 2
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
-[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 17
-[IR_DBG]   Case AST_CALL (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 17
-[IR_DBG]    Case AST_CALL for function 'output'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind UNKNOWN at line 17
-[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 17
-[IR_DBG]    Case AST_ID
-[IR_DBG] Creating new temporary: t38
-[IR_DBG] Creating new name operand: i
-[IR_DBG] Emitting instruction with opcode 1
-[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] Creating new temporary: t39
-[IR_DBG] Creating new name operand: vec
-[IR_DBG] Emitting instruction with opcode 3
-[IR_DBG] Creating new temporary: t40
-[IR_DBG] Emitting instruction with opcode 5
-[IR_DBG] Creating new temporary: t41
 [IR_DBG] Emitting instruction with opcode 1
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind UNKNOWN
 [IR_DBG] Emitting instruction with opcode 19
@@ -822,60 +327,21 @@ Semantic analysis completed successfully with no errors.
 --- BEGIN IR DUMP (Terminal) ---
   vec := .space , 3
 main:
-  *i := 0
   t0 := call input, 0
   *gap := t0
   t1 := *gap
-  t2 := *i
+  t2 := t1 - 1
   t3 := &vec
-  t4 := t3 + t2
-  *t4 := t1
-  t5 := *i
+  t4 := t3 + 2
+  *t4 := t2
+  t5 := *gap
   t6 := &vec
-  t7 := t6 + t5
-  t8 := *t7
-  arg t8
-  call output, 1
-  t9 := *i
-  t10 := t9 + 1
-  *i := t10
-  t11 := *i
-  t12 := t11 - 1
-  t13 := &vec
-  t14 := t13 + t12
-  t15 := *t14
-  t16 := *gap
-  t17 := t15 + t16
-  t18 := *i
-  t19 := &vec
-  t20 := t19 + t18
-  *t20 := t17
-  t21 := *i
-  t22 := &vec
-  t23 := t22 + t21
-  t24 := *t23
-  arg t24
-  call output, 1
-  t25 := *i
-  t26 := *gap
-  t27 := t25 + t26
-  *i := t27
-  t28 := *i
-  t29 := t28 - 1
-  t30 := &vec
-  t31 := t30 + t29
-  t32 := *t31
-  t33 := *gap
-  t34 := t32 + t33
-  t35 := *i
-  t36 := &vec
-  t37 := t36 + t35
-  *t37 := t34
-  t38 := *i
-  t39 := &vec
-  t40 := t39 + t38
-  t41 := *t40
-  arg t41
+  t7 := t6 + 0
+  *t7 := t5
+  t8 := &vec
+  t9 := t8 + 2
+  t10 := *t9
+  arg t10
   call output, 1
   return _
 --- END IR DUMP ---

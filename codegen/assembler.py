@@ -95,6 +95,7 @@ class Instruction:
         if line == 'ret:':
             details['opcode'] = 'ret'
             details['type'] = '11'
+            details['supp'] = 'i'
             print(f"[DISASSEMBLE] -> Instrução 'ret' identificada.")
             return details
 

@@ -1,58 +1,19 @@
   vec := .space , 3
 main:
-  *i := 0
   t0 := call input, 0
   *gap := t0
   t1 := *gap
-  t2 := *i
+  t2 := t1 - 1
   t3 := &vec
-  t4 := t3 + t2
-  *t4 := t1
-  t5 := *i
+  t4 := t3 + 2
+  *t4 := t2
+  t5 := *gap
   t6 := &vec
-  t7 := t6 + t5
-  t8 := *t7
-  arg t8
-  call output, 1
-  t9 := *i
-  t10 := t9 + 1
-  *i := t10
-  t11 := *i
-  t12 := t11 - 1
-  t13 := &vec
-  t14 := t13 + t12
-  t15 := *t14
-  t16 := *gap
-  t17 := t15 + t16
-  t18 := *i
-  t19 := &vec
-  t20 := t19 + t18
-  *t20 := t17
-  t21 := *i
-  t22 := &vec
-  t23 := t22 + t21
-  t24 := *t23
-  arg t24
-  call output, 1
-  t25 := *i
-  t26 := *gap
-  t27 := t25 + t26
-  *i := t27
-  t28 := *i
-  t29 := t28 - 1
-  t30 := &vec
-  t31 := t30 + t29
-  t32 := *t31
-  t33 := *gap
-  t34 := t32 + t33
-  t35 := *i
-  t36 := &vec
-  t37 := t36 + t35
-  *t37 := t34
-  t38 := *i
-  t39 := &vec
-  t40 := t39 + t38
-  t41 := *t40
-  arg t41
+  t7 := t6 + 0
+  *t7 := t5
+  t8 := &vec
+  t9 := t8 + 2
+  t10 := *t9
+  arg t10
   call output, 1
   return _

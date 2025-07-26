@@ -450,6 +450,10 @@ def translate_instruction(instr_parts, func_ctx):
             
             dest_reg = alloc.get_reg_for_temp(dest)
             func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {op2_val}")
+            
+            alloc.free_reg_if_temp(reg1)
+            if not (arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit())):
+                alloc.free_reg_if_temp(op2_val)
         
         elif expr_parts[0].startswith('&'):
             print("[TRANSLATE] -> Caminho: Obter Endereço (&)")
@@ -460,17 +464,28 @@ def translate_instruction(instr_parts, func_ctx):
 
         elif expr_parts[0].startswith('*'):
             print("[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)")
-            
             ptr_name = expr_parts[0][1:] 
             
-            reg_ptr = alloc.ensure_var_in_reg(ptr_name)
+            addr_reg = None
+            # Diferencia o tratamento para temporárias vs. variáveis nomeadas
+            if ptr_name.startswith('t'):
+                # Se for uma temporária (ex: *t9), ela JÁ contém o endereço.
+                # Então, precisamos do VALOR dela em um registrador.
+                print(f"[TRANSLATE] -> Ponteiro é uma temporária ('{ptr_name}'). Usando seu valor como endereço.")
+                addr_reg = alloc.ensure_var_in_reg(ptr_name)
+            else:
+                # Se for uma variável nomeada, precisamos buscar o ENDEREÇO dela.
+                print(f"[TRANSLATE] -> Ponteiro é uma variável nomeada ('{ptr_name}'). Buscando seu endereço.")
+                addr_reg = alloc.get_address_in_reg(ptr_name)
             
-            reg_dest = alloc.get_reg_for_temp(dest)
+            dest_reg = alloc.get_reg_for_temp(dest)
             
-            func_ctx.add_instruction(f"\tload: {reg_dest} = [{reg_ptr}]")
+            # A instrução de load agora funciona para ambos os casos
+            func_ctx.add_instruction(f"\tload: {dest_reg} = [{addr_reg}]")
             
-            alloc.free_reg_if_temp(reg_ptr)
-
+            # Libera o registrador que continha o endereço
+            alloc.free_reg_if_temp(addr_reg) 
+            
         elif dest.startswith('*'):
             print("[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)")
             addr_var_name = dest[1:]
@@ -487,7 +502,7 @@ def translate_instruction(instr_parts, func_ctx):
             
             func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
             
-            alloc.free_reg_if_temp(src_reg) 
+            alloc._unassign_reg(src_reg) 
             alloc._unassign_reg(addr_reg)
             
         elif 'call' in expr_parts:
@@ -534,11 +549,12 @@ def translate_instruction(instr_parts, func_ctx):
             del func_ctx.last_comparison 
             return
             
-            
         else:
             print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
             reg_src = alloc.ensure_var_in_reg(expr_parts[0])
             alloc.update_var_from_reg(dest, reg_src)
+            if expr_parts[0].startswith('t'):
+                alloc.free_reg_if_temp(reg_src)
 
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento")

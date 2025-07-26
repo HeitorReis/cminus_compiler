@@ -5,78 +5,31 @@
 main:
 	movi: r29 = 63
 	mov: r31 = r29
-	subi: r29 = r29, 48
+	subi: r29 = r29, 16
 	subi: r30 = r31, 1
 	store: [r30] = r1
 	subi: r30 = r31, 2
 	store: [r30] = r2
 	subi: r30 = r31, 3
 	store: [r30] = r3
-	movi: r12 = 0
+	in: r12
 	subi: r13 = r31, 5
 	store: [r13] = r12
-	in: r14
-	subi: r15 = r31, 6
-	store: [r15] = r14
-	subi: r30 = r31, 6
-	load: r16 = [r30]
-	load: r17 = [r16]
-	subi: r30 = r31, 5
-	load: r18 = [r30]
-	load: r19 = [r18]
-	movi: r20 = 32
-	add: r21 = r20, r19
-	store: [r21] = r17
-	load: r22 = [r18]
+	subi: r14 = r31, 5
+	load: r15 = [r14]
+	subi: r16 = r15, 1
+	movi: r17 = 32
+	addi: r18 = r17, 2
+	store: [r18] = r16
+	subi: r19 = r31, 5
+	load: r20 = [r19]
+	movi: r21 = 32
+	addi: r22 = r21, 0
+	store: [r22] = r20
 	movi: r23 = 32
-	add: r24 = r23, r22
+	addi: r24 = r23, 2
 	load: r25 = [r24]
 	mov: r1 = r25
-	out: r1
-	load: r26 = [r18]
-	addi: r4 = r26, 1
-	subi: r5 = r31, 5
-	store: [r5] = r4
-	load: r6 = [r18]
-	subi: r7 = r6, 1
-	movi: r8 = 32
-	add: r9 = r8, r7
-	load: r10 = [r9]
-	load: r11 = [r16]
-	add: r13 = r10, r11
-	load: r14 = [r18]
-	movi: r15 = 32
-	add: r17 = r15, r14
-	store: [r17] = r13
-	load: r21 = [r18]
-	movi: r24 = 32
-	add: r25 = r24, r21
-	load: r4 = [r25]
-	mov: r1 = r4
-	out: r1
-	load: r5 = [r18]
-	load: r9 = [r16]
-	add: r13 = r5, r9
-	subi: r17 = r31, 5
-	store: [r17] = r13
-	load: r25 = [r18]
-	subi: r4 = r25, 1
-	movi: r13 = 32
-	add: r17 = r13, r4
-	load: r16 = [r17]
-	subi: r30 = r31, 6
-	load: r16 = [r30]
-	load: r17 = [r16]
-	add: r16 = r16, r17
-	load: r16 = [r18]
-	movi: r16 = 32
-	add: r16 = r16, r16
-	store: [r16] = r16
-	load: r16 = [r18]
-	movi: r18 = 32
-	add: r18 = r18, r16
-	load: r18 = [r18]
-	mov: r1 = r18
 	out: r1
 	bi: main_epilogue
 main_epilogue:
