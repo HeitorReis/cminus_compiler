@@ -12,11 +12,8 @@ IR_TO_ASSEMBLY_BRANCH = {
     '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
 }
 
-LINK_STACK_SIZE = 32  # Espaço reservado para a pilha de chamadas
-DATA_MEMORY_SIZE = 64  # Tamanho da memória de dados (exemplo)
-# Mapeamento de nomes simbólicos para registradores físicos
+DATA_MEMORY_SIZE = 256 
 SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
-# r0 é para retorno/argumento, r1-r3 são para os próximos argumentos.
 ARG_REGS = ['r1', 'r2', 'r3']
 
 # Contador para alocar regiões únicas de memória para cada chamada de função
@@ -99,7 +96,7 @@ class RegisterAllocator:
         self.callee_saved_pool = [f"r{i}" for i in range(12, 27)]
         self.caller_saved_pool = [f"r{i}" for i in range(4, 12)]
 
-        self.reg_pool = self.callee_saved_pool + self.caller_saved_pool
+        self.reg_pool = self.caller_saved_pool + self.callee_saved_pool
         self.SPILL_TEMP_REG = SPECIAL_REGS['spill']  # Registrador para spill temporário 
         print(f"[ALLOC_INIT] Pool de registradores definido: {self.reg_pool}")
         print(f"[ALLOC_INIT] Registrador de spill reservado: {self.SPILL_TEMP_REG}")

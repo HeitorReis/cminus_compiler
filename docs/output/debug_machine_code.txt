@@ -7,8 +7,8 @@ Line 1: 1000 10 0000 29 = 0, 0000111111
 Line 2: mov na do r31 = r0, r29
 Line 2: 1000 00 0000 31 = 0, 11101
 
-Line 3: sub i do r29 = r29, immediate 16
-Line 3: 0001 10 0000 29 = 29, 0000010000
+Line 3: sub i do r29 = r29, immediate 21
+Line 3: 0001 10 0000 29 = 29, 0000010101
 
 Line 4: sub i do r30 = r31, immediate 1
 Line 4: 0001 10 0000 30 = 31, 0000000001
@@ -28,65 +28,77 @@ Line 8: 0001 10 0000 30 = 31, 0000000011
 Line 9: store na do r0 = r3, r30
 Line 9: 0000 00 0000 0 = 3, 1111000000
 
-Line 10: in na do r12 = r0, r0
-Line 10: 1001 00 0000 12 = 0, 00000
+Line 10: mov i do r12 = r0, immediate 32
+Line 10: 1000 10 0000 12 = 0, 0000100000
 
-Line 11: sub i do r13 = r31, immediate 5
-Line 11: 0001 10 0000 13 = 31, 0000000101
+Line 11: add i do r13 = r12, immediate 1
+Line 11: 0000 10 0000 13 = 12, 0000000001
 
-Line 12: store na do r0 = r12, r13
-Line 12: 0000 00 0000 0 = 12, 0110100000
+Line 12: mov i do r14 = r0, immediate 50
+Line 12: 1000 10 0000 14 = 0, 0000110010
 
-Line 13: sub i do r14 = r31, immediate 5
-Line 13: 0001 10 0000 14 = 31, 0000000101
+Line 13: store na do r0 = r14, r13
+Line 13: 0000 00 0000 0 = 14, 0110100000
 
-Line 14: load na do r15 = r0, reg_addr: r14
-Line 14: 0001 00 0000 15 = 0, 0111000000
+Line 14: mov i do r15 = r0, immediate 35
+Line 14: 1000 10 0000 15 = 0, 0000100011
 
-Line 15: sub i do r16 = r15, immediate 1
-Line 15: 0001 10 0000 16 = 15, 0000000001
+Line 15: add i do r16 = r15, immediate 2
+Line 15: 0000 10 0000 16 = 15, 0000000010
 
-Line 16: mov i do r17 = r0, immediate 32
-Line 16: 1000 10 0000 17 = 0, 0000100000
+Line 16: mov i do r17 = r0, immediate 25
+Line 16: 1000 10 0000 17 = 0, 0000011001
 
-Line 17: add i do r18 = r17, immediate 2
-Line 17: 0000 10 0000 18 = 17, 0000000010
+Line 17: store na do r0 = r17, r16
+Line 17: 0000 00 0000 0 = 17, 1000000000
 
-Line 18: store na do r0 = r16, r18
-Line 18: 0000 00 0000 0 = 16, 1001000000
+Line 18: mov i do r18 = r0, immediate 32
+Line 18: 1000 10 0000 18 = 0, 0000100000
 
-Line 19: sub i do r19 = r31, immediate 5
-Line 19: 0001 10 0000 19 = 31, 0000000101
+Line 19: add i do r19 = r18, immediate 1
+Line 19: 0000 10 0000 19 = 18, 0000000001
 
 Line 20: load na do r20 = r0, reg_addr: r19
 Line 20: 0001 00 0000 20 = 0, 1001100000
 
-Line 21: mov i do r21 = r0, immediate 32
-Line 21: 1000 10 0000 21 = 0, 0000100000
+Line 21: mov i do r21 = r0, immediate 35
+Line 21: 1000 10 0000 21 = 0, 0000100011
 
-Line 22: add i do r22 = r21, immediate 0
-Line 22: 0000 10 0000 22 = 21, 0000000000
+Line 22: add i do r22 = r21, immediate 2
+Line 22: 0000 10 0000 22 = 21, 0000000010
 
-Line 23: store na do r0 = r20, r22
-Line 23: 0000 00 0000 0 = 20, 1011000000
+Line 23: load na do r23 = r0, reg_addr: r22
+Line 23: 0001 00 0000 23 = 0, 1011000000
 
-Line 24: mov i do r23 = r0, immediate 32
-Line 24: 1000 10 0000 23 = 0, 0000100000
+Line 24: add na do r24 = r20, r23
+Line 24: 0000 00 0000 24 = 20, 10111
 
-Line 25: add i do r24 = r23, immediate 2
-Line 25: 0000 10 0000 24 = 23, 0000000010
+Line 25: mov i do r25 = r0, immediate 38
+Line 25: 1000 10 0000 25 = 0, 0000100110
 
-Line 26: load na do r25 = r0, reg_addr: r24
-Line 26: 0001 00 0000 25 = 0, 1100000000
+Line 26: add i do r26 = r25, immediate 0
+Line 26: 0000 10 0000 26 = 25, 0000000000
 
-Line 27: mov na do r1 = r0, r25
-Line 27: 1000 00 0000 1 = 0, 11001
+Line 27: store na do r0 = r24, r26
+Line 27: 0000 00 0000 0 = 24, 1101000000
 
-Line 28: out na do r0 = r0, r1
-Line 28: 1010 00 0000 0 = 0, 00001
+Line 28: mov i do r4 = r0, immediate 38
+Line 28: 1000 10 0000 4 = 0, 0000100110
 
-Line 29: b   i do na = na, ProgramCounter+0
-Line 29: 0000 10 0000    =   , 00000000000000000000
+Line 29: add i do r5 = r4, immediate 0
+Line 29: 0000 10 0000 5 = 4, 0000000000
 
-Line 30: ret i do na = na, ProgramCounter-1
-Line 30: 1111 10 0000    =   , 11111111111111111111
+Line 30: load na do r6 = r0, reg_addr: r5
+Line 30: 0001 00 0000 6 = 0, 0010100000
+
+Line 31: mov na do r1 = r0, r6
+Line 31: 1000 00 0000 1 = 0, 00110
+
+Line 32: out na do r0 = r0, r1
+Line 32: 1010 00 0000 0 = 0, 00001
+
+Line 33: b   i do na = na, ProgramCounter+0
+Line 33: 0000 10 0000    =   , 00000000000000000000
+
+Line 34: ret i do na = na, ProgramCounter-1
+Line 34: 1111 10 0000    =   , 11111111111111111111

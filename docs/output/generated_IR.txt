@@ -1,19 +1,26 @@
-  vec := .space , 3
+  vec_a := .space , 3
+  vec_b := .space , 3
+  result_vec := .space , 3
 main:
-  t0 := call input, 0
-  *gap := t0
-  t1 := *gap
-  t2 := t1 - 1
-  t3 := &vec
-  t4 := t3 + 2
-  *t4 := t2
-  t5 := *gap
-  t6 := &vec
-  t7 := t6 + 0
-  *t7 := t5
-  t8 := &vec
-  t9 := t8 + 2
-  t10 := *t9
-  arg t10
+  t0 := &vec_a
+  t1 := t0 + 1
+  *t1 := 50
+  t2 := &vec_b
+  t3 := t2 + 2
+  *t3 := 25
+  t4 := &vec_a
+  t5 := t4 + 1
+  t6 := *t5
+  t7 := &vec_b
+  t8 := t7 + 2
+  t9 := *t8
+  t10 := t6 + t9
+  t11 := &result_vec
+  t12 := t11 + 0
+  *t12 := t10
+  t13 := &result_vec
+  t14 := t13 + 0
+  t15 := *t14
+  arg t15
   call output, 1
   return _
