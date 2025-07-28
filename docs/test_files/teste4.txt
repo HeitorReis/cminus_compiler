@@ -1,12 +1,14 @@
-int vec_a[3];
-int vec_b[3];
-int result_vec[3];
+int mod_2 (int value)
+{       
+  output(value);
+	if (value < 2) return value;
+  else return mod_2 (value/2);
+}
 
-void main(void) {
-  vec_a[1] = 50;
-  vec_b[2] = 25;
-
-  result_vec[0] = vec_a[1] + vec_b[2];
-
-  output(result_vec[0]);
+void main(void)
+{	int x; int result;
+  x = 10;
+  result = mod_2(x);
+  output(0);
+  output(result);
 }

@@ -1,8 +1,12 @@
+int vec_a[3];
+int vec_b[3];
+int result_vec[3];
+
 void main(void) {
-    int x;
-    x = input();
-    while (x > 0) {
-        x = x - 1;
-        output(x);
-    }
+  vec_a[1] = 50;
+  vec_b[2] = 25;
+
+  result_vec[0] = vec_a[1] + vec_b[2];
+
+  output(result_vec[0]);
 }

@@ -2,39 +2,40 @@
 .global main
 
 	bi: main
-count:
+mod_2:
 	subi: r29 = r29, 1
 	store: [r29] = r28
 	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
-	subi: r29 = r29, 7
+	subi: r29 = r29, 4
 	subi: r30 = r31, 1
 	store: [r30] = r1
-	subi: r30 = r31, 2
-	store: [r30] = r2
-	subi: r4 = r31, 2
-	load: r5 = [r4]
-	movi: r6 = 0
+	subi: r30 = r31, 1
+	load: r4 = [r30]
+	mov: r1 = r4
+	out: r1
+	subi: r30 = r31, 1
+	load: r5 = [r30]
+	movi: r6 = 2
 	subs: r0 = r5, r6
-	bineq: L0
-	bi: count_epilogue
+	bigteq: L0
+	mov: r0 = r5
+	bi: mod_2_epilogue
 	bi: L1
 L0:
+	divi: r7 = r5, 2
+	mov: r1 = r7
+	movi: r8 = mod_2_Lret0
+	mov: r28 = r8
+	bl: mod_2
+mod_2_Lret0:
+	mov: r9 = r0
+	mov: r0 = r9
+	bi: mod_2_epilogue
 L1:
-	subi: r7 = r31, 2
-	load: r8 = [r7]
-	mov: r1 = r8
-	out: r1
-	subi: r9 = r31, 2
-	load: r10 = [r9]
-	subi: r11 = r10, 1
-	mov: r1 = r11
-	movi: r28 = count_Lret0
-	bl: count
-count_Lret0:
-	bi: count_epilogue
-count_epilogue:
+	bi: mod_2_epilogue
+mod_2_epilogue:
 	mov: r29 = r31
 	load: r31 = [r29]
 	addi: r29 = r29, 1
@@ -45,24 +46,27 @@ count_epilogue:
 main:
 	movi: r29 = 255
 	mov: r31 = r29
-	subi: r29 = r29, 6
-	subi: r30 = r31, 1
-	store: [r30] = r1
+	subi: r29 = r29, 3
+	movi: r4 = 10
 	subi: r30 = r31, 2
-	store: [r30] = r2
-	in: r4
-	subi: r5 = r31, 3
-	store: [r5] = r4
-	subi: r6 = r31, 3
-	load: r7 = [r6]
-	mov: r1 = r7
-	out: r1
-	subi: r8 = r31, 3
-	load: r9 = [r8]
-	mov: r1 = r9
-	movi: r28 = main_Lret0
-	bl: count
+	store: [r30] = r4
+	mov: r1 = r4
+	movi: r5 = main_Lret0
+	mov: r28 = r5
+	bl: mod_2
 main_Lret0:
+	mov: r6 = r0
+	subi: r30 = r31, 1
+	store: [r30] = r6
+	movi: r7 = 0
+	mov: r1 = r7
+	subi: r30 = r31, 1
+	store: [r30] = r6
+	out: r1
+	subi: r30 = r31, 1
+	load: r8 = [r30]
+	mov: r1 = r8
+	out: r1
 	bi: main_epilogue
 main_epilogue:
 	ret:

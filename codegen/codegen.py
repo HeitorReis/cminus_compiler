@@ -186,7 +186,7 @@ class RegisterAllocator:
         addr_reg = self._get_free_reg()
         
         if var_name in self.func_context.stack_layout:
-            # A variável está na pilha. Seu endereço é "fp + offset".
+            # A variável está na pilha. endereço "fp + offset".
             offset = self.func_context.stack_layout[var_name]
             fp_reg = SPECIAL_REGS['fp']
             print(f"[GET_ADDR] -> '{var_name}' está na pilha. Calculando endereço [fp, #{offset}].")
@@ -228,17 +228,36 @@ class RegisterAllocator:
     
     def spill_all_dirty(self):
         """
-        Força o salvamento de todas as variáveis "reais" antes de chamadas de função.
+        Força o salvamento de todas as variáveis "reais" (não temporárias) que foram modificadas.
+        Distingue entre variáveis locais (pilha) e globais (memória .data).
         """
-        print(f"[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: {self.dirty_regs}")
+        print(f"[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {self.dirty_regs}")
         for reg in list(self.dirty_regs):
             var_name = self.reg_to_var.get(reg)
             if var_name and not var_name.startswith('t'):
-                addr_reg = self.SPILL_TEMP_REG
-                addr = self.func_context.data_manager.get_address(var_name)
-                print(f"[SPILL_ALL] -> Salvando variável real '{var_name}' do registrador {reg} na memória.")
-                self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
-                self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
+                # --- LÓGICA CORRIGIDA ---
+                # Primeiro, verifique se a variável é local ou um parâmetro.
+                if var_name in self.func_context.stack_layout:
+                    # É uma variável da pilha. Salve em [fp + offset].
+                    offset = self.func_context.stack_layout[var_name]
+                    print(f"[SPILL_ALL] -> Salvando variável local '{var_name}' do registrador {reg} na pilha [fp, #{offset}].")
+                    
+                    # Gera código para armazenar na pilha
+                    scratch_reg, fp_reg = self.SPILL_TEMP_REG, SPECIAL_REGS['fp']
+                    self.func_context.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
+                    self.func_context.add_instruction(f"\tstore: [{scratch_reg}] = {reg}")
+                    
+                else:
+                    # Se não for local, assume-se que é global. Salve na memória .data.
+                    try:
+                        addr = self.func_context.data_manager.get_address(var_name)
+                        addr_reg = self.SPILL_TEMP_REG
+                        print(f"[SPILL_ALL] -> Salvando variável global '{var_name}' do registrador {reg} na memória.")
+                        self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
+                        self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
+                    except KeyError:
+                        print(f"[SPILL_ALL_WARN] -> Aviso: Variável '{var_name}' não é nem local nem global. Não foi salva.")
+                        
                 self.dirty_regs.discard(reg)
     
     def invalidate_vars(self, var_names):
@@ -341,7 +360,7 @@ class RegisterAllocator:
             print(f"[UNASSIGN_REG] Desmapeado {reg} de '{var_name}'.")
         else:
             print(f"[UNASSIGN_REG] {reg} já estava desmapeado.")
-
+            
         if reg not in self.free_regs:
             self.free_regs.append(reg)
         if reg in self.lru_order:
@@ -353,6 +372,17 @@ class RegisterAllocator:
         if reg in self.lru_order:
             self.lru_order.remove(reg)
         self.lru_order.append(reg)
+    
+    def invalidate_caller_saved_regs(self):
+        """
+        Invalida todas as variáveis que estão em registradores caller-saved.
+        Deve ser chamada após uma chamada de função.
+        """
+        print("[ALLOC_INVALIDATE] Invalidando registradores caller-saved após chamada de função.")
+        for reg in self.caller_saved_pool:
+            if reg in self.reg_to_var:
+                print(f" -> Invalidando {reg} que continha '{self.reg_to_var[reg]}'")
+                self._unassign_reg(reg)
 
 class FunctionContext:
     def __init__(self, name, data_manager):
@@ -533,6 +563,7 @@ def translate_instruction(instr_parts, func_ctx):
                 print(f"[TRANSLATE] -> Função chamada: {func_name}, argumento: {hit_reg}")
                 print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
                 func_ctx.add_instruction(f"\tout: {hit_reg}")
+                alloc.invalidate_caller_saved_regs()
             else:
                 print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
                 return_label = func_ctx.new_label()
@@ -540,6 +571,7 @@ def translate_instruction(instr_parts, func_ctx):
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
                 func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
                 func_ctx.add_instruction(f"\tbl: {func_name}")
+                alloc.invalidate_caller_saved_regs()
                 alloc.free_reg_if_temp(ret_reg)
                 func_ctx.add_instruction(f"{return_label}:")
                 
@@ -566,11 +598,37 @@ def translate_instruction(instr_parts, func_ctx):
             return
             
         else:
-            print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
-            reg_src = alloc.ensure_var_in_reg(expr_parts[0])
-            alloc.update_var_from_reg(dest, reg_src)
-            if expr_parts[0].startswith('t'):
-                alloc.free_reg_if_temp(reg_src)
+            print("[TRANSLATE] -> Caminho: Atribuição Simples")
+            dest_var = dest
+            src_val = expr_parts[0]
+
+            # 1. Garante que o valor de origem (seja constante ou variável)
+            #    esteja em um registrador.
+            src_reg = alloc.ensure_var_in_reg(src_val)
+
+            # 2. Se o destino for uma variável local (tem um lugar na pilha),
+            #    gere código para armazenar o valor lá.
+            if dest_var in func_ctx.stack_layout:
+                print(f"[TRANSLATE_ASSIGN] -> Armazenando '{dest_var}' na sua posição da pilha.")
+                offset = func_ctx.stack_layout[dest_var]
+                
+                # Usa um registrador temporário para calcular o endereço [fp + offset]
+                addr_reg = alloc.SPILL_TEMP_REG 
+                fp_reg = SPECIAL_REGS['fp']
+                
+                # Gera as instruções para: store [fp + offset] = src_reg
+                func_ctx.add_instruction(f"\tsubi: {addr_reg} = {fp_reg}, {-offset}")
+                func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
+
+            # 3. Atualiza o alocador para saber que `dest_var` agora também pode ser
+            #    encontrado em `src_reg`. Isso é uma otimização para uso imediato.
+            alloc.update_var_from_reg(dest_var, src_reg)
+
+            # 4. Se a origem era um temporário (ex: b := t1), podemos liberar
+            #    o registrador se ele não for mais necessário para `dest_var`.
+            if src_val.startswith('t'):
+                alloc.free_reg_if_temp(src_reg)
+
 
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento")
@@ -581,10 +639,12 @@ def translate_instruction(instr_parts, func_ctx):
             output_reg = ARG_REGS[0]  
             
             func_ctx.add_instruction(f"\tout: {output_reg}")
+            alloc.invalidate_caller_saved_regs()
         else:
             return_label = func_ctx.new_label()
             func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {return_label}")
             func_ctx.add_instruction(f"\tbl: {func_name}")
+            alloc.invalidate_caller_saved_regs()
             func_ctx.add_instruction(f"{return_label}:")
         alloc.invalidate_vars(func_ctx.arg_vars)
         func_ctx.arg_vars.clear()
@@ -722,7 +782,7 @@ def generate_assembly(ir_list):
         # 2A: Descobre parâmetros e variáveis locais da função
         defined_vars = set()
         all_vars_in_func = set()
-        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return'}
+        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return', 'output'}
         LABEL_RE = re.compile(r'^L\d+$')   # L0, L1, L2...
         VAR_RE   = re.compile(r'\b([a-zA-Z_]\w*)\b')
         
@@ -746,6 +806,7 @@ def generate_assembly(ir_list):
         
         # Agora, fora do loop, definimos parâmetros e variáveis locais
         func_ctx.param_names = [v for v in all_vars_in_func if v not in defined_vars]
+        print(f"[DEBUG] Função '{func_name}': all_vars={all_vars_in_func}, defined_vars={defined_vars}, params={func_ctx.param_names}")
         print(f"--> Parâmetros para '{func_name}': {func_ctx.param_names}")
         
         local_vars = {

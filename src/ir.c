@@ -268,10 +268,7 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
 
         case AST_ID: {
             printf("[IR_DBG]    Case AST_ID\n");
-            Operand temp = new_temp();
-            // Emite: temp := *ID
-            emit(list, IR_LOAD, temp, new_name(node->name), (Operand){.kind=OPERAND_EMPTY});
-            result_op = temp; // Retorna o temporário que contém o valor
+            result_op = new_name(node->name);
             break;
         }
 
@@ -286,11 +283,9 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             Operand rhs_op = generate_ir_for_expr(rhs, list, symtab); 
             
             if (lhs->kind == AST_ID) {
-                // Caso original: x = ...
                 Operand lhs_op = new_name(lhs->name); 
-                emit(list, IR_STORE, lhs_op, rhs_op, (Operand){.kind=OPERAND_EMPTY});
+                emit(list, IR_ASSIGN, lhs_op, rhs_op, (Operand){.kind=OPERAND_EMPTY});
             } else if (lhs->kind == AST_ARRAY_ACCESS) {
-                // Novo caso: a[i] = ...
                 printf("[IR_DBG]      Assigning to Array Access\n");
                 AstNode* index_node = lhs->firstChild;
                 if (!index_node) break;
