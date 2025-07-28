@@ -144,8 +144,12 @@ class Instruction:
             details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
             details['cond'] = op_part[1:] if len(op_part) > 1 else 'do'   # A condição são os últimos caracteres (ex: 'lteq')
             details['type'] = '11'
-            details['supp'] = 'na' 
-            details['op2'] = rest_part       # O alvo do desvio
+            is_register_target = rest_part.strip().lower().startswith('r')
+            if is_register_target:
+                details['supp'] = 'na'
+            else:
+                details['supp'] = 'i'
+            details['op2'] = rest_part
             return details
         
         branchlink_ops = [

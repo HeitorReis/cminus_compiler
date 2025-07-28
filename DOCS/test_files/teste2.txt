@@ -1,11 +1,8 @@
-void main(void)
-{
-    int x; int y;
-    x = input(); 
-    output(x);
-    y = 4;
-    if (x>y)
+void main(void) {
+    int x;
+    x = input();
+    while (x > 0) {
+        x = x - 1;
         output(x);
-    else
-        output(y);
+    }
 }

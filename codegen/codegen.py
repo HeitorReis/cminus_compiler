@@ -453,11 +453,25 @@ def translate_instruction(instr_parts, func_ctx):
                 alloc.free_reg_if_temp(op2_val)
         
         elif expr_parts[0].startswith('&'):
-            print("[TRANSLATE] -> Caminho: Obter Endereço (&)")
             var_name = expr_parts[0][1:]
             dest_reg = alloc.get_reg_for_temp(dest)
-            addr = func_ctx.data_manager.get_address(var_name)
-            func_ctx.add_instruction(f"\tmovi: {dest_reg} = {addr}")
+            
+            # Se é variável da pilha (parâmetro/local), o endereço é [fp + offset]
+            if var_name in func_ctx.stack_layout:
+                addr_reg = alloc.get_address_in_reg(var_name)
+                func_ctx.add_instruction(f"\tmov: {dest_reg} = {addr_reg}")
+                alloc.free_reg_if_temp(addr_reg)
+            else:
+                # Deve ser global; pegue do DataMemoryManager
+                try:
+                    addr = func_ctx.data_manager.get_address(var_name)
+                except KeyError as e:
+                    raise RuntimeError(
+                        f"&{var_name}: variável não é global e não está na stack_layout. "
+                        f"Provável erro no IR/front-end. stack_vars={list(func_ctx.stack_layout.keys())}"
+                    ) from e
+                func_ctx.add_instruction(f"\tmovi: {dest_reg} = {addr}")
+            return
 
         elif expr_parts[0].startswith('*'):
             print("[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)")
@@ -510,7 +524,21 @@ def translate_instruction(instr_parts, func_ctx):
             
             if func_name == 'input':
                 dest_reg = alloc.get_reg_for_temp(dest)
-                func_ctx.add_instruction(f"\tin: {dest_reg}")
+                if dest_reg == SPECIAL_REGS['retval']:
+                    # Pega um novo registrador temporário (garantido que não será r0 de novo)
+                    new_dest_reg = alloc.get_reg_for_temp(f"{dest}_fix") 
+                    
+                    # Move o resultado para o novo registrador seguro
+                    func_ctx.add_instruction(f"\tmov: {new_dest_reg} = {SPECIAL_REGS['retval']}")
+                    
+                    # Libera o registrador r0 que foi alocado incorretamente
+                    alloc.free_reg_if_temp(dest_reg) 
+                    
+                    # Atualiza o mapeamento para que a variável de destino aponte para o novo registrador
+                    alloc.update_var_from_reg(dest, new_dest_reg)
+                else:
+                    # Se o registrador alocado for seguro, apenas faça o mov
+                    func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
             elif func_name == 'output':
                 hit_reg = expr_parts[1].split(',', 1)[1]
                 print(f"[TRANSLATE] -> Função chamada: {func_name}, argumento: {hit_reg}")
@@ -525,7 +553,21 @@ def translate_instruction(instr_parts, func_ctx):
                 alloc.free_reg_if_temp(ret_reg)
                 func_ctx.add_instruction(f"{return_label}:")
                 dest_reg = alloc.get_reg_for_temp(dest)
-                func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+                if dest_reg == SPECIAL_REGS['retval']:
+                    # Pega um novo registrador temporário (garantido que não será r0 de novo)
+                    new_dest_reg = alloc.get_reg_for_temp(f"{dest}_fix") 
+                    
+                    # Move o resultado para o novo registrador seguro
+                    func_ctx.add_instruction(f"\tmov: {new_dest_reg} = {SPECIAL_REGS['retval']}")
+                    
+                    # Libera o registrador r0 que foi alocado incorretamente
+                    alloc.free_reg_if_temp(dest_reg) 
+                    
+                    # Atualiza o mapeamento para que a variável de destino aponte para o novo registrador
+                    alloc.update_var_from_reg(dest, new_dest_reg)
+                else:
+                    # Se o registrador alocado for seguro, apenas faça o mov
+                    func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
             alloc.invalidate_vars(func_ctx.arg_vars)
             func_ctx.arg_vars.clear()
             func_ctx.arg_count = 0
@@ -678,7 +720,6 @@ def generate_assembly(ir_list):
                 symbol_table.add_symbol(symbol)
     
     print(f"--- Fim da Passagem 1: {len(symbol_table.symbols)} símbolos globais encontrados. ---\n")
-
     # --- Etapa 2: Geração de Código para cada função ---
     print("--- Passagem 2: Traduzindo o IR para cada função ---")
     for func_name, func_ctx in functions.items():
@@ -687,38 +728,55 @@ def generate_assembly(ir_list):
         in_func = False
         for line in ir_list:
             stripped = line.strip()
-            if not stripped: continue
-            if stripped.startswith(func_name + ':'): in_func = True; continue
+            if not stripped: 
+                continue
+            if stripped.startswith(func_name + ':'): 
+                in_func = True
+                continue
             if stripped.endswith(':') and not stripped.startswith('L'):
-                if stripped[:-1] in functions and stripped[:-1] != func_name: in_func = False
-            if in_func: func_ir.append(stripped)
+                if stripped[:-1] in functions and stripped[:-1] != func_name: 
+                    in_func = False
+            if in_func: 
+                func_ir.append(stripped)
         
         print(f"-> IR isolado para '{func_name}' contém {len(func_ir)} instruções.")
         
         # 2A: Descobre parâmetros e variáveis locais da função
         defined_vars = set()
         all_vars_in_func = set()
-        var_pattern = re.compile(r'\b([a-zA-Z_]\w*)\b')
-
+        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return'}
+        LABEL_RE = re.compile(r'^L\d+$')   # L0, L1, L2...
+        VAR_RE   = re.compile(r'\b([a-zA-Z_]\w*)\b')
+        
         for line in func_ir:
             if ':=' in line:
-                dest = line.split(':=')[0].strip()
+                dest = line.split(':=', 1)[0].strip()
                 dest_var = re.sub(r'^\*', '', dest).strip()
-                if not dest_var.startswith('t'):
+                if not dest_var.startswith('t') and not LABEL_RE.match(dest_var) and dest_var != '_':
                     defined_vars.add(dest_var)
-            
-            matches = var_pattern.findall(line)
+                    
+            matches = VAR_RE.findall(line)
             for var in matches:
-                if var not in functions and not var.startswith('t') and var not in ['if_false', 'goto', 'call', 'arg', 'return']:
-                    all_vars_in_func.add(var)
-
-        func_ctx.param_names = [var for var in all_vars_in_func if var not in defined_vars]
+                if (var in functions                
+                    or var.startswith('t')          
+                    or var in IR_KEYWORDS           
+                    or LABEL_RE.match(var)          
+                    or var == '_'                   
+                ):
+                    continue
+                all_vars_in_func.add(var)
+        
+        # Agora, fora do loop, definimos parâmetros e variáveis locais
+        func_ctx.param_names = [v for v in all_vars_in_func if v not in defined_vars]
         print(f"--> Parâmetros para '{func_name}': {func_ctx.param_names}")
-
-        local_vars = {var for var in all_vars_in_func if var not in func_ctx.param_names and not symbol_table.get_symbol(var)}
+        
+        local_vars = {
+            v for v in all_vars_in_func
+            if v not in func_ctx.param_names and not symbol_table.get_symbol(v)
+        }
         func_ctx.local_vars = list(local_vars)
         print(f"--> Variáveis Locais para '{func_name}': {func_ctx.local_vars}")
-
+        
         # 2B: Atribui um offset na pilha para cada parâmetro e variável local
         print(f"--> Criando o layout da pilha para '{func_name}'...")
         current_offset = -1

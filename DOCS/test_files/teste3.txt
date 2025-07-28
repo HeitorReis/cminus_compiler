@@ -11,10 +11,11 @@ int gcd (int u, int v)
 }
 
 void main(void)
-{	int x; int y;
+{	int x; int y; int z;
 	x = input();
 	output(x);
 	y = input();
 	output(y);
-	output(gcd(x,y));
+	z = gcd(x,y);
+	output(z);
 }
