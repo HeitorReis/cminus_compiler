@@ -517,34 +517,24 @@ def translate_instruction(instr_parts, func_ctx):
             alloc._unassign_reg(addr_reg)
             
         elif 'call' in expr_parts:
-            print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
+            print("[TRANSLATE] -> Caminho: Chamada de Função")
             func_name = expr_parts[1].replace(',', '')
             
             alloc.spill_all_dirty()
             
             if func_name == 'input':
+                print("\t[TRANSLATE] -> Caminho: Chamada de Função Input")
+                # VERSÃO ORIGINAL: Simplesmente aloca um registrador e gera a instrução 'in'.
                 dest_reg = alloc.get_reg_for_temp(dest)
-                if dest_reg == SPECIAL_REGS['retval']:
-                    # Pega um novo registrador temporário (garantido que não será r0 de novo)
-                    new_dest_reg = alloc.get_reg_for_temp(f"{dest}_fix") 
-                    
-                    # Move o resultado para o novo registrador seguro
-                    func_ctx.add_instruction(f"\tmov: {new_dest_reg} = {SPECIAL_REGS['retval']}")
-                    
-                    # Libera o registrador r0 que foi alocado incorretamente
-                    alloc.free_reg_if_temp(dest_reg) 
-                    
-                    # Atualiza o mapeamento para que a variável de destino aponte para o novo registrador
-                    alloc.update_var_from_reg(dest, new_dest_reg)
-                else:
-                    # Se o registrador alocado for seguro, apenas faça o mov
-                    func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+                func_ctx.add_instruction(f"\tin: {dest_reg}")
             elif func_name == 'output':
+                print("\t[TRANSLATE] -> Caminho: Chamada de Função Output")
                 hit_reg = expr_parts[1].split(',', 1)[1]
                 print(f"[TRANSLATE] -> Função chamada: {func_name}, argumento: {hit_reg}")
                 print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
                 func_ctx.add_instruction(f"\tout: {hit_reg}")
             else:
+                print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
                 return_label = func_ctx.new_label()
                 ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
@@ -552,23 +542,10 @@ def translate_instruction(instr_parts, func_ctx):
                 func_ctx.add_instruction(f"\tbl: {func_name}")
                 alloc.free_reg_if_temp(ret_reg)
                 func_ctx.add_instruction(f"{return_label}:")
+                
                 dest_reg = alloc.get_reg_for_temp(dest)
-                if dest_reg == SPECIAL_REGS['retval']:
-                    # Pega um novo registrador temporário (garantido que não será r0 de novo)
-                    new_dest_reg = alloc.get_reg_for_temp(f"{dest}_fix") 
-                    
-                    # Move o resultado para o novo registrador seguro
-                    func_ctx.add_instruction(f"\tmov: {new_dest_reg} = {SPECIAL_REGS['retval']}")
-                    
-                    # Libera o registrador r0 que foi alocado incorretamente
-                    alloc.free_reg_if_temp(dest_reg) 
-                    
-                    # Atualiza o mapeamento para que a variável de destino aponte para o novo registrador
-                    alloc.update_var_from_reg(dest, new_dest_reg)
-                else:
-                    # Se o registrador alocado for seguro, apenas faça o mov
-                    func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
-            alloc.invalidate_vars(func_ctx.arg_vars)
+                func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+                alloc.invalidate_vars(func_ctx.arg_vars)
             func_ctx.arg_vars.clear()
             func_ctx.arg_count = 0
         
@@ -632,6 +609,7 @@ def translate_instruction(instr_parts, func_ctx):
             reg = alloc.ensure_var_in_reg(instr_parts[1])
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
         alloc.spill_all_dirty()
+        print("[TRANSLATE] -> Pular para a seção de epílogo.")
         func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
         return 
 
