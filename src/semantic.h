@@ -10,6 +10,7 @@ extern char *currentScope;
 typedef enum {
     TYPE_INT = 1,
     TYPE_VOID = 2,
+    TYPE_ARRAY = 3,
     TYPE_ERROR = -1
 } ExpType;
 

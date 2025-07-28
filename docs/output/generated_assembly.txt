@@ -2,50 +2,112 @@
 .global main
 
 	bi: main
-count:
-	subi: r29 = r29, 8
-	storei: [r29, #0] = r28
-	storei: [r29, #4] = r31
+gcd:
+	subi: r29 = r29, 1
+	store: [r29] = r28
+	subi: r29 = r29, 1
+	store: [r29] = r31
 	mov: r31 = r29
-	movi: r14 = var_number
-	load: r13 = [r14]
-	movi: r15 = 0
-	subs: r26 = r13, r15
-	bilteq: L0
-	bi: count_epilogue
-L0:
-L1:
-	movi: r18 = var_number
-	load: r17 = [r18]
-	mov: r1 = r17
+	subi: r29 = r29, 17
+	subi: r30 = r31, 1
+	store: [r30] = r1
+	subi: r30 = r31, 2
+	store: [r30] = r2
+	subi: r30 = r31, 3
+	store: [r30] = r3
+	subi: r4 = r31, 2
+	load: r5 = [r4]
+	mov: r1 = r5
 	out: r1
-	movi: r20 = var_number
-	load: r19 = [r20]
-	subi: r21 = r19, 1
-	mov: r1 = r21
-	bl: count
-count_epilogue:
-	loadi: r31 = [r29, #4]
-	loadi: r28 = [r29, #0]
-	addi: r29 = r29, 8
+	subi: r6 = r31, 1
+	load: r7 = [r6]
+	mov: r1 = r7
+	out: r1
+	subi: r8 = r31, 1
+	load: r9 = [r8]
+	movi: r10 = 0
+	subs: r0 = r9, r10
+	bineq: L0
+	subi: r11 = r31, 2
+	load: r12 = [r11]
+	mov: r0 = r12
+	bi: gcd_epilogue
+	bi: L1
+L0:
+	subi: r13 = r31, 1
+	load: r14 = [r13]
+	mov: r1 = r14
+	subi: r15 = r31, 2
+	load: r16 = [r15]
+	subi: r17 = r31, 2
+	load: r18 = [r17]
+	subi: r19 = r31, 1
+	load: r20 = [r19]
+	div: r21 = r18, r20
+	subi: r22 = r31, 1
+	load: r23 = [r22]
+	mul: r24 = r21, r23
+	sub: r25 = r16, r24
+	mov: r2 = r25
+	movi: r26 = gcd_Lret0
+	mov: r28 = r26
+	bl: gcd
+gcd_Lret0:
+	mov: r5 = r0
+	mov: r0 = r5
+	bi: gcd_epilogue
+L1:
+	bi: gcd_epilogue
+gcd_epilogue:
+	mov: r29 = r31
+	load: r31 = [r29]
+	addi: r29 = r29, 1
+	load: r28 = [r29]
+	addi: r29 = r29, 1
 	b: r28
 
 main:
-	subi: r29 = r29, 8
-	storei: [r29, #0] = r28
-	storei: [r29, #4] = r31
+	movi: r29 = 255
 	mov: r31 = r29
-	in: r13
-	movi: r14 = var_x
-	store: [r14] = r13
-	movi: r16 = var_x
-	load: r15 = [r16]
-	mov: r1 = r15
-	bl: count
+	subi: r29 = r29, 13
+	subi: r30 = r31, 1
+	store: [r30] = r1
+	subi: r30 = r31, 2
+	store: [r30] = r2
+	mov: r4 = r0
+	subi: r5 = r31, 4
+	store: [r5] = r4
+	subi: r6 = r31, 4
+	load: r7 = [r6]
+	mov: r1 = r7
+	out: r1
+	mov: r8 = r0
+	subi: r9 = r31, 3
+	store: [r9] = r8
+	subi: r10 = r31, 3
+	load: r11 = [r10]
+	mov: r1 = r11
+	out: r1
+	subi: r12 = r31, 4
+	load: r13 = [r12]
+	mov: r1 = r13
+	subi: r14 = r31, 3
+	load: r15 = [r14]
+	mov: r2 = r15
+	movi: r16 = main_Lret0
+	mov: r28 = r16
+	bl: gcd
+main_Lret0:
+	mov: r17 = r0
+	subi: r18 = r31, 5
+	store: [r18] = r17
+	subi: r19 = r31, 5
+	load: r20 = [r19]
+	mov: r1 = r20
+	out: r1
+	bi: main_epilogue
 main_epilogue:
-	loadi: r31 = [r29, #4]
-	loadi: r28 = [r29, #0]
-	addi: r29 = r29, 8
 	ret:
 
 .data
+stack_space: .space 256

@@ -102,6 +102,24 @@ static void emit(IRList* list, IrOpcode opcode, Operand result, Operand arg1, Op
 
 // --- Main IR Generation Logic ---
 
+static void generate_global_declarations(AstNode* node, IRList* list) {
+    if (!node || node->kind != AST_PROGRAM) {
+        return;
+    }
+    printf("[IR_DBG] Pass 1: Searching for global variable declarations...\n");
+
+    for (AstNode* child = node->firstChild; child; child = child->nextSibling) {
+        if (child->kind == AST_VAR_DECL) {
+            printf("[IR_DBG]   Found global var declaration for '%s'\n", child->name);
+            if (child->array_size > 0) {
+                emit(list, IR_DEC, new_name(child->name), new_name(".space"), new_const(child->array_size));
+            } else {
+                // Não emitimos .word para globais simples, o backend já faz isso
+            }
+        }
+    }
+}
+
 static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symtab) {
     if (!node) {
         printf("[IR_DBG] generate_ir_for_node: Encountered NULL node, returning.\n");
@@ -113,7 +131,8 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
         case AST_PROGRAM:
             printf("[IR_DBG]   Case AST_PROGRAM\n");
             for (AstNode* child = node->firstChild; child; child = child->nextSibling) {
-                generate_ir_for_node(child, list, symtab);
+                if (child->kind == AST_FUN_DECL)
+                    generate_ir_for_node(child, list, symtab);
             }
             break;
 
@@ -134,7 +153,8 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
         case AST_BLOCK:
             printf("[IR_DBG]   Case AST_BLOCK\n");
             for (AstNode* child = node->firstChild; child; child = child->nextSibling) {
-                generate_ir_for_node(child, list, symtab);
+                if (child->kind != AST_VAR_DECL)
+                    generate_ir_for_node(child, list, symtab);
             }
             break;
 
@@ -199,7 +219,22 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
             generate_ir_for_expr(node, list, symtab);
             break;
 
-        case AST_VAR_DECL:
+        case AST_VAR_DECL: {
+            // Apenas processa declarações que estão no escopo global.
+            // Variáveis locais (dentro de funções) serão gerenciadas na pilha pelo backend.
+            if (strcmp(currentScope, "global") == 0) {
+                printf("[IR_DBG]   Processing GLOBAL declaration for '%s'\n", node->name);
+                if (node->array_size > 0) {
+                    // É um vetor global: Gera a diretiva .space
+                    emit(list, IR_DEC, new_name(node->name), new_name(".space"), new_const(node->array_size));
+                }
+                // Variáveis globais simples não precisam de diretiva,
+                // pois o backend as descobre e aloca .word para elas.
+            } else {
+                printf("[IR_DBG]   Skipping LOCAL declaration for '%s' in scope '%s'\n", node->name, currentScope);
+            }
+            break;
+        }
         case AST_PARAM:
         case AST_PARAM_LIST:
         case AST_PARAM_ARRAY:
@@ -262,8 +297,7 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
                 
                 // A lógica de cálculo de endereço é a mesma do LOAD
                 Operand index_op = generate_ir_for_expr(index_node, list, symtab);
-                Operand offset_op = new_temp();
-                emit(list, IR_MUL, offset_op, index_op, new_const(4));
+                Operand offset_op = index_op;
                 Operand base_addr_op = new_temp();
                 emit(list, IR_ADDR, base_addr_op, new_name(lhs->name), (Operand){.kind=OPERAND_EMPTY});
                 Operand final_addr_op = new_temp();
@@ -351,10 +385,8 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
 
             // 1. Gera IR para o índice e obtém o operando temporário (ex: t_idx)
             Operand index_op = generate_ir_for_expr(index_node, list, symtab);
-
-            // 2. Calcula o offset em bytes (índice * 4, pois C-minus só tem int)
-            Operand offset_op = new_temp();
-            emit(list, IR_MUL, offset_op, index_op, new_const(4));
+            
+            Operand offset_op = index_op;
 
             // 3. Obtém o endereço base do vetor
             Operand base_addr_op = new_temp();
@@ -426,6 +458,8 @@ IRList* generate_ir(AstNode* root, SymbolTable* symtab) {
     temp_counter = 0;
     label_counter = 0;
     
+    generate_global_declarations(root, list);
+    
     generate_ir_for_node(root, list, symtab);
 
     // Remove trechos inalcançáveis gerados após saltos
@@ -467,7 +501,7 @@ static void print_instruction_to_stream(FILE* out, IRInstruction* instr) {
             switch(instr->opcode) {
                 case IR_ADD: op_str = "+"; break; case IR_SUB: op_str = "-"; break; case IR_MUL: op_str = "*"; break; case IR_DIV: op_str = "/"; break;
                 case IR_EQ:  op_str = "=="; break; case IR_NEQ: op_str = "!="; break; case IR_LT:  op_str = "<"; break; case IR_LTE: op_str = "<="; break;
-                case IR_GT:  op_str = ">"; break; case IR_GTE: op_str = ">="; break;
+                case IR_GT:  op_str = ">"; break; case IR_GTE: op_str = ">="; break; case IR_DEC: op_str = ",";
                 default: break;
             }
             fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := "); print_operand(out, instr->arg1); fprintf(out, " %s ", op_str); print_operand(out, instr->arg2); break;

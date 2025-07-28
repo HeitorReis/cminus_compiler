@@ -1,0 +1,5 @@
+1:			sort 												.vectors
+2:			simple comparison									.if statements
+3:			gcd													.recursion
+4:			arithmetic progression (3 numbers)					.simple_vectors
+5:			count												.simple_recursion

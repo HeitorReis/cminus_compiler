@@ -1,7 +1,12 @@
-int main(void) {
-    int x; int y;
-    x = input();
-    y = x * 2;
-    output(y);
-    return 1;
+int vec_a[3];
+int vec_b[3];
+int result_vec[3];
+
+void main(void) {
+  vec_a[1] = 50;
+  vec_b[2] = 25;
+
+  result_vec[0] = vec_a[1] + vec_b[2];
+
+  output(result_vec[0]);
 }

@@ -31,13 +31,12 @@ LDFLAGS := -lfl
 
 # === Source list ===
 SRC_FILES := main.c \
-             $(SRC_DIR)/semantic.c \
-             $(SRC_DIR)/symbol_table.c \
-             $(SRC_DIR)/syntax_tree.c \
-             $(SRC_DIR)/utils.c \
-						 $(SRC_DIR)/ir.c \
-						#  $(SRC_DIR)/codegen.c
-
+            $(SRC_DIR)/semantic.c \
+            $(SRC_DIR)/symbol_table.c \
+            $(SRC_DIR)/syntax_tree.c \
+            $(SRC_DIR)/utils.c \
+			$(SRC_DIR)/ir.c \
+			
 # === Rules ===
 
 all: clean run
@@ -48,7 +47,7 @@ $(BUILD_DIR) $(BIN_DIR):
 
 # Generate parser using bison with flags -d -v -g
 $(YACC_C) $(YACC_H): $(YACC_FILE) | $(BUILD_DIR)
-	bison -d -v -g -Wcounterexamples $(YACC_FILE)
+	bison -d -v -g $(YACC_FILE)
 	mv -f parser.tab.c $(BUILD_DIR)/
 	mv -f parser.tab.h $(BUILD_DIR)/
 
@@ -74,25 +73,25 @@ $(BUILD_DIR)/lex.yy.o: $(LEX_C)
 	$(CC) $(CFLAGS) -c $(LEX_C) -o $@
 
 # Link all object files using g++ with the -lfl flag
-$(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS)
+$(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS) 
 	$(CXX) $(CFLAGS) $(OBJECTS) -o $(EXEC) $(LDFLAGS)
 
 # Run with test files based on the user-specified TEST variable
 run: $(EXEC)
 ifeq ($(TEST),1)
-	$(EXEC) $(DOCS_DIR)/teste.txt
+	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),2)
-	$(EXEC) $(DOCS_DIR)/teste2.txt
+	$(EXEC) $(DOCS_DIR)/teste2.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),3)
-	$(EXEC) $(DOCS_DIR)/teste3.txt
+	$(EXEC) $(DOCS_DIR)/teste3.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),4)
-	$(EXEC) $(DOCS_DIR)/teste4.txt
+	$(EXEC) $(DOCS_DIR)/teste4.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),5)
-	$(EXEC) $(DOCS_DIR)/teste5.txt
+	$(EXEC) $(DOCS_DIR)/teste5.txt > docs/output/log_compiler.txt
 else
-	$(EXEC) $(DOCS_DIR)/teste.txt
+	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
 endif
-	python3.10 -u codegen/main.py
+	python3.10 -u codegen/main.py > docs/output/log_codegen.txt
 
 # Cleanup intermediate files and binary
 clean:

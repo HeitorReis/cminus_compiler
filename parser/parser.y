@@ -116,12 +116,18 @@ var_declaration:
             currentScope, 
             SYMBOL_VAR, 
             yylineno, 
-            $1
+            $1,
+            0
         );
         AstNode *n = newNode(AST_VAR_DECL);
         n->name = strdup($2);
+        n->array_size = 0;
         n->lineno = yylineno; // Set the line number manually
         $$ = n;
+        printf(
+            "[PARSER DBG] var_declaration: name=%s",
+            $2
+        );
         free($2);
     }
     | type_specifier ID LBRACK NUM RBRACK SEMICOLON  /* <-- Adicione esta regra */
@@ -131,15 +137,21 @@ var_declaration:
             &symtab,
             $2,
             currentScope,
-            SYMBOL_VAR, // Pode querer um SYMBOL_ARRAY no futuro
+            SYMBOL_VAR,
             yylineno,
-            $1
+            $1,
+            $4
         );
-        AstNode *n = newNode(AST_VAR_DECL); // Ou um novo AST_ARRAY_DECL
+        AstNode *n = newNode(AST_VAR_DECL);
         n->name = strdup($2);
-        n->value = $4; // Guarda o tamanho do vetor
+        n->array_size = $4;
         n->lineno = yylineno;
         $$ = n;
+        printf(
+            "[PARSER DBG] var_declaration (vector): name=%s, size=%p",
+            $2, 
+            $4
+        );
         free($2);
     } ;
 
@@ -156,7 +168,8 @@ fun_declaration:
             currentScope,
             SYMBOL_FUNC,
             yylineno,
-            $1               // return type
+            $1,               // return type
+            0
         );
         pushScope($2); // enter function scope
     } params RPAREN compound_stmt {
@@ -232,7 +245,8 @@ param:
             currentScope,
             SYMBOL_VAR,
             yylineno,
-            $1
+            $1,
+            0
         );
         $$ = newNode(AST_PARAM);
         $$->name = strdup($2); // parameter name
@@ -246,11 +260,13 @@ param:
             currentScope,
             SYMBOL_VAR,
             yylineno,
-            $1
+            $1,
+            -1
         );
         $$ = newNode(AST_PARAM_ARRAY);
         $$->name = strdup($2); // parameter name
         $$->lineno = yylineno; // Set the line number manually
+        $$->array_size = -1;
         free($2);
     }
 ;
