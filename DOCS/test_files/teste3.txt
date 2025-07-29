@@ -3,18 +3,13 @@
 
 int gcd (int u, int v)
 {       
-	output(u);
 	if (v == 0) return u ;
 	else return gcd(v,u-u/v*v);
 	/* u-u/v*v == u mod v */
 }
 
 void main(void)
-{	int x; int y; int z;
-	x = input();
-	output(x);
-	y = input();
-	output(y);
-	z = gcd(x,y);
-	output(z);
+{	int x; int y;
+	x = input(); y = input();
+	output(gcd(x,y));
 }

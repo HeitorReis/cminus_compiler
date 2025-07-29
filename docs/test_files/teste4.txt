@@ -7,7 +7,7 @@ int mod_2 (int value)
 
 void main(void)
 {	int x; int result;
-  x = 10;
+  x = 3;
   result = mod_2(x);
   output(0);
   output(result);

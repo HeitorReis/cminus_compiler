@@ -2,40 +2,47 @@
 .global main
 
 	bi: main
-mod_2:
+gcd:
 	subi: r29 = r29, 1
 	store: [r29] = r28
 	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
-	subi: r29 = r29, 4
+	subi: r29 = r29, 7
 	subi: r30 = r31, 1
 	store: [r30] = r1
+	subi: r30 = r31, 2
+	store: [r30] = r2
 	subi: r30 = r31, 1
 	load: r4 = [r30]
 	mov: r1 = r4
 	out: r1
-	subi: r30 = r31, 1
+	subi: r30 = r31, 2
 	load: r5 = [r30]
-	movi: r6 = 2
+	movi: r6 = 0
 	subs: r0 = r5, r6
-	bigteq: L0
-	mov: r0 = r5
-	bi: mod_2_epilogue
+	bineq: L0
+	subi: r30 = r31, 1
+	load: r7 = [r30]
+	mov: r0 = r7
+	bi: gcd_epilogue
 	bi: L1
 L0:
-	divi: r7 = r5, 2
-	mov: r1 = r7
-	movi: r8 = mod_2_Lret0
-	mov: r28 = r8
-	bl: mod_2
-mod_2_Lret0:
-	mov: r9 = r0
-	mov: r0 = r9
-	bi: mod_2_epilogue
+	mov: r1 = r5
+	div: r8 = r7, r5
+	mul: r9 = r8, r5
+	sub: r10 = r7, r9
+	mov: r2 = r10
+	movi: r11 = gcd_Lret0
+	mov: r28 = r11
+	bl: gcd
+gcd_Lret0:
+	mov: r12 = r0
+	mov: r0 = r12
+	bi: gcd_epilogue
 L1:
-	bi: mod_2_epilogue
-mod_2_epilogue:
+	bi: gcd_epilogue
+gcd_epilogue:
 	mov: r29 = r31
 	load: r31 = [r29]
 	addi: r29 = r29, 1
@@ -44,32 +51,45 @@ mod_2_epilogue:
 	b: r28
 
 main:
-	movi: r29 = 255
+	movi: r29 = 63
 	mov: r31 = r29
-	subi: r29 = r29, 3
-	movi: r4 = 10
-	subi: r30 = r31, 2
+	subi: r29 = r29, 7
+	subi: r30 = r31, 1
+	store: [r30] = r1
+	in: r4
+	subi: r30 = r31, 3
 	store: [r30] = r4
 	mov: r1 = r4
-	movi: r5 = main_Lret0
-	mov: r28 = r5
-	bl: mod_2
-main_Lret0:
-	mov: r6 = r0
-	subi: r30 = r31, 1
-	store: [r30] = r6
-	movi: r7 = 0
-	mov: r1 = r7
-	subi: r30 = r31, 1
-	store: [r30] = r6
+	subi: r30 = r31, 3
+	store: [r30] = r4
 	out: r1
-	subi: r30 = r31, 1
-	load: r8 = [r30]
-	mov: r1 = r8
+	in: r5
+	subi: r30 = r31, 2
+	store: [r30] = r5
+	mov: r1 = r5
+	subi: r30 = r31, 2
+	store: [r30] = r5
+	out: r1
+	subi: r30 = r31, 3
+	load: r6 = [r30]
+	mov: r1 = r6
+	subi: r30 = r31, 2
+	load: r7 = [r30]
+	mov: r2 = r7
+	movi: r8 = main_Lret0
+	mov: r28 = r8
+	bl: gcd
+main_Lret0:
+	mov: r9 = r0
+	subi: r30 = r31, 4
+	store: [r30] = r9
+	mov: r1 = r9
+	subi: r30 = r31, 4
+	store: [r30] = r9
 	out: r1
 	bi: main_epilogue
 main_epilogue:
 	ret:
 
 .data
-stack_space: .space 256
+stack_space: .space 64

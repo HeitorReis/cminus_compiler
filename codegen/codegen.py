@@ -12,7 +12,7 @@ IR_TO_ASSEMBLY_BRANCH = {
     '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
 }
 
-DATA_MEMORY_SIZE = 256 
+DATA_MEMORY_SIZE = 64 
 SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -644,7 +644,6 @@ def translate_instruction(instr_parts, func_ctx):
             return_label = func_ctx.new_label()
             func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {return_label}")
             func_ctx.add_instruction(f"\tbl: {func_name}")
-            alloc.invalidate_caller_saved_regs()
             func_ctx.add_instruction(f"{return_label}:")
         alloc.invalidate_vars(func_ctx.arg_vars)
         func_ctx.arg_vars.clear()
@@ -666,9 +665,10 @@ def translate_instruction(instr_parts, func_ctx):
     elif opcode == 'return':
         print("[TRANSLATE] -> Caminho: Retorno de Função")
         if len(instr_parts) > 1 and instr_parts[1] != '_':
-            reg = alloc.ensure_var_in_reg(instr_parts[1])
+            var_name = instr_parts[1]
+            reg = alloc.ensure_var_in_reg(var_name)
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
-        alloc.spill_all_dirty()
+        alloc.spill_all_dirty() 
         print("[TRANSLATE] -> Pular para a seção de epílogo.")
         func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
         return 
@@ -840,17 +840,27 @@ def generate_assembly(ir_list):
         # Inicia a geração de código
         func_ctx.instructions.clear()
         
-        # Gera o código para salvar os parâmetros na pilha
+        print(f"--> Gerando código para salvar parâmetros de '{func_name}' na pilha...")
         for idx, param_name in enumerate(func_ctx.param_names):
+            # Verifica se o parâmetro está dentro do limite de registradores de argumento
             if idx < len(ARG_REGS):
+                # Pega qual registrador de argumento foi usado (r1, r2, etc.)
                 arg_reg = ARG_REGS[idx]
+                # Pega o offset da pilha para este parâmetro (ex: -1)
                 offset = func_ctx.stack_layout[param_name]
+                # Pega os registradores especiais para a operação
                 scratch_reg, fp_reg = SPECIAL_REGS['spill'], SPECIAL_REGS['fp']
                 
+                print(f"    -> Salvando parâmetro '{param_name}' de {arg_reg} para [fp, #{offset}]")
+
+                # Gera a instrução para calcular o endereço: scratch = fp - offset_positivo
                 func_ctx.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
+                
+                # Gera a instrução para armazenar o valor do registrador de argumento no endereço calculado
                 func_ctx.add_instruction(f"\tstore: [{scratch_reg}] = {arg_reg}")
         
         # Traduz o resto do corpo da função a partir do IR
+        print(f"--> Traduzindo corpo da IR para '{func_name}'...")
         for line in func_ir:
             translate_instruction(line.split(), func_ctx)
         

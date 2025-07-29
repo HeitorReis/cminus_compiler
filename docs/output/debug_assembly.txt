@@ -3,41 +3,57 @@ subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r28 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r31 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
-subi: r29 = r29, 4 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 4'}
+subi: r29 = r29, 7 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 7'}
 subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
 store: [r30] = r1 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r1'}
+subi: r30 = r31, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 2'}
+store: [r30] = r2 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r2'}
 subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
 load: r4 = [r30] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r30]'}
-subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
+subi: r30 = r31, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 2'}
 load: r5 = [r30] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r30]'}
-movi: r6 = 2 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r6', 'rh': 'r0', 'op2': '2'}
+movi: r6 = 0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r6', 'rh': 'r0', 'op2': '0'}
 subs: r0 = r5, r6 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r5, r6'}
-bigteq: L0 -> {'supp': 'i', 'opcode': 'bigteq'}
-bi: mod_2_epilogue -> {'supp': 'i', 'opcode': 'b'}
+bineq: L0 -> {'supp': 'i', 'opcode': 'bineq'}
+subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
+load: r7 = [r30] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r30]'}
+bi: gcd_epilogue -> {'supp': 'i', 'opcode': 'b'}
 bi: L1 -> {'supp': 'i', 'opcode': 'b'}
-divi: r7 = r5, 2 -> {'supp': 'i', 'opcode': 'div', 'op2': 'r5, 2'}
-movi: r8 = mod_2_Lret0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r8', 'rh': 'r0', 'op2': 'mod_2_Lret0'}
-bl: mod_2 -> {'supp': 'na', 'opcode': 'bl'}
-bi: mod_2_epilogue -> {'supp': 'i', 'opcode': 'b'}
-bi: mod_2_epilogue -> {'supp': 'i', 'opcode': 'b'}
+div: r8 = r7, r5 -> {'supp': 'i', 'opcode': 'div', 'op2': 'r7, r5'}
+mul: r9 = r8, r5 -> {'supp': 'na', 'opcode': 'mul', 'op2': 'r8, r5'}
+sub: r10 = r7, r9 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r7, r9'}
+movi: r11 = gcd_Lret0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r11', 'rh': 'r0', 'op2': 'gcd_Lret0'}
+bl: gcd -> {'supp': 'na', 'opcode': 'bl'}
+bi: gcd_epilogue -> {'supp': 'i', 'opcode': 'b'}
+bi: gcd_epilogue -> {'supp': 'i', 'opcode': 'b'}
 load: r31 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
 addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
 load: r28 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
 addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
 b: r28 -> {'supp': 'na', 'opcode': 'b'}
-movi: r29 = 255 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r29', 'rh': 'r0', 'op2': '255'}
-subi: r29 = r29, 3 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 3'}
-movi: r4 = 10 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r4', 'rh': 'r0', 'op2': '10'}
-subi: r30 = r31, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 2'}
+movi: r29 = 63 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r29', 'rh': 'r0', 'op2': '63'}
+subi: r29 = r29, 7 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 7'}
+subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
+store: [r30] = r1 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r1'}
+in: r4 -> {'supp': 'i', 'opcode': 'in'}
+subi: r30 = r31, 3 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 3'}
 store: [r30] = r4 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r4'}
-movi: r5 = main_Lret0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r5', 'rh': 'r0', 'op2': 'main_Lret0'}
-bl: mod_2 -> {'supp': 'na', 'opcode': 'bl'}
-subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
-store: [r30] = r6 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r6'}
-movi: r7 = 0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r7', 'rh': 'r0', 'op2': '0'}
-subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
-store: [r30] = r6 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r6'}
-subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
-load: r8 = [r30] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r30]'}
+subi: r30 = r31, 3 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 3'}
+store: [r30] = r4 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r4'}
+in: r5 -> {'supp': 'i', 'opcode': 'in'}
+subi: r30 = r31, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 2'}
+store: [r30] = r5 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r5'}
+subi: r30 = r31, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 2'}
+store: [r30] = r5 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r5'}
+subi: r30 = r31, 3 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 3'}
+load: r6 = [r30] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r30]'}
+subi: r30 = r31, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 2'}
+load: r7 = [r30] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r30]'}
+movi: r8 = main_Lret0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r8', 'rh': 'r0', 'op2': 'main_Lret0'}
+bl: gcd -> {'supp': 'na', 'opcode': 'bl'}
+subi: r30 = r31, 4 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 4'}
+store: [r30] = r9 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r9'}
+subi: r30 = r31, 4 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 4'}
+store: [r30] = r9 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r9'}
 bi: main_epilogue -> {'supp': 'i', 'opcode': 'b'}
 ret: -> {'supp': 'na', 'opcode': 'ret'}

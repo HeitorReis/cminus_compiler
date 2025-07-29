@@ -1,24 +1,33 @@
-mod_2:
-  arg value
+gcd:
+  arg u
   call output, 1
-  t0 := value < 2
+  t0 := v == 0
   if_false t0 goto L0
-  return value
+  return u
   goto L1
 L0:
-  t1 := value / 2
-  arg t1
-  t2 := call mod_2, 1
-  return t2
+  arg v
+  t1 := u / v
+  t2 := t1 * v
+  t3 := u - t2
+  arg t3
+  t4 := call gcd, 2
+  return t4
 L1:
   return _
 main:
-  x := 10
+  t5 := call input, 0
+  x := t5
   arg x
-  t3 := call mod_2, 1
-  result := t3
-  arg 0
   call output, 1
-  arg result
+  t6 := call input, 0
+  y := t6
+  arg y
+  call output, 1
+  arg x
+  arg y
+  t7 := call gcd, 2
+  z := t7
+  arg z
   call output, 1
   return _
