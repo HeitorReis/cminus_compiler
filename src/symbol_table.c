@@ -123,10 +123,14 @@ void setFunctionParams(
     Symbol *sym = getSymbol(table, name, scope);
     if (!sym || sym->kind != SYMBOL_FUNC) return;
     sym->paramCount = paramCount;
-    sym->paramTypes = malloc(paramCount * sizeof(int));
-    if (!sym->paramTypes) { perror("malloc"); exit(1); }
     sym->array_size = 0;
-    memcpy(sym->paramTypes, paramTypes, paramCount * sizeof(int));
+    if (paramCount <= 0) {
+        sym->paramTypes = NULL;
+    } else {
+        sym->paramTypes = malloc(paramCount * sizeof(int));
+        if (!sym->paramTypes) { perror("malloc"); exit(1); }
+        memcpy(sym->paramTypes, paramTypes, paramCount * sizeof(int));
+    }
     printf(
         "[SYM_TABLE DBG] setFunctionParams: '%s' in scope '%s' with %d params\n",
         name, 

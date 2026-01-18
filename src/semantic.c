@@ -305,18 +305,13 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
                         expr->name);
             result = TYPE_ERROR;
         } else {
-            if (s->dataType == TYPE_INT) {
-                // Se for uma variável inteira, o tipo é INT.
-                result = TYPE_INT;
-            } else if (s->dataType == TYPE_ARRAY) {
-                // Se for um vetor, o uso de seu nome em uma expressão
-                // resulta em um ponteiro (endereço), que tratamos como INT.
+            if (s->dataType == TYPE_ARRAY) {
+                result = TYPE_ARRAY;
+            } else if (s->dataType == TYPE_INT) {
                 result = TYPE_INT;
             } else {
-                // Caso contrário, o tipo é VOID (ex: nome de uma função sem retorno).
                 result = TYPE_VOID;
             }
-            // --- FIM DA CORREÇÃO ---
         }
         break;
     }
@@ -348,6 +343,14 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
         if (!lval || (lval->kind != AST_ID && lval->kind != AST_ARRAY_ACCESS)) {
             semanticError(expr->lineno, ctx,
                         "lhs of assignment must be a variable or array element");
+        }
+        if (lval && lval->kind == AST_ID) {
+            Symbol *lhs_sym = getSymbol(ctx->symtab, lval->name, currentScope);
+            if (lhs_sym && lhs_sym->dataType == TYPE_ARRAY) {
+                semanticError(expr->lineno, ctx,
+                            "cannot assign to array '%s' without index",
+                            lval->name);
+            }
         }
         
         if (!rval) {
@@ -387,8 +390,8 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
                 semanticError(expr->lineno, ctx,
                             "arg %d to '%s' expects %s but got %s",
                             got+1, expr->name,
-                            want==TYPE_INT?"int":"void",
-                            at  ==TYPE_INT?"int":"void");
+                            want==TYPE_INT?"int":(want==TYPE_ARRAY?"array":"void"),
+                            at  ==TYPE_INT?"int":(at==TYPE_ARRAY?"array":"void"));
             }
         }
         int wantCount = getParamCount(ctx->symtab, expr->name, "global");
@@ -408,6 +411,10 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
         Symbol *array_symbol = getSymbol(ctx->symtab, expr->name, currentScope);
         if (!array_symbol) {
             semanticError(expr->lineno, ctx, "o vetor '%s' não foi declarado", expr->name);
+            return TYPE_ERROR;
+        }
+        if (array_symbol->dataType != TYPE_ARRAY) {
+            semanticError(expr->lineno, ctx, "'%s' is not an array", expr->name);
             return TYPE_ERROR;
         }
 

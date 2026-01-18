@@ -1,0 +1,45 @@
+module PC_main (
+
+	input [31:0] branch_value,
+	input [31:0] link_value,
+	
+	input should_branch,
+	input write_condition,
+	input should_branch_to_link,
+	
+	input halt_temporarily_signal,
+	input clock, fast_clock,
+	
+	input reset,
+	
+	output reg unsigned [31:0] instruction_address
+);
+	
+	initial begin
+		instruction_address <= 32'b0;
+	end
+	
+	always @(negedge clock) begin
+		 if (reset) begin
+			  // Use non-blocking assignment for reset.
+			  instruction_address <= 32'b0;
+		 end
+		 else if (~halt_temporarily_signal) begin
+				// Use a clear if-else structure to prioritize branch over increment.
+				if (write_condition && should_branch) begin
+					if (should_branch_to_link) begin
+						 // Branch to the link register value
+						 instruction_address <= link_value;
+					end else begin
+						 // Branch to a calculated offset (PC-relative)
+						 instruction_address <= instruction_address + branch_value;
+					end
+				end 
+				else begin
+					// Default behavior: increment the PC
+					instruction_address <= instruction_address + 1;
+				end
+		 end
+	end
+	
+endmodule

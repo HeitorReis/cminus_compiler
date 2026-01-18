@@ -1,0 +1,258 @@
+module integrated (
+
+	input clock,
+	input fast_clock,
+	input reset,
+	
+	input peripheral_signal,
+	input [31:0] peripheral_value,
+	
+	output write_condition,
+	
+	output [31:0] output0,
+	output [31:0] output1,
+	output [31:0] output2,
+	output [31:0] output3,
+	output [31:0] pc,
+	
+	output [31:0] test0,
+	output [31:0] test1,
+	output [31:0] test2,
+	output [31:0] test3
+
+);
+
+	// Values
+	wire [31:0] extended_immediate;
+	wire [31:0] current_link_value;
+	wire [31:0] alu_result;
+	wire [31:0] ram_output;
+	wire [31:0] rh_value;
+	wire [31:0] ro_value;
+//	wire [31:0] rd_value;
+	wire [31:0] op2_value;
+	wire [31:0] r4_value;
+	wire [31:0] r31_value;
+	wire [31:0] output_value;
+	wire [31:0] WriteData;
+
+	// Codes
+	wire [1:0] TypeCode;
+	wire Load_bit;
+	wire should_store_link;
+	wire is_immediate;
+	wire [3:0] OpCode;
+	wire should_use_data_memory;
+	wire [3:0] CondField;
+	wire set_cond_bit;
+	wire should_branch;
+	wire should_branch_to_link;
+	wire [31:0] current_instr_code;
+	wire zero_bit;
+	wire neg_bit;
+	wire halt_temporarily_signal;
+	wire is_load_instruction; // Data Memory
+ 	wire store_condition; // Data Memory
+	wire store_link_signal; // Register Bank
+	wire store_reg_signal; // Register Bank
+	wire output_signal; // Output
+	wire update_output_reg_signal;
+	
+	// Addresses
+	wire [4:0] rh_addr;
+	wire [4:0] ro_addr;
+	wire [4:0] rd_addr;
+	wire [31:0] current_instr_addr;
+
+	// Assignments
+	assign output0 = r31_value;
+	assign output1 = ram_output;
+	assign output2 = output_value;	
+	assign output3 = current_instr_addr;
+	assign pc = current_instr_addr;
+	
+	assign test0 = WriteData;
+	assign test1 = alu_result;
+	assign test2 = ram_output;
+	assign test3 = {32{is_load_instruction}};
+	
+	// UC
+	ControlUnit integrated0(
+
+		
+		.instruction(current_instr_code),
+		.peripheral_signal(peripheral_signal),
+		.halt_temporarily_signal(halt_temporarily_signal),
+		.clock(clock),
+		
+		// Output register bank
+		.TypeCode(TypeCode),
+		.Load(Load_bit),
+		.should_store_link(should_store_link),
+		.Rh(rh_addr),
+		.Ro(ro_addr),
+		.Rd(rd_addr),
+		
+		// Output ALU Control
+		.extended_immediate(extended_immediate),
+		.is_immediate(is_immediate),
+		.OpCode(OpCode),
+		// output [1:0] TypeCode,
+		
+		
+		// Output Data Memory
+		// output WriteCondition,
+		// output Load,
+		// output [1:0] TypeCode,
+		.should_use_data_memory(should_use_data_memory),
+		
+		// Output CPSR Module
+		.CondField(CondField),
+		.set_cond_bit(set_cond_bit), // Set Condition
+		
+		
+		// Output PC
+		.should_branch(should_branch),
+		// output WriteCondition,
+		.should_branch_to_link(should_branch_to_link)
+	);
+	
+	PC_main integrated1(
+
+		.branch_value(alu_result), // ALU Result
+		.link_value(current_link_value), // RegBank
+		
+		.should_branch(should_branch),
+		.write_condition(write_condition),
+		.should_branch_to_link(should_branch_to_link),
+		
+		.halt_temporarily_signal(halt_temporarily_signal),
+		.clock(clock),
+		.fast_clock(fast_clock),
+		
+		.reset(reset),
+		
+		.instruction_address(current_instr_addr)
+	);
+	
+	InstructionMemory integrated2(
+		.addr(current_instr_addr),
+		.clock(clock),
+		.fast_clock(fast_clock),
+		.instruction(current_instr_code)
+	);
+	
+	mux_write_in_reg integrated7(
+		.ram_output(ram_output), .alu_result(alu_result),
+		.is_load_instruction(is_load_instruction), .WriteData(WriteData)
+	);
+	
+	assign store_link_signal = write_condition & should_store_link;
+	assign store_reg_signal = write_condition & ((TypeCode == 2'b00) | ( (TypeCode == 2'b01) & Load_bit ));
+	
+	registerBank integrated3( // Inputs are Rh, Ro (Op2), Clock, TypeCode, WriteData (to Rd), Rd
+
+		// Addresses
+		.RhAddress(rh_addr),
+		.RoAddress(ro_addr),
+		.RdAddress(rd_addr),
+		
+		// Values
+		.WriteData(WriteData),
+		.new_LinkValue(current_instr_addr),
+		
+		// Codes
+		.store_link_signal(store_link_signal),
+		.store_reg_signal(store_reg_signal),
+		
+		
+		
+		// Clock
+		.clock(clock), .fast_clock(fast_clock),
+		
+		.reset(reset),
+		
+		// Outputs
+		.RhValue(rh_value),
+		.RoValue(ro_value),
+		.RdValue(), // Testing
+		
+		.LinkValue(current_link_value),
+		
+		// Test
+		.r4_value(r4_value),
+		.r31_value(r31_value)
+	);
+	
+	ALUControl integrated4(
+
+		// Codes
+		.OpCode(OpCode),
+		.TypeCode(TypeCode),
+		.is_immediate(is_immediate),
+		
+		// Values
+		.immediate_value(extended_immediate),
+		.RhValue(rh_value),
+		.RoValue(ro_value),
+		.peripheral_value(peripheral_value),
+		
+		// Outputs
+		.zero(zero_bit),
+		.negative(neg_bit),
+		.result(alu_result),
+		
+		.r1_value(), // A
+		.r2_value(op2_value) // B
+	);
+	
+	assign update_output_reg_signal = (OpCode == 4'b1010) & (TypeCode == 2'b00);
+	
+	output_manager integrated8(
+	
+		.clock(clock), .fast_clock(fast_clock), // CLK
+		.update_output_reg_signal(update_output_reg_signal), // Signals
+		
+		.value(alu_result), // Input
+		
+		.output_value(output_value) // Output
+
+	);
+	
+
+	CPSR_module	integrated5(
+
+		.ALUresult(alu_result),
+		
+		.set_cond_bit(set_cond_bit),
+		
+		.zero(zero_bit),
+		.negative(neg_bit),
+		
+		.Cond_field(CondField),
+		
+		.clock(clock),
+		
+		.write_condition(write_condition),
+		
+		.current_flags() // Test
+		
+	);
+	
+	assign store_condition = write_condition & (~Load_bit) & (TypeCode == 2'b01);
+	
+	DataMemory integrated6(
+		.new_data(alu_result), // Pass Rh value as new data
+		.mem_addr(ro_value), // Pass Ro Value as memory address
+		.write_addr(ro_value), // Same
+		.clock(clock),
+		.fast_clock(fast_clock),
+		.we(store_condition),
+		
+		.ram_output(ram_output),
+	);
+	
+	assign is_load_instruction = (TypeCode == 2'b01) && Load_bit;
+	
+	
+endmodule

@@ -51,7 +51,7 @@ typedef enum {
     // Control Flow
     IR_LABEL,       // result: (defines a label)
     IR_GOTO,        // goto result
-    IR_IF_GOTO,     // if (arg1) goto result
+    IR_IF_GOTO,     // if_false (arg1) goto result
     IR_RETURN,      // return result
 
     // Function Calls

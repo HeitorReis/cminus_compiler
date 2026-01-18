@@ -186,7 +186,7 @@ class RegisterAllocator:
         addr_reg = self._get_free_reg()
         
         if var_name in self.func_context.stack_layout:
-            # A variável está na pilha. Seu endereço é "fp + offset".
+            # A variável está na pilha. endereço "fp + offset".
             offset = self.func_context.stack_layout[var_name]
             fp_reg = SPECIAL_REGS['fp']
             print(f"[GET_ADDR] -> '{var_name}' está na pilha. Calculando endereço [fp, #{offset}].")
@@ -228,17 +228,36 @@ class RegisterAllocator:
     
     def spill_all_dirty(self):
         """
-        Força o salvamento de todas as variáveis "reais" antes de chamadas de função.
+        Força o salvamento de todas as variáveis "reais" (não temporárias) que foram modificadas.
+        Distingue entre variáveis locais (pilha) e globais (memória .data).
         """
-        print(f"[SPILL_ALL] Verificando registradores sujos para salvar antes da chamada de função. Sujos: {self.dirty_regs}")
+        print(f"[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {self.dirty_regs}")
         for reg in list(self.dirty_regs):
             var_name = self.reg_to_var.get(reg)
             if var_name and not var_name.startswith('t'):
-                addr_reg = self.SPILL_TEMP_REG
-                addr = self.func_context.data_manager.get_address(var_name)
-                print(f"[SPILL_ALL] -> Salvando variável real '{var_name}' do registrador {reg} na memória.")
-                self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
-                self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
+                # --- LÓGICA CORRIGIDA ---
+                # Primeiro, verifique se a variável é local ou um parâmetro.
+                if var_name in self.func_context.stack_layout:
+                    # É uma variável da pilha. Salve em [fp + offset].
+                    offset = self.func_context.stack_layout[var_name]
+                    print(f"[SPILL_ALL] -> Salvando variável local '{var_name}' do registrador {reg} na pilha [fp, #{offset}].")
+                    
+                    # Gera código para armazenar na pilha
+                    scratch_reg, fp_reg = self.SPILL_TEMP_REG, SPECIAL_REGS['fp']
+                    self.func_context.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
+                    self.func_context.add_instruction(f"\tstore: [{scratch_reg}] = {reg}")
+                    
+                else:
+                    # Se não for local, assume-se que é global. Salve na memória .data.
+                    try:
+                        addr = self.func_context.data_manager.get_address(var_name)
+                        addr_reg = self.SPILL_TEMP_REG
+                        print(f"[SPILL_ALL] -> Salvando variável global '{var_name}' do registrador {reg} na memória.")
+                        self.func_context.add_instruction(f"\tmovi: {addr_reg} = {addr}")
+                        self.func_context.add_instruction(f"\tstore: [{addr_reg}] = {reg}")
+                    except KeyError:
+                        print(f"[SPILL_ALL_WARN] -> Aviso: Variável '{var_name}' não é nem local nem global. Não foi salva.")
+                        
                 self.dirty_regs.discard(reg)
     
     def invalidate_vars(self, var_names):
@@ -364,6 +383,7 @@ class FunctionContext:
         self.arg_vars = []
         self.param_names = []  
         self.local_vars = []
+        self.local_array_sizes = {}
         self.local_stack_size = 0
         self.stack_layout = {}
         self.next_stack_slot = -1
@@ -412,6 +432,9 @@ def translate_instruction(instr_parts, func_ctx):
     if ':=' in instr_parts:
         dest, _, *expr_parts = instr_parts
         print(f"[TRANSLATE] -> Detalhes: Destino='{dest}', Expressão='{' '.join(expr_parts)}'")
+        if expr_parts and expr_parts[0] == '.space':
+            print("[TRANSLATE] -> Declaração de array local (IR_DEC). Ignorando na geração de instruções.")
+            return
         
         if len(expr_parts) > 1 and expr_parts[1] in ['<', '<=', '>', '>=', '==', '!=']:
             print("[TRANSLATE] -> Caminho: Comparação (condicional)")
@@ -517,34 +540,24 @@ def translate_instruction(instr_parts, func_ctx):
             alloc._unassign_reg(addr_reg)
             
         elif 'call' in expr_parts:
-            print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
+            print("[TRANSLATE] -> Caminho: Chamada de Função")
             func_name = expr_parts[1].replace(',', '')
             
             alloc.spill_all_dirty()
             
             if func_name == 'input':
+                print("\t[TRANSLATE] -> Caminho: Chamada de Função Input")
+                # VERSÃO ORIGINAL: Simplesmente aloca um registrador e gera a instrução 'in'.
                 dest_reg = alloc.get_reg_for_temp(dest)
-                if dest_reg == SPECIAL_REGS['retval']:
-                    # Pega um novo registrador temporário (garantido que não será r0 de novo)
-                    new_dest_reg = alloc.get_reg_for_temp(f"{dest}_fix") 
-                    
-                    # Move o resultado para o novo registrador seguro
-                    func_ctx.add_instruction(f"\tmov: {new_dest_reg} = {SPECIAL_REGS['retval']}")
-                    
-                    # Libera o registrador r0 que foi alocado incorretamente
-                    alloc.free_reg_if_temp(dest_reg) 
-                    
-                    # Atualiza o mapeamento para que a variável de destino aponte para o novo registrador
-                    alloc.update_var_from_reg(dest, new_dest_reg)
-                else:
-                    # Se o registrador alocado for seguro, apenas faça o mov
-                    func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+                func_ctx.add_instruction(f"\tin: {dest_reg}")
             elif func_name == 'output':
+                print("\t[TRANSLATE] -> Caminho: Chamada de Função Output")
                 hit_reg = expr_parts[1].split(',', 1)[1]
                 print(f"[TRANSLATE] -> Função chamada: {func_name}, argumento: {hit_reg}")
                 print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
                 func_ctx.add_instruction(f"\tout: {hit_reg}")
             else:
+                print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
                 return_label = func_ctx.new_label()
                 ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
@@ -552,23 +565,10 @@ def translate_instruction(instr_parts, func_ctx):
                 func_ctx.add_instruction(f"\tbl: {func_name}")
                 alloc.free_reg_if_temp(ret_reg)
                 func_ctx.add_instruction(f"{return_label}:")
+                
                 dest_reg = alloc.get_reg_for_temp(dest)
-                if dest_reg == SPECIAL_REGS['retval']:
-                    # Pega um novo registrador temporário (garantido que não será r0 de novo)
-                    new_dest_reg = alloc.get_reg_for_temp(f"{dest}_fix") 
-                    
-                    # Move o resultado para o novo registrador seguro
-                    func_ctx.add_instruction(f"\tmov: {new_dest_reg} = {SPECIAL_REGS['retval']}")
-                    
-                    # Libera o registrador r0 que foi alocado incorretamente
-                    alloc.free_reg_if_temp(dest_reg) 
-                    
-                    # Atualiza o mapeamento para que a variável de destino aponte para o novo registrador
-                    alloc.update_var_from_reg(dest, new_dest_reg)
-                else:
-                    # Se o registrador alocado for seguro, apenas faça o mov
-                    func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
-            alloc.invalidate_vars(func_ctx.arg_vars)
+                func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+                alloc.invalidate_vars(func_ctx.arg_vars)
             func_ctx.arg_vars.clear()
             func_ctx.arg_count = 0
         
@@ -577,7 +577,13 @@ def translate_instruction(instr_parts, func_ctx):
             target_label = instr_parts[3]
             
             if not hasattr(func_ctx, 'last_comparison'):
-                print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
+                print("[TRANSLATE] -> Sem comparação prévia, comparando condição com 0.")
+                cond_reg = alloc.ensure_var_in_reg(instr_parts[1])
+                zero_reg = alloc.ensure_var_in_reg("0")
+                func_ctx.add_instruction(f"\tsubs: r0 = {cond_reg}, {zero_reg}")
+                func_ctx.add_instruction(f"\tbieq: {target_label}")
+                alloc.free_reg_if_temp(cond_reg)
+                alloc.free_reg_if_temp(zero_reg)
                 return
             
             original_op = func_ctx.last_comparison
@@ -589,11 +595,37 @@ def translate_instruction(instr_parts, func_ctx):
             return
             
         else:
-            print("[TRANSLATE] -> Caminho: Atribuição Simples (mov)")
-            reg_src = alloc.ensure_var_in_reg(expr_parts[0])
-            alloc.update_var_from_reg(dest, reg_src)
-            if expr_parts[0].startswith('t'):
-                alloc.free_reg_if_temp(reg_src)
+            print("[TRANSLATE] -> Caminho: Atribuição Simples")
+            dest_var = dest
+            src_val = expr_parts[0]
+
+            # 1. Garante que o valor de origem (seja constante ou variável)
+            #    esteja em um registrador.
+            src_reg = alloc.ensure_var_in_reg(src_val)
+
+            # 2. Se o destino for uma variável local (tem um lugar na pilha),
+            #    gere código para armazenar o valor lá.
+            if dest_var in func_ctx.stack_layout:
+                print(f"[TRANSLATE_ASSIGN] -> Armazenando '{dest_var}' na sua posição da pilha.")
+                offset = func_ctx.stack_layout[dest_var]
+                
+                # Usa um registrador temporário para calcular o endereço [fp + offset]
+                addr_reg = alloc.SPILL_TEMP_REG 
+                fp_reg = SPECIAL_REGS['fp']
+                
+                # Gera as instruções para: store [fp + offset] = src_reg
+                func_ctx.add_instruction(f"\tsubi: {addr_reg} = {fp_reg}, {-offset}")
+                func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
+
+            # 3. Atualiza o alocador para saber que `dest_var` agora também pode ser
+            #    encontrado em `src_reg`. Isso é uma otimização para uso imediato.
+            alloc.update_var_from_reg(dest_var, src_reg)
+
+            # 4. Se a origem era um temporário (ex: b := t1), podemos liberar
+            #    o registrador se ele não for mais necessário para `dest_var`.
+            if src_val.startswith('t'):
+                alloc.free_reg_if_temp(src_reg)
+
 
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento")
@@ -632,6 +664,7 @@ def translate_instruction(instr_parts, func_ctx):
             reg = alloc.ensure_var_in_reg(instr_parts[1])
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
         alloc.spill_all_dirty()
+        print("[TRANSLATE] -> Pular para a seção de epílogo.")
         func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
         return 
 
@@ -640,7 +673,13 @@ def translate_instruction(instr_parts, func_ctx):
         target_label = instr_parts[3]
         
         if not hasattr(func_ctx, 'last_comparison'):
-            print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
+            print("[TRANSLATE] -> Sem comparação prévia, comparando condição com 0.")
+            cond_reg = alloc.ensure_var_in_reg(instr_parts[1])
+            zero_reg = alloc.ensure_var_in_reg("0")
+            func_ctx.add_instruction(f"\tsubs: r0 = {cond_reg}, {zero_reg}")
+            func_ctx.add_instruction(f"\tbieq: {target_label}")
+            alloc.free_reg_if_temp(cond_reg)
+            alloc.free_reg_if_temp(zero_reg)
             return
         
         original_op = func_ctx.last_comparison
@@ -744,7 +783,7 @@ def generate_assembly(ir_list):
         # 2A: Descobre parâmetros e variáveis locais da função
         defined_vars = set()
         all_vars_in_func = set()
-        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return'}
+        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return', 'output', 'input'}
         LABEL_RE = re.compile(r'^L\d+$')   # L0, L1, L2...
         VAR_RE   = re.compile(r'\b([a-zA-Z_]\w*)\b')
         
@@ -754,6 +793,13 @@ def generate_assembly(ir_list):
                 dest_var = re.sub(r'^\*', '', dest).strip()
                 if not dest_var.startswith('t') and not LABEL_RE.match(dest_var) and dest_var != '_':
                     defined_vars.add(dest_var)
+                if '.space' in line:
+                    decl_parts = [p.strip() for p in line.split(':=', 1)[1].split(',')]
+                    if len(decl_parts) >= 2 and decl_parts[0] == '.space':
+                        try:
+                            func_ctx.local_array_sizes[dest_var] = int(decl_parts[1])
+                        except ValueError:
+                            pass
                     
             matches = VAR_RE.findall(line)
             for var in matches:
@@ -768,6 +814,7 @@ def generate_assembly(ir_list):
         
         # Agora, fora do loop, definimos parâmetros e variáveis locais
         func_ctx.param_names = [v for v in all_vars_in_func if v not in defined_vars]
+        print(f"[DEBUG] Função '{func_name}': all_vars={all_vars_in_func}, defined_vars={defined_vars}, params={func_ctx.param_names}")
         print(f"--> Parâmetros para '{func_name}': {func_ctx.param_names}")
         
         local_vars = {
@@ -783,19 +830,23 @@ def generate_assembly(ir_list):
         for var_name in (func_ctx.param_names + func_ctx.local_vars):
             if var_name not in func_ctx.stack_layout:
                 func_ctx.stack_layout[var_name] = current_offset
-                print(f"    -> Mapeando '{var_name}' para o offset [fp, #{current_offset}]")
-                current_offset -= 1
+                size = func_ctx.local_array_sizes.get(var_name, 1)
+                print(f"    -> Mapeando '{var_name}' para o offset [fp, #{current_offset}] (size={size})")
+                current_offset -= size
                 
         # 2C: Calcula o tamanho total do frame (parâmetros + locais + temporários)
-        all_stack_vars = set()
+        temp_vars = set()
         for line in func_ir:
             matches = re.findall(r'\b(t\d+)\b', line)
-            for var in matches: all_stack_vars.add(var)
-        
-        all_stack_vars.update(func_ctx.param_names)
-        all_stack_vars.update(func_ctx.local_vars)
-            
-        func_ctx.local_stack_size = len(all_stack_vars)
+            for var in matches: temp_vars.add(var)
+
+        local_words = 0
+        for var_name in func_ctx.param_names:
+            local_words += 1
+        for var_name in func_ctx.local_vars:
+            local_words += func_ctx.local_array_sizes.get(var_name, 1)
+
+        func_ctx.local_stack_size = local_words + len(temp_vars)
         print(f"--> Tamanho total do frame para '{func_name}': {func_ctx.local_stack_size} palavras.")
         
         # Inicia a geração de código
