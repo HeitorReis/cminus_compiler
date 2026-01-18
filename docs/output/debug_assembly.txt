@@ -3,7 +3,7 @@ subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r28 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r28'}
 subi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 1'}
 store: [r29] = r31 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r29', 'rh': 'r31'}
-subi: r29 = r29, 5 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 5'}
+subi: r29 = r29, 7 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 7'}
 subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
 store: [r30] = r1 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r1'}
 subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
@@ -11,15 +11,15 @@ load: r4 = [r30] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r30]'}
 movi: r5 = 2 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r5', 'rh': 'r0', 'op2': '2'}
 subs: r0 = r4, r5 -> {'supp': 'na', 'opcode': 'sub', 'op2': 'r4, r5'}
 bigteq: L0 -> {'supp': 'i', 'opcode': 'bigteq'}
-movi: r6 = 1 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r6', 'rh': 'r0', 'op2': '1'}
-bi: fact_epilogue -> {'supp': 'i', 'opcode': 'b'}
-bi: L1 -> {'supp': 'i', 'opcode': 'b'}
-subi: r7 = r4, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r4, 1'}
-movi: r8 = fact_Lret0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r8', 'rh': 'r0', 'op2': 'fact_Lret0'}
-bl: fact -> {'supp': 'na', 'opcode': 'bl'}
-mul: r10 = r4, r9 -> {'supp': 'na', 'opcode': 'mul', 'op2': 'r4, r9'}
-bi: fact_epilogue -> {'supp': 'i', 'opcode': 'b'}
-bi: fact_epilogue -> {'supp': 'i', 'opcode': 'b'}
+bi: fib_epilogue -> {'supp': 'i', 'opcode': 'b'}
+subi: r6 = r4, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r4, 1'}
+movi: r7 = fib_Lret0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r7', 'rh': 'r0', 'op2': 'fib_Lret0'}
+bl: fib -> {'supp': 'na', 'opcode': 'bl'}
+subi: r9 = r4, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r4, 2'}
+movi: r10 = fib_Lret1 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r10', 'rh': 'r0', 'op2': 'fib_Lret1'}
+bl: fib -> {'supp': 'na', 'opcode': 'bl'}
+add: r12 = r8, r11 -> {'supp': 'na', 'opcode': 'add', 'op2': 'r8, r11'}
+bi: fib_epilogue -> {'supp': 'i', 'opcode': 'b'}
 load: r31 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
 addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
 load: r28 = [r29] -> {'supp': 'na', 'opcode': 'load', 'op2': '[r29]'}
@@ -27,9 +27,9 @@ addi: r29 = r29, 1 -> {'supp': 'i', 'opcode': 'add', 'op2': 'r29, 1'}
 b: r28 -> {'supp': 'na', 'opcode': 'b'}
 movi: r29 = 255 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r29', 'rh': 'r0', 'op2': '255'}
 subi: r29 = r29, 2 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r29, 2'}
-movi: r4 = 5 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r4', 'rh': 'r0', 'op2': '5'}
+movi: r4 = 10 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r4', 'rh': 'r0', 'op2': '10'}
 movi: r5 = main_Lret0 -> {'supp': 'i', 'opcode': 'mov', 'rd': 'r5', 'rh': 'r0', 'op2': 'main_Lret0'}
-bl: fact -> {'supp': 'na', 'opcode': 'bl'}
+bl: fib -> {'supp': 'na', 'opcode': 'bl'}
 subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}
 store: [r30] = r6 -> {'supp': 'na', 'opcode': 'store', 'rd': 'r0', 'op2': 'r30', 'rh': 'r6'}
 subi: r30 = r31, 1 -> {'supp': 'i', 'opcode': 'sub', 'op2': 'r31, 1'}

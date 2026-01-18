@@ -1,20 +1,21 @@
-fact:
+fib:
   t0 := n < 2
   if_false t0 goto L0
-  return 1
-  goto L1
+  return n
 L0:
 L1:
   t1 := n - 1
   arg t1
-  t2 := call fact, 1
-  t3 := n * t2
-  return t3
-  return _
+  t2 := call fib, 1
+  t3 := n - 2
+  arg t3
+  t4 := call fib, 1
+  t5 := t2 + t4
+  return t5
 main:
-  arg 5
-  t4 := call fact, 1
-  r := t4
+  arg 10
+  t6 := call fib, 1
+  r := t6
   arg r
   call output, 1
   return _

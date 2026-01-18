@@ -5,6 +5,7 @@ BUILD_DIR := build
 BIN_DIR := bin
 DOCS_DIR := docs/test_files
 ALL_OUTPUT_DIR := docs/output/all_machine_codes
+ALL_LOG_DIR := $(ALL_OUTPUT_DIR)/logs
 
 # === Files ===
 LEX_FILE := $(PARSER_DIR)/lexer.l
@@ -45,7 +46,7 @@ TEST_FILES := $(wildcard $(DOCS_DIR)/teste*.txt)
 all: clean run
 
 # Create necessary directories
-$(BUILD_DIR) $(BIN_DIR) $(ALL_OUTPUT_DIR):
+$(BUILD_DIR) $(BIN_DIR) $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR):
 	mkdir -p $@
 
 # Generate parser using bison with flags -d -v -g
@@ -101,13 +102,19 @@ endif
 	python -u codegen/main.py > docs/output/log_codegen.txt
 
 # Run all test files and collect machine code outputs
-run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR)
+run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
 	@for test_file in $(TEST_FILES); do \
 		echo "Running $$test_file"; \
-		$(EXEC) $$test_file > docs/output/log_compiler.txt; \
-		python -u codegen/main.py > docs/output/log_codegen.txt; \
 		base=$$(basename $$test_file .txt); \
-		cp docs/output/generated_machine_code.txt $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
+		rm -f $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
+		rm -f docs/output/generated_machine_code.txt; \
+		$(EXEC) $$test_file > $(ALL_LOG_DIR)/$${base}_compiler.log 2>&1 || true; \
+		python3 -u codegen/main.py > $(ALL_LOG_DIR)/$${base}_codegen.log 2>&1 || true; \
+		if [ -f docs/output/generated_machine_code.txt ]; then \
+			cp docs/output/generated_machine_code.txt $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
+		else \
+			echo "No machine code generated for $$test_file" >> $(ALL_LOG_DIR)/$${base}_codegen.log; \
+		fi; \
 	done
 
 # Cleanup intermediate files and binary

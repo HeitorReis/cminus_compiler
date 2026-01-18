@@ -3,7 +3,7 @@
 import re
 import collections
 
-DATA_MEMORY_SIZE = 64
+DATA_MEMORY_SIZE = 1024
 
 # Dicionários de mapeamento da arquitetura do processador
 instructions = {
@@ -601,7 +601,6 @@ class FullCode:
                     except ValueError:
                         self.response = f"Error: Invalid size '{size}' in directive '{directive}'"
                         return
-                    data_base_address += amount
                 if data_base_address > DATA_MEMORY_SIZE:
                     self.response = "Error: DATA_MEMORY_SIZE exceeded"
                     return
