@@ -33,6 +33,8 @@ AstNode *newNode(AstNodeKind kind) {
     n->kind        = kind;
     n->name        = NULL;
     n->value       = 0;
+    n->array_size  = 0;
+    n->data_type   = 0;
     n->lineno      = 0;  // default line number, can be set later
     n->firstChild  = NULL;
     n->nextSibling = NULL;
@@ -126,7 +128,7 @@ void freeAst(AstNode *node) {
         c = next;
     }
     /* free own data */
-    if (node->kind == AST_ID && node->name) free(node->name);
+    if (node->name) free(node->name);
     free(node);
 }
 

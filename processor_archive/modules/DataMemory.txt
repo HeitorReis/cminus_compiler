@@ -1,0 +1,30 @@
+// Quartus Prime Verilog Template
+// Simple Dual Port RAM with separate read/write addresses and
+// separate read/write clocks
+
+module DataMemory
+#(parameter DATA_WIDTH=32, parameter ADDR_WIDTH=6)
+(
+	input [(DATA_WIDTH-1):0] new_data,
+	input [(ADDR_WIDTH-1):0] mem_addr, write_addr,
+	input we, clock, fast_clock,
+	output reg [(DATA_WIDTH-1):0] ram_output
+);
+	
+	// Declare the RAM variable
+	reg [DATA_WIDTH-1:0] ram [2**ADDR_WIDTH-1:0];
+	
+	always @ (posedge clock) begin // Write in positive edge
+		
+		// If Store -> WRITE
+		if (we) begin
+			ram[write_addr] <= new_data;
+		end 
+		
+	end
+	
+	always @ (posedge fast_clock) begin
+		ram_output <= ram[mem_addr];
+	end
+	
+endmodule

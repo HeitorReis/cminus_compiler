@@ -8,6 +8,7 @@
 
     #define TYPE_INT 1
     #define TYPE_VOID 2
+    #define TYPE_ARRAY 3
 
     extern int yylineno;
     extern char *yytext;
@@ -122,6 +123,7 @@ var_declaration:
         AstNode *n = newNode(AST_VAR_DECL);
         n->name = strdup($2);
         n->array_size = 0;
+        n->data_type = $1;
         n->lineno = yylineno; // Set the line number manually
         $$ = n;
         printf(
@@ -145,10 +147,11 @@ var_declaration:
         AstNode *n = newNode(AST_VAR_DECL);
         n->name = strdup($2);
         n->array_size = $4;
+        n->data_type = $1;
         n->lineno = yylineno;
         $$ = n;
         printf(
-            "[PARSER DBG] var_declaration (vector): name=%s, size=%p",
+            "[PARSER DBG] var_declaration (vector): name=%s, size=%d",
             $2, 
             $4
         );
@@ -180,24 +183,26 @@ fun_declaration:
         );
         AstNode *n = newNode(AST_FUN_DECL);
         n->name = strdup($2); // function name
+        n->data_type = $1;
         n->lineno = funcSym ? funcSym->declLines->line : yylineno; // Set the line number manually
         if ($5) addChild(n, $5); // parameters
         if ($7) addChild(n, $7); // compound statement
         $$ = n;
 
         int pcount = 0;
-        for (AstNode *p = $5; p; p = p->firstChild ? p->firstChild->nextSibling : NULL) {
+        if ($5) {
             for (AstNode *c = $5->firstChild; c; c = c->nextSibling) {
                 ++pcount;
             }
-            break;
         }
 
         int *types = NULL;
         if (pcount > 0) {
             types = malloc(pcount * sizeof(*types));
-            for (int i = 0; i < pcount; ++i)
-                types[i] = TYPE_INT;
+            int i = 0;
+            for (AstNode *c = $5->firstChild; c; c = c->nextSibling, ++i) {
+                types[i] = (c->array_size != 0) ? TYPE_ARRAY : c->data_type;
+            }
         }
 
         setFunctionParams(
@@ -210,13 +215,13 @@ fun_declaration:
 
         free(types);
         popScope();
-        free($2);
         printf(
             "[PARSER DBG] fun_declaration: name=%s, params=%p, body=%p\n",
             $2, 
             (void*)$5, 
             (void*)$7
         );
+        free($2);
     }
 ;
 
@@ -250,6 +255,7 @@ param:
         );
         $$ = newNode(AST_PARAM);
         $$->name = strdup($2); // parameter name
+        $$->data_type = $1;
         $$->lineno = yylineno; // Set the line number manually
         free($2);
     }
@@ -265,6 +271,7 @@ param:
         );
         $$ = newNode(AST_PARAM_ARRAY);
         $$->name = strdup($2); // parameter name
+        $$->data_type = $1;
         $$->lineno = yylineno; // Set the line number manually
         $$->array_size = -1;
         free($2);

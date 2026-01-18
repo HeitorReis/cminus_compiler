@@ -1,33 +1,20 @@
-gcd:
-  arg u
-  call output, 1
-  t0 := v == 0
+fact:
+  t0 := n < 2
   if_false t0 goto L0
-  return u
+  return 1
   goto L1
 L0:
-  arg v
-  t1 := u / v
-  t2 := t1 * v
-  t3 := u - t2
-  arg t3
-  t4 := call gcd, 2
-  return t4
 L1:
+  t1 := n - 1
+  arg t1
+  t2 := call fact, 1
+  t3 := n * t2
+  return t3
   return _
 main:
-  t5 := call input, 0
-  x := t5
-  arg x
-  call output, 1
-  t6 := call input, 0
-  y := t6
-  arg y
-  call output, 1
-  arg x
-  arg y
-  t7 := call gcd, 2
-  z := t7
-  arg z
+  arg 5
+  t4 := call fact, 1
+  r := t4
+  arg r
   call output, 1
   return _

@@ -4,6 +4,7 @@ PARSER_DIR := parser
 BUILD_DIR := build
 BIN_DIR := bin
 DOCS_DIR := docs/test_files
+ALL_OUTPUT_DIR := docs/output/all_machine_codes
 
 # === Files ===
 LEX_FILE := $(PARSER_DIR)/lexer.l
@@ -36,13 +37,15 @@ SRC_FILES := main.c \
             $(SRC_DIR)/syntax_tree.c \
             $(SRC_DIR)/utils.c \
 			$(SRC_DIR)/ir.c \
+
+TEST_FILES := $(wildcard $(DOCS_DIR)/teste*.txt)
 			
 # === Rules ===
 
 all: clean run
 
 # Create necessary directories
-$(BUILD_DIR) $(BIN_DIR):
+$(BUILD_DIR) $(BIN_DIR) $(ALL_OUTPUT_DIR):
 	mkdir -p $@
 
 # Generate parser using bison with flags -d -v -g
@@ -88,10 +91,24 @@ else ifeq ($(TEST),4)
 	$(EXEC) $(DOCS_DIR)/teste4.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),5)
 	$(EXEC) $(DOCS_DIR)/teste5.txt > docs/output/log_compiler.txt
+else ifeq ($(TEST),6)
+	$(EXEC) $(DOCS_DIR)/teste6.txt > docs/output/log_compiler.txt
+else ifeq ($(TEST),7)
+	$(EXEC) $(DOCS_DIR)/teste7.txt > docs/output/log_compiler.txt
 else
 	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
 endif
-	python3.10 -u codegen/main.py > docs/output/log_codegen.txt
+	python -u codegen/main.py > docs/output/log_codegen.txt
+
+# Run all test files and collect machine code outputs
+run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR)
+	@for test_file in $(TEST_FILES); do \
+		echo "Running $$test_file"; \
+		$(EXEC) $$test_file > docs/output/log_compiler.txt; \
+		python -u codegen/main.py > docs/output/log_codegen.txt; \
+		base=$$(basename $$test_file .txt); \
+		cp docs/output/generated_machine_code.txt $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
+	done
 
 # Cleanup intermediate files and binary
 clean:

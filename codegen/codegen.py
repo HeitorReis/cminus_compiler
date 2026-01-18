@@ -12,7 +12,7 @@ IR_TO_ASSEMBLY_BRANCH = {
     '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
 }
 
-DATA_MEMORY_SIZE = 64 
+DATA_MEMORY_SIZE = 256 
 SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -360,7 +360,7 @@ class RegisterAllocator:
             print(f"[UNASSIGN_REG] Desmapeado {reg} de '{var_name}'.")
         else:
             print(f"[UNASSIGN_REG] {reg} já estava desmapeado.")
-            
+
         if reg not in self.free_regs:
             self.free_regs.append(reg)
         if reg in self.lru_order:
@@ -372,17 +372,6 @@ class RegisterAllocator:
         if reg in self.lru_order:
             self.lru_order.remove(reg)
         self.lru_order.append(reg)
-    
-    def invalidate_caller_saved_regs(self):
-        """
-        Invalida todas as variáveis que estão em registradores caller-saved.
-        Deve ser chamada após uma chamada de função.
-        """
-        print("[ALLOC_INVALIDATE] Invalidando registradores caller-saved após chamada de função.")
-        for reg in self.caller_saved_pool:
-            if reg in self.reg_to_var:
-                print(f" -> Invalidando {reg} que continha '{self.reg_to_var[reg]}'")
-                self._unassign_reg(reg)
 
 class FunctionContext:
     def __init__(self, name, data_manager):
@@ -394,6 +383,7 @@ class FunctionContext:
         self.arg_vars = []
         self.param_names = []  
         self.local_vars = []
+        self.local_array_sizes = {}
         self.local_stack_size = 0
         self.stack_layout = {}
         self.next_stack_slot = -1
@@ -442,6 +432,9 @@ def translate_instruction(instr_parts, func_ctx):
     if ':=' in instr_parts:
         dest, _, *expr_parts = instr_parts
         print(f"[TRANSLATE] -> Detalhes: Destino='{dest}', Expressão='{' '.join(expr_parts)}'")
+        if expr_parts and expr_parts[0] == '.space':
+            print("[TRANSLATE] -> Declaração de array local (IR_DEC). Ignorando na geração de instruções.")
+            return
         
         if len(expr_parts) > 1 and expr_parts[1] in ['<', '<=', '>', '>=', '==', '!=']:
             print("[TRANSLATE] -> Caminho: Comparação (condicional)")
@@ -563,7 +556,6 @@ def translate_instruction(instr_parts, func_ctx):
                 print(f"[TRANSLATE] -> Função chamada: {func_name}, argumento: {hit_reg}")
                 print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
                 func_ctx.add_instruction(f"\tout: {hit_reg}")
-                alloc.invalidate_caller_saved_regs()
             else:
                 print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
                 return_label = func_ctx.new_label()
@@ -571,7 +563,6 @@ def translate_instruction(instr_parts, func_ctx):
                 func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
                 func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
                 func_ctx.add_instruction(f"\tbl: {func_name}")
-                alloc.invalidate_caller_saved_regs()
                 alloc.free_reg_if_temp(ret_reg)
                 func_ctx.add_instruction(f"{return_label}:")
                 
@@ -586,7 +577,13 @@ def translate_instruction(instr_parts, func_ctx):
             target_label = instr_parts[3]
             
             if not hasattr(func_ctx, 'last_comparison'):
-                print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
+                print("[TRANSLATE] -> Sem comparação prévia, comparando condição com 0.")
+                cond_reg = alloc.ensure_var_in_reg(instr_parts[1])
+                zero_reg = alloc.ensure_var_in_reg("0")
+                func_ctx.add_instruction(f"\tsubs: r0 = {cond_reg}, {zero_reg}")
+                func_ctx.add_instruction(f"\tbieq: {target_label}")
+                alloc.free_reg_if_temp(cond_reg)
+                alloc.free_reg_if_temp(zero_reg)
                 return
             
             original_op = func_ctx.last_comparison
@@ -639,7 +636,6 @@ def translate_instruction(instr_parts, func_ctx):
             output_reg = ARG_REGS[0]  
             
             func_ctx.add_instruction(f"\tout: {output_reg}")
-            alloc.invalidate_caller_saved_regs()
         else:
             return_label = func_ctx.new_label()
             func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {return_label}")
@@ -665,10 +661,9 @@ def translate_instruction(instr_parts, func_ctx):
     elif opcode == 'return':
         print("[TRANSLATE] -> Caminho: Retorno de Função")
         if len(instr_parts) > 1 and instr_parts[1] != '_':
-            var_name = instr_parts[1]
-            reg = alloc.ensure_var_in_reg(var_name)
+            reg = alloc.ensure_var_in_reg(instr_parts[1])
             func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['retval']} = {reg}")
-        alloc.spill_all_dirty() 
+        alloc.spill_all_dirty()
         print("[TRANSLATE] -> Pular para a seção de epílogo.")
         func_ctx.add_instruction(f"\tbi: {func_ctx.name}_epilogue")
         return 
@@ -678,7 +673,13 @@ def translate_instruction(instr_parts, func_ctx):
         target_label = instr_parts[3]
         
         if not hasattr(func_ctx, 'last_comparison'):
-            print("[TRANSLATE_ERROR] -> 'if_false' sem comparação prévia!")
+            print("[TRANSLATE] -> Sem comparação prévia, comparando condição com 0.")
+            cond_reg = alloc.ensure_var_in_reg(instr_parts[1])
+            zero_reg = alloc.ensure_var_in_reg("0")
+            func_ctx.add_instruction(f"\tsubs: r0 = {cond_reg}, {zero_reg}")
+            func_ctx.add_instruction(f"\tbieq: {target_label}")
+            alloc.free_reg_if_temp(cond_reg)
+            alloc.free_reg_if_temp(zero_reg)
             return
         
         original_op = func_ctx.last_comparison
@@ -782,7 +783,7 @@ def generate_assembly(ir_list):
         # 2A: Descobre parâmetros e variáveis locais da função
         defined_vars = set()
         all_vars_in_func = set()
-        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return', 'output'}
+        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return', 'output', 'input'}
         LABEL_RE = re.compile(r'^L\d+$')   # L0, L1, L2...
         VAR_RE   = re.compile(r'\b([a-zA-Z_]\w*)\b')
         
@@ -792,6 +793,13 @@ def generate_assembly(ir_list):
                 dest_var = re.sub(r'^\*', '', dest).strip()
                 if not dest_var.startswith('t') and not LABEL_RE.match(dest_var) and dest_var != '_':
                     defined_vars.add(dest_var)
+                if '.space' in line:
+                    decl_parts = [p.strip() for p in line.split(':=', 1)[1].split(',')]
+                    if len(decl_parts) >= 2 and decl_parts[0] == '.space':
+                        try:
+                            func_ctx.local_array_sizes[dest_var] = int(decl_parts[1])
+                        except ValueError:
+                            pass
                     
             matches = VAR_RE.findall(line)
             for var in matches:
@@ -822,45 +830,39 @@ def generate_assembly(ir_list):
         for var_name in (func_ctx.param_names + func_ctx.local_vars):
             if var_name not in func_ctx.stack_layout:
                 func_ctx.stack_layout[var_name] = current_offset
-                print(f"    -> Mapeando '{var_name}' para o offset [fp, #{current_offset}]")
-                current_offset -= 1
+                size = func_ctx.local_array_sizes.get(var_name, 1)
+                print(f"    -> Mapeando '{var_name}' para o offset [fp, #{current_offset}] (size={size})")
+                current_offset -= size
                 
         # 2C: Calcula o tamanho total do frame (parâmetros + locais + temporários)
-        all_stack_vars = set()
+        temp_vars = set()
         for line in func_ir:
             matches = re.findall(r'\b(t\d+)\b', line)
-            for var in matches: all_stack_vars.add(var)
-        
-        all_stack_vars.update(func_ctx.param_names)
-        all_stack_vars.update(func_ctx.local_vars)
-            
-        func_ctx.local_stack_size = len(all_stack_vars)
+            for var in matches: temp_vars.add(var)
+
+        local_words = 0
+        for var_name in func_ctx.param_names:
+            local_words += 1
+        for var_name in func_ctx.local_vars:
+            local_words += func_ctx.local_array_sizes.get(var_name, 1)
+
+        func_ctx.local_stack_size = local_words + len(temp_vars)
         print(f"--> Tamanho total do frame para '{func_name}': {func_ctx.local_stack_size} palavras.")
         
         # Inicia a geração de código
         func_ctx.instructions.clear()
         
-        print(f"--> Gerando código para salvar parâmetros de '{func_name}' na pilha...")
+        # Gera o código para salvar os parâmetros na pilha
         for idx, param_name in enumerate(func_ctx.param_names):
-            # Verifica se o parâmetro está dentro do limite de registradores de argumento
             if idx < len(ARG_REGS):
-                # Pega qual registrador de argumento foi usado (r1, r2, etc.)
                 arg_reg = ARG_REGS[idx]
-                # Pega o offset da pilha para este parâmetro (ex: -1)
                 offset = func_ctx.stack_layout[param_name]
-                # Pega os registradores especiais para a operação
                 scratch_reg, fp_reg = SPECIAL_REGS['spill'], SPECIAL_REGS['fp']
                 
-                print(f"    -> Salvando parâmetro '{param_name}' de {arg_reg} para [fp, #{offset}]")
-
-                # Gera a instrução para calcular o endereço: scratch = fp - offset_positivo
                 func_ctx.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
-                
-                # Gera a instrução para armazenar o valor do registrador de argumento no endereço calculado
                 func_ctx.add_instruction(f"\tstore: [{scratch_reg}] = {arg_reg}")
         
         # Traduz o resto do corpo da função a partir do IR
-        print(f"--> Traduzindo corpo da IR para '{func_name}'...")
         for line in func_ir:
             translate_instruction(line.split(), func_ctx)
         

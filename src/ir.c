@@ -1,6 +1,7 @@
 #include "ir.h"
 #include "syntax_tree.h"
 #include "semantic.h" // Include for TYPE_INT definition
+#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +10,7 @@
 
 static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symtab);
 static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* symtab);
+static int is_array_param(SymbolTable* symtab, const char* name, const char* scope);
 
 // --- State for generating unique temps and labels ---
 static int temp_counter = 0;
@@ -75,6 +77,14 @@ static Operand new_name(const char* name) {
     return (Operand){.kind = OPERAND_NAME, .data.name = strdup(name)};
 }
 
+static int is_array_param(SymbolTable* symtab, const char* name, const char* scope) {
+    Symbol* sym = getSymbol(symtab, name, scope);
+    if (!sym) {
+        return 0;
+    }
+    return sym->dataType == TYPE_ARRAY && sym->array_size == -1;
+}
+
 static void emit(IRList* list, IrOpcode opcode, Operand result, Operand arg1, Operand arg2) {
     printf("[IR_DBG] Emitting instruction with opcode %d\n", opcode);
     IRInstruction* instr = (IRInstruction*)malloc(sizeof(IRInstruction));
@@ -139,6 +149,8 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
         case AST_FUN_DECL: {
             printf("[IR_DBG]   Case AST_FUN_DECL for '%s'\n", node->name);
             emit(list, IR_LABEL, new_name(node->name), (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
+            char *outer_scope = currentScope;
+            currentScope = node->name;
             AstNode* body = node->firstChild;
             if (body && body->kind == AST_PARAM_LIST) {
                 body = body->nextSibling;
@@ -146,6 +158,7 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
             if (body && body->kind == AST_BLOCK) {
                 generate_ir_for_node(body, list, symtab);
             }
+            currentScope = outer_scope;
             emit(list, IR_RETURN, (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
             break;
         }
@@ -153,8 +166,13 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
         case AST_BLOCK:
             printf("[IR_DBG]   Case AST_BLOCK\n");
             for (AstNode* child = node->firstChild; child; child = child->nextSibling) {
-                if (child->kind != AST_VAR_DECL)
+                if (child->kind == AST_VAR_DECL) {
+                    if (child->array_size > 0) {
+                        emit(list, IR_DEC, new_name(child->name), new_name(".space"), new_const(child->array_size));
+                    }
+                } else {
                     generate_ir_for_node(child, list, symtab);
+                }
             }
             break;
 
@@ -220,18 +238,16 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
             break;
 
         case AST_VAR_DECL: {
-            // Apenas processa declarações que estão no escopo global.
-            // Variáveis locais (dentro de funções) serão gerenciadas na pilha pelo backend.
             if (strcmp(currentScope, "global") == 0) {
                 printf("[IR_DBG]   Processing GLOBAL declaration for '%s'\n", node->name);
                 if (node->array_size > 0) {
-                    // É um vetor global: Gera a diretiva .space
                     emit(list, IR_DEC, new_name(node->name), new_name(".space"), new_const(node->array_size));
                 }
-                // Variáveis globais simples não precisam de diretiva,
-                // pois o backend as descobre e aloca .word para elas.
             } else {
-                printf("[IR_DBG]   Skipping LOCAL declaration for '%s' in scope '%s'\n", node->name, currentScope);
+                printf("[IR_DBG]   Processing LOCAL declaration for '%s' in scope '%s'\n", node->name, currentScope);
+                if (node->array_size > 0) {
+                    emit(list, IR_DEC, new_name(node->name), new_name(".space"), new_const(node->array_size));
+                }
             }
             break;
         }
@@ -293,8 +309,13 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
                 // A lógica de cálculo de endereço é a mesma do LOAD
                 Operand index_op = generate_ir_for_expr(index_node, list, symtab);
                 Operand offset_op = index_op;
-                Operand base_addr_op = new_temp();
-                emit(list, IR_ADDR, base_addr_op, new_name(lhs->name), (Operand){.kind=OPERAND_EMPTY});
+                Operand base_addr_op;
+                if (is_array_param(symtab, lhs->name, currentScope)) {
+                    base_addr_op = new_name(lhs->name);
+                } else {
+                    base_addr_op = new_temp();
+                    emit(list, IR_ADDR, base_addr_op, new_name(lhs->name), (Operand){.kind=OPERAND_EMPTY});
+                }
                 Operand final_addr_op = new_temp();
                 emit(list, IR_ADD, final_addr_op, base_addr_op, offset_op);
                 
@@ -356,6 +377,20 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             AstNode* arg_list_node = node->firstChild;
             if (arg_list_node) {
                 for (AstNode* arg = arg_list_node->firstChild; arg; arg = arg->nextSibling) {
+                    if (arg->kind == AST_ID) {
+                        Symbol *asym = getSymbol(symtab, arg->name, currentScope);
+                        if (asym && asym->dataType == TYPE_ARRAY) {
+                            if (asym->array_size == -1) {
+                                emit(list, IR_ARG, new_name(arg->name), (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
+                            } else {
+                                Operand addr_tmp = new_temp();
+                                emit(list, IR_ADDR, addr_tmp, new_name(arg->name), (Operand){.kind=OPERAND_EMPTY});
+                                emit(list, IR_ARG, addr_tmp, (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
+                            }
+                            arg_count++;
+                            continue;
+                        }
+                    }
                     Operand arg_op = generate_ir_for_expr(arg, list, symtab);
                     emit(list, IR_ARG, arg_op, (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
                     arg_count++;
@@ -384,8 +419,13 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             Operand offset_op = index_op;
 
             // 3. Obtém o endereço base do vetor
-            Operand base_addr_op = new_temp();
-            emit(list, IR_ADDR, base_addr_op, new_name(node->name), (Operand){.kind=OPERAND_EMPTY});
+            Operand base_addr_op;
+            if (is_array_param(symtab, node->name, currentScope)) {
+                base_addr_op = new_name(node->name);
+            } else {
+                base_addr_op = new_temp();
+                emit(list, IR_ADDR, base_addr_op, new_name(node->name), (Operand){.kind=OPERAND_EMPTY});
+            }
 
             // 4. Soma o endereço base com o offset para obter o endereço final
             Operand final_addr_op = new_temp();

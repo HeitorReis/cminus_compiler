@@ -55,7 +55,9 @@ int main(int argc, char **argv) {
         printAst(syntax_tree, 0);
     }
 
-    semanticAnalyze(syntax_tree, &symtab);
+    if (parseResult == 0) {
+        semanticAnalyze(syntax_tree, &symtab);
+    }
 
     if (syntax_tree) {
         freeAst(syntax_tree);
