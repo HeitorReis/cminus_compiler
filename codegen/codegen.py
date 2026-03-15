@@ -1,6 +1,7 @@
 import collections
 import re
 from symbol_table import Type, IntegerType, ArrayType, Symbol, SymbolTable # <-- ADICIONE ESTA LINHA
+from constants import STACK_WORDS, INITIAL_SP, DATA_SECTION_BASE
 
 IR_TO_ASSEMBLY_BRANCH = {
     # IR op: Assembly branch instruction
@@ -12,7 +13,6 @@ IR_TO_ASSEMBLY_BRANCH = {
     '!=': 'bieq',   # if_false (a != b) -> branch if (a == b)
 }
 
-DATA_MEMORY_SIZE = 256 
 SPECIAL_REGS = {  'retval': 'r0', 'pseudo': 'r27', 'lr': 'r28', 'sp': 'r29','spill': 'r30', 'fp': 'r31'}
 ARG_REGS = ['r1', 'r2', 'r3']
 
@@ -128,7 +128,9 @@ class RegisterAllocator:
         if var_name in self.spilled_temps:
             reg = self._get_free_reg()
             offset = self.spilled_temps[var_name]
-            self.func_context.add_instruction(f"\tloadi: {reg} = [fp, #{offset}]")
+            scratch_reg, fp_reg = self.SPILL_TEMP_REG, SPECIAL_REGS['fp']
+            self.func_context.emit_frame_address(scratch_reg, offset)
+            self.func_context.add_instruction(f"\tload: {reg} = [{scratch_reg}]")
             print(f"[ENSURE] -> Recuperando '{var_name}' da pilha [fp, #{offset}] para {reg}.")
             del self.spilled_temps[var_name]
             self._assign_reg_to_var(reg, var_name)
@@ -154,8 +156,8 @@ class RegisterAllocator:
             reg = self._get_free_reg()
             
             # Expande a pseudo-instrução: reg = [fp + offset]
-            scratch_reg, fp_reg = self.SPILL_TEMP_REG, SPECIAL_REGS['fp']
-            self.func_context.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
+            scratch_reg = self.SPILL_TEMP_REG
+            self.func_context.emit_frame_address(scratch_reg, offset)
             self.func_context.add_instruction(f"\tload: {reg} = [{scratch_reg}]")
             
             self._assign_reg_to_var(reg, var_name)
@@ -188,9 +190,8 @@ class RegisterAllocator:
         if var_name in self.func_context.stack_layout:
             # A variável está na pilha. endereço "fp + offset".
             offset = self.func_context.stack_layout[var_name]
-            fp_reg = SPECIAL_REGS['fp']
             print(f"[GET_ADDR] -> '{var_name}' está na pilha. Calculando endereço [fp, #{offset}].")
-            self.func_context.add_instruction(f"\tsubi: {addr_reg} = {fp_reg}, {-offset}")
+            self.func_context.emit_frame_address(addr_reg, offset)
         else:
             # A variável é global. Pega o endereço do DataManager.
             addr = self.func_context.data_manager.get_address(var_name)
@@ -243,8 +244,8 @@ class RegisterAllocator:
                     print(f"[SPILL_ALL] -> Salvando variável local '{var_name}' do registrador {reg} na pilha [fp, #{offset}].")
                     
                     # Gera código para armazenar na pilha
-                    scratch_reg, fp_reg = self.SPILL_TEMP_REG, SPECIAL_REGS['fp']
-                    self.func_context.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
+                    scratch_reg = self.SPILL_TEMP_REG
+                    self.func_context.emit_frame_address(scratch_reg, offset)
                     self.func_context.add_instruction(f"\tstore: [{scratch_reg}] = {reg}")
                     
                 else:
@@ -259,6 +260,37 @@ class RegisterAllocator:
                         print(f"[SPILL_ALL_WARN] -> Aviso: Variável '{var_name}' não é nem local nem global. Não foi salva.")
                         
                 self.dirty_regs.discard(reg)
+
+    def spill_all_for_call(self):
+        """
+        Salva variáveis reais modificadas e derrama temporários para a pilha
+        antes de uma chamada que pode clobberar registradores.
+        """
+        print("[SPILL_CALL] Preparando spill completo antes de chamada.")
+        self.spill_all_dirty()
+        for reg in list(self.reg_to_var.keys()):
+            var_name = self.reg_to_var.get(reg)
+            if not var_name:
+                continue
+            if var_name.startswith('t'):
+                self._spill_reg(reg, force=True)
+            else:
+                self._unassign_reg(reg)
+        self.dirty_regs.clear()
+
+    def invalidate_non_temps(self):
+        """Remove mapeamentos apenas de variáveis reais (não temporárias)."""
+        for reg in list(self.reg_to_var.keys()):
+            var_name = self.reg_to_var.get(reg)
+            if var_name and not var_name.startswith('t'):
+                self._unassign_reg(reg)
+                self.dirty_regs.discard(reg)
+
+    def invalidate_all(self):
+        """Remove todos os mapeamentos de registradores."""
+        for reg in list(self.reg_to_var.keys()):
+            self._unassign_reg(reg)
+        self.dirty_regs.clear()
     
     def invalidate_vars(self, var_names):
         """Remove o mapeamento de registradores para as variáveis fornecidas."""
@@ -300,7 +332,7 @@ class RegisterAllocator:
         self._mark_as_used(reg_to_spill)
         return reg_to_spill
 
-    def _spill_reg(self, reg):
+    def _spill_reg(self, reg, force=False):
         """ Salva um registrador na memória (se for variável) ou na pilha (se for temporário). """
         var_name = self.reg_to_var.get(reg)
         if not var_name:
@@ -310,8 +342,10 @@ class RegisterAllocator:
 
         print(f"[SPILL] Derramando registrador {reg}, que contém '{var_name}'.")
 
-        if reg in self.dirty_regs:
-            if not var_name.startswith('t'):
+        is_temp = var_name.startswith('t')
+        should_store = force or reg in self.dirty_regs or is_temp
+        if should_store:
+            if not is_temp:
                 addr_reg = self.SPILL_TEMP_REG
                 addr = self.func_context.data_manager.get_address(var_name)
                 print(f"[SPILL] -> '{var_name}' é uma variável real. Salvando em .data.")
@@ -326,7 +360,9 @@ class RegisterAllocator:
                 
                 self.spilled_temps[var_name] = offset
                 print(f"[SPILL] -> '{var_name}' é um temporário. Salvando na pilha em [fp, #{offset}].")
-                self.func_context.add_instruction(f"\tstorei: [fp, #{offset}] = {reg}")
+                scratch_reg = self.SPILL_TEMP_REG
+                self.func_context.emit_frame_address(scratch_reg, offset)
+                self.func_context.add_instruction(f"\tstore: [{scratch_reg}] = {reg}")
             
             self.dirty_regs.discard(reg)
         else:
@@ -379,8 +415,7 @@ class FunctionContext:
         self.instructions = []
         self.data_manager = data_manager
         self.allocator = RegisterAllocator(self)
-        self.arg_count = 0
-        self.arg_vars = []
+        self.pending_args = []
         self.param_names = []  
         self.local_vars = []
         self.local_array_sizes = {}
@@ -395,11 +430,73 @@ class FunctionContext:
     def add_instruction(self, instruction):
         print(f"[ADD_INSTR] Adicionando instrução para '{self.name}': {instruction.strip()}")
         self.instructions.append(instruction)
+
+    def emit_frame_address(self, target_reg, offset):
+        if offset > 0:
+            self.add_instruction(f"\taddi: {target_reg} = {SPECIAL_REGS['fp']}, {offset}")
+        elif offset < 0:
+            self.add_instruction(f"\tsubi: {target_reg} = {SPECIAL_REGS['fp']}, {-offset}")
+        else:
+            self.add_instruction(f"\tmov: {target_reg} = {SPECIAL_REGS['fp']}")
     
     def new_label(self, prefix="Lret"):
         label = f"{self.name}_{prefix}{self.label_counter}"
         self.label_counter += 1
         return label
+
+
+def is_integer_literal(token):
+    return token.isdigit() or (token.startswith('-') and token[1:].isdigit())
+
+
+def emit_pending_args(func_ctx):
+    alloc = func_ctx.allocator
+    extra_args = func_ctx.pending_args[len(ARG_REGS):]
+
+    for arg_name in reversed(extra_args):
+        src_reg = alloc.ensure_var_in_reg(arg_name)
+        func_ctx.add_instruction(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1")
+        func_ctx.add_instruction(f"\tstore: [{SPECIAL_REGS['sp']}] = {src_reg}")
+        alloc.free_reg_if_temp(src_reg)
+
+    for index, arg_name in enumerate(func_ctx.pending_args[:len(ARG_REGS)]):
+        src_reg = alloc.ensure_var_in_reg(arg_name)
+        func_ctx.add_instruction(f"\tmov: {ARG_REGS[index]} = {src_reg}")
+        alloc.free_reg_if_temp(src_reg)
+
+    return len(extra_args)
+
+
+def cleanup_pending_args(func_ctx, pushed_count):
+    if pushed_count > 0:
+        func_ctx.add_instruction(f"\taddi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, {pushed_count}")
+    func_ctx.allocator.invalidate_vars(func_ctx.pending_args)
+    func_ctx.pending_args.clear()
+
+
+def emit_call(func_ctx, func_name, dest=None):
+    alloc = func_ctx.allocator
+    alloc.spill_all_for_call()
+    pushed_count = emit_pending_args(func_ctx)
+
+    if func_name == 'input':
+        dest_reg = alloc.get_reg_for_temp(dest)
+        func_ctx.add_instruction(f"\tin: {dest_reg}")
+    elif func_name == 'output':
+        func_ctx.add_instruction(f"\tout: {ARG_REGS[0]}")
+    else:
+        return_label = func_ctx.new_label()
+        ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
+        func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
+        func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
+        func_ctx.add_instruction(f"\tbl: {func_name}")
+        alloc.free_reg_if_temp(ret_reg)
+        func_ctx.add_instruction(f"{return_label}:")
+        if dest is not None:
+            dest_reg = alloc.get_reg_for_temp(dest)
+            func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
+
+    cleanup_pending_args(func_ctx, pushed_count)
 
 def translate_instruction(instr_parts, func_ctx):
     """
@@ -413,6 +510,7 @@ def translate_instruction(instr_parts, func_ctx):
     if opcode.endswith(':'):
         print(f"[TRANSLATE] -> Rótulo detectado: {opcode}")
         alloc.spill_all_dirty()
+        alloc.invalidate_non_temps()
         func_ctx.add_instruction(opcode)
         return
         
@@ -426,7 +524,12 @@ def translate_instruction(instr_parts, func_ctx):
         print(f"[TRANSLATE] -> Desvio incondicional detectado: {instr_parts[1]}")
         alloc.spill_all_dirty()
         func_ctx.add_instruction(f"\tbi: {instr_parts[1]}")
+        alloc.invalidate_all()
         func_ctx.last_instr_type = 'goto'
+        return
+
+    if opcode == 'param':
+        print(f"[TRANSLATE] -> Declaração formal de parâmetro ignorada no assembly: {instr_parts[1]}")
         return
 
     if ':=' in instr_parts:
@@ -461,7 +564,7 @@ def translate_instruction(instr_parts, func_ctx):
             reg1 = alloc.ensure_var_in_reg(arg1)
             assembly_op = op_map[op_str]
             
-            if arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit()):
+            if is_integer_literal(arg2):
                 assembly_op += 'i'
                 op2_val = arg2
                 print(f"[TRANSLATE] -> Operando 2 é um imediato: {op2_val}")
@@ -472,7 +575,7 @@ def translate_instruction(instr_parts, func_ctx):
             func_ctx.add_instruction(f"\t{assembly_op}: {dest_reg} = {reg1}, {op2_val}")
             
             alloc.free_reg_if_temp(reg1)
-            if not (arg2.isdigit() or (arg2.startswith('-') and arg2[1:].isdigit())):
+            if not is_integer_literal(arg2):
                 alloc.free_reg_if_temp(op2_val)
         
         elif expr_parts[0].startswith('&'):
@@ -542,35 +645,7 @@ def translate_instruction(instr_parts, func_ctx):
         elif 'call' in expr_parts:
             print("[TRANSLATE] -> Caminho: Chamada de Função")
             func_name = expr_parts[1].replace(',', '')
-            
-            alloc.spill_all_dirty()
-            
-            if func_name == 'input':
-                print("\t[TRANSLATE] -> Caminho: Chamada de Função Input")
-                # VERSÃO ORIGINAL: Simplesmente aloca um registrador e gera a instrução 'in'.
-                dest_reg = alloc.get_reg_for_temp(dest)
-                func_ctx.add_instruction(f"\tin: {dest_reg}")
-            elif func_name == 'output':
-                print("\t[TRANSLATE] -> Caminho: Chamada de Função Output")
-                hit_reg = expr_parts[1].split(',', 1)[1]
-                print(f"[TRANSLATE] -> Função chamada: {func_name}, argumento: {hit_reg}")
-                print(f"[TRANSLATE] -> Chamada de função 'output' detectada. Registrador a ser retornado: {hit_reg}.")
-                func_ctx.add_instruction(f"\tout: {hit_reg}")
-            else:
-                print("[TRANSLATE] -> Caminho: Chamada de Função com Retorno")
-                return_label = func_ctx.new_label()
-                ret_reg = alloc.get_reg_for_temp(f"t_ret_{len(func_ctx.instructions)}")
-                func_ctx.add_instruction(f"\tmovi: {ret_reg} = {return_label}")
-                func_ctx.add_instruction(f"\tmov: {SPECIAL_REGS['lr']} = {ret_reg}")
-                func_ctx.add_instruction(f"\tbl: {func_name}")
-                alloc.free_reg_if_temp(ret_reg)
-                func_ctx.add_instruction(f"{return_label}:")
-                
-                dest_reg = alloc.get_reg_for_temp(dest)
-                func_ctx.add_instruction(f"\tmov: {dest_reg} = {SPECIAL_REGS['retval']}")
-                alloc.invalidate_vars(func_ctx.arg_vars)
-            func_ctx.arg_vars.clear()
-            func_ctx.arg_count = 0
+            emit_call(func_ctx, func_name, dest=dest)
         
         elif opcode == "if_false":
             print(f"[TRANSLATE] -> Caminho: Desvio Condicional (if_false)")
@@ -611,10 +686,9 @@ def translate_instruction(instr_parts, func_ctx):
                 
                 # Usa um registrador temporário para calcular o endereço [fp + offset]
                 addr_reg = alloc.SPILL_TEMP_REG 
-                fp_reg = SPECIAL_REGS['fp']
                 
                 # Gera as instruções para: store [fp + offset] = src_reg
-                func_ctx.add_instruction(f"\tsubi: {addr_reg} = {fp_reg}, {-offset}")
+                func_ctx.emit_frame_address(addr_reg, offset)
                 func_ctx.add_instruction(f"\tstore: [{addr_reg}] = {src_reg}")
 
             # 3. Atualiza o alocador para saber que `dest_var` agora também pode ser
@@ -630,32 +704,12 @@ def translate_instruction(instr_parts, func_ctx):
     elif opcode == 'call':
         print("[TRANSLATE] -> Caminho: Chamada de Procedimento")
         func_name = instr_parts[1].replace(',', '')
-        num_args = int(instr_parts[2]) if len(instr_parts) > 2 else 0
-        alloc.spill_all_dirty()
-        if func_name == 'output':
-            output_reg = ARG_REGS[0]  
-            
-            func_ctx.add_instruction(f"\tout: {output_reg}")
-        else:
-            return_label = func_ctx.new_label()
-            func_ctx.add_instruction(f"\tmovi: {SPECIAL_REGS['lr']} = {return_label}")
-            func_ctx.add_instruction(f"\tbl: {func_name}")
-            func_ctx.add_instruction(f"{return_label}:")
-        alloc.invalidate_vars(func_ctx.arg_vars)
-        func_ctx.arg_vars.clear()
-        func_ctx.arg_count = 0
+        emit_call(func_ctx, func_name, dest=None)
     
     
     elif opcode == 'arg':
-        print(f"[TRANSLATE] -> Caminho: Passagem de Argumento (arg {func_ctx.arg_count+1})")
-        if func_ctx.arg_count < len(ARG_REGS):
-            src_reg = alloc.ensure_var_in_reg(instr_parts[1])
-            dest_reg = ARG_REGS[func_ctx.arg_count]
-            func_ctx.add_instruction(f"\tmov: {dest_reg} = {src_reg}")
-            func_ctx.arg_vars.append(instr_parts[1])
-            func_ctx.arg_count += 1
-        else:
-            print(f"[TRANSLATE_WARN] -> Aviso: Mais de {len(ARG_REGS)} argumentos. Passagem pela pilha não implementada.")
+        print(f"[TRANSLATE] -> Caminho: Enfileirando argumento {len(func_ctx.pending_args)+1}")
+        func_ctx.pending_args.append(instr_parts[1])
         return
     
     elif opcode == 'return':
@@ -693,7 +747,7 @@ def translate_instruction(instr_parts, func_ctx):
 def generate_assembly(ir_list):
     print("\n\n=== INICIANDO GERAÇÃO DE ASSEMBLY ===")
     functions = collections.OrderedDict()
-    data_manager = DataMemoryManager(base_address=int(DATA_MEMORY_SIZE/2))
+    data_manager = DataMemoryManager(base_address=DATA_SECTION_BASE)
     
     # --- Etapa 1: Análise Estática ---
 
@@ -782,12 +836,22 @@ def generate_assembly(ir_list):
         
         # 2A: Descobre parâmetros e variáveis locais da função
         defined_vars = set()
-        all_vars_in_func = set()
-        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'return', 'output', 'input'}
+        ordered_vars = []
+        seen_vars = set()
+        IR_KEYWORDS = {'if_false', 'goto', 'call', 'arg', 'param', 'return', 'output', 'input'}
         LABEL_RE = re.compile(r'^L\d+$')   # L0, L1, L2...
         VAR_RE   = re.compile(r'\b([a-zA-Z_]\w*)\b')
+        func_ctx.param_names = []
         
         for line in func_ir:
+            if line.startswith('param '):
+                param_name = line.split()[1]
+                if param_name not in func_ctx.param_names:
+                    func_ctx.param_names.append(param_name)
+                if param_name not in seen_vars:
+                    ordered_vars.append(param_name)
+                    seen_vars.add(param_name)
+                continue
             if ':=' in line:
                 dest = line.split(':=', 1)[0].strip()
                 dest_var = re.sub(r'^\*', '', dest).strip()
@@ -810,29 +874,48 @@ def generate_assembly(ir_list):
                     or var == '_'                   
                 ):
                     continue
-                all_vars_in_func.add(var)
-        
-        # Agora, fora do loop, definimos parâmetros e variáveis locais
-        func_ctx.param_names = [v for v in all_vars_in_func if v not in defined_vars]
-        print(f"[DEBUG] Função '{func_name}': all_vars={all_vars_in_func}, defined_vars={defined_vars}, params={func_ctx.param_names}")
+                if var not in seen_vars:
+                    ordered_vars.append(var)
+                    seen_vars.add(var)
+
+        # Fallback para IRs antigos sem declarações formais explícitas.
+        if not func_ctx.param_names:
+            func_ctx.param_names = [
+                var for var in ordered_vars
+                if var not in defined_vars and not symbol_table.get_symbol(var)
+            ]
+
+        print(f"[DEBUG] Função '{func_name}': all_vars={ordered_vars}, defined_vars={defined_vars}, params={func_ctx.param_names}")
         print(f"--> Parâmetros para '{func_name}': {func_ctx.param_names}")
         
-        local_vars = {
-            v for v in all_vars_in_func
-            if v not in func_ctx.param_names and not symbol_table.get_symbol(v)
-        }
-        func_ctx.local_vars = list(local_vars)
+        func_ctx.local_vars = [
+            var for var in ordered_vars
+            if var not in func_ctx.param_names and var in defined_vars and not symbol_table.get_symbol(var)
+        ]
         print(f"--> Variáveis Locais para '{func_name}': {func_ctx.local_vars}")
         
         # 2B: Atribui um offset na pilha para cada parâmetro e variável local
         print(f"--> Criando o layout da pilha para '{func_name}'...")
         current_offset = -1
-        for var_name in (func_ctx.param_names + func_ctx.local_vars):
+        fast_param_count = min(len(func_ctx.param_names), len(ARG_REGS))
+        for var_name in func_ctx.param_names[:fast_param_count]:
+            if var_name not in func_ctx.stack_layout:
+                func_ctx.stack_layout[var_name] = current_offset
+                print(f"    -> Parâmetro rápido '{var_name}' em [fp, #{current_offset}]")
+                current_offset -= 1
+
+        for var_name in func_ctx.local_vars:
             if var_name not in func_ctx.stack_layout:
                 func_ctx.stack_layout[var_name] = current_offset
                 size = func_ctx.local_array_sizes.get(var_name, 1)
                 print(f"    -> Mapeando '{var_name}' para o offset [fp, #{current_offset}] (size={size})")
                 current_offset -= size
+
+        for index, var_name in enumerate(func_ctx.param_names[fast_param_count:]):
+            positive_offset = 2 + index
+            func_ctx.stack_layout[var_name] = positive_offset
+            print(f"    -> Parâmetro empilhado '{var_name}' em [fp, #{positive_offset}]")
+        func_ctx.next_stack_slot = current_offset
                 
         # 2C: Calcula o tamanho total do frame (parâmetros + locais + temporários)
         temp_vars = set()
@@ -841,7 +924,7 @@ def generate_assembly(ir_list):
             for var in matches: temp_vars.add(var)
 
         local_words = 0
-        for var_name in func_ctx.param_names:
+        for var_name in func_ctx.param_names[:fast_param_count]:
             local_words += 1
         for var_name in func_ctx.local_vars:
             local_words += func_ctx.local_array_sizes.get(var_name, 1)
@@ -853,14 +936,12 @@ def generate_assembly(ir_list):
         func_ctx.instructions.clear()
         
         # Gera o código para salvar os parâmetros na pilha
-        for idx, param_name in enumerate(func_ctx.param_names):
-            if idx < len(ARG_REGS):
-                arg_reg = ARG_REGS[idx]
-                offset = func_ctx.stack_layout[param_name]
-                scratch_reg, fp_reg = SPECIAL_REGS['spill'], SPECIAL_REGS['fp']
-                
-                func_ctx.add_instruction(f"\tsubi: {scratch_reg} = {fp_reg}, {-offset}")
-                func_ctx.add_instruction(f"\tstore: [{scratch_reg}] = {arg_reg}")
+        for idx, param_name in enumerate(func_ctx.param_names[:fast_param_count]):
+            arg_reg = ARG_REGS[idx]
+            offset = func_ctx.stack_layout[param_name]
+            scratch_reg = SPECIAL_REGS['spill']
+            func_ctx.emit_frame_address(scratch_reg, offset)
+            func_ctx.add_instruction(f"\tstore: [{scratch_reg}] = {arg_reg}")
         
         # Traduz o resto do corpo da função a partir do IR
         for line in func_ir:
@@ -884,7 +965,7 @@ def generate_assembly(ir_list):
         final_code.append(f"{func_name}:")
         
         if func_name == 'main':
-            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = {DATA_MEMORY_SIZE - 1}")
+            final_code.append(f"\tmovi: {SPECIAL_REGS['sp']} = {INITIAL_SP}")
             final_code.append(f"\tmov: {SPECIAL_REGS['fp']} = {SPECIAL_REGS['sp']}")
         else:
             final_code.append(f"\tsubi: {SPECIAL_REGS['sp']} = {SPECIAL_REGS['sp']}, 1") 
@@ -918,7 +999,7 @@ def generate_assembly(ir_list):
 
     print("[Montagem] Adicionando a seção .data.")
     final_code.append(".data")
-    final_code.append(f"stack_space: .space {DATA_MEMORY_SIZE}")
+    final_code.append(f"stack_space: .space {STACK_WORDS}")
     directives = data_manager.generate_data_directives(symbol_table)
     print(f"[Montagem] -> Variáveis a serem declaradas: {[s.name for s in symbol_table.symbols.values()]}")
     final_code.extend(directives)

@@ -1,0 +1,328 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\geometry{margin=2.5cm}
+
+\title{Relatório Científico de Desenvolvimento, Correção e Verificação do Compilador C-minus para uma ISA ARM-like}
+\author{Projeto C-minus Compiler}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este relatório apresenta a arquitetura, a lógica de implementação, a correção e a verificação do compilador C-minus presente neste repositório. O trabalho adota como especificação normativa o documento \texttt{ImportantAdditionalText-ProcessorInformation.txt}, que define uma ISA de 32 bits com largura fixa, campo de condição, bits de suporte para imediato e atualização do CPSR, e organização uniforme dos campos \texttt{Rd}, \texttt{Rh} e \texttt{Operand\_2}. A contribuição principal desta etapa foi uma correção ampla do toolchain do compilador, cobrindo parser, tabela de símbolos, análise semântica, geração de IR, geração de assembly e montagem em código de máquina. Além da descrição detalhada do desenvolvimento, o relatório documenta os erros encontrados, as correções aplicadas, a metodologia de validação e as limitações residuais que permanecem fora de escopo, em especial as divergências entre o compilador corrigido e os módulos de \texttt{processor\_archive/}.
+\end{abstract}
+
+\section{Introdução}
+O compilador C-minus é organizado como um pipeline clássico dividido em frontend, IR e backend. O frontend, implementado em C com Flex e Bison, realiza análise léxica, sintática e semântica. Em seguida, o compilador gera uma representação intermediária textual, usada como entrada para um backend em Python responsável por produzir assembly e, por fim, código de máquina.
+
+O objetivo desta correção foi tornar o compilador consistente com a ISA ARM-like normativa descrita em \texttt{ImportantAdditionalText-ProcessorInformation.txt}, sem modificar os módulos do processador mantidos em \texttt{processor\_archive/}. A decisão de manter o hardware fora do escopo exige que este relatório diferencie explicitamente o que foi corrigido no compilador daquilo que permanece como incompatibilidade residual entre software e hardware.
+
+\section{Objetivos e escopo}
+Os objetivos técnicos desta etapa foram:
+\begin{itemize}[leftmargin=1.5em]
+    \item corrigir falhas funcionais no frontend, na IR, no backend e no assembler;
+    \item alinhar a codificação binária e o modelo de execução do compilador à ISA normativa;
+    \item tornar o pipeline reproduzível, com testes positivos e negativos;
+    \item registrar de forma científica a lógica de implementação, a auditoria técnica e as limitações remanescentes.
+\end{itemize}
+
+O escopo cobre apenas o compilador e sua documentação. O hardware arquivado em \texttt{processor\_archive/} permanece inalterado. Portanto, este texto distingue:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{correções internas do toolchain}, que foram implementadas e validadas; e
+    \item \textbf{mismatches residuais com o hardware}, que foram apenas documentados.
+\end{itemize}
+
+\section{ISA normativa e modelo-alvo}
+\subsection{Formato da instrução}
+Todas as instruções possuem 32 bits, organizados como:
+\begin{center}
+\texttt{Cond[31:28] | Type[27:26] | Supp[25:24] | Funct[23:20] | Rd[19:15] | Rh[14:10] | Operand\_2[9:0]}
+\end{center}
+
+Os elementos relevantes para o compilador são:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Cond}: execução condicional;
+    \item \textbf{Type}: classe da instrução (\texttt{00} processamento, \texttt{01} memória, \texttt{11} desvio);
+    \item \textbf{Supp}: modo imediato, atualização de flags, ou ambos;
+    \item \textbf{Funct}: operação específica dentro da classe;
+    \item \textbf{Operand\_2}: imediato com sinal em 10 bits ou registrador codificado em \texttt{[9:5]} com \texttt{[4:0]=0}.
+\end{itemize}
+
+\subsection{Implicações para o compilador}
+Essa ISA impõe quatro decisões de projeto importantes:
+\begin{enumerate}[leftmargin=1.5em]
+    \item não há espaço para imediatos arbitrariamente grandes em uma única instrução;
+    \item desvios imediatos também ficam limitados ao intervalo representável em 10 bits;
+    \item operadores de alto nível não presentes na ISA precisam de \emph{lowering} explícito;
+    \item o backend precisa respeitar uma convenção de chamadas consistente com as restrições do conjunto de registradores.
+\end{enumerate}
+
+\subsection{Convenção de software adotada}
+Embora a ISA normativa preveja instruções de \emph{branch \& link}, o compilador preserva a convenção de software já usada no projeto:
+\begin{itemize}[leftmargin=1.5em]
+    \item \texttt{r0}: valor de retorno;
+    \item \texttt{r1--r3}: três primeiros argumentos;
+    \item \texttt{r28}: registrador de link tratado pelo compilador;
+    \item \texttt{r29}: \emph{stack pointer};
+    \item \texttt{r31}: \emph{frame pointer}.
+\end{itemize}
+Essa escolha mantém compatibilidade com o backend já existente, ao custo de uma divergência residual em relação ao hardware arquivado, discutida na Seção~\ref{sec:limitacoes}.
+
+\subsection{Modelo de memória do toolchain}
+O compilador foi unificado para assumir uma pilha lógica de 256 palavras, com \texttt{sp} inicial em 255 e seção de dados posicionada a partir desse limite. Essa decisão padroniza frontend, backend e assembler, evitando inconsistências internas de endereçamento. Entretanto, tal convenção ainda exige reconciliação explícita com a implementação de memória presente no hardware arquivado.
+
+\section{Arquitetura do compilador}
+\subsection{Frontend}
+O frontend está distribuído entre \texttt{parser/} e \texttt{src/}. O lexer reconhece palavras-chave, identificadores, literais inteiros, operadores aritméticos e relacionais, pontuação e comentários. O parser produz uma AST n-ária. Em paralelo, ações semânticas registram declarações e usos na tabela de símbolos.
+
+\subsection{Tabela de símbolos e pilha de escopos}
+O compilador mantém uma tabela de símbolos com nome, escopo, tipo, linhas de declaração e linhas de uso. A correção introduziu uma pilha de escopos explícita, compartilhada entre parser, análise semântica e geração de IR. Isso permite que a resolução léxica percorra, da região mais interna para a mais externa, a cadeia de escopos ativos até \texttt{global}.
+
+\subsection{Análise semântica}
+A análise semântica valida:
+\begin{itemize}[leftmargin=1.5em]
+    \item existência de identificadores;
+    \item uso correto de vetores e índices;
+    \item consistência entre chamadas e assinaturas;
+    \item tipo de expressões de retorno;
+    \item presença de retorno em todas as rotas de funções não-\texttt{void}.
+\end{itemize}
+
+\subsection{IR}
+A IR é uma forma textual de três endereços com temporários explícitos. Após esta correção, ela passou a registrar parâmetros formais por meio da instrução \texttt{param x}, o que eliminou inferências frágeis de ordem de parâmetros no backend. A IR também passou a bloquear emissões inválidas quando a expressão da direita falha semanticamente.
+
+\subsection{Backend}
+O backend realiza:
+\begin{enumerate}[leftmargin=1.5em]
+    \item análise da IR por função;
+    \item construção do layout de pilha;
+    \item alocação de registradores com \emph{spill};
+    \item geração de assembly;
+    \item montagem para código binário.
+\end{enumerate}
+
+\subsection{Assembler}
+O assembler foi reestruturado como um tradutor em duas passagens:
+\begin{itemize}[leftmargin=1.5em]
+    \item primeira passagem para mapear rótulos, diretivas e expansões previstas;
+    \item segunda passagem para codificar instruções, expandir pseudo-instruções e produzir o binário final.
+\end{itemize}
+Essa abordagem removeu dependências frágeis do comportamento linear anterior, principalmente em \texttt{movi} para imediatos grandes e \emph{long branches}.
+
+\section{Passo a passo do desenvolvimento e da lógica de implementação}
+\subsection{Etapa 1: análise léxica e sintática}
+O compilador inicia em \texttt{main.c}, inicializa a pilha de escopos, declara \texttt{input()} e \texttt{output(x)} e invoca o parser. O parser usa Flex/Bison para reconhecer a gramática C-minus e construir a AST. Cada declaração local, parâmetro ou função é registrada na tabela de símbolos no escopo ativo.
+
+Nesta etapa, a gramática foi reescrita em pontos específicos para eliminar ambiguidades de listas. Em termos de projeto, a escolha por regras não ambíguas reduz dependência de resolução implícita de conflitos pelo gerador LR e torna a AST mais previsível para as etapas seguintes.
+
+\subsection{Etapa 2: organização de escopos}
+Uma limitação importante da versão anterior era tratar apenas escopo de função. Isso causava falso erro de redeclaração em blocos internos e impedia sombreamento léxico legítimo. A correção introduziu:
+\begin{itemize}[leftmargin=1.5em]
+    \item criação de um escopo único para cada \texttt{compound\_stmt};
+    \item nomes internos de bloco armazenados na AST;
+    \item resolução de símbolos na cadeia de escopos ativos até \texttt{global};
+    \item replay da pilha de escopos durante análise semântica e geração de IR.
+\end{itemize}
+
+A lógica por trás dessa alteração é simples: o parser conhece a estrutura léxica do programa, mas a semântica e a IR precisam reproduzir a mesma visão de escopo. Sem um identificador estável por bloco, cada fase veria um programa diferente.
+
+\subsection{Etapa 3: análise semântica}
+Com a AST pronta, a análise semântica percorre o programa e aplica verificações estruturais e de tipo. Nesta etapa, foi adicionada uma análise conservadora de retorno: uma função não-\texttt{void} só é aceita se o corpo garantir retorno em todos os caminhos observáveis. Isso impede que a IR receba um \texttt{return \_} implícito para funções inteiras.
+
+Essa decisão foi deliberadamente conservadora. O objetivo não é provar propriedades sofisticadas de fluxo de controle, mas impedir o caso mais grave: aceitação silenciosa de função inteira sem valor definido de retorno.
+
+\subsection{Etapa 4: geração de IR}
+A geração de IR lineariza a árvore em instruções simples. O caso mais importante corrigido foi o operador módulo. Como a ISA não possui instrução nativa para \texttt{\%}, o compilador passa a fazer \emph{lowering} para:
+\begin{center}
+\texttt{a \% b = a - ((a / b) * b)}
+\end{center}
+Essa decisão preserva a expressividade da linguagem sem alterar a ISA.
+
+Além disso, a introdução de \texttt{param} na IR corrigiu um problema arquitetural do backend: antes, a ordem dos parâmetros era inferida por inspeção de variáveis, o que é frágil e semanticamente incorreto. Com parâmetros formais explícitos, a ABI torna-se determinística.
+
+\subsection{Etapa 5: convenção de chamadas e layout de frame}
+O backend monta um frame por função. Os três primeiros parâmetros são recebidos em registradores e armazenados em offsets negativos de \texttt{fp}. Parâmetros adicionais são passados pelo chamador na pilha, da direita para a esquerda, e acessados pelo callee em offsets positivos a partir de \texttt{fp}. Essa correção elimina a antiga limitação que aceitava chamadas com mais de três argumentos, porém descartava argumentos extras silenciosamente.
+
+A lógica de offsets ficou assim:
+\begin{itemize}[leftmargin=1.5em]
+    \item offsets negativos: parâmetros rápidos, variáveis locais e temporários;
+    \item offsets positivos: parâmetros excedentes empilhados pelo chamador;
+    \item limpeza da pilha após a chamada: responsabilidade do chamador.
+\end{itemize}
+
+\subsection{Etapa 6: montagem para código de máquina}
+O assembler foi reestruturado em duas passagens principais:
+\begin{itemize}[leftmargin=1.5em]
+    \item mapeamento estável de rótulos de texto e dados;
+    \item expansão de pseudo-instruções e codificação final.
+\end{itemize}
+Dois comportamentos são centrais:
+\begin{enumerate}[leftmargin=1.5em]
+    \item \textbf{imediatos grandes}: \texttt{movi} com valor fora do intervalo de 10 bits é convertido em acesso via \emph{literal pool};
+    \item \textbf{desvios longos}: um branch para rótulo fora do alcance de 10 bits é expandido para \texttt{movi} + branch por registrador.
+\end{enumerate}
+
+Sem essa correção, o assembler assumia codificações incompatíveis com a própria ISA alvo, o que comprometia a validade de qualquer código de máquina produzido.
+
+\section{Erros encontrados, causa raiz e correções aplicadas}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.26\textwidth} >{\raggedright\arraybackslash}p{0.20\textwidth}}
+\toprule
+\textbf{Erro encontrado} & \textbf{Causa raiz} & \textbf{Correção aplicada} & \textbf{Impacto} \\
+\midrule
+\endhead
+Conflitos no parser & gramática de listas com ambiguidade estrutural & reescrita de \texttt{local\_declarations} e \texttt{statement\_list} em forma não ambígua & build estável do parser \\
+Escopo de bloco ausente & modelo de escopo limitado à função & escopos por bloco + resolução pela cadeia ativa & sombreamento léxico correto \\
+Falta de retorno em função \texttt{int} & ausência de verificação de fluxo mínimo & análise de caminhos de retorno em funções inteiras & evita IR inválida e bugs silenciosos \\
+Operador \texttt{\%} quebrado & frontend aceitava o operador, mas sem lowering correspondente & lowering para divisão, multiplicação e subtração & suporte consistente ao operador \\
+Ordem de parâmetros instável & backend inferia parâmetros por conjunto sem ordem formal & nova instrução de IR \texttt{param} & ABI determinística \\
+Mais de 3 argumentos & ABI incompleta no gerador de chamadas & passagem em pilha pelo chamador + acesso por offsets positivos & chamadas com mais de três argumentos funcionais \\
+Pseudo-\texttt{movi} inválido & expansão parcial e endereço literal incorreto & \emph{literal pool} com expansão correta & suporte a constantes e endereços grandes \\
+Branch fora de alcance & uso incorreto do espaço de operando e contagem de tamanho imprecisa & expansão para branch longo via registrador & conformidade com imediato de 10 bits \\
+Parser de mnemonics condicionado & análise de sufixos sensível à ordem textual & parser de sufixos em ambas as ordens & assembler mais robusto \\
+Modelo de memória inconsistente & constantes divergentes entre backend e assembler & constante compartilhada de 256 palavras & endereçamento interno unificado \\
+\bottomrule
+\end{longtable}
+
+\section{Metodologia de verificação}
+Foram usados três níveis de verificação.
+
+\subsection{Validação do pipeline completo}
+Executou-se:
+\begin{verbatim}
+make clean && make run_all
+\end{verbatim}
+Esse fluxo recompila o frontend, gera IR, assembly e código de máquina para todos os arquivos \texttt{teste*.txt} em \texttt{docs/test\_files/}.
+
+\subsection{Casos de regressão do compilador}
+Foram adicionados os seguintes programas:
+\begin{itemize}[leftmargin=1.5em]
+    \item \texttt{teste8.txt}: módulo por lowering;
+    \item \texttt{teste9.txt}: chamada com quatro argumentos;
+    \item \texttt{teste10.txt}: imediato grande e \emph{literal pool};
+    \item \texttt{teste11.txt}: escopo de bloco com sombreamento;
+    \item \texttt{invalid\_missing\_return.txt}: teste negativo para retorno ausente.
+\end{itemize}
+
+\subsection{Casos de regressão do assembler}
+Executou-se:
+\begin{verbatim}
+python3 codegen/assembler_regressions.py
+\end{verbatim}
+Esse script valida explicitamente:
+\begin{itemize}[leftmargin=1.5em]
+    \item parsing de instruções condicionais com imediato;
+    \item expansão de branch longo para alvo distante.
+\end{itemize}
+
+\subsection{Critérios de aceite}
+Os critérios de aceite adotados nesta etapa foram:
+\begin{itemize}[leftmargin=1.5em]
+    \item ausência de conflitos do Bison;
+    \item ausência de warnings de declaração implícita no build em C;
+    \item geração bem-sucedida de IR, assembly e código de máquina para a suíte positiva;
+    \item falha controlada com diagnóstico semântico no caso negativo de retorno ausente;
+    \item respeito ao formato normativo da instrução, em especial o imediato de 10 bits.
+\end{itemize}
+
+\section{Resultados e discussão}
+Os principais resultados obtidos foram:
+\begin{itemize}[leftmargin=1.5em]
+    \item eliminação dos conflitos do Bison;
+    \item remoção dos warnings de declaração implícita no build em C;
+    \item aceitação correta de escopos internos;
+    \item rejeição correta de funções não-\texttt{void} sem retorno total;
+    \item geração de IR válida para o operador \texttt{\%};
+    \item suporte funcional a chamadas com quatro argumentos;
+    \item montagem bem-sucedida de imediatos grandes por \emph{literal pool};
+    \item validação de parsing condicional e branch longo no assembler.
+\end{itemize}
+
+Do ponto de vista arquitetural, o ganho principal foi a remoção de contratos implícitos entre fases. Antes da correção, parte do pipeline ``funcionava'' porque fases posteriores tentavam inferir intenções da fase anterior. Após a correção, os contratos ficaram explícitos: a AST carrega escopo de bloco, a IR carrega parâmetros formais, o backend distingue parâmetros rápidos e empilhados, e o assembler distingue corretamente o que cabe ou não em 10 bits.
+
+\section{Limitações residuais}
+\label{sec:limitacoes}
+As seguintes limitações permanecem fora do escopo desta correção:
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Hardware arquivado não atualizado}: os módulos de \texttt{processor\_archive/} não foram modificados, apesar de divergirem da ISA normativa em pontos relevantes de branch, memória e link.
+    \item \textbf{Convenção de software em \texttt{r28}}: o compilador mantém \texttt{r28} como registrador de link lógico, enquanto o hardware arquivado possui também um registrador de link separado.
+    \item \textbf{Modelo de memória}: o compilador assume uma região de pilha com 256 palavras e dados acima dessa faixa, o que exige reconciliação explícita com a RAM descrita no hardware arquivado.
+    \item \textbf{Análise de retorno conservadora}: a verificação de retorno cobre os casos estruturais mais relevantes, mas não tenta provar propriedades avançadas de fluxo de controle.
+\end{itemize}
+
+\section{Trabalhos futuros}
+Os próximos passos tecnicamente recomendados são:
+\begin{itemize}[leftmargin=1.5em]
+    \item reconciliar explicitamente o hardware arquivado com a ISA normativa adotada pelo compilador;
+    \item substituir a convenção de link em \texttt{r28} por uma solução alinhada ao hardware final escolhido;
+    \item ampliar a suíte com testes de regressão para recursão profunda, pressão de registradores e arrays multidimensionais simulados;
+    \item produzir resultados experimentais com simulação do processador, medindo corretude binária fim a fim.
+\end{itemize}
+
+\section{Conclusão}
+O compilador C-minus foi corrigido de modo a tornar o pipeline internamente consistente com a ISA normativa adotada para esta etapa. O frontend passou a respeitar escopos léxicos e retorno obrigatório em funções inteiras; a IR tornou explícita a ordem dos parâmetros; o backend passou a lidar com argumentos extras na pilha; e o assembler foi refeito para obedecer à codificação com imediato de 10 bits, \emph{literal pool} e expansão de branch longo. O resultado é um toolchain significativamente mais previsível, verificável e apropriado para documentação científica e futuras etapas de integração com hardware.
+
+\appendix
+
+\section{Matriz de conformidade: especificação versus implementação}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.22\textwidth} >{\raggedright\arraybackslash}p{0.18\textwidth} >{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.25\textwidth}}
+\toprule
+\textbf{Aspecto} & \textbf{Especificação} & \textbf{Implementação atual} & \textbf{Observação} \\
+\midrule
+\endhead
+Formato da instrução & 32 bits fixos & implementado & alinhado ao documento normativo \\
+Imediato em \texttt{Operand\_2} & 10 bits com sinal & implementado & grandes constantes exigem expansão \\
+Branch imediato & 10 bits com sinal & implementado & alvos fora de alcance usam branch longo \\
+Branch por registrador & registrador em \texttt{Operand\_2} & implementado & usado na expansão de branches longos \\
+Operador \texttt{\%} na linguagem & permitido pela gramática & implementado por lowering & não exige mudança da ISA \\
+Escopo por bloco & esperado em linguagem C-like & implementado & ausente antes da correção \\
+Funções \texttt{int} sem retorno total & devem ser rejeitadas & implementado & verificação conservadora \\
+Passagem de mais de 3 argumentos & depende da ABI & implementado & chamador empilha excedentes \\
+Modelo de memória do compilador & consistente entre fases & implementado & 256 palavras no toolchain \\
+Compatibilidade com \texttt{processor\_archive/} & desejável & parcial & permanece fora de escopo \\
+\bottomrule
+\end{longtable}
+
+\section{Procedimento reprodutível}
+Uma reprodução mínima da validação pode ser feita com:
+\begin{verbatim}
+make clean
+make run_all
+python3 codegen/assembler_regressions.py
+./bin/c-c docs/test_files/invalid_missing_return.txt
+\end{verbatim}
+
+Os artefatos gerados ficam em:
+\begin{itemize}[leftmargin=1.5em]
+    \item \texttt{docs/output/generated\_IR.txt};
+    \item \texttt{docs/output/generated\_assembly.txt};
+    \item \texttt{docs/output/generated\_machine\_code.txt};
+    \item \texttt{docs/output/all\_machine\_codes/}.
+\end{itemize}
+
+\section{Casos de teste dirigidos}
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.20\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
+\toprule
+\textbf{Arquivo} & \textbf{Tema} & \textbf{Comportamento esperado} \\
+\midrule
+\endhead
+\texttt{teste8.txt} & operador \texttt{\%} & IR com lowering em \texttt{div}, \texttt{mul} e \texttt{sub} \\
+\texttt{teste9.txt} & chamada com 4 argumentos & quarto argumento passado na pilha e lido via offset positivo de \texttt{fp} \\
+\texttt{teste10.txt} & imediato grande & expansão por \emph{literal pool} sem falha do assembler \\
+\texttt{teste11.txt} & escopo de bloco & sombreamento aceito sem falso erro de redeclaração \\
+\texttt{invalid\_missing\_return.txt} & erro semântico & rejeição de função \texttt{int} sem retorno em todos os caminhos \\
+\bottomrule
+\end{longtable}
+
+\end{document}

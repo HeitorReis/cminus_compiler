@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include "semantic.h"
 #include "ir.h"
+#include "utils.h"
 
 extern char *currentScope;
 
@@ -13,6 +14,8 @@ static void analyzeDeclaration(AstNode *decl, SemanticContext *ctx);
 static void analyzeBlock(AstNode *block, SemanticContext *ctx);
 static void analyzeStatement(AstNode *stmt, SemanticContext *ctx);
 static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx);
+static int statement_guarantees_return(const AstNode *stmt);
+static int block_guarantees_return(const AstNode *block);
 
 // error‐reporting helper
 static void semanticError(int line, SemanticContext *ctx, const char *fmt, ...) {
@@ -38,6 +41,7 @@ void semanticAnalyze(AstNode *root, SymbolTable *symtab) {
         return;
     }
 
+    initScopeStack();
     analyzeProgram(root, &ctx);
 
     if (ctx.errorCount > 0)
@@ -136,8 +140,7 @@ static void analyzeDeclaration(AstNode *decl, SemanticContext *ctx) {
             ctx->curRetType==TYPE_INT ? "int" : "void"
         );
 
-        char *outerScope = currentScope;
-        currentScope = decl->name; // set current scope to function name
+        pushScope(decl->name);
         printf("[Semantic DBG]  switched currentScope = %s\n", currentScope);
 
         AstNode *child = decl->firstChild;
@@ -171,7 +174,17 @@ static void analyzeDeclaration(AstNode *decl, SemanticContext *ctx) {
             );
         }
 
-        currentScope = outerScope; // restore outer scope
+        if (ctx->curRetType == TYPE_INT && body && body->kind == AST_BLOCK &&
+            !block_guarantees_return(body)) {
+            semanticError(
+                decl->lineno,
+                ctx,
+                "non-void function '%s' does not return a value on all paths",
+                decl->name
+            );
+        }
+
+        popScope();
         printf("[Semantic DBG]   currentScope restored to %s\n", currentScope);
 
         break;
@@ -184,6 +197,11 @@ static void analyzeDeclaration(AstNode *decl, SemanticContext *ctx) {
 
 
 static void analyzeBlock(AstNode *block, SemanticContext *ctx) {
+    int pushed_scope = 0;
+    if (block && block->name) {
+        pushScope(block->name);
+        pushed_scope = 1;
+    }
     printf("[Semantic DBG] analyzeBlock: scope=\"%s\"\n", currentScope);
     for (AstNode *c = block->firstChild; c; c = c->nextSibling) {
         if (c->kind == AST_VAR_DECL) {
@@ -196,6 +214,9 @@ static void analyzeBlock(AstNode *block, SemanticContext *ctx) {
             );
             analyzeStatement(c, ctx);
         }
+    }
+    if (pushed_scope) {
+        popScope();
     }
 }
 
@@ -298,7 +319,7 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
         break;
 
     case AST_ID: {
-        Symbol *s = getSymbol(ctx->symtab, expr->name, currentScope);
+        Symbol *s = resolveSymbol(ctx->symtab, expr->name, currentScope);
         if (!s) {
             semanticError(expr->lineno, ctx,
                         "use of undeclared identifier '%s'",
@@ -345,7 +366,7 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
                         "lhs of assignment must be a variable or array element");
         }
         if (lval && lval->kind == AST_ID) {
-            Symbol *lhs_sym = getSymbol(ctx->symtab, lval->name, currentScope);
+            Symbol *lhs_sym = resolveSymbol(ctx->symtab, lval->name, currentScope);
             if (lhs_sym && lhs_sym->dataType == TYPE_ARRAY) {
                 semanticError(expr->lineno, ctx,
                             "cannot assign to array '%s' without index",
@@ -408,7 +429,7 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
         printf("[Semantic DBG]   Case AST_ARRAY_ACCESS for '%s' at line %d\n", expr->name, expr->lineno);
 
         // 1. Verifica se o nome do vetor foi declarado.
-        Symbol *array_symbol = getSymbol(ctx->symtab, expr->name, currentScope);
+        Symbol *array_symbol = resolveSymbol(ctx->symtab, expr->name, currentScope);
         if (!array_symbol) {
             semanticError(expr->lineno, ctx, "o vetor '%s' não foi declarado", expr->name);
             return TYPE_ERROR;
@@ -449,4 +470,46 @@ static ExpType analyzeExpression(AstNode *expr, SemanticContext *ctx) {
     printf("[Semantic DBG] ← analyzeExpression(expr=%p) returns %d\n",
         (void*)expr, result);
     return result;
+}
+
+static int statement_guarantees_return(const AstNode *stmt) {
+    if (!stmt) {
+        return 0;
+    }
+
+    switch (stmt->kind) {
+        case AST_RETURN:
+            return 1;
+
+        case AST_BLOCK:
+            return block_guarantees_return(stmt);
+
+        case AST_IF: {
+            const AstNode *condition = stmt->firstChild;
+            const AstNode *then_stmt = condition ? condition->nextSibling : NULL;
+            const AstNode *else_stmt = then_stmt ? then_stmt->nextSibling : NULL;
+            return then_stmt && else_stmt &&
+                   statement_guarantees_return(then_stmt) &&
+                   statement_guarantees_return(else_stmt);
+        }
+
+        default:
+            return 0;
+    }
+}
+
+static int block_guarantees_return(const AstNode *block) {
+    if (!block) {
+        return 0;
+    }
+
+    for (const AstNode *child = block->firstChild; child; child = child->nextSibling) {
+        if (child->kind == AST_VAR_DECL) {
+            continue;
+        }
+        if (statement_guarantees_return(child)) {
+            return 1;
+        }
+    }
+    return 0;
 }

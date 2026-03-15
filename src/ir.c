@@ -36,6 +36,7 @@ static const char* kind_to_string(AstNodeKind kind) {
         case AST_ID: return "AST_ID";
         case AST_NUM: return "AST_NUM";
         case AST_ARG_LIST: return "AST_ARG_LIST";
+        case AST_ARRAY_ACCESS: return "AST_ARRAY_ACCESS";
         default: return "UNKNOWN";
     }
 }
@@ -78,7 +79,7 @@ static Operand new_name(const char* name) {
 }
 
 static int is_array_param(SymbolTable* symtab, const char* name, const char* scope) {
-    Symbol* sym = getSymbol(symtab, name, scope);
+    Symbol* sym = resolveSymbol(symtab, name, scope);
     if (!sym) {
         return 0;
     }
@@ -149,22 +150,28 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
         case AST_FUN_DECL: {
             printf("[IR_DBG]   Case AST_FUN_DECL for '%s'\n", node->name);
             emit(list, IR_LABEL, new_name(node->name), (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
-            char *outer_scope = currentScope;
-            currentScope = node->name;
+            pushScope(node->name);
+            AstNode* param_list = node->firstChild;
             AstNode* body = node->firstChild;
-            if (body && body->kind == AST_PARAM_LIST) {
-                body = body->nextSibling;
+            if (param_list && param_list->kind == AST_PARAM_LIST) {
+                for (AstNode *param = param_list->firstChild; param; param = param->nextSibling) {
+                    emit(list, IR_PARAM, new_name(param->name), (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
+                }
+                body = param_list->nextSibling;
             }
             if (body && body->kind == AST_BLOCK) {
                 generate_ir_for_node(body, list, symtab);
             }
-            currentScope = outer_scope;
+            popScope();
             emit(list, IR_RETURN, (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
             break;
         }
 
         case AST_BLOCK:
             printf("[IR_DBG]   Case AST_BLOCK\n");
+            if (node->name) {
+                pushScope(node->name);
+            }
             for (AstNode* child = node->firstChild; child; child = child->nextSibling) {
                 if (child->kind == AST_VAR_DECL) {
                     if (child->array_size > 0) {
@@ -173,6 +180,9 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
                 } else {
                     generate_ir_for_node(child, list, symtab);
                 }
+            }
+            if (node->name) {
+                popScope();
             }
             break;
 
@@ -297,6 +307,7 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
 
             // Gera IR para o lado direito (o valor a ser atribuído)
             Operand rhs_op = generate_ir_for_expr(rhs, list, symtab); 
+            if (rhs_op.kind == OPERAND_EMPTY) break;
             
             if (lhs->kind == AST_ID) {
                 Operand lhs_op = new_name(lhs->name); 
@@ -354,6 +365,15 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             else if (strcmp(op_node->name, "-") == 0) op = IR_SUB;
             else if (strcmp(op_node->name, "*") == 0) op = IR_MUL;
             else if (strcmp(op_node->name, "/") == 0) op = IR_DIV;
+            else if (strcmp(op_node->name, "%") == 0) {
+                Operand div_result = new_temp();
+                Operand mul_result = new_temp();
+                emit(list, IR_DIV, div_result, left_op, right_op);
+                emit(list, IR_MUL, mul_result, div_result, right_op);
+                emit(list, IR_SUB, result, left_op, mul_result);
+                result_op = result;
+                break;
+            }
             else if (strcmp(op_node->name, "==") == 0) op = IR_EQ;
             else if (strcmp(op_node->name, "!=") == 0) op = IR_NEQ;
             else if (strcmp(op_node->name, "<") == 0) op = IR_LT;
@@ -378,7 +398,7 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             if (arg_list_node) {
                 for (AstNode* arg = arg_list_node->firstChild; arg; arg = arg->nextSibling) {
                     if (arg->kind == AST_ID) {
-                        Symbol *asym = getSymbol(symtab, arg->name, currentScope);
+                        Symbol *asym = resolveSymbol(symtab, arg->name, currentScope);
                         if (asym && asym->dataType == TYPE_ARRAY) {
                             if (asym->array_size == -1) {
                                 emit(list, IR_ARG, new_name(arg->name), (Operand){.kind=OPERAND_EMPTY}, (Operand){.kind=OPERAND_EMPTY});
@@ -492,6 +512,7 @@ IRList* generate_ir(AstNode* root, SymbolTable* symtab) {
     list->head = list->tail = NULL;
     temp_counter = 0;
     label_counter = 0;
+    initScopeStack();
     
     generate_global_declarations(root, list);
     
@@ -524,6 +545,7 @@ static void print_instruction_to_stream(FILE* out, IRInstruction* instr) {
         case IR_GOTO:    fprintf(out, "  goto "); print_operand(out, instr->result); break;
         case IR_IF_GOTO: fprintf(out, "  if_false "); print_operand(out, instr->arg1); fprintf(out, " goto "); print_operand(out, instr->result); break;
         case IR_RETURN:  fprintf(out, "  return "); print_operand(out, instr->result); break;
+        case IR_PARAM:   fprintf(out, "  param "); print_operand(out, instr->result); break;
         case IR_ASSIGN:  fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := "); print_operand(out, instr->arg1); break;
         case IR_ARG:     fprintf(out, "  arg "); print_operand(out, instr->result); break;
         case IR_CALL:    fprintf(out, "  "); print_operand(out, instr->result); fprintf(out, " := call "); print_operand(out, instr->arg1); fprintf(out, ", "); print_operand(out, instr->arg2); break;

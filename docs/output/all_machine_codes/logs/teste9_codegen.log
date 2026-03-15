@@ -1,0 +1,643 @@
+
+
+=== INICIANDO GERAÇÃO DE ASSEMBLY ===
+
+--- Passagem 1A: Coletando definições de funções ---
+[Passagem 1A] Função encontrada: 'sum4'
+[ALLOC_INIT] Inicializando alocador para a função 'sum4'
+[ALLOC_INIT] Pool de registradores definido: ['r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26']
+[ALLOC_INIT] Registrador de spill reservado: r30
+[ALLOC_INIT] Estado inicial: 23 registradores livres.
+[FUNC_CTX] Contexto para a função 'sum4' criado.
+[Passagem 1A] Função encontrada: 'main'
+[ALLOC_INIT] Inicializando alocador para a função 'main'
+[ALLOC_INIT] Pool de registradores definido: ['r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26']
+[ALLOC_INIT] Registrador de spill reservado: r30
+[ALLOC_INIT] Estado inicial: 23 registradores livres.
+[FUNC_CTX] Contexto para a função 'main' criado.
+
+--- Passagem 1B: Construindo a Tabela de Símbolos Globais ---
+--- Fim da Passagem 1: 0 símbolos globais encontrados. ---
+
+--- Passagem 2: Traduzindo o IR para cada função ---
+
+[Processando Função] -> 'sum4'
+-> IR isolado para 'sum4' contém 8 instruções.
+[DEBUG] Função 'sum4': all_vars=['a', 'b', 'c', 'd'], defined_vars=set(), params=['a', 'b', 'c', 'd']
+--> Parâmetros para 'sum4': ['a', 'b', 'c', 'd']
+--> Variáveis Locais para 'sum4': []
+--> Criando o layout da pilha para 'sum4'...
+    -> Parâmetro rápido 'a' em [fp, #-1]
+    -> Parâmetro rápido 'b' em [fp, #-2]
+    -> Parâmetro rápido 'c' em [fp, #-3]
+    -> Parâmetro empilhado 'd' em [fp, #2]
+--> Tamanho total do frame para 'sum4': 6 palavras.
+[ADD_INSTR] Adicionando instrução para 'sum4': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'sum4': store: [r30] = r1
+[ADD_INSTR] Adicionando instrução para 'sum4': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'sum4': store: [r30] = r2
+[ADD_INSTR] Adicionando instrução para 'sum4': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'sum4': store: [r30] = r3
+
+--- [TRANSLATE] Processando IR: param a ---
+[TRANSLATE] -> Declaração formal de parâmetro ignorada no assembly: a
+
+--- [TRANSLATE] Processando IR: param b ---
+[TRANSLATE] -> Declaração formal de parâmetro ignorada no assembly: b
+
+--- [TRANSLATE] Processando IR: param c ---
+[TRANSLATE] -> Declaração formal de parâmetro ignorada no assembly: c
+
+--- [TRANSLATE] Processando IR: param d ---
+[TRANSLATE] -> Declaração formal de parâmetro ignorada no assembly: d
+
+--- [TRANSLATE] Processando IR: t0 := a + b ---
+[TRANSLATE] -> Detalhes: Destino='t0', Expressão='a + b'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 'a' em um registrador.
+[ENSURE] -> 'a' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r4. Restantes: 22.
+[ADD_INSTR] Adicionando instrução para 'sum4': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'sum4': load: r4 = [r30]
+[ASSIGN_REG] Mapeando 'a' para r4.
+[ENSURE] Tentando garantir 'b' em um registrador.
+[ENSURE] -> 'b' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r5. Restantes: 21.
+[ADD_INSTR] Adicionando instrução para 'sum4': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'sum4': load: r5 = [r30]
+[ASSIGN_REG] Mapeando 'b' para r5.
+[GET_TEMP] Solicitando registrador para o temporário 't0'.
+[GET_FREE] -> Encontrado registrador livre: r6. Restantes: 20.
+[ASSIGN_REG] Mapeando 't0' para r6.
+[GET_TEMP] -> 't0' alocado no registrador r6.
+[ADD_INSTR] Adicionando instrução para 'sum4': add: r6 = r4, r5
+
+--- [TRANSLATE] Processando IR: t1 := t0 + c ---
+[TRANSLATE] -> Detalhes: Destino='t1', Expressão='t0 + c'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't0' em um registrador.
+[ENSURE] -> Sucesso! 't0' já está em r6.
+[ENSURE] Tentando garantir 'c' em um registrador.
+[ENSURE] -> 'c' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r7. Restantes: 19.
+[ADD_INSTR] Adicionando instrução para 'sum4': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'sum4': load: r7 = [r30]
+[ASSIGN_REG] Mapeando 'c' para r7.
+[GET_TEMP] Solicitando registrador para o temporário 't1'.
+[GET_FREE] -> Encontrado registrador livre: r8. Restantes: 18.
+[ASSIGN_REG] Mapeando 't1' para r8.
+[GET_TEMP] -> 't1' alocado no registrador r8.
+[ADD_INSTR] Adicionando instrução para 'sum4': add: r8 = r6, r7
+[FREE_TEMP] Liberando registrador r6 que continha o temporário 't0'.
+[UNASSIGN_REG] Desmapeado r6 de 't0'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {'a': 'r4', 'b': 'r5', 'c': 'r7', 't1': 'r8'}
+
+--- [TRANSLATE] Processando IR: t2 := t1 + d ---
+[TRANSLATE] -> Detalhes: Destino='t2', Expressão='t1 + d'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't1' em um registrador.
+[ENSURE] -> Sucesso! 't1' já está em r8.
+[ENSURE] Tentando garantir 'd' em um registrador.
+[ENSURE] -> 'd' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r9. Restantes: 18.
+[ADD_INSTR] Adicionando instrução para 'sum4': addi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'sum4': load: r9 = [r30]
+[ASSIGN_REG] Mapeando 'd' para r9.
+[GET_TEMP] Solicitando registrador para o temporário 't2'.
+[GET_FREE] -> Encontrado registrador livre: r10. Restantes: 17.
+[ASSIGN_REG] Mapeando 't2' para r10.
+[GET_TEMP] -> 't2' alocado no registrador r10.
+[ADD_INSTR] Adicionando instrução para 'sum4': add: r10 = r8, r9
+[FREE_TEMP] Liberando registrador r8 que continha o temporário 't1'.
+[UNASSIGN_REG] Desmapeado r8 de 't1'.
+[UNASSIGN_REG] -> Estado atual: 18 registradores livres. Mapeamentos: {'a': 'r4', 'b': 'r5', 'c': 'r7', 'd': 'r9', 't2': 'r10'}
+
+--- [TRANSLATE] Processando IR: return t2 ---
+[TRANSLATE] -> Caminho: Retorno de Função
+[ENSURE] Tentando garantir 't2' em um registrador.
+[ENSURE] -> Sucesso! 't2' já está em r10.
+[ADD_INSTR] Adicionando instrução para 'sum4': mov: r0 = r10
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r8', 'r6'}
+[TRANSLATE] -> Pular para a seção de epílogo.
+[ADD_INSTR] Adicionando instrução para 'sum4': bi: sum4_epilogue
+-> Finalizando a função 'sum4', fazendo spill de todos os registradores sujos.
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r8', 'r6'}
+
+[Processando Função] -> 'main'
+-> IR isolado para 'main' contém 9 instruções.
+[DEBUG] Função 'main': all_vars=['r'], defined_vars={'r'}, params=[]
+--> Parâmetros para 'main': []
+--> Variáveis Locais para 'main': ['r']
+--> Criando o layout da pilha para 'main'...
+    -> Mapeando 'r' para o offset [fp, #-1] (size=1)
+--> Tamanho total do frame para 'main': 2 palavras.
+
+--- [TRANSLATE] Processando IR: arg 1 ---
+[TRANSLATE] -> Caminho: Enfileirando argumento 1
+
+--- [TRANSLATE] Processando IR: arg 2 ---
+[TRANSLATE] -> Caminho: Enfileirando argumento 2
+
+--- [TRANSLATE] Processando IR: arg 3 ---
+[TRANSLATE] -> Caminho: Enfileirando argumento 3
+
+--- [TRANSLATE] Processando IR: arg 4 ---
+[TRANSLATE] -> Caminho: Enfileirando argumento 4
+
+--- [TRANSLATE] Processando IR: t3 := call sum4, 4 ---
+[TRANSLATE] -> Detalhes: Destino='t3', Expressão='call sum4, 4'
+[TRANSLATE] -> Caminho: Chamada de Função
+[SPILL_CALL] Preparando spill completo antes de chamada.
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[ENSURE] Tentando garantir '4' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r4. Restantes: 22.
+[ENSURE] -> Alocando r4 para a constante '4'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r4 = 4
+[ADD_INSTR] Adicionando instrução para 'main': subi: r29 = r29, 1
+[ADD_INSTR] Adicionando instrução para 'main': store: [r29] = r4
+[ENSURE] Tentando garantir '1' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r5. Restantes: 21.
+[ENSURE] -> Alocando r5 para a constante '1'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r5 = 1
+[ADD_INSTR] Adicionando instrução para 'main': mov: r1 = r5
+[ENSURE] Tentando garantir '2' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r6. Restantes: 20.
+[ENSURE] -> Alocando r6 para a constante '2'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r6 = 2
+[ADD_INSTR] Adicionando instrução para 'main': mov: r2 = r6
+[ENSURE] Tentando garantir '3' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r7. Restantes: 19.
+[ENSURE] -> Alocando r7 para a constante '3'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r7 = 3
+[ADD_INSTR] Adicionando instrução para 'main': mov: r3 = r7
+[GET_TEMP] Solicitando registrador para o temporário 't_ret_9'.
+[GET_FREE] -> Encontrado registrador livre: r8. Restantes: 18.
+[ASSIGN_REG] Mapeando 't_ret_9' para r8.
+[GET_TEMP] -> 't_ret_9' alocado no registrador r8.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r8 = main_Lret0
+[ADD_INSTR] Adicionando instrução para 'main': mov: r28 = r8
+[ADD_INSTR] Adicionando instrução para 'main': bl: sum4
+[FREE_TEMP] Liberando registrador r8 que continha o temporário 't_ret_9'.
+[UNASSIGN_REG] Desmapeado r8 de 't_ret_9'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {}
+[ADD_INSTR] Adicionando instrução para 'main': main_Lret0:
+[GET_TEMP] Solicitando registrador para o temporário 't3'.
+[GET_FREE] -> Encontrado registrador livre: r9. Restantes: 18.
+[ASSIGN_REG] Mapeando 't3' para r9.
+[GET_TEMP] -> 't3' alocado no registrador r9.
+[ADD_INSTR] Adicionando instrução para 'main': mov: r9 = r0
+[ADD_INSTR] Adicionando instrução para 'main': addi: r29 = r29, 1
+
+--- [TRANSLATE] Processando IR: r := t3 ---
+[TRANSLATE] -> Detalhes: Destino='r', Expressão='t3'
+[TRANSLATE] -> Caminho: Atribuição Simples
+[ENSURE] Tentando garantir 't3' em um registrador.
+[ENSURE] -> Sucesso! 't3' já está em r9.
+[TRANSLATE_ASSIGN] -> Armazenando 'r' na sua posição da pilha.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r9
+[UPDATE_MAP] Mapeando 'r' para o registrador r9 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 'r' para r9.
+[ASSIGN_REG] -> Registrador r9 já continha 't3'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r9 de 't3'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: arg r ---
+[TRANSLATE] -> Caminho: Enfileirando argumento 1
+
+--- [TRANSLATE] Processando IR: call output, 1 ---
+[TRANSLATE] -> Caminho: Chamada de Procedimento
+[SPILL_CALL] Preparando spill completo antes de chamada.
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r8'}
+[SPILL_ALL] -> Salvando variável local 'r' do registrador r9 na pilha [fp, #-1].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r9
+[UNASSIGN_REG] Desmapeado r9 de 'r'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {}
+[ENSURE] Tentando garantir 'r' em um registrador.
+[ENSURE] -> 'r' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r10. Restantes: 18.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'main': load: r10 = [r30]
+[ASSIGN_REG] Mapeando 'r' para r10.
+[ADD_INSTR] Adicionando instrução para 'main': mov: r1 = r10
+[ADD_INSTR] Adicionando instrução para 'main': out: r1
+[UNASSIGN_REG] Desmapeado r10 de 'r'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: return 0 ---
+[TRANSLATE] -> Caminho: Retorno de Função
+[ENSURE] Tentando garantir '0' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r11. Restantes: 18.
+[ENSURE] -> Alocando r11 para a constante '0'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r11 = 0
+[ADD_INSTR] Adicionando instrução para 'main': mov: r0 = r11
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[TRANSLATE] -> Pular para a seção de epílogo.
+[ADD_INSTR] Adicionando instrução para 'main': bi: main_epilogue
+-> Finalizando a função 'main', fazendo spill de todos os registradores sujos.
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+--- Fim da Passagem 2 ---
+
+--- Montagem Final: Construindo o arquivo assembly completo ---
+[Montagem] Processando função 'sum4' com 19 instruções.
+[Montagem] Processando função 'main' com 26 instruções.
+[Montagem] Adicionando a seção .data.
+[Montagem] -> Variáveis a serem declaradas: []
+=== GERAÇÃO DE ASSEMBLY CONCLUÍDA ===
+--- ASSEMBLY CODE READY FOR YOUR ASSEMBLER ---
+.text
+.global main
+
+	bi: main
+sum4:
+	subi: r29 = r29, 1
+	store: [r29] = r28
+	subi: r29 = r29, 1
+	store: [r29] = r31
+	mov: r31 = r29
+	subi: r29 = r29, 6
+	subi: r30 = r31, 1
+	store: [r30] = r1
+	subi: r30 = r31, 2
+	store: [r30] = r2
+	subi: r30 = r31, 3
+	store: [r30] = r3
+	subi: r30 = r31, 1
+	load: r4 = [r30]
+	subi: r30 = r31, 2
+	load: r5 = [r30]
+	add: r6 = r4, r5
+	subi: r30 = r31, 3
+	load: r7 = [r30]
+	add: r8 = r6, r7
+	addi: r30 = r31, 2
+	load: r9 = [r30]
+	add: r10 = r8, r9
+	mov: r0 = r10
+	bi: sum4_epilogue
+sum4_epilogue:
+	mov: r29 = r31
+	load: r31 = [r29]
+	addi: r29 = r29, 1
+	load: r28 = [r29]
+	addi: r29 = r29, 1
+	b: r28
+
+main:
+	movi: r29 = 255
+	mov: r31 = r29
+	subi: r29 = r29, 2
+	movi: r4 = 4
+	subi: r29 = r29, 1
+	store: [r29] = r4
+	movi: r5 = 1
+	mov: r1 = r5
+	movi: r6 = 2
+	mov: r2 = r6
+	movi: r7 = 3
+	mov: r3 = r7
+	movi: r8 = main_Lret0
+	mov: r28 = r8
+	bl: sum4
+main_Lret0:
+	mov: r9 = r0
+	addi: r29 = r29, 1
+	subi: r30 = r31, 1
+	store: [r30] = r9
+	subi: r30 = r31, 1
+	store: [r30] = r9
+	subi: r30 = r31, 1
+	load: r10 = [r30]
+	mov: r1 = r10
+	out: r1
+	movi: r11 = 0
+	mov: r0 = r11
+	bi: main_epilogue
+main_epilogue:
+	ret:
+
+.data
+stack_space: .space 256
+---------------------------------------------
+--- DEBUG OUTPUT ---
+00001110000000000000000000011111 -> bi: main
+00000010000111101111010000000001 -> subi: r29 = r29, 1
+00000100000000000111001110100000 -> store: [r29] = r28
+00000010000111101111010000000001 -> subi: r29 = r29, 1
+00000100000000000111111110100000 -> store: [r29] = r31
+00000000100011111000001110100000 -> mov: r31 = r29
+00000010000111101111010000000110 -> subi: r29 = r29, 6
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000000000000011111000000 -> store: [r30] = r1
+00000010000111110111110000000010 -> subi: r30 = r31, 2
+00000100000000000000101111000000 -> store: [r30] = r2
+00000010000111110111110000000011 -> subi: r30 = r31, 3
+00000100000000000000111111000000 -> store: [r30] = r3
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000100100000001111000000 -> load: r4 = [r30]
+00000010000111110111110000000010 -> subi: r30 = r31, 2
+00000100000100101000001111000000 -> load: r5 = [r30]
+00000000000000110001000010100000 -> add: r6 = r4, r5
+00000010000111110111110000000011 -> subi: r30 = r31, 3
+00000100000100111000001111000000 -> load: r7 = [r30]
+00000000000001000001100011100000 -> add: r8 = r6, r7
+00000010000011110111110000000010 -> addi: r30 = r31, 2
+00000100000101001000001111000000 -> load: r9 = [r30]
+00000000000001010010000100100000 -> add: r10 = r8, r9
+00000000100000000000000101000000 -> mov: r0 = r10
+00001110000000000000000000000000 -> bi: sum4_epilogue
+00000000100011101000001111100000 -> mov: r29 = r31
+00000100000111111000001110100000 -> load: r31 = [r29]
+00000010000011101111010000000001 -> addi: r29 = r29, 1
+00000100000111100000001110100000 -> load: r28 = [r29]
+00000010000011101111010000000001 -> addi: r29 = r29, 1
+00001100000000000000001110000000 -> b: r28
+00000010100011101000000011111111 -> movi: r29 = 255
+00000000100011111000001110100000 -> mov: r31 = r29
+00000010000111101111010000000010 -> subi: r29 = r29, 2
+00000010100000100000000000000100 -> movi: r4 = 4
+00000010000111101111010000000001 -> subi: r29 = r29, 1
+00000100000000000001001110100000 -> store: [r29] = r4
+00000010100000101000000000000001 -> movi: r5 = 1
+00000000100000001000000010100000 -> mov: r1 = r5
+00000010100000110000000000000010 -> movi: r6 = 2
+00000000100000010000000011000000 -> mov: r2 = r6
+00000010100000111000000000000011 -> movi: r7 = 3
+00000000100000011000000011100000 -> mov: r3 = r7
+00000010100001000000000000101111 -> movi: r8 = main_Lret0
+00000000100011100000000100000000 -> mov: r28 = r8
+00001110100000000000001111010010 -> bl: sum4
+00000000100001001000000000000000 -> mov: r9 = r0
+00000010000011101111010000000001 -> addi: r29 = r29, 1
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000000000010011111000000 -> store: [r30] = r9
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000000000010011111000000 -> store: [r30] = r9
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000101010000001111000000 -> load: r10 = [r30]
+00000000100000001000000101000000 -> mov: r1 = r10
+00000000101000000000000000100000 -> out: r1
+00000010100001011000000000000000 -> movi: r11 = 0
+00000000100000000000000101100000 -> mov: r0 = r11
+00001110000000000000000000000000 -> bi: main_epilogue
+00001110000000000000000000000000 -> ret -> bi 0
+00000000000000000000000000000000 -> data stack_space[0] .space
+00000000000000000000000000000000 -> data stack_space[1] .space
+00000000000000000000000000000000 -> data stack_space[2] .space
+00000000000000000000000000000000 -> data stack_space[3] .space
+00000000000000000000000000000000 -> data stack_space[4] .space
+00000000000000000000000000000000 -> data stack_space[5] .space
+00000000000000000000000000000000 -> data stack_space[6] .space
+00000000000000000000000000000000 -> data stack_space[7] .space
+00000000000000000000000000000000 -> data stack_space[8] .space
+00000000000000000000000000000000 -> data stack_space[9] .space
+00000000000000000000000000000000 -> data stack_space[10] .space
+00000000000000000000000000000000 -> data stack_space[11] .space
+00000000000000000000000000000000 -> data stack_space[12] .space
+00000000000000000000000000000000 -> data stack_space[13] .space
+00000000000000000000000000000000 -> data stack_space[14] .space
+00000000000000000000000000000000 -> data stack_space[15] .space
+00000000000000000000000000000000 -> data stack_space[16] .space
+00000000000000000000000000000000 -> data stack_space[17] .space
+00000000000000000000000000000000 -> data stack_space[18] .space
+00000000000000000000000000000000 -> data stack_space[19] .space
+00000000000000000000000000000000 -> data stack_space[20] .space
+00000000000000000000000000000000 -> data stack_space[21] .space
+00000000000000000000000000000000 -> data stack_space[22] .space
+00000000000000000000000000000000 -> data stack_space[23] .space
+00000000000000000000000000000000 -> data stack_space[24] .space
+00000000000000000000000000000000 -> data stack_space[25] .space
+00000000000000000000000000000000 -> data stack_space[26] .space
+00000000000000000000000000000000 -> data stack_space[27] .space
+00000000000000000000000000000000 -> data stack_space[28] .space
+00000000000000000000000000000000 -> data stack_space[29] .space
+00000000000000000000000000000000 -> data stack_space[30] .space
+00000000000000000000000000000000 -> data stack_space[31] .space
+00000000000000000000000000000000 -> data stack_space[32] .space
+00000000000000000000000000000000 -> data stack_space[33] .space
+00000000000000000000000000000000 -> data stack_space[34] .space
+00000000000000000000000000000000 -> data stack_space[35] .space
+00000000000000000000000000000000 -> data stack_space[36] .space
+00000000000000000000000000000000 -> data stack_space[37] .space
+00000000000000000000000000000000 -> data stack_space[38] .space
+00000000000000000000000000000000 -> data stack_space[39] .space
+00000000000000000000000000000000 -> data stack_space[40] .space
+00000000000000000000000000000000 -> data stack_space[41] .space
+00000000000000000000000000000000 -> data stack_space[42] .space
+00000000000000000000000000000000 -> data stack_space[43] .space
+00000000000000000000000000000000 -> data stack_space[44] .space
+00000000000000000000000000000000 -> data stack_space[45] .space
+00000000000000000000000000000000 -> data stack_space[46] .space
+00000000000000000000000000000000 -> data stack_space[47] .space
+00000000000000000000000000000000 -> data stack_space[48] .space
+00000000000000000000000000000000 -> data stack_space[49] .space
+00000000000000000000000000000000 -> data stack_space[50] .space
+00000000000000000000000000000000 -> data stack_space[51] .space
+00000000000000000000000000000000 -> data stack_space[52] .space
+00000000000000000000000000000000 -> data stack_space[53] .space
+00000000000000000000000000000000 -> data stack_space[54] .space
+00000000000000000000000000000000 -> data stack_space[55] .space
+00000000000000000000000000000000 -> data stack_space[56] .space
+00000000000000000000000000000000 -> data stack_space[57] .space
+00000000000000000000000000000000 -> data stack_space[58] .space
+00000000000000000000000000000000 -> data stack_space[59] .space
+00000000000000000000000000000000 -> data stack_space[60] .space
+00000000000000000000000000000000 -> data stack_space[61] .space
+00000000000000000000000000000000 -> data stack_space[62] .space
+00000000000000000000000000000000 -> data stack_space[63] .space
+00000000000000000000000000000000 -> data stack_space[64] .space
+00000000000000000000000000000000 -> data stack_space[65] .space
+00000000000000000000000000000000 -> data stack_space[66] .space
+00000000000000000000000000000000 -> data stack_space[67] .space
+00000000000000000000000000000000 -> data stack_space[68] .space
+00000000000000000000000000000000 -> data stack_space[69] .space
+00000000000000000000000000000000 -> data stack_space[70] .space
+00000000000000000000000000000000 -> data stack_space[71] .space
+00000000000000000000000000000000 -> data stack_space[72] .space
+00000000000000000000000000000000 -> data stack_space[73] .space
+00000000000000000000000000000000 -> data stack_space[74] .space
+00000000000000000000000000000000 -> data stack_space[75] .space
+00000000000000000000000000000000 -> data stack_space[76] .space
+00000000000000000000000000000000 -> data stack_space[77] .space
+00000000000000000000000000000000 -> data stack_space[78] .space
+00000000000000000000000000000000 -> data stack_space[79] .space
+00000000000000000000000000000000 -> data stack_space[80] .space
+00000000000000000000000000000000 -> data stack_space[81] .space
+00000000000000000000000000000000 -> data stack_space[82] .space
+00000000000000000000000000000000 -> data stack_space[83] .space
+00000000000000000000000000000000 -> data stack_space[84] .space
+00000000000000000000000000000000 -> data stack_space[85] .space
+00000000000000000000000000000000 -> data stack_space[86] .space
+00000000000000000000000000000000 -> data stack_space[87] .space
+00000000000000000000000000000000 -> data stack_space[88] .space
+00000000000000000000000000000000 -> data stack_space[89] .space
+00000000000000000000000000000000 -> data stack_space[90] .space
+00000000000000000000000000000000 -> data stack_space[91] .space
+00000000000000000000000000000000 -> data stack_space[92] .space
+00000000000000000000000000000000 -> data stack_space[93] .space
+00000000000000000000000000000000 -> data stack_space[94] .space
+00000000000000000000000000000000 -> data stack_space[95] .space
+00000000000000000000000000000000 -> data stack_space[96] .space
+00000000000000000000000000000000 -> data stack_space[97] .space
+00000000000000000000000000000000 -> data stack_space[98] .space
+00000000000000000000000000000000 -> data stack_space[99] .space
+00000000000000000000000000000000 -> data stack_space[100] .space
+00000000000000000000000000000000 -> data stack_space[101] .space
+00000000000000000000000000000000 -> data stack_space[102] .space
+00000000000000000000000000000000 -> data stack_space[103] .space
+00000000000000000000000000000000 -> data stack_space[104] .space
+00000000000000000000000000000000 -> data stack_space[105] .space
+00000000000000000000000000000000 -> data stack_space[106] .space
+00000000000000000000000000000000 -> data stack_space[107] .space
+00000000000000000000000000000000 -> data stack_space[108] .space
+00000000000000000000000000000000 -> data stack_space[109] .space
+00000000000000000000000000000000 -> data stack_space[110] .space
+00000000000000000000000000000000 -> data stack_space[111] .space
+00000000000000000000000000000000 -> data stack_space[112] .space
+00000000000000000000000000000000 -> data stack_space[113] .space
+00000000000000000000000000000000 -> data stack_space[114] .space
+00000000000000000000000000000000 -> data stack_space[115] .space
+00000000000000000000000000000000 -> data stack_space[116] .space
+00000000000000000000000000000000 -> data stack_space[117] .space
+00000000000000000000000000000000 -> data stack_space[118] .space
+00000000000000000000000000000000 -> data stack_space[119] .space
+00000000000000000000000000000000 -> data stack_space[120] .space
+00000000000000000000000000000000 -> data stack_space[121] .space
+00000000000000000000000000000000 -> data stack_space[122] .space
+00000000000000000000000000000000 -> data stack_space[123] .space
+00000000000000000000000000000000 -> data stack_space[124] .space
+00000000000000000000000000000000 -> data stack_space[125] .space
+00000000000000000000000000000000 -> data stack_space[126] .space
+00000000000000000000000000000000 -> data stack_space[127] .space
+00000000000000000000000000000000 -> data stack_space[128] .space
+00000000000000000000000000000000 -> data stack_space[129] .space
+00000000000000000000000000000000 -> data stack_space[130] .space
+00000000000000000000000000000000 -> data stack_space[131] .space
+00000000000000000000000000000000 -> data stack_space[132] .space
+00000000000000000000000000000000 -> data stack_space[133] .space
+00000000000000000000000000000000 -> data stack_space[134] .space
+00000000000000000000000000000000 -> data stack_space[135] .space
+00000000000000000000000000000000 -> data stack_space[136] .space
+00000000000000000000000000000000 -> data stack_space[137] .space
+00000000000000000000000000000000 -> data stack_space[138] .space
+00000000000000000000000000000000 -> data stack_space[139] .space
+00000000000000000000000000000000 -> data stack_space[140] .space
+00000000000000000000000000000000 -> data stack_space[141] .space
+00000000000000000000000000000000 -> data stack_space[142] .space
+00000000000000000000000000000000 -> data stack_space[143] .space
+00000000000000000000000000000000 -> data stack_space[144] .space
+00000000000000000000000000000000 -> data stack_space[145] .space
+00000000000000000000000000000000 -> data stack_space[146] .space
+00000000000000000000000000000000 -> data stack_space[147] .space
+00000000000000000000000000000000 -> data stack_space[148] .space
+00000000000000000000000000000000 -> data stack_space[149] .space
+00000000000000000000000000000000 -> data stack_space[150] .space
+00000000000000000000000000000000 -> data stack_space[151] .space
+00000000000000000000000000000000 -> data stack_space[152] .space
+00000000000000000000000000000000 -> data stack_space[153] .space
+00000000000000000000000000000000 -> data stack_space[154] .space
+00000000000000000000000000000000 -> data stack_space[155] .space
+00000000000000000000000000000000 -> data stack_space[156] .space
+00000000000000000000000000000000 -> data stack_space[157] .space
+00000000000000000000000000000000 -> data stack_space[158] .space
+00000000000000000000000000000000 -> data stack_space[159] .space
+00000000000000000000000000000000 -> data stack_space[160] .space
+00000000000000000000000000000000 -> data stack_space[161] .space
+00000000000000000000000000000000 -> data stack_space[162] .space
+00000000000000000000000000000000 -> data stack_space[163] .space
+00000000000000000000000000000000 -> data stack_space[164] .space
+00000000000000000000000000000000 -> data stack_space[165] .space
+00000000000000000000000000000000 -> data stack_space[166] .space
+00000000000000000000000000000000 -> data stack_space[167] .space
+00000000000000000000000000000000 -> data stack_space[168] .space
+00000000000000000000000000000000 -> data stack_space[169] .space
+00000000000000000000000000000000 -> data stack_space[170] .space
+00000000000000000000000000000000 -> data stack_space[171] .space
+00000000000000000000000000000000 -> data stack_space[172] .space
+00000000000000000000000000000000 -> data stack_space[173] .space
+00000000000000000000000000000000 -> data stack_space[174] .space
+00000000000000000000000000000000 -> data stack_space[175] .space
+00000000000000000000000000000000 -> data stack_space[176] .space
+00000000000000000000000000000000 -> data stack_space[177] .space
+00000000000000000000000000000000 -> data stack_space[178] .space
+00000000000000000000000000000000 -> data stack_space[179] .space
+00000000000000000000000000000000 -> data stack_space[180] .space
+00000000000000000000000000000000 -> data stack_space[181] .space
+00000000000000000000000000000000 -> data stack_space[182] .space
+00000000000000000000000000000000 -> data stack_space[183] .space
+00000000000000000000000000000000 -> data stack_space[184] .space
+00000000000000000000000000000000 -> data stack_space[185] .space
+00000000000000000000000000000000 -> data stack_space[186] .space
+00000000000000000000000000000000 -> data stack_space[187] .space
+00000000000000000000000000000000 -> data stack_space[188] .space
+00000000000000000000000000000000 -> data stack_space[189] .space
+00000000000000000000000000000000 -> data stack_space[190] .space
+00000000000000000000000000000000 -> data stack_space[191] .space
+00000000000000000000000000000000 -> data stack_space[192] .space
+00000000000000000000000000000000 -> data stack_space[193] .space
+00000000000000000000000000000000 -> data stack_space[194] .space
+00000000000000000000000000000000 -> data stack_space[195] .space
+00000000000000000000000000000000 -> data stack_space[196] .space
+00000000000000000000000000000000 -> data stack_space[197] .space
+00000000000000000000000000000000 -> data stack_space[198] .space
+00000000000000000000000000000000 -> data stack_space[199] .space
+00000000000000000000000000000000 -> data stack_space[200] .space
+00000000000000000000000000000000 -> data stack_space[201] .space
+00000000000000000000000000000000 -> data stack_space[202] .space
+00000000000000000000000000000000 -> data stack_space[203] .space
+00000000000000000000000000000000 -> data stack_space[204] .space
+00000000000000000000000000000000 -> data stack_space[205] .space
+00000000000000000000000000000000 -> data stack_space[206] .space
+00000000000000000000000000000000 -> data stack_space[207] .space
+00000000000000000000000000000000 -> data stack_space[208] .space
+00000000000000000000000000000000 -> data stack_space[209] .space
+00000000000000000000000000000000 -> data stack_space[210] .space
+00000000000000000000000000000000 -> data stack_space[211] .space
+00000000000000000000000000000000 -> data stack_space[212] .space
+00000000000000000000000000000000 -> data stack_space[213] .space
+00000000000000000000000000000000 -> data stack_space[214] .space
+00000000000000000000000000000000 -> data stack_space[215] .space
+00000000000000000000000000000000 -> data stack_space[216] .space
+00000000000000000000000000000000 -> data stack_space[217] .space
+00000000000000000000000000000000 -> data stack_space[218] .space
+00000000000000000000000000000000 -> data stack_space[219] .space
+00000000000000000000000000000000 -> data stack_space[220] .space
+00000000000000000000000000000000 -> data stack_space[221] .space
+00000000000000000000000000000000 -> data stack_space[222] .space
+00000000000000000000000000000000 -> data stack_space[223] .space
+00000000000000000000000000000000 -> data stack_space[224] .space
+00000000000000000000000000000000 -> data stack_space[225] .space
+00000000000000000000000000000000 -> data stack_space[226] .space
+00000000000000000000000000000000 -> data stack_space[227] .space
+00000000000000000000000000000000 -> data stack_space[228] .space
+00000000000000000000000000000000 -> data stack_space[229] .space
+00000000000000000000000000000000 -> data stack_space[230] .space
+00000000000000000000000000000000 -> data stack_space[231] .space
+00000000000000000000000000000000 -> data stack_space[232] .space
+00000000000000000000000000000000 -> data stack_space[233] .space
+00000000000000000000000000000000 -> data stack_space[234] .space
+00000000000000000000000000000000 -> data stack_space[235] .space
+00000000000000000000000000000000 -> data stack_space[236] .space
+00000000000000000000000000000000 -> data stack_space[237] .space
+00000000000000000000000000000000 -> data stack_space[238] .space
+00000000000000000000000000000000 -> data stack_space[239] .space
+00000000000000000000000000000000 -> data stack_space[240] .space
+00000000000000000000000000000000 -> data stack_space[241] .space
+00000000000000000000000000000000 -> data stack_space[242] .space
+00000000000000000000000000000000 -> data stack_space[243] .space
+00000000000000000000000000000000 -> data stack_space[244] .space
+00000000000000000000000000000000 -> data stack_space[245] .space
+00000000000000000000000000000000 -> data stack_space[246] .space
+00000000000000000000000000000000 -> data stack_space[247] .space
+00000000000000000000000000000000 -> data stack_space[248] .space
+00000000000000000000000000000000 -> data stack_space[249] .space
+00000000000000000000000000000000 -> data stack_space[250] .space
+00000000000000000000000000000000 -> data stack_space[251] .space
+00000000000000000000000000000000 -> data stack_space[252] .space
+00000000000000000000000000000000 -> data stack_space[253] .space
+00000000000000000000000000000000 -> data stack_space[254] .space
+00000000000000000000000000000000 -> data stack_space[255] .space
+
+Código de máquina gerado com sucesso em: docs/output/generated_machine_code.txt
+--- MACHINE CODE DECODED ---

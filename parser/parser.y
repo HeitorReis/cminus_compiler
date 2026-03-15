@@ -19,6 +19,7 @@
 
     int errorCount = 0;
 
+    int yylex(void);
     void yyerror(const char *msg);
 
 //   yydebug = 1;
@@ -40,6 +41,7 @@
 %type <ast> statement selection_stmt iteration_stmt return_stmt
 %type <ast> expression_stmt expression simple_expression var call args arg_list
 %type <ast> compound_stmt additive_expression
+%type <sval> block_scope
 %type <ival> type_specifier
 %type <ast> relop addop mulop
 %type <ast> local_declarations statement_list
@@ -207,9 +209,9 @@ fun_declaration:
 
         setFunctionParams(
             &symtab,
-            $2, 
-            currentScope, 
-            pcount, 
+            $2,
+            "global",
+            pcount,
             types
         );
 
@@ -279,12 +281,13 @@ param:
 ;
 
 compound_stmt: 
-    LBRACE local_declarations statement_list RBRACE {
+    LBRACE block_scope local_declarations statement_list RBRACE {
         AstNode *n = newNode(AST_BLOCK);
         n->lineno = yylineno; // Set the line number manually
-        if ($2) addChild(n, $2); // local declarations
-        if ($3) {
-            AstNode *stmts = $3;
+        n->name = $2;
+        if ($3) addChild(n, $3); // local declarations
+        if ($4) {
+            AstNode *stmts = $4;
             while (stmts) {
                 AstNode *next = stmts->nextSibling; // save next node
                 stmts->nextSibling = NULL; // detach current statement
@@ -293,35 +296,45 @@ compound_stmt:
             }
         }
         $$ = n;
+        popScope();
         printf(
-            "[PARSER DBG] compound_stmt: decls=%p stmts=%p\n",
-            (void*)$2,
-            (void*)$3
+            "[PARSER DBG] compound_stmt: scope=%s decls=%p stmts=%p\n",
+            n->name,
+            (void*)$3,
+            (void*)$4
         );
     }
     ;
 
+block_scope:
+    /* empty */ {
+        pushBlockScope();
+        $$ = strdup(currentScope);
+    }
+    ;
+
 local_declarations: 
-    local_declarations var_declaration {
+    /* empty */ { $$ = NULL; }
+    | var_declaration local_declarations {
         AstNode *cur = $1;
         while (cur->nextSibling) cur = cur->nextSibling;
         cur->nextSibling = $2;
         $$ = $1;
-        }
-    | var_declaration {
-        $$ = $1;   /* a single VAR_DECL */
-        }
-    | /* empty */ { $$ = NULL; }
+    }
     ;
 
 statement_list:
-    statement_list statement {
-        AstNode *n = $1;
-        while (n->nextSibling) n = n->nextSibling; // traverse to the end of the list
-        n->nextSibling = $2; // append the new statement
-        $$ = $1; // return the updated list
+    /* empty */ { $$ = NULL; }
+    | statement statement_list {
+        if (!$1) {
+            $$ = $2;
+        } else {
+            AstNode *n = $1;
+            while (n->nextSibling) n = n->nextSibling;
+            n->nextSibling = $2;
+            $$ = $1;
+        }
     }
-    | statement { $$ = $1; } // single statement
     ;
 
 statement

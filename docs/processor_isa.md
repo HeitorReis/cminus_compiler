@@ -1,69 +1,141 @@
 # Processor ISA Reference
 
-This table summarizes the instruction encoding and operation semantics as implemented in the Verilog sources under `processor_archive/modules/`.
+This document reflects the instruction syntax and encoding rules implemented by `codegen/assembler.py`.
 
-## Encoding (32-bit)
+## Source Format Accepted by the Assembler
 
+The assembler reads a simple textual assembly language with:
+
+- `.text`
+- `.global <symbol>`
+- `.data`
+- labels ending with `:`
+- data directives:
+  - `.word <value>`
+  - `.space <count>`
+
+Examples:
+
+```text
+addi: r4 = r31, 3
+subi: r30 = r31, 1
+load: r5 = [r30]
+store: [r30] = r4
+bi: main
+b: r28
+out: r1
+in: r4
+ret:
 ```
-[31:28] Cond    [27:26] Type  [25] I  [24] S  [23:20] Op  [20] L
-[19:15] Rd      [14:10] Rh    [9:5] Ro      [9:0] imm10 (sign-extended)
+
+## Instruction Name Structure
+
+The assembler splits an instruction mnemonic into:
+
+- base opcode
+- optional condition suffix
+- optional support suffix
+
+### Condition Suffixes
+
+- `do`
+  - unconditional default
+- `eq`
+- `neq`
+- `gt`
+- `gteq`
+- `lt`
+- `lteq`
+
+### Support Suffixes
+
+- `na`
+  - register form
+- `i`
+  - immediate form
+- `s`
+  - flag-setting form
+- `is`
+  - immediate plus flag-setting form
+
+Examples:
+
+- `add`
+- `addi`
+- `subs`
+- `movi`
+- `bineq`
+
+## Encoded Layout
+
+The assembler encodes 32-bit words in this order:
+
+```text
+[31:28] condition
+[27:26] type
+[25:24] support bits
+[23:20] function/opcode
+[19:15] rd
+[14:10] rh
+[9:0]   immediate or register payload
 ```
 
-- `Type`: `00` = Data Processing (DP), `01` = Data Transfer (MEM), `11` = Branch (BR)
-- `I`: operand2 source (`0` = `Ro`, `1` = sign-extended `imm10`)
-- `S`: update CPSR flags (Z, N) when condition passes
-- `L`: load bit (only used for MEM)
+Branches use the lower payload bits differently from data-processing instructions.
 
-## Condition Codes (Cond)
+## Implemented Base Opcodes
 
-| Cond | Name | Meaning (uses CPSR flags) |
-| --- | --- | --- |
-| 0000 | AL | always |
-| 0001 | EQ | Z = 1 |
-| 0010 | NE | Z = 0 |
-| 0011 | GT | Z = 0 and N = 0 |
-| 0100 | GE | Z = 1 or N = 0 |
-| 0101 | LT | N = 1 |
-| 0110 | LE | Z = 1 or N = 1 |
-| other | - | never |
+Data processing:
 
-## Data Processing (Type = 00)
+- `add`
+- `sub`
+- `mul`
+- `div`
+- `and`
+- `or`
+- `xor`
+- `not`
+- `mov`
+- `in`
+- `out`
 
-`operand2 = (I == 1) ? signext(imm10) : Ro`
+Memory:
 
-| Op | Mnemonic | Semantics (when Cond passes) |
-| --- | --- | --- |
-| 0000 | ADD | Rd = Rh + operand2 |
-| 0001 | SUB | Rd = Rh - operand2 |
-| 0010 | MUL | Rd = Rh * operand2 |
-| 0011 | DIV | Rd = Rh / operand2 |
-| 0100 | AND | Rd = Rh & operand2 |
-| 0101 | OR  | Rd = Rh | operand2 |
-| 0110 | XOR | Rd = Rh ^ operand2 |
-| 0111 | NEG | Rd = -Rh |
-| 1000 | MOV | Rd = operand2 |
-| 1001 | IN  | Rd = peripheral_value; core halts until peripheral_signal |
-| 1010 | OUT | output_reg = operand2 (Rd write still enabled) |
+- `load`
+- `store`
 
-## Data Transfer (Type = 01)
+Branch:
 
-`Ro` is always the memory address. `Rh` is the store data.
+- `b`
+- `bl`
 
-| L | Mnemonic | Semantics (when Cond passes) |
-| --- | --- | --- |
-| 1 | LDR | Rd = mem[Ro] |
-| 0 | STR | mem[Ro] = Rh |
+## Branch Model
 
-## Branch (Type = 11)
+- Branch targets may be labels, signed numeric offsets, or registers.
+- Label branches are encoded as PC-relative offsets when they fit in the 10-bit signed range.
+- Out-of-range label branches are expanded into:
+  - move target address into scratch register `r27`
+  - branch via register
 
-`branch_offset = (I == 1) ? signext(imm10) : Ro`
+## Immediate Model
 
-| Control bit | Meaning |
-| --- | --- |
-| bit23 = 1 | store link register (Link = current PC) |
-| bit22 = 1 | branch to link register (PC = Link) |
+- Signed immediates are limited to 10 bits
+- Large immediates are placed in a literal pool at the end of the data section
+- The assembler emits:
+  - a move of the literal address into `r27`
+  - a load from `[r27]`
 
-Branch update (when Cond passes):
-- If bit22 = 1: `PC = Link`
-- Else: `PC = PC + branch_offset`
+## Data Directives
 
+The current backend emits:
+
+- `stack_space: .space 256`
+- one `.space` per global array
+- `.word` entries when the backend symbol table contains scalar globals
+
+## Pseudo-Instructions
+
+- `ret:`
+  - parsed specially by the assembler
+  - lowered to `bi 0`
+
+That matches the backend's use of `ret:` as the end-of-program halt path for `main`.

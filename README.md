@@ -1,77 +1,96 @@
 # C-minus Compiler
 
-This project implements a compiler for the **C-minus** language using **Flex**, **Bison**, and **C**.
+This repository implements a C-minus compiler with a split pipeline:
 
-## 📚 Documentation
+- A C front-end built with Flex and Bison.
+- A Python backend that lowers textual IR into assembly and then into machine code.
 
-- `docs/architecture.md` - High-level structure and pipeline
-- `docs/frontend.md` - Lexer/parser/AST/symbol table/semantic analysis
-- `docs/ir.md` - IR format and semantics
-- `docs/backend.md` - Codegen and assembler details
-- `docs/best_practices.md` - Best-practices audit
-- `docs/action_plan.md` - Remediation plan and motivations
+## Current Workflow
 
-## 📁 Project Structure
+The project does not currently have a dedicated `build` target. The practical entry points are:
 
-- `src/` - C source files
-- `parser/` - Flex (lexer.l) and Bison (parser.y)
-- `build/` - Intermediate object and generated files
-- `bin/` - Compiled executable
-- `docs/test_files/` - Test input files
+- `make`
+  - Runs `clean` and then `run` on the default sample program.
+  - This is a full pipeline command, not a build-only command.
+- `make bin/c-c`
+  - Builds only the front-end executable.
+- `make run TEST=N`
+  - Runs one of the wired sample inputs from `docs/test_files/`.
+  - The current `run` target invokes `python`, so it assumes a `python` executable is available.
+- `make run_all`
+  - Cleans, rebuilds, and runs every `docs/test_files/teste*.txt`.
+  - This target already uses `python3`.
 
-## ✅ Language Support
+If your environment only provides `python3`, the most reliable manual flow is:
 
-- Integers, arithmetic, comparisons, and assignments
-- `if/else` and `while`
-- Functions with `int`/`void` returns
-- Vectors (arrays), including array parameters
-- Recursion (self-calling functions)
-- Built-ins: `input()` and `output(x)`
+```sh
+make bin/c-c
+bin/c-c docs/test_files/teste3.txt > docs/output/log_compiler.txt
+python3 -u codegen/main.py > docs/output/log_codegen.txt
+```
 
-## 🔧 Build Instructions
+## Pipeline
 
-To build the project:
+1. `bin/c-c <input_file>`
+   - Initializes built-in symbols `input()` and `output(int)`.
+   - Parses the source into an AST.
+   - Prints the symbol table and AST for debugging.
+   - Runs semantic analysis.
+   - Emits `docs/output/generated_IR.txt` only when semantic analysis succeeds.
+2. `python3 codegen/main.py`
+   - Reads `docs/output/generated_IR.txt`.
+   - Generates `docs/output/generated_assembly.txt`.
+   - Assembles into `docs/output/generated_machine_code.txt`.
+   - Writes a decoded machine-code log to `docs/output/debug_machine_code.txt`.
 
-    make
+The C and Python halves communicate through the IR text file rather than through a shared in-memory representation.
 
-## ▶️ Run with Test Files
+## Current Language Coverage
 
-To run the program with a specific test file:
+The checked-in tests exercise the following features:
 
-    make run TEST=1   # Runs with docs/test_files/teste.txt
-    make run TEST=2   # Runs with docs/test_files/teste2.txt
-    make run TEST=3   # Runs with docs/test_files/teste3.txt
-    make run TEST=4   # Runs with docs/test_files/teste4.txt
-    make run TEST=5   # Runs with docs/test_files/teste5.txt
+- `int` and `void` functions
+- Local and global declarations
+- Fixed-size integer arrays
+- Array parameters (`int a[]`)
+- Nested block scopes with shadowing
+- `if`, `if/else`, and `while`
+- Recursion
+- Built-ins `input()` and `output(x)`
+- Arithmetic `+`, `-`, `*`, `/`, `%`
+- Comparisons `==`, `!=`, `<`, `<=`, `>`, `>=`
 
-To run without an input file:
+## Outputs
 
-    make run
+Main pipeline outputs are written under `docs/output/`:
 
-## 📦 Outputs
+- `generated_IR.txt`
+- `generated_assembly.txt`
+- `generated_machine_code.txt`
+- `debug_machine_code.txt`
+- `log_compiler.txt`
+- `log_codegen.txt`
 
-The pipeline writes compiler and codegen artifacts to `docs/output/`:
+`make clean` removes `build/`, `bin/`, `parser.gv`, and `parser.output`, but it does not remove files under `docs/output/`.
 
-- `docs/output/generated_IR.txt`
-- `docs/output/generated_assembly.txt`
-- `docs/output/generated_machine_code.txt`
+## Repository Layout
 
-## 🧹 Clean Build Files
+- `main.c`
+  - Front-end entry point.
+- `parser/`
+  - Flex lexer and Bison grammar.
+- `src/`
+  - AST, symbol table, scope stack, semantic analysis, and IR generation.
+- `codegen/`
+  - Python code generator, assembler, and backend symbol helpers.
+- `docs/test_files/`
+  - Sample input programs.
+- `docs/output/`
+  - Generated artifacts and logs.
 
-To clean all generated files:
+## Current Caveats
 
-    make clean
-
-## 🛠 Requirements
-
-Make sure you have the following installed:
-
-- gcc and g++
-- flex
-- bison
-- make
-
-On Ubuntu/Debian:
-
-    sudo apt update
-    sudo apt install build-essential flex bison
+- Debug logging is always enabled across the front-end and backend.
+- `make run` uses `python`, while `make run_all` uses `python3`.
+- Semantic errors prevent IR generation, but the front-end process still exits based on parse success, not semantic success.
+- Global arrays are materialized in the backend data section. Global scalar storage is a weaker path today and is not covered by the checked-in regression set.

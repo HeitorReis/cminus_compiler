@@ -1,864 +1,571 @@
-# codegen/assembler.py
-
-import re
 import collections
+import re
+from dataclasses import dataclass
 
-DATA_MEMORY_SIZE = 1024
+from constants import STACK_WORDS
 
-# Dicionários de mapeamento da arquitetura do processador
-instructions = {
-    # Data-Processing (Type 00)
-    'add': '0000', 'sub': '0001', 'mul': '0010', 'div': '0011',
-    'and': '0100', 'or':  '0101', 'xor': '0110', 'not': '0111',
-    'mov': '1000', 'in': '1001', 'out': '1010',
-    
-    # Load/Store (Type 01)
-    'store': '0000', 'load': '0001',
-    
-    # Branch (Type 11)
-    'b': '0000', 'bl': '1000', 'ret': '1111'
+CONDITION_CODES = {
+    'do': '0000',
+    'eq': '0001',
+    'neq': '0010',
+    'gt': '0011',
+    'gteq': '0100',
+    'lt': '0101',
+    'lteq': '0110',
 }
 
-type_codes = {
-    '00': ['add', 'sub', 'mul', 'div', 'and', 'or', 'xor', 'not', 'mov', 'in', 'out'],
-    '01': ['load', 'store'],
-    '11': ['b', 'bl', 'ret', 'bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq']
+SUPPORT_BITS = {
+    'na': '00',
+    's': '01',
+    'i': '10',
+    'is': '11',
 }
 
-condition_setting = {
-    "simple": {'do': '0000', 'eq': '0001', 'gt': '0011', 'lt': '0101'},
-    "complex": {'neq': '0010', 'gteq': '0100', 'lteq': '0110'}
-}   
-
-support_bits_map = {
-    'i': '10', 's': '01', 'is': '11', 'si': '11', 'na': '00'
+INSTRUCTION_INFO = {
+    'add': ('00', '0000'),
+    'sub': ('00', '0001'),
+    'mul': ('00', '0010'),
+    'div': ('00', '0011'),
+    'and': ('00', '0100'),
+    'or': ('00', '0101'),
+    'xor': ('00', '0110'),
+    'not': ('00', '0111'),
+    'mov': ('00', '1000'),
+    'in': ('00', '1001'),
+    'out': ('00', '1010'),
+    'store': ('01', '0000'),
+    'load': ('01', '0001'),
+    'b': ('11', '0000'),
+    'bl': ('11', '1000'),
 }
 
-class Instruction:
-    def __init__(
-        self, 
-        assembly_single_line: str, 
-        symbol_table: dict, 
-        current_address: int,
-        literal_pool: dict
-        ):
-        print(f"\n--- [INSTRUCTION] Nova instrução em processamento na linha de montagem: '{assembly_single_line.strip()}' ---")
-        self.assembly_line = assembly_single_line.strip()
-        self.symbol_table = symbol_table
-        self.current_address = current_address
-        self.literal_pool = literal_pool
-        self.binary32_line = ""
-        self.debug_line = ""
-        self.response = '-> Success'
-        self.op_details = {}
-        self.binary32_lines = []
-        self.debug_lines = []
+CONDITION_SUFFIXES = sorted([suffix for suffix in CONDITION_CODES if suffix != 'do'], key=len, reverse=True)
+SUPPORT_SUFFIXES = ('is', 'si', 'i', 's')
+REGISTER_PATTERN = re.compile(r'^r(\d+)$')
+WORD_MASK_32 = (1 << 32) - 1
 
-        if self.assembly_line.startswith('.') or (self.assembly_line.endswith(':') and self.assembly_line != 'ret:'):
-            self.response = '-> Skipped: Directive or Label'
-            print(f"[INSTRUCTION] -> Linha ignorada: {self.response}")
-            return
 
-        print("[INSTRUCTION] -> Passo 1: Desmontando a linha de assembly...")
-        self.op_details = self.disassemble(self.assembly_line)
-        if 'Error' in self.op_details:
-            self.response = self.op_details['Error']
-            print(f"[INSTRUCTION] -> Erro na desmontagem: {self.response}")
-            return
-        
-        print(f"[INSTRUCTION] -> Desmontagem concluída. Detalhes: {self.op_details}")
-        print("[INSTRUCTION] -> Passo 2: Codificando para binário...")
-        result = self.encode()
-        if result is None:
-            if self.binary32_lines:
-                print(f"[INSTRUCTION] -> Codificação de pseudo-instrução concluída. Gerou {len(self.binary32_lines)} linhas binárias.")
-            return
+def is_integer_literal(token):
+    return token.isdigit() or (token.startswith('-') and token[1:].isdigit())
 
-        self.binary32_line, self.debug_line = result
-        if 'Error' in self.binary32_line:
-            self.response = self.binary32_line
-            print(f"[INSTRUCTION] -> Erro na codificação: {self.response}")
-            return
-        
-        print(f"[INSTRUCTION] -> Codificação concluída. Binário: {self.binary32_line}")
 
-    def get_op_type(self, opcode):
-        for type_code, op_list in type_codes.items():
-            if opcode in op_list:
-                return type_code
-        if any(opcode.startswith(br) for br in ['b']):
-            return '11'
-        return None
+def twos_complement(value, bits):
+    min_value = -(1 << (bits - 1))
+    max_value = (1 << (bits - 1)) - 1
+    if value < min_value or value > max_value:
+        raise ValueError(f"value {value} does not fit in {bits} bits")
+    if value < 0:
+        value = (1 << bits) + value
+    return format(value, f'0{bits}b')
 
-    def disassemble(self, line: str) -> dict:
-        print(f"[DISASSEMBLE] Analisando: '{line}'")
-        details = {'cond': 'do', 'supp': 'na'}
-        
-        if line == 'ret:':
-            details['opcode'] = 'ret'
-            details['type'] = '11'
-            details['supp'] = 'i'
-            print(f"[DISASSEMBLE] -> Instrução 'ret' identificada.")
-            return details
 
-        try:
-            op_part, rest_part = line.split(':', 1)
-            rest_part = rest_part.strip()
-            op_part = op_part.strip()
-        except ValueError:
-            return {'Error': f'-> Error: Syntax (missing ":" separator) in line "{line}"'}
+def register_bits(register_name):
+    match = REGISTER_PATTERN.fullmatch(register_name)
+    if not match:
+        raise ValueError(f"invalid register '{register_name}'")
+    register_index = int(match.group(1))
+    if register_index < 0 or register_index > 31:
+        raise ValueError(f"register out of range '{register_name}'")
+    return format(register_index, '05b')
 
-        op_part = op_part.strip()
-        print(f"[DISASSEMBLE] -> Parte do opcode: '{op_part}', Parte dos operandos: '{rest_part}'")
 
-        branch_ops = [
-            'bli', 'blieq', 'blineq', 'bligt', 'bligteq', 'blilt', 'blilteq',
-            'bi', 'bieq', 'bineq', 'bigt', 'bigteq', 'bilt', 'bilteq'
-            ]
-        if op_part in branch_ops:
-            print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
-            details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
-            details['cond'] = op_part[2:] if len(op_part) > 2 else 'do'    # A condição são os últimos caracteres (ex: 'lteq')
-            details['type'] = '11'
-            details['supp'] = 'i' 
-            details['op2'] = rest_part       # O alvo do desvio
-            return details
-        
-        if 'out' in op_part:
-            print(f"[DISASSEMBLE] -> Instrução 'out' identificada.")
-            details['opcode'] = 'out'
-            details['type'] = '00'
-            extra = op_part.replace('out', '').strip()
-            support_codes = ['na', 'i', 's', 'is', 'si']
-            supp = support_codes.index(extra) if extra in support_codes else 0
-            details['supp'] = support_codes[supp]
-            details['cond'] = extra.replace(support_codes[supp], '').strip() or 'do'
-            details['rd'] = 'r0'
-            details['rh'] = 'r0'
-            details['op2'] = rest_part.strip() if rest_part else 'r0'
-            return details
-        
-        branch_ops = [
-            'b',  'beq', 'bneq', 'bgt', 'bgteq', 'blt', 'blteq'
-            ]
-        if op_part in branch_ops:
-            print(f"[DISASSEMBLE] -> Instrução de branch identificada: '{op_part}'")
-            details['opcode'] = 'b'          # A instrução base é sempre 'b' (branch)
-            details['cond'] = op_part[1:] if len(op_part) > 1 else 'do'   # A condição são os últimos caracteres (ex: 'lteq')
-            details['type'] = '11'
-            is_register_target = rest_part.strip().lower().startswith('r')
-            if is_register_target:
-                details['supp'] = 'na'
-            else:
-                details['supp'] = 'i'
-            details['op2'] = rest_part
-            return details
-        
-        branchlink_ops = [
-            'bl', 'bleq', 'blneq', 'blgt', 'blgteq', 'bllt', 'bllteq'
-        ]
-        if op_part in branchlink_ops:
-            print(f"[DISASSEMBLE] -> Instrução de branch com link identificada: '{op_part}'")
-            details['opcode'] = 'bl'
-            details['cond'] = op_part[2:] if len(op_part) > 2 else 'do'
-            details['type'] = '11'
-            
-            # Verifica se o alvo do branch é um registrador ou um label/imediato
-            is_register_target = rest_part.strip().lower().startswith('r')
-            
-            if is_register_target:
-                # Se for um registrador (ex: bl: r14), o bit 'I' é 0
-                details['supp'] = 'na'
-            else:
-                # Se for um label (ex: bl: count), o bit 'I' deve ser 1
-                details['supp'] = 'i'
-                
-            details['op2'] = rest_part
-            return details
-        
-        
-        if op_part.endswith(('is', 'si')):
-            details['supp'] = 'is'
-            op_part = op_part[:-2]
-        elif op_part.endswith('i'):
-            details['supp'] = 'i'
-            op_part = op_part[:-1]
-        elif op_part.endswith('s'):
-            details['supp'] = 's'
-            op_part = op_part[:-1]
-            
-        if details['supp'] != 'na':
-            print(f"[DISASSEMBLE] -> Sufixo de suporte encontrado: '{details['supp']}'. Opcode final é '{op_part}'")
-            
-        details['opcode'] = op_part
-        details['type'] = self.get_op_type(details['opcode'])
-        print(f"[DISASSEMBLE] -> Opcode final: '{details['opcode']}', Tipo: {details['type']}")
+@dataclass
+class ParsedInstruction:
+    original: str
+    mnemonic: str
+    base_op: str
+    cond: str
+    supp: str
+    operands: dict
 
-        if details['type'] is None and not details['opcode'].startswith("b"):
-            return {'Error': f"-> Error: Unknown instruction opcode '{details['opcode']}'"}
-
-        rest_part = rest_part.replace('retval', 'r0').replace('arg0', 'r0')
-
-        if details['type'] == '11': # Branch
-            details['op2'] = rest_part
-            print(f"[DISASSEMBLE] -> Instrução de Branch. Alvo: '{rest_part}'")
-        elif '=' not in rest_part:
-            details['rd'] = rest_part if rest_part else 'r0'
-            details['rh'] = 'r0'
-            details['op2'] = '0'
-            print(f"[DISASSEMBLE] -> Instrução de operando único. Rd: '{details['rd']}'")
-        else: # Instruções com '='
-            dest, source = map(str.strip, rest_part.split('=', 1))
-            
-            if details['opcode'] == 'mov':
-                print(f"[DISASSEMBLE] -> Instrução 'mov' identificada. Destino: '{dest}', Origem: '{source}'")
-                details['rd'] = dest
-                details['rh'] = 'r0'
-                details['op2'] = source.strip() if source else 'r0'
-            elif details['opcode'] == 'store' and 'i' in details['supp']:
-                print("[DISASSEMBLE] -> Caso especial 'storei' identificado.")
-                details['op2'] = dest
-                details['rh'] = source
-                details['rd'] = 'r0'
-            elif source.startswith('[') and source.endswith(']') or dest.startswith('[') and dest.endswith(']'):
-                if details['opcode'] == 'load':
-                    details['rd'] = dest
-                    details['rh'] = 'r0'
-                    details['op2'] = source.strip('[]')
-                elif details['opcode'] == 'store':
-                    print(f"[DISASSEMBLE] -> Instrução Store com endereçamento por registrador. Dest detectado: {dest}. Source detectado: '{source}'")
-                    details['rd'] = 'r0'
-                    details['op2'] = dest.strip('[]')
-                    details['rh'] = source.strip(' ')
-                print("[DISASSEMBLE] -> Instrução Load/Store com endereçamento por registrador.")
-            elif dest.startswith('[') and dest.endswith(']'):
-                if details['opcode'] == 'store':
-                    details['rd'] = 'r0'
-                    details['op2'] = dest.strip('[]')
-                    details['rh'] = source.strip(' ')
-                    print(f"[DISASSEMBLE] -> Store com endereçamento por registrador. Destino: '{dest}', Origem: '{source}'")
-                else:
-                    print("[DISASSEMBLE] -> ERRO REVER SEçÃO DE CODIGO AINDA NAO IMPLEMENTADA.")
-            else:
-                details['rd'] = dest
-                source_parts = list(map(str.strip, source.split(',')))
-                details['rh'] = source_parts[0]
-                print(f"[DISASSEMBLE] -> Instrução com atribuição. Destino: '{dest}', Origem: '{source}'")
-                
-                if len(source_parts) > 1:
-                    details['op2'] = source_parts[1]
-                else:
-                    if 'i' in details['supp']:
-                        details['op2'] = details['rh']
-                        details['rh'] = 'r0'
-                    else:
-                        details['op2'] = 'r0'
-                print("[DISASSEMBLE] -> Operandos finais: Rd='{}', Rh='{}', Op2='{}'".format(details.get('rd'), details.get('rh'), details.get('op2')))
-        return details
-
-    def get_signed_binary(self, value_str: str, bits: int) -> str:
-        try:
-            value = int(value_str)
-            if value >= 0:
-                return format(value, f'0{bits}b')
-            else: # Complemento de dois
-                return format((1 << bits) + value, f'0{bits}b')
-        except (ValueError, TypeError):
-            return f"Error: Invalid immediate value '{value_str}'"
-
-    def encode(self) -> (str, str):
-        d = self.op_details
-        print(f"[ENCODE] Iniciando codificação para a instrução: {d}")
-        
-        if d['opcode'] == 'mov' and d['supp'] == 'i':
-            imm_val_str = d.get('op2', '0')
-            imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-            
-            try:
-                numeric_val = int(imm_val)
-                if not (-512 <= numeric_val <= 511):
-                    print(f"[ENCODE] -> Valor imediato '{numeric_val}' é muito grande para 10 bits. Tratando como pseudo-instrução.")
-                    
-                    literal_label = None
-                    for label, value in self.literal_pool.items():
-                        if value == numeric_val:
-                            literal_label = label
-                            break
-                    
-                    if literal_label is None:
-                        return f"Error: Literal for value {numeric_val} not found in pool", ""
-                    
-                    print(f"[ENCODE] -> Gerando pseudo-instrução: movi r27, {literal_label} (load do valor)")
-                    movi_details = d.copy()
-                    movi_details['rd'] = 'r27'  # Usamos r27 como registrador de rascunho
-                    movi_details['op2'] = literal_label
-                    
-                    bin1, deb1 = self._encode_single_instruction(movi_details)
-                    if "Error" in bin1: 
-                        self.response = bin1
-                        return None, None
-                    self.binary32_lines.append(bin1)
-                    self.debug_lines.append(f"{self.assembly_line} -> (Pseudo) {deb1}")
-                    print(f"[ENCODE] -> Gerando segunda parte: load {d['rd']}, [r27")
-                    
-                    load_details = {
-                        'opcode': 'load', 'type': '01', 'cond': d['cond'],
-                        'supp': 'na', 'rd': d['rd'], 'rh': 'r27', 'op2': '0'
-                    }
-                    bin2, deb2 = self._encode_single_instruction(load_details, is_pseudo=True)
-                    if "Error" in bin2:
-                        self.response = bin2
-                        return None, None
-                    self.binary32_lines.append(bin2)
-                    self.debug_lines.append(f"{' ': <{len(self.assembly_line)}} -> (Pseudo) {deb2}")
-                    
-                    return None, None
-                
-            except (ValueError, KeyError):
-                pass
-            
-        print("[ENCODE] -> Tratando como instrução normal.")
-        return self._encode_single_instruction(self.op_details)
-
-    def _encode_single_instruction(self, d, is_pseudo=False):
-        print(f"[ENCODE] -> Codificando instrução: {d}")
-        aux_cond = condition_setting['complex'].get(d['cond'], '0000')
-        cond_bin = aux_cond if aux_cond else condition_setting['simple'].get(d['cond'], '0000')
-        type_bin = d.get('type', '00')
-        supp_bin = support_bits_map[d['supp']]
-
-        base_opcode = d['opcode']
-        if base_opcode == 'b' or base_opcode == 'bl':
-            print(f"[ENCODE] -> Instrução de branch detectada: {base_opcode} com condição {d['cond']}")
-            aux_cond = condition_setting['complex'].get(d['cond'], 'na')
-            cond_bin = aux_cond if aux_cond != 'na' else condition_setting['simple'].get(d['cond'], 'error')
-            
-        
-        funct_bin = instructions.get(base_opcode)
-        if funct_bin is None:
-            return f"Error: Instruction '{base_opcode}' not found", ""
-
-        debug = f"cond[{cond_bin}] type[{type_bin}] supp[{supp_bin}] op[{funct_bin}] "
-        binary = cond_bin + type_bin + supp_bin + funct_bin
-        
-        if base_opcode == 'ret':
-            binary += '1' * 20
-            debug += "operand[-1]"
-            return binary, debug
-        
-        if base_opcode == 'out':
-            print("[ENCODE] -> Instrução 'out' detectada.")
-            rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
-            rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
-            debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
-            op2_str = d.get('op2', '0')
-            if op2_str.startswith('r'):
-                ro_num_str = op2_str.replace('r', '')
-                ro_bin = self.get_signed_binary(ro_num_str, 5)
-                op2_bin = ro_bin + '00000'
-                debug += f"Ro[{ro_bin}] pad[00000] (Out sem imediato)"
-            else:
-                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
-                imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                op2_bin = self.get_signed_binary(str(imm_val), 10)
-                debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
-            binary += rd_bin + rh_bin + op2_bin
-            return binary, debug
-        
-        if d['type'] == '11': # Branch
-            try:
-                target = d['op2']
-                offset_bin = ""
-
-                # ------------------- INÍCIO DA CORREÇÃO -------------------
-                # Nova lógica para diferenciar branch para registrador vs. label
-
-                if target.startswith('r'):
-                    # CASO 1: O alvo é um registrador (ex: r28)
-                    print(f"[ENCODE] -> Branch para registrador detectado: {target}")
-                    
-                    # Extrai o número do registrador e converte para 5 bits
-                    reg_num_str = target.replace('r', '')
-                    ro_bin = self.get_signed_binary(reg_num_str, 5)
-                    if 'Error' in ro_bin: return ro_bin, ""
-                    
-                    # Monta o campo de 20 bits como você especificou:
-                    # 10 bits zerados | 5 bits do registrador | 5 bits zerados
-                    # Isso coloca o número do registrador nos bits [9:5] do operando.
-                    offset_bin = '0000000000' + ro_bin + '00000'
-                    
-                    debug += f"reg_target[{target}]->bin[{offset_bin}]"
-
-                else:
-                    # CASO 2: O alvo é um label (lógica que você já tinha e funciona)
-                    offset = 0
-                    next_instruction_address = self.current_address + (2 if is_pseudo else 1)
-                    
-                    if target in self.symbol_table:
-                        offset = self.symbol_table[target] - next_instruction_address
-                    else:
-                        offset = int(target)
-                    
-                    offset_bin = self.get_signed_binary(str(offset), 20)
-                    if 'Error' in offset_bin: return offset_bin, ""
-                    debug += f"offset_calc[({self.symbol_table.get(target, 'imm')} - {next_instruction_address}) = {offset}]->bin[{offset_bin}]"
-                
-                # ------------------- FIM DA CORREÇÃO -------------------
-                
-                binary += offset_bin
-
-            except (ValueError, KeyError) as e:
-                return f"Error resolving branch target '{d['op2']}': {e}", ""
-        elif d['type'] == '01':
-            if d['opcode'] == 'load':
-                rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
-                rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
-                debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
-                op2_str = d.get('op2', '0')
-                if op2_str.startswith('r'):
-                    ro_num_str = op2_str.replace('r', '')
-                    ro_bin = self.get_signed_binary(ro_num_str, 5)
-                    op2_bin = ro_bin + '00000'
-                    debug += f"Ro[{ro_bin}] pad[00000] (Load sem imediato)"
-                else:
-                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
-                    imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                    op2_bin = self.get_signed_binary(str(imm_val), 10)
-                    debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
-                binary += rd_bin + rh_bin + op2_bin
-            elif d['opcode'] == 'store':
-                print("[ENCODE] -> Instrução Store detectada.")
-                rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
-                rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
-                debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
-                print(f"[ENCODE] -> rd_bin, rh_bin calculados: Rd(r0)=:{rd_bin} e Rh({d['rh']})=:{rh_bin}")
-                
-                op2_str = d.get('op2', '0')
-                if 'i' not in d['supp']:
-                    ro_num_str = op2_str.replace('r', '')
-                    ro_bin = self.get_signed_binary(ro_num_str, 5)
-                    op2_bin = ro_bin + '00000'
-                    debug += f"Ro[{ro_bin}] pad[00000] (Store sem imediato)"
-                    print(f"[ENCODE] -> Op2 é um registrador: {op2_str}, convertido para binário: {op2_bin}")
-                else:
-                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
-                    imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                    op2_bin = self.get_signed_binary(str(imm_val), 10)
-                    debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
-                    print(f"[ENCODE] -> Op2 é um imediato: {op2_str}, convertido para binário: {op2_bin}")
-                binary += rd_bin + rh_bin + op2_bin
-        else: # Data-Proc e Load/Store
-            rd_bin = self.get_signed_binary(d.get('rd', 'r0').replace('r', ''), 5)
-            rh_bin = self.get_signed_binary(d.get('rh', 'r0').replace('r', ''), 5)
-            debug += f"Rd[{rd_bin}] Rh[{rh_bin}] "
-            
-            op2_str = d.get('op2', '0')
-            op2_bin = ""
-            is_immediate = 'i' in d['supp']
-            
-            if is_immediate:
-                imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
-                imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                op2_bin = self.get_signed_binary(str(imm_val), 10)
-                debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
-            elif d['opcode'] == 'in':
-                ro_bin = '00000'
-                op2_bin = ro_bin + '00000'
-                debug += f"Ro[{ro_bin}] pad[00000]"
-            elif d['opcode'] == 'mov':
-                if op2_str.startswith('r'):
-                    ro_num_str = op2_str.replace('r', '')
-                    ro_bin = self.get_signed_binary(ro_num_str, 5)
-                    op2_bin = ro_bin + '00000'
-                    debug += f"Ro[{ro_bin}] pad[00000] (Mov sem imediato)"
-                else:
-                    imm_val_str = op2_str.replace('[', '').replace(']', '').replace('#', '')
-                    imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                    op2_bin = self.get_signed_binary(str(imm_val), 10)
-                    debug += f"imm[{op2_str}={imm_val}]->[{op2_bin}]"
-            else: # Registrador
-                if not op2_str.startswith('r'):
-                    return f"Error: Invalid register format '{op2_str}'", ""
-                ro_num_str = op2_str.replace('r', '')
-                ro_bin = self.get_signed_binary(ro_num_str, 5)
-                op2_bin = ro_bin + '00000'
-                debug += f"Ro[{ro_bin}] pad[00000]"
-
-            if 'Error' in rd_bin or 'Error' in rh_bin or 'Error' in op2_bin:
-                return "Error during operand encoding", ""
-
-            binary += rd_bin + rh_bin + op2_bin
-
-        if len(binary) != 32:
-            return f"Error: Generated instruction has invalid length {len(binary)}", debug
-
-        return binary, debug
 
 class FullCode:
-    def __init__(self, assembly_code_lines: list):
-        print("\n\n=== INICIANDO PROCESSO DE MONTAGEM (FullCode) ===")
+    def __init__(self, assembly_code_lines):
         self.assembly_list = [line.strip() for line in assembly_code_lines if line.strip()]
-        self.symbol_table = {'output': 1} 
-        self.literal_pool = collections.OrderedDict()
-        self.full_code = ""
-        self.debug_output = ""
         self.response = '-> Success'
-        
-        print("[INIT] Executando a primeira passagem para construir a tabela de símbolos...")
-        self.first_pass()
-        if 'Error' in self.response:
-            print(f"[INIT] Erro detectado na primeira passagem: {self.response}")
-            return
+        self.debug_output = ''
+        self.full_code = ''
 
-        print(f"[INIT] Tabela de símbolos após a primeira passagem: {self.symbol_table}")
-        print("[INIT] Executando a segunda passagem para codificar as instruções...")
-        self.second_pass()
-        print("=== PROCESSO DE MONTAGEM CONCLUÍDO ===")
-        
-        while('0'*32 in self.full_code):
-            self.full_code = self.full_code.replace('0'*32, '')
+        self.text_entries = []
+        self.data_entries = []
+        self.text_labels = {}
+        self.data_labels = {}
+        self.symbol_table = {}
+        self.literal_pool = collections.OrderedDict()
+        self.literal_addresses = {}
+        self._instruction_sizes = {}
+        self._instruction_plans = {}
 
-    def first_pass(self):
-        print("\n--- [PASS 1] Iniciando a Primeira Passagem ---")
-        current_address = 0
-        instruction_sizes = {}
-        
-        # ETAPA 1: Prever o tamanho das instruções
-        print("[PASS 1] Etapa 1: Prevendo o tamanho de cada instrução na seção .text...")
-        in_text_section = True
-        for i, line in enumerate(self.assembly_list):
-            if line.startswith(".data"):
-                in_text_section = False
-                continue
-            if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
-                continue
-            
-            details = self._disassemble_for_pass1(line)
-            size = 1
-            
-            if details.get('opcode') == 'mov' and details.get('supp') == 'i':
-                op2_str = details.get('op2', '0')
-                
-                is_numeric = op2_str.isdigit() or (op2_str.startswith('-') and op2_str[1:].isdigit())
-                
-                if is_numeric:
-                    imm_val = int(op2_str)
-                    
-                    if not (-512 <= imm_val <= 511):
-                        size = 2
-                        print(f"[PASS 1] -> Linha {i+1} ('{line}') é uma pseudo-instrução (tamanho 2).")
-                        
-            instruction_sizes[i] = size
-                
-        print("\n[DEBUG PASS 1] Tabela de Símbolos Final:")
-        import json
-        print(json.dumps(self.symbol_table, indent=2))
-        print("--- Fim do Debug ---\n")
-        
-        print("\n[PASS 1] Etapa 2: Mapeando os rótulos de código para endereços...")
-        current_address = 0
-        in_text_section = True
-        for i, line in enumerate(self.assembly_list):
-            if line.startswith(".data"):
-                in_text_section = False
-                continue
-            if not in_text_section: continue
-            
-            if line.endswith(':') and line != 'ret:':
-                label = line[:-1]
-                if label in self.symbol_table:
-                    self.response = f"Error: Rótulo duplicado '{label}'"
-                    return
-                self.symbol_table[label] = current_address
-                print(f"[PASS 1] -> Rótulo '{label}' mapeado para o endereço {current_address}.")
-            elif i in instruction_sizes:
-                current_address += instruction_sizes[i]
-        
-        print(f"\n[PASS 1] Etapa 3: A seção de código termina no endereço {current_address - 1}. A seção .data começará em [0].")
-        
-        print("\n[PASS 1] Etapa 4: Mapeando os rótulos da seção .data...")
-        data_base_address = 0
-        in_data_section = False
+        try:
+            self._parse_source()
+            self._build_data_labels()
+            self._stabilize_text_layout()
+            self._assign_literal_addresses()
+            self._encode()
+        except Exception as error:
+            self.response = f"Error: {error}"
+
+    def _parse_source(self):
+        section = 'text'
         for line in self.assembly_list:
-            if line.startswith(".data"):
-                in_data_section = True
+            if line.startswith('.text'):
+                section = 'text'
                 continue
-            if not in_data_section: continue
-            if ':' in line:
-                label, directive = map(str.strip, line.split(':', 1))
-                if label in self.symbol_table:
-                    self.response = f"Error: Símbolo duplicado '{label}'"
-                    return
-                self.symbol_table[label] = data_base_address
-                print(f"[PASS 1] -> Rótulo de dados '{label}' mapeado para o endereço {data_base_address}.")
-                if '.word' in directive:
-                    data_base_address += 1
-                elif '.space' in directive:
-                    size = directive.split('.space')[1].strip()
-                    try:
-                        amount = int(size, 0)
-                        data_base_address += amount
-                    except ValueError:
-                        self.response = f"Error: Invalid size '{size}' in directive '{directive}'"
-                        return
-                if data_base_address > DATA_MEMORY_SIZE:
-                    self.response = "Error: DATA_MEMORY_SIZE exceeded"
-                    return
-        print("--- Fim da Primeira Passagem ---")
+            if line.startswith('.data'):
+                section = 'data'
+                continue
+            if line.startswith('.global'):
+                continue
 
-    def second_pass(self):
-        print("\n--- [PASS 2] Iniciando a Segunda Passagem ---")
-        all_lines_data = []
-        current_address = 0
-        
-        print("[PASS 2] Etapa 1: Coletando literais grandes e atribuindo endereços a eles...")
-        literal_address = max(self.symbol_table.values(), default=-1) + 1
-        in_text_section = True
-        with open("docs/output/debug_assembly.txt", "w") as debug_file:
-            for i, line in enumerate(self.assembly_list):
-                if line.startswith(".data"):
-                    in_text_section = False
-                    continue
-                if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
-                    continue
-                details = self._disassemble_for_pass1(line)
-                if details.get('opcode') == 'out':
-                    print(f"[PASS 2] -> Linha {i+1} ('{line.strip()}') é uma instrução 'out'. Ignorando para literais.")
-                    continue
-                
-                if details.get('opcode') == 'mov':
-                    if details.get('supp') == 'i':
-                        try:
-                            imm_val_str = details.get('op2', '0')
-                            imm_val = self.symbol_table.get(imm_val_str, imm_val_str)
-                            numeric_val = int(imm_val)
-                            if not (-512 <= numeric_val <= 511):
-                                if numeric_val not in self.literal_pool.values():
-                                    literal_label = f".Lconst{len(self.literal_pool)}"
-                                    self.literal_pool[literal_label] = numeric_val
-                                    self.symbol_table[literal_label] = literal_address
-                                    print(f"[PASS 2] -> Literal grande '{numeric_val}' encontrado. Rótulo '{literal_label}' mapeado para o endereço {literal_address}.")
-                                    literal_address += 1
-                        except (ValueError, KeyError):
-                            pass 
-                    else:
-                        print(f"[PASS 2] -> Linha {i+1} ('{line.strip()}') é uma instrução 'mov' sem imediato. Ignorando para literais.")
-                        continue
-                debug_file.write(f"{line.strip()} -> {details}\n")    
-        if self.literal_pool:
-            print(f"[PASS 2] -> Pool de literais final: {self.literal_pool}")
+            if section == 'text':
+                if line.endswith(':') and line != 'ret:':
+                    self.text_entries.append(('label', line[:-1]))
+                else:
+                    self.text_entries.append(('instruction', self._parse_instruction(line)))
+            else:
+                if ':' not in line:
+                    raise ValueError(f"invalid data directive '{line}'")
+                label, directive = [part.strip() for part in line.split(':', 1)]
+                if directive.startswith('.space'):
+                    amount = int(directive.split(None, 1)[1], 0)
+                    self.data_entries.append((label, 'space', amount))
+                elif directive.startswith('.word'):
+                    value = int(directive.split(None, 1)[1], 0)
+                    self.data_entries.append((label, 'word', value))
+                else:
+                    raise ValueError(f"unsupported data directive '{line}'")
+
+    def _parse_instruction(self, line):
+        if line == 'ret:':
+            return ParsedInstruction(line, 'ret', 'ret', 'do', 'i', {'target': '0'})
+
+        if ':' not in line:
+            raise ValueError(f"missing ':' in instruction '{line}'")
+
+        mnemonic, operands_text = [part.strip() for part in line.split(':', 1)]
+        base_name, cond, supp = self._split_mnemonic(mnemonic)
+
+        if base_name not in INSTRUCTION_INFO:
+            raise ValueError(f"unknown opcode '{base_name}'")
+
+        operands = self._parse_operands(base_name, operands_text, supp)
+        resolved_supp = operands.pop('resolved_supp', supp)
+        return ParsedInstruction(line, mnemonic, base_name, cond, resolved_supp, operands)
+
+    def _split_mnemonic(self, mnemonic):
+        candidates = []
+
+        base_part = mnemonic
+        cond = 'do'
+        supp = 'na'
+        for suffix in CONDITION_SUFFIXES:
+            if base_part.endswith(suffix):
+                candidates.append((base_part[:-len(suffix)], suffix, supp))
+                break
+        candidates.append((base_part, cond, supp))
+
+        tried = []
+        for candidate_base, candidate_cond, candidate_supp in candidates:
+            for support_suffix in SUPPORT_SUFFIXES:
+                if candidate_base.endswith(support_suffix):
+                    normalized_support = 'is' if support_suffix in ('is', 'si') else support_suffix
+                    base_name = candidate_base[:-len(support_suffix)]
+                    tried.append((base_name, candidate_cond, normalized_support))
+            tried.append((candidate_base, candidate_cond, candidate_supp))
+
+        for candidate_base, candidate_cond, candidate_supp in tried:
+            if candidate_base in INSTRUCTION_INFO:
+                return candidate_base, candidate_cond, candidate_supp
+
+        for support_suffix in SUPPORT_SUFFIXES:
+            if mnemonic.endswith(support_suffix):
+                base_after_support = mnemonic[:-len(support_suffix)]
+                normalized_support = 'is' if support_suffix in ('is', 'si') else support_suffix
+                for cond_suffix in CONDITION_SUFFIXES:
+                    if base_after_support.endswith(cond_suffix):
+                        base_name = base_after_support[:-len(cond_suffix)]
+                        if base_name in INSTRUCTION_INFO:
+                            return base_name, cond_suffix, normalized_support
+
+        return mnemonic, 'do', 'na'
+
+    def _parse_operands(self, base_op, operands_text, supp):
+        operands = {}
+
+        if base_op in ('b', 'bl'):
+            target = operands_text.strip()
+            if not target:
+                raise ValueError(f"missing branch target in '{base_op}'")
+            operands['target'] = target
+            operands['resolved_supp'] = 'na' if REGISTER_PATTERN.fullmatch(target) else 'i'
+            return operands
+
+        if base_op == 'out':
+            source = operands_text.strip()
+            if not source:
+                raise ValueError("missing operand for out")
+            operands['op2'] = source
+            operands['rd'] = 'r0'
+            operands['rh'] = 'r0'
+            operands['resolved_supp'] = 'na' if REGISTER_PATTERN.fullmatch(source) else 'i'
+            return operands
+
+        if base_op == 'in':
+            operands['rd'] = operands_text.strip()
+            operands['rh'] = 'r0'
+            operands['op2'] = 'r0'
+            operands['resolved_supp'] = 'na'
+            return operands
+
+        if '=' not in operands_text:
+            raise ValueError(f"missing '=' in instruction '{base_op}: {operands_text}'")
+
+        left_side, right_side = [part.strip() for part in operands_text.split('=', 1)]
+
+        if base_op == 'load':
+            if not (right_side.startswith('[') and right_side.endswith(']')):
+                raise ValueError(f"invalid load source '{right_side}'")
+            address = right_side[1:-1].strip()
+            operands['rd'] = left_side
+            operands['rh'] = 'r0'
+            operands['op2'] = address
+            operands['resolved_supp'] = 'na' if REGISTER_PATTERN.fullmatch(address) else 'i'
+            return operands
+
+        if base_op == 'store':
+            if not (left_side.startswith('[') and left_side.endswith(']')):
+                raise ValueError(f"invalid store target '{left_side}'")
+            address = left_side[1:-1].strip()
+            operands['rd'] = 'r0'
+            operands['rh'] = right_side
+            operands['op2'] = address
+            operands['resolved_supp'] = 'na' if REGISTER_PATTERN.fullmatch(address) else 'i'
+            return operands
+
+        if base_op == 'mov':
+            operands['rd'] = left_side
+            operands['rh'] = 'r0'
+            operands['op2'] = right_side
+            operands['resolved_supp'] = 'na' if REGISTER_PATTERN.fullmatch(right_side) else 'i'
+            return operands
+
+        source_parts = [part.strip() for part in right_side.split(',')]
+        operands['rd'] = left_side
+        operands['rh'] = source_parts[0]
+        operands['op2'] = source_parts[1] if len(source_parts) > 1 else 'r0'
+        if operands['op2'] != 'r0' and not REGISTER_PATTERN.fullmatch(operands['op2']) and supp == 'na':
+            operands['resolved_supp'] = 'i'
         else:
-            print("[PASS 2] -> Nenhum literal grande encontrado.")
-        print("\n[PASS 2] Etapa 2: Codificando cada linha de instrução para binário...")
-        in_text_section = True
-        for line_num, line in enumerate(self.assembly_list):
-            if line.startswith(".data"):
-                in_text_section = False
-                continue
-            if not in_text_section or line.startswith(".") or (line.endswith(':') and line != 'ret:'):
-                continue
-            
-            line_instruction = Instruction(line, self.symbol_table, current_address, self.literal_pool)
-            if 'Error' in line_instruction.response:
-                self.response = f"{line_instruction.response} na linha {line_num + 1} ('{line.strip()}')"
-                return
-            
-            if line_instruction.binary32_lines:
-                for i in range(len(line_instruction.binary32_lines)):
-                    all_lines_data.append((line_instruction.binary32_lines[i], line_instruction.debug_lines[i]))
-                    current_address += 1
-            elif line_instruction.binary32_line:
-                all_lines_data.append((line_instruction.binary32_line, line_instruction.debug_line))
-                current_address += 1
-                
-        self.full_code = "\n".join([f"{data[0]}" for data in all_lines_data])
-        self.debug_output = "\n".join([f"{data[0]} -> {data[1]}" for data in all_lines_data])
-        print(f"\n[PASS 2] -> {len(all_lines_data)} linhas de código de máquina geradas.")
-        
-        print("\n[PASS 2] Etapa 3: Adicionando a seção de dados e literais ao código de máquina final...")
-        data_section_code = []
-        data_vars = {}
-        in_data_section = False
-        for line in self.assembly_list:
-            if line.startswith('.data'): in_data_section = True; continue
-            if not in_data_section: continue
-            if '.word' in line:
-                label = line.split(':')[0]
-                val_str = line.split('.word')[1].strip()
-                data_vars[self.symbol_table[label]] = val_str
-            elif '.space' in line:
-                label = line.split(':')[0]
-                size_str = line.split('.space')[1].strip()
-                try:
-                    size = int(size_str, 0)
-                except ValueError:
-                    self.response = f"Error: Invalid size '{size_str}' in directive '{line}'"
-                    return
-                base_addr = self.symbol_table.get(label, len(self.full_code) // 32)
-                for offset in range(size):
-                    data_vars[base_addr + offset] = '0'
-        
-        for label, value in self.literal_pool.items():
-            data_vars[self.symbol_table[label]] = str(value)
-        
-        sorted_data = sorted(data_vars.items())
-        print(f"[PASS 2] -> Dados a serem adicionados (endereço: valor): {sorted_data}")
-        
-        for addr, value in sorted_data:
-            data_section_code.append(self.get_signed_binary(value, 32))
-        
-        if data_section_code:
-            self.full_code += "\n" + "\n".join(data_section_code)
-        print("--- Fim da Segunda Passagem ---")
-            
-    def _disassemble_for_pass1(self, line):
-        details = {}
-        try:
-            op_part, rest_part = line.split(':', 1)
-            op_part = op_part.strip()
-            details['supp'] = 'i' if 'i' in op_part else 'na'
-            op_part_no_cond = op_part
-            cond_found = False
-            for i, char in enumerate(op_part):
-                if op_part[-i:-1] in condition_setting['complex']:
-                    op_part_no_cond = op_part[:-i]
-                    details['cond'] = condition_setting['complex'][op_part[-i:-1]]
-                    cond_found = True
-                    break
-            if not cond_found:
-                for i, char in enumerate(op_part):
-                    if op_part[-i:-1] in condition_setting['complex']:
-                        op_part_no_cond = op_part[:-i]
-                        details['cond'] = condition_setting['complex'][op_part[-i:-1]]
-                        break
-            details['opcode'] = op_part_no_cond.rstrip('is')
-            if '=' in rest_part:
-                dest, source = map(str.strip, rest_part.split('=', 1))
-                if 'mov' in details['opcode']:
-                    details['rd'] = dest
-                    details['rh'] = 'r0'
-                    details['op2'] = source
-                elif 'store' in details['opcode'] and 'i' in details['supp']:
-                    details['op2'] = dest
-                elif 'store' in details['opcode']:
-                    details['rd'] = 'r0'
-                    details['op2'] = dest.strip('[]')
-                    details['rh'] = source.strip(' ')
-                elif 'in' in details['opcode']:
-                    details['rd'] = dest
-                    details['rh'] = 'r0'
-                    details['op2'] = 'error: IN instruction generated with "="'
-                else:
-                    details['op2'] = source
-        except ValueError:
-            pass
-        return details
+            operands['resolved_supp'] = supp
+        return operands
 
-    def get_signed_binary(self, value_str: str, bits: int) -> str:
-        try:
-            value = int(value_str)
-            if value >= 0:
-                return format(value, f'0{bits}b')
+    def _build_data_labels(self):
+        current_address = 0
+        for label, directive, value in self.data_entries:
+            if label in self.data_labels:
+                raise ValueError(f"duplicate data label '{label}'")
+            self.data_labels[label] = current_address
+            if directive == 'space':
+                current_address += value
             else:
-                return format((1 << bits) + value, f'0{bits}b')
-        except (ValueError, TypeError):
-            return f"Error: Invalid immediate value '{value_str}'"
-    
-    def decode_machine_code(self):
-        print("\n--- Iniciando a Decodificação do Código de Máquina ---")
-        decoded_lines = []
-        for lineno, line in enumerate(self.full_code.splitlines()):
-            if not line.strip():
-                continue
-            if len(line) != 32:
-                decoded_lines.append(f"Error: Invalid instruction length {len(line)}")
-                continue
-            if (line == '0' * 32):
-                continue
-            
-            type_names = {
-                '00': "Data-Processing.",
-                '01': "Load / Store . .",
-                '11': "Branch . . . . ."
+                current_address += 1
+
+    def _stabilize_text_layout(self):
+        instruction_index = 0
+        for entry_type, _ in self.text_entries:
+            if entry_type == 'instruction':
+                self._instruction_sizes[instruction_index] = 1
+                instruction_index += 1
+
+        changed = True
+        while changed:
+            self._rebuild_text_labels()
+            changed = False
+            new_sizes = {}
+            plans = {}
+            instruction_index = 0
+            current_address = 0
+
+            for entry_type, payload in self.text_entries:
+                if entry_type == 'label':
+                    continue
+
+                plan = self._plan_instruction(payload, current_address)
+                plans[instruction_index] = plan
+                new_sizes[instruction_index] = plan['size']
+                if self._instruction_sizes.get(instruction_index) != plan['size']:
+                    changed = True
+                current_address += plan['size']
+                instruction_index += 1
+
+            self._instruction_sizes = new_sizes
+            self._instruction_plans = plans
+
+        self._rebuild_text_labels()
+
+    def _rebuild_text_labels(self):
+        self.text_labels = {}
+        current_address = 0
+        instruction_index = 0
+        for entry_type, payload in self.text_entries:
+            if entry_type == 'label':
+                if payload in self.text_labels:
+                    raise ValueError(f"duplicate text label '{payload}'")
+                self.text_labels[payload] = current_address
+            else:
+                current_address += self._instruction_sizes.get(instruction_index, 1)
+                instruction_index += 1
+
+        self.symbol_table = {}
+        self.symbol_table.update(self.text_labels)
+        self.symbol_table.update(self.data_labels)
+
+    def _resolve_symbol_or_int(self, token):
+        if is_integer_literal(token):
+            return int(token)
+        if token in self.text_labels:
+            return self.text_labels[token]
+        if token in self.data_labels:
+            return self.data_labels[token]
+        raise ValueError(f"unknown symbol '{token}'")
+
+    def _plan_instruction(self, instruction, current_address):
+        if instruction.base_op == 'ret':
+            return {'kind': 'ret', 'size': 1}
+
+        if instruction.base_op == 'mov' and 'i' in instruction.supp:
+            value = self._resolve_symbol_or_int(instruction.operands['op2'])
+            if -512 <= value <= 511:
+                return {'kind': 'single', 'size': 1}
+            return {'kind': 'literal_move', 'size': 2, 'value': value}
+
+        if instruction.base_op in ('b', 'bl') and not REGISTER_PATTERN.fullmatch(instruction.operands['target']):
+            target = instruction.operands['target']
+            if is_integer_literal(target):
+                offset = int(target)
+                if -512 <= offset <= 511:
+                    return {'kind': 'single', 'size': 1}
+                raise ValueError(f"numeric branch offset out of range in '{instruction.original}'")
+
+            target_address = self._resolve_symbol_or_int(target)
+            offset = target_address - (current_address + 1)
+            if -512 <= offset <= 511:
+                return {'kind': 'single', 'size': 1}
+            move_size = 1 if -512 <= target_address <= 511 else 2
+            return {
+                'kind': 'long_branch',
+                'size': move_size + 1,
+                'target_address': target_address,
             }
-            
-            cond = line[:4]
-            for cond_dict in [condition_setting['simple'], condition_setting['complex']]:
-                for cond_key, cond_value in cond_dict.items():
-                    if cond == cond_value:
-                        cond_decoded = cond_key
-                        break
-            type_code = line[4:6]
-            type_decoded = type_names.get(type_code, ['unknown'])
-            supp = line[6:8]
-            is_immediate = True if supp[0] == '1' else False
-            for supp_key, supp_value in support_bits_map.items():
-                if supp == supp_value:
-                    supp_decoded = supp_key
-                    break
-            opcode = line[8:12]
-            opcode_decoded = next((k for k, v in instructions.items() if v == opcode), 'unknown')
-            rd = int(line[12:17], 2)
-            rd_decoded = f"r{rd}"
-            rh = int(line[17:22], 2)
-            rh_decoded = f"r{rh}"
-            ro = line[22:27]
-            ro_decoded = int(ro, 2)
-            op2 = line[22:]
-            op2_decoded = int(op2, 2)
-            if type_code == '11':
-                rd = '  '; rh = '  '
-                rd_decoded = 'na'; rh_decoded = 'na'
-                opcode_decoded = 'b  ' if opcode == '0000' else 'bl' if opcode == '1000' else 'ret'
-                if not is_immediate and opcode != '1000':
-                    op2_decoded = f"ProgramCounter <= r{ro_decoded}"
-                else:
-                    op2 = line[12:]; op2_decoded = int(op2, 2)
-                    if op2_decoded > 1 << 19:
-                        op2_decoded -= 1 << 20
-                    op2_decoded = "ProgramCounter"+("+" if op2_decoded >= 0 else "")+f"{op2_decoded}"
-            elif type_code == '01':
-                if opcode_decoded == 'sub':
-                    opcode_decoded = 'load'
-                    op2_decoded = f"immediate {op2_decoded}" if 'i' in supp else f"reg_addr: r{int(line[22:27], 2)}"
-                elif opcode_decoded == 'add':
-                    opcode_decoded = 'store'
-                    if is_immediate:
-                        op2_decoded = f"immediate {op2_decoded}"
-                    else:
-                        op2_decoded = f"r{ro_decoded}"
-                else:
-                    op2_decoded = f"immediate {op2_decoded}"
-            else: # Data-Processing
-                if is_immediate:
-                    # Se for imediato, converte de binário de 10 bits para inteiro com sinal
-                    if line[22] == '1': # Se for negativo (complemento de dois)
-                        op2_val = op2_decoded - (1 << 10)
-                    else:
-                        op2_val = op2_decoded
-                    op2_decoded = f"immediate {op2_val}"
-                else:
-                    # Se não for imediato, os 5 bits mais altos são o registrador Ro
-                    ro_reg = int(line[22:27], 2)
-                    op2_decoded = f"r{ro_reg}"
-                    op2 = ro
-            
-            version = 2
-            if version == 1:
-                decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \t\tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
-                decoded_lines.append(decoded_line)
-                decode_line = f"\tBinary: Type({type_code}) \t\t\t\tCond({cond}) \t\tSupp({supp}) \t\tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
-                decoded_lines.append(decoded_line)
-            elif version == 2:
-                decoded_line = f"Line {lineno}: {opcode_decoded} {supp_decoded} {cond_decoded} {rd_decoded} = {rh_decoded}, {op2_decoded}"
-                decoded_lines.append(decoded_line)
-                decoded_line = f"Line {lineno}: {opcode} {supp} {cond} {rd} = {rh}, {op2}\n"
-                decoded_lines.append(decoded_line)
+
+        return {'kind': 'single', 'size': 1}
+
+    def _assign_literal_addresses(self):
+        literal_values = []
+        for plan in self._instruction_plans.values():
+            if plan['kind'] == 'literal_move':
+                literal_values.append(plan['value'])
+            elif plan['kind'] == 'long_branch' and not (-512 <= plan['target_address'] <= 511):
+                literal_values.append(plan['target_address'])
+
+        explicit_data_size = 0
+        for _, directive, value in self.data_entries:
+            explicit_data_size += value if directive == 'space' else 1
+
+        next_address = explicit_data_size
+        for value in literal_values:
+            if value in self.literal_pool:
+                continue
+            label = f'.Lconst{len(self.literal_pool)}'
+            self.literal_pool[value] = label
+            self.literal_addresses[label] = next_address
+            next_address += 1
+
+        self.symbol_table.update(self.literal_addresses)
+
+    def _encode(self):
+        encoded_lines = []
+        debug_lines = []
+
+        instruction_index = 0
+        current_address = 0
+        for entry_type, payload in self.text_entries:
+            if entry_type == 'label':
+                continue
+
+            plan = self._instruction_plans[instruction_index]
+            concrete_instructions = self._expand_instruction(payload, plan, current_address)
+            for concrete in concrete_instructions:
+                binary = self._encode_concrete(concrete, current_address)
+                encoded_lines.append(binary)
+                debug_lines.append(f"{binary} -> {concrete['debug']}")
+                current_address += 1
+            instruction_index += 1
+
+        for label, directive, value in self.data_entries:
+            if directive == 'word':
+                encoded_lines.append(format(value & WORD_MASK_32, '032b'))
+                debug_lines.append(f"{encoded_lines[-1]} -> data {label} .word {value}")
             else:
-                decoded_line = f"Line {lineno} -\tType: {type_decoded} \tCond: {cond_decoded} \tSupport: {supp_decoded}  \tOpcode: {opcode_decoded}  \tRd:  {rd_decoded} = \t (Rh) {rh_decoded} \tOperand: {op2_decoded}"
-                decoded_lines.append(decoded_line)
-                decode_line = f"\tBinary: Type({type_code}) \tCond({cond}) \tSupp({supp}) \tOpcode({opcode}) \tRd({rd})   \t Rh({rh}) \tOp2({op2})\n"
-                decoded_lines.append(decoded_line)
-            
-        print("--- Decodificação Concluída ---")
-        return "\n".join(decoded_lines)
+                for index in range(value):
+                    encoded_lines.append('0' * 32)
+                    debug_lines.append(f"{encoded_lines[-1]} -> data {label}[{index}] .space")
+
+        for value, label in self.literal_pool.items():
+            encoded_lines.append(format(value & WORD_MASK_32, '032b'))
+            debug_lines.append(f"{encoded_lines[-1]} -> literal {label} = {value}")
+
+        self.full_code = '\n'.join(encoded_lines)
+        self.debug_output = '\n'.join(debug_lines)
+
+    def _expand_instruction(self, instruction, plan, current_address):
+        if plan['kind'] == 'ret':
+            pseudo_branch = ParsedInstruction('ret:', 'bi', 'b', 'do', 'i', {'target': '0'})
+            return [{'instruction': pseudo_branch, 'debug': 'ret -> bi 0'}]
+
+        if plan['kind'] == 'literal_move':
+            literal_label = self.literal_pool[plan['value']]
+            literal_address = self.literal_addresses[literal_label]
+            if not (-512 <= literal_address <= 511):
+                raise ValueError(f"literal address {literal_address} out of 10-bit range")
+            scratch = 'r27'
+            first = ParsedInstruction(
+                f"movi: {scratch} = {literal_address}",
+                'movi',
+                'mov',
+                instruction.cond,
+                'i',
+                {'rd': scratch, 'rh': 'r0', 'op2': str(literal_address)},
+            )
+            second = ParsedInstruction(
+                f"load: {instruction.operands['rd']} = [{scratch}]",
+                'load',
+                'load',
+                instruction.cond,
+                'na',
+                {'rd': instruction.operands['rd'], 'rh': 'r0', 'op2': scratch},
+            )
+            return [
+                {'instruction': first, 'debug': f"{instruction.original} -> literal addr {literal_address}"},
+                {'instruction': second, 'debug': f"{instruction.original} -> load literal"},
+            ]
+
+        if plan['kind'] == 'long_branch':
+            scratch = 'r27'
+            target_address = plan['target_address']
+            first_phase = ParsedInstruction(
+                f"movi: {scratch} = {target_address}",
+                'movi',
+                'mov',
+                instruction.cond,
+                'i',
+                {'rd': scratch, 'rh': 'r0', 'op2': str(target_address)},
+            )
+            branch_to_reg = ParsedInstruction(
+                f"{instruction.base_op}: {scratch}",
+                instruction.base_op,
+                instruction.base_op,
+                instruction.cond,
+                'na',
+                {'target': scratch},
+            )
+            move_plan = {'kind': 'single', 'size': 1}
+            if not (-512 <= target_address <= 511):
+                move_plan = {'kind': 'literal_move', 'size': 2, 'value': target_address}
+            move_sequence = self._expand_instruction(first_phase, move_plan, current_address)
+            return move_sequence + [{'instruction': branch_to_reg, 'debug': f"{instruction.original} -> long branch"}]
+
+        return [{'instruction': instruction, 'debug': instruction.original}]
+
+    def _encode_concrete(self, concrete, current_address):
+        instruction = concrete['instruction']
+        info = INSTRUCTION_INFO[instruction.base_op]
+        cond_bits = CONDITION_CODES[instruction.cond]
+        type_bits, funct_bits = info
+        supp_bits = SUPPORT_BITS[instruction.supp]
+
+        binary = cond_bits + type_bits + supp_bits + funct_bits
+
+        if instruction.base_op in ('b', 'bl'):
+            target = instruction.operands['target']
+            if REGISTER_PATTERN.fullmatch(target):
+                binary += '0' * 10 + register_bits(target) + '0' * 5
+            else:
+                if is_integer_literal(target):
+                    offset = int(target)
+                else:
+                    target_address = self.text_labels[target]
+                    offset = target_address - (current_address + 1)
+                binary += '0' * 10 + twos_complement(offset, 10)
+            return binary
+
+        rd_bits = register_bits(instruction.operands.get('rd', 'r0'))
+        rh_bits = register_bits(instruction.operands.get('rh', 'r0'))
+        op2_token = instruction.operands.get('op2', '0')
+
+        if instruction.base_op == 'load':
+            if 'i' in instruction.supp:
+                immediate = self._resolve_symbol_or_int(op2_token)
+                op2_bits = twos_complement(immediate, 10)
+            else:
+                op2_bits = register_bits(op2_token) + '0' * 5
+            return binary + rd_bits + rh_bits + op2_bits
+
+        if instruction.base_op == 'store':
+            if 'i' in instruction.supp:
+                immediate = self._resolve_symbol_or_int(op2_token)
+                op2_bits = twos_complement(immediate, 10)
+            else:
+                op2_bits = register_bits(op2_token) + '0' * 5
+            return binary + rd_bits + rh_bits + op2_bits
+
+        if 'i' in instruction.supp:
+            immediate = self._resolve_symbol_or_int(op2_token)
+            op2_bits = twos_complement(immediate, 10)
+        elif instruction.base_op == 'in':
+            op2_bits = '0' * 10
+        else:
+            op2_bits = register_bits(op2_token) + '0' * 5
+
+        return binary + rd_bits + rh_bits + op2_bits
+
+    def decode_machine_code(self):
+        decoded = []
+        for line_number, line in enumerate(self.full_code.splitlines()):
+            if len(line) != 32:
+                decoded.append(f"Line {line_number}: invalid word")
+                continue
+
+            cond_bits = line[:4]
+            type_bits = line[4:6]
+            supp_bits = line[6:8]
+            funct_bits = line[8:12]
+
+            cond_name = next((name for name, bits in CONDITION_CODES.items() if bits == cond_bits), 'unknown')
+            supp_name = next((name for name, bits in SUPPORT_BITS.items() if bits == supp_bits), 'unknown')
+            opcode_name = next((name for name, info in INSTRUCTION_INFO.items() if info == (type_bits, funct_bits)), 'data')
+
+            if type_bits == '11':
+                target_payload = line[12:]
+                if supp_name == 'na':
+                    opcode_text = f"{opcode_name} {cond_name} r{int(target_payload[10:15], 2)}"
+                else:
+                    immediate = int(target_payload[-10:], 2)
+                    if immediate >= 512:
+                        immediate -= 1024
+                    opcode_text = f"{opcode_name} {supp_name} {cond_name} {immediate}"
+            else:
+                rd = int(line[12:17], 2)
+                rh = int(line[17:22], 2)
+                if supp_name in ('i', 'is'):
+                    immediate = int(line[22:], 2)
+                    if immediate >= 512:
+                        immediate -= 1024
+                    opcode_text = f"{opcode_name} {supp_name} {cond_name} r{rd} = r{rh}, {immediate}"
+                else:
+                    ro = int(line[22:27], 2)
+                    opcode_text = f"{opcode_name} {supp_name} {cond_name} r{rd} = r{rh}, r{ro}"
+
+            decoded.append(f"Line {line_number}: {opcode_text}")
+
+        return '\n'.join(decoded)

@@ -55,6 +55,7 @@ typedef enum {
     IR_RETURN,      // return result
 
     // Function Calls
+    IR_PARAM,       // Formal parameter declaration
     IR_ARG,         // Push an argument for a function call
     IR_PCALL,       // Procedure call (no return value)
     IR_CALL,        // Function call (with return value)

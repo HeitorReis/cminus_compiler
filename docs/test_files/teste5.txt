@@ -9,4 +9,5 @@ int main (void) {
   x = input();
   output(x);
   count(x);
+  return 0;
 }

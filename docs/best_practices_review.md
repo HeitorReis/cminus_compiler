@@ -1,21 +1,25 @@
 # Best-Practices Review
 
-This is a lightweight audit of the repository as it stands. It focuses on
-engineering practices rather than language semantics.
+This is the current short-form review of the repository after the recent scope, IR, and backend changes.
 
-## Gaps and risks
+## Primary Findings
 
-1) No automated test runner or CI workflow (including coverage for recursion and returns).
-2) No LICENSE file or contribution guidelines.
-3) Debug logging is always enabled in the compiler and codegen paths.
-4) Generated outputs are checked in under `docs/output/`, which can drift
-   and become stale.
-5) No static analysis or sanitizers are configured (e.g., `-Wall`,
-   `-Wextra`, `-fsanitize=address`).
-6) Build scripts do not expose a release/debug mode separation.
-7) No documented versioning or change log.
+1. The default `make` target is surprising.
+   - It cleans and runs the default test instead of providing an incremental build.
+2. Python invocation is inconsistent.
+   - `make run` depends on `python`.
+   - `make run_all` depends on `python3`.
+3. Semantic failure is not reflected in the process exit code.
+   - The compiler skips IR generation on semantic errors, but `main.c` still returns based on parse success.
+4. The backend still infers too much from IR text.
+   - Parameters, locals, and some storage decisions are reconstructed by scanning strings.
+5. Global scalar handling is weaker than it looks from the source language.
+   - The backend only allocates explicit global data directives it sees in IR.
+6. Verbose debugging is permanently on.
+   - This is useful during development but weak for repeatable tests and normal usage.
 
-## Notes
+## Positive Notes
 
-- The current `Makefile` always cleans before building, which is convenient
-  for local runs but makes incremental builds slower.
+- Nested block-scope resolution is implemented and exercised by `teste11.txt`.
+- Return-path analysis for non-void functions is implemented and exercised by `invalid_missing_return.txt`.
+- Four-argument calls and large immediates now have dedicated regression inputs.

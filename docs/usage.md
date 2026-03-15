@@ -1,34 +1,114 @@
 # Usage Guide
 
-## Build
+## Fastest Commands
 
-```
+### Run the default sample end to end
+
+```sh
 make
 ```
 
-## Run the compiler
+Current behavior:
 
+- `make` runs `clean` and then `run`
+- The default input is `docs/test_files/teste.txt`
+- This is not a build-only command
+
+### Build only the front-end executable
+
+```sh
+make bin/c-c
 ```
-make run TEST=1
+
+### Run one wired sample
+
+```sh
+make run TEST=3
 ```
 
-Available test inputs live in `docs/test_files/` and are selected by the `TEST`
-value in the `Makefile`. The run target produces:
+Useful sample selectors:
 
-- `docs/output/log_compiler.txt` (front-end output)
-- `docs/output/generated_IR.txt`
-- `docs/output/log_codegen.txt` (codegen output)
-- `docs/output/generated_assembly.txt`
-- `docs/output/generated_machine_code.txt`
+- `TEST=1`
+  - selection-sort sample using a global array
+- `TEST=8`
+  - modulo lowering
+- `TEST=9`
+  - four-argument call and stack arguments
+- `TEST=10`
+  - large immediate and literal-pool behavior
+- `TEST=11`
+  - nested block scope and shadowing
 
-## End-to-end pipeline
+Important caveat:
 
-1) Front-end parses and type-checks source into the AST.
-2) IR is generated into `docs/output/generated_IR.txt`.
-3) Python codegen translates IR to assembly in `docs/output/generated_assembly.txt`.
-4) The assembler emits machine code in `docs/output/generated_machine_code.txt`.
+- The current `run` target invokes `python`, not `python3`
+- If your machine only has `python3`, run the frontend and backend manually instead
 
-## Adding new tests
+### Run every checked-in regression sample
 
-Place a `.txt` file in `docs/test_files/` and wire it into the `Makefile`
-`TEST` selector to include it in `make run`.
+```sh
+make run_all
+```
+
+`run_all` currently executes every `docs/test_files/teste*.txt` and stores per-test logs and machine-code outputs under `docs/output/all_machine_codes/`.
+
+## Manual Workflow
+
+For the most reliable environment-independent flow:
+
+```sh
+make bin/c-c
+bin/c-c docs/test_files/teste3.txt > docs/output/log_compiler.txt
+python3 -u codegen/main.py > docs/output/log_codegen.txt
+```
+
+Replace `docs/test_files/teste3.txt` with any source file path.
+
+## What Each Step Produces
+
+Frontend run:
+
+- prints parser, AST, symbol-table, semantic, and IR debug output
+- writes `docs/output/generated_IR.txt` when semantic analysis succeeds
+
+Backend run:
+
+- writes `docs/output/generated_assembly.txt`
+- writes `docs/output/generated_machine_code.txt`
+- writes `docs/output/debug_machine_code.txt`
+
+Common log files:
+
+- `docs/output/log_compiler.txt`
+- `docs/output/log_codegen.txt`
+
+## Invalid-Test Workflow
+
+`invalid_missing_return.txt` is not wired into `make run` or `make run_all`.
+
+Run it manually with:
+
+```sh
+bin/c-c docs/test_files/invalid_missing_return.txt
+```
+
+Current behavior to be aware of:
+
+- The semantic error is reported
+- IR generation is skipped
+- The process still exits as if parsing succeeded
+
+## Cleaning
+
+```sh
+make clean
+```
+
+This removes:
+
+- `build/`
+- `bin/`
+- `parser.gv`
+- `parser.output`
+
+It does not remove files under `docs/output/`.

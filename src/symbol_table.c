@@ -1,8 +1,11 @@
 #include "symbol_table.h"
+#include "utils.h"
 #include "parser.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+void yyerror(const char *msg);
 
 #define TYPE_INT 1
 #define TYPE_VOID 2
@@ -25,12 +28,39 @@ Symbol *getSymbol(
     const char *name, 
     const char *scope
 ) {
-    Symbol *s = findSymbol(table, name, scope);
-    if (s) return s;
-    if (strcmp(scope, "global") != 0) {
-        return findSymbol(table, name, "global");
+    if (!table || !name || !scope) {
+        return NULL;
     }
-    return NULL;
+    return findSymbol(table, name, scope);
+}
+
+Symbol *resolveSymbol(
+    SymbolTable *table,
+    const char *name,
+    const char *scope
+) {
+    if (!table || !name) {
+        return NULL;
+    }
+
+    if (scope && isScopeActive(scope)) {
+        for (int index = getScopeDepth() - 1; index >= 0; --index) {
+            const char *active_scope = getScopeNameAt(index);
+            Symbol *symbol = findSymbol(table, name, active_scope);
+            if (symbol) {
+                return symbol;
+            }
+        }
+    }
+
+    if (scope) {
+        Symbol *symbol = findSymbol(table, name, scope);
+        if (symbol) {
+            return symbol;
+        }
+    }
+
+    return findSymbol(table, name, "global");
 }
 
 void initSymbolTable(SymbolTable *table) {
@@ -95,7 +125,7 @@ void useSymbol(
     const char  *scope,
     int          useLine
 ) {
-    Symbol *sym = getSymbol(table, name, scope);
+    Symbol *sym = resolveSymbol(table, name, scope);
     if (!sym) {
         yyerror("use of undeclared identifier");
     return;
@@ -120,7 +150,7 @@ void setFunctionParams(
     int paramCount,
     int *paramTypes
 ) {
-    Symbol *sym = getSymbol(table, name, scope);
+    Symbol *sym = resolveSymbol(table, name, scope);
     if (!sym || sym->kind != SYMBOL_FUNC) return;
     sym->paramCount = paramCount;
     sym->array_size = 0;
@@ -144,7 +174,7 @@ int getParamCount(
     const char *name,
     const char *scope
 ) {
-    Symbol *sym = getSymbol(table, name, scope);
+    Symbol *sym = resolveSymbol(table, name, scope);
     return sym ? sym->paramCount : -1;
 }
 
@@ -154,7 +184,7 @@ int getParamType(
     const char *scope,
     int index
 ) {
-    Symbol *sym = getSymbol(table, name, scope);
+    Symbol *sym = resolveSymbol(table, name, scope);
     if (!sym || index < 0 || index >= sym->paramCount) {
         return -1; // invalid request
     }
@@ -184,7 +214,7 @@ void printSymbolTable(const SymbolTable *table) {
             if (ln->next) printf(",");
         }
 
-        printf(" \t");
+        printf("\t");
 
         /* Print all use lines as comma-separated */
         for (LineNode *ln = s->useLines; ln; ln = ln->next) {
@@ -192,7 +222,7 @@ void printSymbolTable(const SymbolTable *table) {
             if (ln->next) printf(",");
         }
         
-        printf(" \t");
+        printf("\t");
 
         if (s->dataType == TYPE_ARRAY) {
             const char* baseTypeStr = (s->baseType == TYPE_INT) ? "INT" : "?";
@@ -201,7 +231,7 @@ void printSymbolTable(const SymbolTable *table) {
         } else {
             // Comportamento antigo para INT e VOID
             const char *typeStr = (s->dataType == TYPE_INT ? "INT" : "VOID");
-            printf("%-6s\n", typeStr);
+            printf("%s\n", typeStr);
         }
     }
 

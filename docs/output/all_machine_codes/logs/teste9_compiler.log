@@ -1,0 +1,432 @@
+Initializing symbol table and scope stack...
+[SYM_TABLE DBG] setFunctionParams: 'input' in scope 'global' with 0 params
+[SYM_TABLE DBG] setFunctionParams: 'output' in scope 'global' with 1 params
+Symbol table initialized successfully.
+Parsing 'docs/test_files/teste9.txt'...
+[LEX][1] INT      -> 'int'
+[LEX][1] ID       -> 'sum4'
+[LEX][1] LPAREN   -> '('
+[LEX][1] INT      -> 'int'
+[LEX][1] ID       -> 'a'
+[LEX][1] COMMA    -> ','
+[AST DBG] newNode kind=AST_PARAM -> 0x58127bfd9860
+[AST DBG] newNode kind=AST_PARAM_LIST -> 0x58127bfd98c0
+[AST DBG] addChild parent=0x58127bfd98c0(AST_PARAM_LIST, lineno=0) child=0x58127bfd9860(AST_PARAM, lineno=1)
+[LEX][1] INT      -> 'int'
+[LEX][1] ID       -> 'b'
+[LEX][1] COMMA    -> ','
+[AST DBG] newNode kind=AST_PARAM -> 0x58127bfd99b0
+[AST DBG] addChild parent=0x58127bfd98c0(AST_PARAM_LIST, lineno=0) child=0x58127bfd99b0(AST_PARAM, lineno=1)
+[LEX][1] INT      -> 'int'
+[LEX][1] ID       -> 'c'
+[LEX][1] COMMA    -> ','
+[AST DBG] newNode kind=AST_PARAM -> 0x58127bfd9ac0
+[AST DBG] addChild parent=0x58127bfd98c0(AST_PARAM_LIST, lineno=0) child=0x58127bfd9ac0(AST_PARAM, lineno=1)
+[LEX][1] INT      -> 'int'
+[LEX][1] ID       -> 'd'
+[LEX][1] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_PARAM -> 0x58127bfd9bd0
+[AST DBG] addChild parent=0x58127bfd98c0(AST_PARAM_LIST, lineno=0) child=0x58127bfd9bd0(AST_PARAM, lineno=1)
+[LEX][2] LBRACE   -> '{'
+[LEX][3] RETURN   -> 'return'
+[LEX][3] ID       -> 'a'
+[LEX][3] PLUS     -> '+'
+[SYM_TABLE DBG] useSymbol: 'a' in scope 'sum4#block0' at line 3
+[AST DBG] newNode kind=AST_ID -> 0x58127bfd9c90
+[AST DBG] newIdNode("a") -> 0x58127bfd9c90
+[AST DBG] newNode kind=AST_BINOP -> 0x58127bfd9cf0
+[LEX][3] ID       -> 'b'
+[LEX][3] PLUS     -> '+'
+[SYM_TABLE DBG] useSymbol: 'b' in scope 'sum4#block0' at line 3
+[AST DBG] newNode kind=AST_ID -> 0x58127bfd9d70
+[AST DBG] newIdNode("b") -> 0x58127bfd9d70
+[AST DBG] newNode kind=AST_BINOP -> 0x58127bfd9dd0
+[AST DBG] addChild parent=0x58127bfd9dd0(AST_BINOP, lineno=0) child=0x58127bfd9c90(AST_ID, lineno=3)
+[AST DBG] addChild parent=0x58127bfd9dd0(AST_BINOP, lineno=0) child=0x58127bfd9cf0(AST_BINOP, lineno=3)
+[AST DBG] addChild parent=0x58127bfd9dd0(AST_BINOP, lineno=0) child=0x58127bfd9d70(AST_ID, lineno=3)
+[AST DBG] newNode kind=AST_BINOP -> 0x58127bfd9e10
+[LEX][3] ID       -> 'c'
+[LEX][3] PLUS     -> '+'
+[SYM_TABLE DBG] useSymbol: 'c' in scope 'sum4#block0' at line 3
+[AST DBG] newNode kind=AST_ID -> 0x58127bfd9e90
+[AST DBG] newIdNode("c") -> 0x58127bfd9e90
+[AST DBG] newNode kind=AST_BINOP -> 0x58127bfd9ef0
+[AST DBG] addChild parent=0x58127bfd9ef0(AST_BINOP, lineno=0) child=0x58127bfd9dd0(AST_BINOP, lineno=0)
+[AST DBG] addChild parent=0x58127bfd9ef0(AST_BINOP, lineno=0) child=0x58127bfd9e10(AST_BINOP, lineno=3)
+[AST DBG] addChild parent=0x58127bfd9ef0(AST_BINOP, lineno=0) child=0x58127bfd9e90(AST_ID, lineno=3)
+[AST DBG] newNode kind=AST_BINOP -> 0x58127bfd9f30
+[LEX][3] ID       -> 'd'
+[LEX][3] SEMI     -> ';'
+[SYM_TABLE DBG] useSymbol: 'd' in scope 'sum4#block0' at line 3
+[AST DBG] newNode kind=AST_ID -> 0x58127bfd9fb0
+[AST DBG] newIdNode("d") -> 0x58127bfd9fb0
+[AST DBG] newNode kind=AST_BINOP -> 0x58127bfda010
+[AST DBG] addChild parent=0x58127bfda010(AST_BINOP, lineno=0) child=0x58127bfd9ef0(AST_BINOP, lineno=0)
+[AST DBG] addChild parent=0x58127bfda010(AST_BINOP, lineno=0) child=0x58127bfd9f30(AST_BINOP, lineno=3)
+[AST DBG] addChild parent=0x58127bfda010(AST_BINOP, lineno=0) child=0x58127bfd9fb0(AST_ID, lineno=3)
+[AST DBG] newNode kind=AST_RETURN -> 0x58127bfda050
+[AST DBG] addChild parent=0x58127bfda050(AST_RETURN, lineno=3) child=0x58127bfda010(AST_BINOP, lineno=0)
+[LEX][4] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x58127bfda090
+[AST DBG] addChild parent=0x58127bfda090(AST_BLOCK, lineno=4) child=0x58127bfda050(AST_RETURN, lineno=3)
+[PARSER DBG] compound_stmt: scope=sum4#block0 decls=(nil) stmts=0x58127bfda050
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x58127bfda0d0
+[AST DBG] addChild parent=0x58127bfda0d0(AST_FUN_DECL, lineno=1) child=0x58127bfd98c0(AST_PARAM_LIST, lineno=0)
+[AST DBG] addChild parent=0x58127bfda0d0(AST_FUN_DECL, lineno=1) child=0x58127bfda090(AST_BLOCK, lineno=4)
+[SYM_TABLE DBG] setFunctionParams: 'sum4' in scope 'global' with 4 params
+[PARSER DBG] fun_declaration: name=sum4, params=0x58127bfd98c0, body=0x58127bfda090
+[LEX][6] INT      -> 'int'
+[LEX][6] ID       -> 'main'
+[LEX][6] LPAREN   -> '('
+[LEX][6] VOID     -> 'void'
+[LEX][6] RPAREN   -> ')'
+[LEX][7] LBRACE   -> '{'
+[LEX][8] INT      -> 'int'
+[LEX][8] ID       -> 'r'
+[LEX][8] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x58127bfda2d0
+[PARSER DBG] var_declaration: name=r[LEX][9] ID       -> 'r'
+[LEX][9] ASSIGN   -> '='
+[SYM_TABLE DBG] useSymbol: 'r' in scope 'main#block1' at line 9
+[AST DBG] newNode kind=AST_ID -> 0x58127bfda350
+[AST DBG] newIdNode("r") -> 0x58127bfda350
+[LEX][9] ID       -> 'sum4'
+[LEX][9] LPAREN   -> '('
+[LEX][9] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x58127bfda3b0
+[AST DBG] newNumNode(1) -> 0x58127bfda3b0
+[LEX][9] COMMA    -> ','
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x58127bfda3f0
+[AST DBG] addChild parent=0x58127bfda3f0(AST_ARG_LIST, lineno=9) child=0x58127bfda3b0(AST_NUM, lineno=9)
+[LEX][9] NUM      -> '2' (2)
+[AST DBG] newNode kind=AST_NUM -> 0x58127bfda430
+[AST DBG] newNumNode(2) -> 0x58127bfda430
+[LEX][9] COMMA    -> ','
+[AST DBG] addChild parent=0x58127bfda3f0(AST_ARG_LIST, lineno=9) child=0x58127bfda430(AST_NUM, lineno=9)
+[LEX][9] NUM      -> '3' (3)
+[AST DBG] newNode kind=AST_NUM -> 0x58127bfda470
+[AST DBG] newNumNode(3) -> 0x58127bfda470
+[LEX][9] COMMA    -> ','
+[AST DBG] addChild parent=0x58127bfda3f0(AST_ARG_LIST, lineno=9) child=0x58127bfda470(AST_NUM, lineno=9)
+[LEX][9] NUM      -> '4' (4)
+[AST DBG] newNode kind=AST_NUM -> 0x58127bfda4b0
+[AST DBG] newNumNode(4) -> 0x58127bfda4b0
+[LEX][9] RPAREN   -> ')'
+[AST DBG] addChild parent=0x58127bfda3f0(AST_ARG_LIST, lineno=9) child=0x58127bfda4b0(AST_NUM, lineno=9)
+[SYM_TABLE DBG] useSymbol: 'sum4' in scope 'main#block1' at line 9
+[AST DBG] newNode kind=AST_CALL -> 0x58127bfda510
+[AST DBG] addChild parent=0x58127bfda510(AST_CALL, lineno=9) child=0x58127bfda3f0(AST_ARG_LIST, lineno=9)
+[LEX][9] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x58127bfda570
+[AST DBG] addChild parent=0x58127bfda570(AST_ASSIGN, lineno=9) child=0x58127bfda350(AST_ID, lineno=9)
+[AST DBG] addChild parent=0x58127bfda570(AST_ASSIGN, lineno=9) child=0x58127bfda510(AST_CALL, lineno=9)
+[PARSER DBG] assignment: var=0x58127bfda350 expr=0x58127bfda510
+[LEX][10] ID       -> 'output'
+[LEX][10] LPAREN   -> '('
+[LEX][10] ID       -> 'r'
+[LEX][10] RPAREN   -> ')'
+[SYM_TABLE DBG] useSymbol: 'r' in scope 'main#block1' at line 10
+[AST DBG] newNode kind=AST_ID -> 0x58127bfda5f0
+[AST DBG] newIdNode("r") -> 0x58127bfda5f0
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x58127bfda650
+[AST DBG] addChild parent=0x58127bfda650(AST_ARG_LIST, lineno=10) child=0x58127bfda5f0(AST_ID, lineno=10)
+[SYM_TABLE DBG] useSymbol: 'output' in scope 'main#block1' at line 10
+[AST DBG] newNode kind=AST_CALL -> 0x58127bfda690
+[AST DBG] addChild parent=0x58127bfda690(AST_CALL, lineno=10) child=0x58127bfda650(AST_ARG_LIST, lineno=10)
+[LEX][10] SEMI     -> ';'
+[LEX][11] RETURN   -> 'return'
+[LEX][11] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x58127bfda6f0
+[AST DBG] newNumNode(0) -> 0x58127bfda6f0
+[LEX][11] SEMI     -> ';'
+[AST DBG] newNode kind=AST_RETURN -> 0x58127bfda730
+[AST DBG] addChild parent=0x58127bfda730(AST_RETURN, lineno=11) child=0x58127bfda6f0(AST_NUM, lineno=11)
+[LEX][12] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x58127bfda770
+[AST DBG] addChild parent=0x58127bfda770(AST_BLOCK, lineno=12) child=0x58127bfda2d0(AST_VAR_DECL, lineno=8)
+[AST DBG] addChild parent=0x58127bfda770(AST_BLOCK, lineno=12) child=0x58127bfda570(AST_ASSIGN, lineno=9)
+[AST DBG] addChild parent=0x58127bfda770(AST_BLOCK, lineno=12) child=0x58127bfda690(AST_CALL, lineno=10)
+[AST DBG] addChild parent=0x58127bfda770(AST_BLOCK, lineno=12) child=0x58127bfda730(AST_RETURN, lineno=11)
+[PARSER DBG] compound_stmt: scope=main#block1 decls=0x58127bfda2d0 stmts=0x58127bfda570
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x58127bfda7b0
+[AST DBG] addChild parent=0x58127bfda7b0(AST_FUN_DECL, lineno=6) child=0x58127bfda770(AST_BLOCK, lineno=12)
+[SYM_TABLE DBG] setFunctionParams: 'main' in scope 'global' with 0 params
+[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x58127bfda770
+[PARSER DBG] declaration_list: added main
+[LEX][13] EOF
+[AST DBG] newNode kind=AST_PROGRAM -> 0x58127bfda7f0
+[AST DBG] addChild parent=0x58127bfda7f0(AST_PROGRAM, lineno=0) child=0x58127bfda0d0(AST_FUN_DECL, lineno=1)
+[AST DBG] addChild parent=0x58127bfda7f0(AST_PROGRAM, lineno=0) child=0x58127bfda7b0(AST_FUN_DECL, lineno=6)
+Parse successful.
+======= SYMBOL TABLE =======
+Name            Scope      Kind   Decl Lines           Use Lines            Type  
+--------------------------------------------------------------------------
+r               main#block1 VAR    8	10,9	INT
+main            global     FUNC   6		INT
+d               sum4       VAR    1	3	INT
+c               sum4       VAR    1	3	INT
+b               sum4       VAR    1	3	INT
+a               sum4       VAR    1	3	INT
+sum4            global     FUNC   1	9	INT
+output          global     FUNC   0	10	VOID
+input           global     FUNC   0		INT
+======= END OF TABLE =======
+Symbol table printed successfully.
+
+=== AST ===
+Program (lineno=0)
+  FunDecl(name=sum4, lineno=1)
+    ParamList (lineno=0)
+      Param(name=a, lineno=1)
+      Param(name=b, lineno=1)
+      Param(name=c, lineno=1)
+      Param(name=d, lineno=1)
+    Block (lineno=4)
+      Return (lineno=3)
+        BinOp (lineno=0)
+          BinOp (lineno=0)
+            BinOp (lineno=0)
+              Id(name=a, lineno=3)
+              BinOp(op='+', lineno=3)
+              Id(name=b, lineno=3)
+            BinOp(op='+', lineno=3)
+            Id(name=c, lineno=3)
+          BinOp(op='+', lineno=3)
+          Id(name=d, lineno=3)
+  FunDecl(name=main, lineno=6)
+    Block (lineno=12)
+      VarDecl(name=r, lineno=8)
+      Assign (lineno=9)
+        Id(name=r, lineno=9)
+        Call(name=sum4, lineno=9)
+          ArgList (lineno=9)
+            Num(value=1, lineno=9)
+            Num(value=2, lineno=9)
+            Num(value=3, lineno=9)
+            Num(value=4, lineno=9)
+      Call(name=output, lineno=10)
+        ArgList (lineno=10)
+          Id(name=r, lineno=10)
+      Return (lineno=11)
+        Num(value=0, lineno=11)
+[Semantic DBG] analyzeProgram: entering program node
+[Semantic DBG] declaration: kind=3 name="sum4" at line 1
+[Semantic DBG] analyzeDeclaration: kind=3 name="sum4" line=1
+[Semantic DBG] FunDecl: name="sum4" line=1
+[Semantic DBG]   return-type = int
+[Semantic DBG]  switched currentScope = sum4
+[Semantic DBG]   Found parameter list
+[Semantic DBG]   Param: name="a" line=1
+[Semantic DBG]   Param: name="b" line=1
+[Semantic DBG]   Param: name="c" line=1
+[Semantic DBG]   Param: name="d" line=1
+[Semantic DBG] analyzeBlock: scope="sum4#block0"
+[Semantic DBG]   Statement: kind=10 line=3
+[Semantic DBG] → analyzeStatement(stmt=0x58127bfda050, kind=10, line=3)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda010, kind=12, line=0)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfd9ef0, kind=12, line=0)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfd9dd0, kind=12, line=0)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfd9c90, kind=14, line=3)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfd9c90) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x58127bfd9d70, kind=14, line=3)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfd9d70) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfd9dd0) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x58127bfd9e90, kind=14, line=3)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfd9e90) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfd9ef0) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x58127bfd9fb0, kind=14, line=3)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfd9fb0) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda010) returns 1
+[Semantic DBG] ← analyzeStatement(stmt=0x58127bfda050)
+[Semantic DBG]   currentScope restored to global
+[Semantic DBG] declaration: kind=3 name="main" at line 6
+[Semantic DBG] analyzeDeclaration: kind=3 name="main" line=6
+[Semantic DBG] FunDecl: name="main" line=6
+[Semantic DBG]   return-type = int
+[Semantic DBG]  switched currentScope = main
+[Semantic DBG]   No parameters, just a block
+[Semantic DBG] analyzeBlock: scope="main#block1"
+[Semantic DBG] analyzeDeclaration: kind=2 name="r" line=8
+[Semantic DBG]   VarDecl: Found simple var 'r'
+[Semantic DBG]   Statement: kind=11 line=9
+[Semantic DBG] → analyzeStatement(stmt=0x58127bfda570, kind=11, line=9)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda570, kind=11, line=9)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda510, kind=13, line=9)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda3b0, kind=15, line=9)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda3b0) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda430, kind=15, line=9)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda430) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda470, kind=15, line=9)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda470) returns 1
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda4b0, kind=15, line=9)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda4b0) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda510) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda570) returns 1
+[Semantic DBG] ← analyzeStatement(stmt=0x58127bfda570)
+[Semantic DBG]   Statement: kind=13 line=10
+[Semantic DBG] → analyzeStatement(stmt=0x58127bfda690, kind=13, line=10)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda690, kind=13, line=10)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda5f0, kind=14, line=10)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda5f0) returns 1
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda690) returns 2
+[Semantic DBG] ← analyzeStatement(stmt=0x58127bfda690)
+[Semantic DBG]   Statement: kind=10 line=11
+[Semantic DBG] → analyzeStatement(stmt=0x58127bfda730, kind=10, line=11)
+[Semantic DBG] → analyzeExpression(expr=0x58127bfda6f0, kind=15, line=11)
+[Semantic DBG] ← analyzeExpression(expr=0x58127bfda6f0) returns 1
+[Semantic DBG] ← analyzeStatement(stmt=0x58127bfda730)
+[Semantic DBG]   currentScope restored to global
+Semantic analysis completed successfully with no errors.
+
+=== IR ===
+
+[IR_DBG] === Starting IR Generation ===
+[IR_DBG] Pass 1: Searching for global variable declarations...
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_PROGRAM at line 0
+[IR_DBG]   Case AST_PROGRAM
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_FUN_DECL at line 1
+[IR_DBG]   Case AST_FUN_DECL for 'sum4'
+[IR_DBG] Creating new name operand: sum4
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] Creating new name operand: a
+[IR_DBG] Emitting instruction with opcode 19
+[IR_DBG] Creating new name operand: b
+[IR_DBG] Emitting instruction with opcode 19
+[IR_DBG] Creating new name operand: c
+[IR_DBG] Emitting instruction with opcode 19
+[IR_DBG] Creating new name operand: d
+[IR_DBG] Emitting instruction with opcode 19
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 4
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_RETURN at line 3
+[IR_DBG]   Case AST_RETURN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 0
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 3
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: a
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 3
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: b
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t0
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 3
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: c
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t1
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 3
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: d
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t2
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_RETURN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_FUN_DECL
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_FUN_DECL at line 6
+[IR_DBG]   Case AST_FUN_DECL for 'main'
+[IR_DBG] Creating new name operand: main
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 12
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 9
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 9
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 9
+[IR_DBG]    Case AST_CALL for function 'sum4'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 9
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 9
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 2
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 9
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 3
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 9
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 4
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] Creating new temporary: t3
+[IR_DBG] Creating new constant: 4
+[IR_DBG] Creating new name operand: sum4
+[IR_DBG] Emitting instruction with opcode 22
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] Creating new name operand: r
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 10
+[IR_DBG]   Case AST_CALL (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 10
+[IR_DBG]    Case AST_CALL for function 'output'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 10
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: r
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] Creating new constant: 1
+[IR_DBG] Creating new name operand: output
+[IR_DBG] Emitting instruction with opcode 21
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_RETURN at line 11
+[IR_DBG]   Case AST_RETURN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 11
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_RETURN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_FUN_DECL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_PROGRAM
+[IR_DBG] === Finished IR Generation ===
+
+--- BEGIN IR DUMP (Terminal) ---
+sum4:
+  param a
+  param b
+  param c
+  param d
+  t0 := a + b
+  t1 := t0 + c
+  t2 := t1 + d
+  return t2
+main:
+  arg 1
+  arg 2
+  arg 3
+  arg 4
+  t3 := call sum4, 4
+  r := t3
+  arg r
+  call output, 1
+  return 0
+--- END IR DUMP ---
+IR dump has been saved to: docs/output/generated_IR.txt

@@ -84,4 +84,10 @@ Symbol *getSymbol(
     const char *scope
 );
 
+Symbol *resolveSymbol(
+    SymbolTable *table,
+    const char *name,
+    const char *scope
+);
+
 #endif /* SYMBOL_TABLE_H */

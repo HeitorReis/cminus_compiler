@@ -96,10 +96,18 @@ else ifeq ($(TEST),6)
 	$(EXEC) $(DOCS_DIR)/teste6.txt > docs/output/log_compiler.txt
 else ifeq ($(TEST),7)
 	$(EXEC) $(DOCS_DIR)/teste7.txt > docs/output/log_compiler.txt
+else ifeq ($(TEST),8)
+	$(EXEC) $(DOCS_DIR)/teste8.txt > docs/output/log_compiler.txt
+else ifeq ($(TEST),9)
+	$(EXEC) $(DOCS_DIR)/teste9.txt > docs/output/log_compiler.txt
+else ifeq ($(TEST),10)
+	$(EXEC) $(DOCS_DIR)/teste10.txt > docs/output/log_compiler.txt
+else ifeq ($(TEST),11)
+	$(EXEC) $(DOCS_DIR)/teste11.txt > docs/output/log_compiler.txt
 else
 	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
 endif
-	python -u codegen/main.py > docs/output/log_codegen.txt
+	python3 -u codegen/main.py > docs/output/log_codegen.txt
 
 # Run all test files and collect machine code outputs
 run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
