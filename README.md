@@ -14,18 +14,18 @@ The project does not currently have a dedicated `build` target. The practical en
   - This is a full pipeline command, not a build-only command.
 - `make bin/c-c`
   - Builds only the front-end executable.
-- `make run TEST=N`
+- `make run TEST=<id>`
   - Runs one of the wired sample inputs from `docs/test_files/`.
-  - The current `run` target invokes `python`, so it assumes a `python` executable is available.
+  - Accepts legacy numeric selectors such as `TEST=3` and canonical names such as `TEST=gcd`.
 - `make run_all`
-  - Cleans, rebuilds, and runs every `docs/test_files/teste*.txt`.
-  - This target already uses `python3`.
+  - Cleans, rebuilds, and runs the configured positive regression suite.
+  - The suite uses canonical names for `sort`, `gcd`, `factorial`, and `fibonacci`, plus the remaining numbered fixtures.
 
 If your environment only provides `python3`, the most reliable manual flow is:
 
 ```sh
 make bin/c-c
-bin/c-c docs/test_files/teste3.txt > docs/output/log_compiler.txt
+bin/c-c docs/test_files/gcd.txt > docs/output/log_compiler.txt
 python3 -u codegen/main.py > docs/output/log_codegen.txt
 ```
 
@@ -91,6 +91,5 @@ Main pipeline outputs are written under `docs/output/`:
 ## Current Caveats
 
 - Debug logging is always enabled across the front-end and backend.
-- `make run` uses `python`, while `make run_all` uses `python3`.
 - Semantic errors prevent IR generation, but the front-end process still exits based on parse success, not semantic success.
 - Global arrays are materialized in the backend data section. Global scalar storage is a weaker path today and is not covered by the checked-in regression set.

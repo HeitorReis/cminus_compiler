@@ -12,11 +12,11 @@
 
 --- Passagem 1B: Construindo a Tabela de Símbolos Globais ---
 [Passagem 1B] Declaração de Vetor Global encontrada: 'vec_a' de tamanho 3
-[SymbolTable] Adding symbol: <Symbol(name='vec_a', type=ARRAY(size=3, base_type=INT), scope='global', addr=256)>
+[SymbolTable] Adding symbol: <Symbol(name='vec_a', type=ARRAY(size=3, base_type=INT), scope='global', addr=64)>
 [Passagem 1B] Declaração de Vetor Global encontrada: 'vec_b' de tamanho 3
-[SymbolTable] Adding symbol: <Symbol(name='vec_b', type=ARRAY(size=3, base_type=INT), scope='global', addr=259)>
+[SymbolTable] Adding symbol: <Symbol(name='vec_b', type=ARRAY(size=3, base_type=INT), scope='global', addr=67)>
 [Passagem 1B] Declaração de Vetor Global encontrada: 'result_vec' de tamanho 3
-[SymbolTable] Adding symbol: <Symbol(name='result_vec', type=ARRAY(size=3, base_type=INT), scope='global', addr=262)>
+[SymbolTable] Adding symbol: <Symbol(name='result_vec', type=ARRAY(size=3, base_type=INT), scope='global', addr=70)>
 --- Fim da Passagem 1: 3 símbolos globais encontrados. ---
 
 --- Passagem 2: Traduzindo o IR para cada função ---
@@ -35,7 +35,7 @@
 [GET_FREE] -> Encontrado registrador livre: r4. Restantes: 22.
 [ASSIGN_REG] Mapeando 't0' para r4.
 [GET_TEMP] -> 't0' alocado no registrador r4.
-[ADD_INSTR] Adicionando instrução para 'main': movi: r4 = 256
+[ADD_INSTR] Adicionando instrução para 'main': movi: r4 = 64
 
 --- [TRANSLATE] Processando IR: t1 := t0 + 1 ---
 [TRANSLATE] -> Detalhes: Destino='t1', Expressão='t0 + 1'
@@ -74,7 +74,7 @@
 [GET_FREE] -> Encontrado registrador livre: r7. Restantes: 22.
 [ASSIGN_REG] Mapeando 't2' para r7.
 [GET_TEMP] -> 't2' alocado no registrador r7.
-[ADD_INSTR] Adicionando instrução para 'main': movi: r7 = 259
+[ADD_INSTR] Adicionando instrução para 'main': movi: r7 = 67
 
 --- [TRANSLATE] Processando IR: t3 := t2 + 2 ---
 [TRANSLATE] -> Detalhes: Destino='t3', Expressão='t2 + 2'
@@ -113,7 +113,7 @@
 [GET_FREE] -> Encontrado registrador livre: r10. Restantes: 22.
 [ASSIGN_REG] Mapeando 't4' para r10.
 [GET_TEMP] -> 't4' alocado no registrador r10.
-[ADD_INSTR] Adicionando instrução para 'main': movi: r10 = 256
+[ADD_INSTR] Adicionando instrução para 'main': movi: r10 = 64
 
 --- [TRANSLATE] Processando IR: t5 := t4 + 1 ---
 [TRANSLATE] -> Detalhes: Destino='t5', Expressão='t4 + 1'
@@ -151,7 +151,7 @@
 [GET_FREE] -> Encontrado registrador livre: r13. Restantes: 21.
 [ASSIGN_REG] Mapeando 't7' para r13.
 [GET_TEMP] -> 't7' alocado no registrador r13.
-[ADD_INSTR] Adicionando instrução para 'main': movi: r13 = 259
+[ADD_INSTR] Adicionando instrução para 'main': movi: r13 = 67
 
 --- [TRANSLATE] Processando IR: t8 := t7 + 2 ---
 [TRANSLATE] -> Detalhes: Destino='t8', Expressão='t7 + 2'
@@ -208,7 +208,7 @@
 [GET_FREE] -> Encontrado registrador livre: r17. Restantes: 21.
 [ASSIGN_REG] Mapeando 't11' para r17.
 [GET_TEMP] -> 't11' alocado no registrador r17.
-[ADD_INSTR] Adicionando instrução para 'main': movi: r17 = 262
+[ADD_INSTR] Adicionando instrução para 'main': movi: r17 = 70
 
 --- [TRANSLATE] Processando IR: t12 := t11 + 0 ---
 [TRANSLATE] -> Detalhes: Destino='t12', Expressão='t11 + 0'
@@ -245,7 +245,7 @@
 [GET_FREE] -> Encontrado registrador livre: r19. Restantes: 22.
 [ASSIGN_REG] Mapeando 't13' para r19.
 [GET_TEMP] -> 't13' alocado no registrador r19.
-[ADD_INSTR] Adicionando instrução para 'main': movi: r19 = 262
+[ADD_INSTR] Adicionando instrução para 'main': movi: r19 = 70
 
 --- [TRANSLATE] Processando IR: t14 := t13 + 0 ---
 [TRANSLATE] -> Detalhes: Destino='t14', Expressão='t13 + 0'
@@ -283,7 +283,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r15', 'r21', 'r19', 'r11', 'r20', 'r8', 'r16', 'r4', 'r12', 'r5', 'r13', 'r14', 'r7', 'r18', 'r17'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16', 'r4', 'r12', 'r7', 'r14', 'r17', 'r21', 'r18', 'r8', 'r15', 'r5', 'r11', 'r20', 'r19', 'r10'}
 [SPILL] Derramando registrador r21, que contém 't15'.
 [SPILL] -> 't15' é um temporário. Salvando na pilha em [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
@@ -322,28 +322,28 @@
 
 	bi: main
 main:
-	movi: r29 = 255
+	movi: r29 = 63
 	mov: r31 = r29
 	subi: r29 = r29, 16
-	movi: r4 = 256
+	movi: r4 = 64
 	addi: r5 = r4, 1
 	movi: r6 = 50
 	store: [r5] = r6
-	movi: r7 = 259
+	movi: r7 = 67
 	addi: r8 = r7, 2
 	movi: r9 = 25
 	store: [r8] = r9
-	movi: r10 = 256
+	movi: r10 = 64
 	addi: r11 = r10, 1
 	load: r12 = [r11]
-	movi: r13 = 259
+	movi: r13 = 67
 	addi: r14 = r13, 2
 	load: r15 = [r14]
 	add: r16 = r12, r15
-	movi: r17 = 262
+	movi: r17 = 70
 	addi: r18 = r17, 0
 	store: [r18] = r16
-	movi: r19 = 262
+	movi: r19 = 70
 	addi: r20 = r19, 0
 	load: r21 = [r20]
 	subi: r30 = r31, 1
@@ -357,35 +357,35 @@ main_epilogue:
 	ret:
 
 .data
-stack_space: .space 256
+stack_space: .space 64
 var_vec_a: .space 3
 var_vec_b: .space 3
 var_result_vec: .space 3
 ---------------------------------------------
 --- DEBUG OUTPUT ---
 00001110000000000000000000000000 -> bi: main
-00000010100011101000000011111111 -> movi: r29 = 255
+00000010100011101000000000111111 -> movi: r29 = 63
 00000000100011111000001110100000 -> mov: r31 = r29
 00000010000111101111010000010000 -> subi: r29 = r29, 16
-00000010100000100000000100000000 -> movi: r4 = 256
+00000010100000100000000001000000 -> movi: r4 = 64
 00000010000000101001000000000001 -> addi: r5 = r4, 1
 00000010100000110000000000110010 -> movi: r6 = 50
 00000100000000000001100010100000 -> store: [r5] = r6
-00000010100000111000000100000011 -> movi: r7 = 259
+00000010100000111000000001000011 -> movi: r7 = 67
 00000010000001000001110000000010 -> addi: r8 = r7, 2
 00000010100001001000000000011001 -> movi: r9 = 25
 00000100000000000010010100000000 -> store: [r8] = r9
-00000010100001010000000100000000 -> movi: r10 = 256
+00000010100001010000000001000000 -> movi: r10 = 64
 00000010000001011010100000000001 -> addi: r11 = r10, 1
 00000100000101100000000101100000 -> load: r12 = [r11]
-00000010100001101000000100000011 -> movi: r13 = 259
+00000010100001101000000001000011 -> movi: r13 = 67
 00000010000001110011010000000010 -> addi: r14 = r13, 2
 00000100000101111000000111000000 -> load: r15 = [r14]
 00000000000010000011000111100000 -> add: r16 = r12, r15
-00000010100010001000000100000110 -> movi: r17 = 262
+00000010100010001000000001000110 -> movi: r17 = 70
 00000010000010010100010000000000 -> addi: r18 = r17, 0
 00000100000000000100001001000000 -> store: [r18] = r16
-00000010100010011000000100000110 -> movi: r19 = 262
+00000010100010011000000001000110 -> movi: r19 = 70
 00000010000010100100110000000000 -> addi: r20 = r19, 0
 00000100000110101000001010000000 -> load: r21 = [r20]
 00000010000111110111110000000001 -> subi: r30 = r31, 1
@@ -460,198 +460,6 @@ var_result_vec: .space 3
 00000000000000000000000000000000 -> data stack_space[61] .space
 00000000000000000000000000000000 -> data stack_space[62] .space
 00000000000000000000000000000000 -> data stack_space[63] .space
-00000000000000000000000000000000 -> data stack_space[64] .space
-00000000000000000000000000000000 -> data stack_space[65] .space
-00000000000000000000000000000000 -> data stack_space[66] .space
-00000000000000000000000000000000 -> data stack_space[67] .space
-00000000000000000000000000000000 -> data stack_space[68] .space
-00000000000000000000000000000000 -> data stack_space[69] .space
-00000000000000000000000000000000 -> data stack_space[70] .space
-00000000000000000000000000000000 -> data stack_space[71] .space
-00000000000000000000000000000000 -> data stack_space[72] .space
-00000000000000000000000000000000 -> data stack_space[73] .space
-00000000000000000000000000000000 -> data stack_space[74] .space
-00000000000000000000000000000000 -> data stack_space[75] .space
-00000000000000000000000000000000 -> data stack_space[76] .space
-00000000000000000000000000000000 -> data stack_space[77] .space
-00000000000000000000000000000000 -> data stack_space[78] .space
-00000000000000000000000000000000 -> data stack_space[79] .space
-00000000000000000000000000000000 -> data stack_space[80] .space
-00000000000000000000000000000000 -> data stack_space[81] .space
-00000000000000000000000000000000 -> data stack_space[82] .space
-00000000000000000000000000000000 -> data stack_space[83] .space
-00000000000000000000000000000000 -> data stack_space[84] .space
-00000000000000000000000000000000 -> data stack_space[85] .space
-00000000000000000000000000000000 -> data stack_space[86] .space
-00000000000000000000000000000000 -> data stack_space[87] .space
-00000000000000000000000000000000 -> data stack_space[88] .space
-00000000000000000000000000000000 -> data stack_space[89] .space
-00000000000000000000000000000000 -> data stack_space[90] .space
-00000000000000000000000000000000 -> data stack_space[91] .space
-00000000000000000000000000000000 -> data stack_space[92] .space
-00000000000000000000000000000000 -> data stack_space[93] .space
-00000000000000000000000000000000 -> data stack_space[94] .space
-00000000000000000000000000000000 -> data stack_space[95] .space
-00000000000000000000000000000000 -> data stack_space[96] .space
-00000000000000000000000000000000 -> data stack_space[97] .space
-00000000000000000000000000000000 -> data stack_space[98] .space
-00000000000000000000000000000000 -> data stack_space[99] .space
-00000000000000000000000000000000 -> data stack_space[100] .space
-00000000000000000000000000000000 -> data stack_space[101] .space
-00000000000000000000000000000000 -> data stack_space[102] .space
-00000000000000000000000000000000 -> data stack_space[103] .space
-00000000000000000000000000000000 -> data stack_space[104] .space
-00000000000000000000000000000000 -> data stack_space[105] .space
-00000000000000000000000000000000 -> data stack_space[106] .space
-00000000000000000000000000000000 -> data stack_space[107] .space
-00000000000000000000000000000000 -> data stack_space[108] .space
-00000000000000000000000000000000 -> data stack_space[109] .space
-00000000000000000000000000000000 -> data stack_space[110] .space
-00000000000000000000000000000000 -> data stack_space[111] .space
-00000000000000000000000000000000 -> data stack_space[112] .space
-00000000000000000000000000000000 -> data stack_space[113] .space
-00000000000000000000000000000000 -> data stack_space[114] .space
-00000000000000000000000000000000 -> data stack_space[115] .space
-00000000000000000000000000000000 -> data stack_space[116] .space
-00000000000000000000000000000000 -> data stack_space[117] .space
-00000000000000000000000000000000 -> data stack_space[118] .space
-00000000000000000000000000000000 -> data stack_space[119] .space
-00000000000000000000000000000000 -> data stack_space[120] .space
-00000000000000000000000000000000 -> data stack_space[121] .space
-00000000000000000000000000000000 -> data stack_space[122] .space
-00000000000000000000000000000000 -> data stack_space[123] .space
-00000000000000000000000000000000 -> data stack_space[124] .space
-00000000000000000000000000000000 -> data stack_space[125] .space
-00000000000000000000000000000000 -> data stack_space[126] .space
-00000000000000000000000000000000 -> data stack_space[127] .space
-00000000000000000000000000000000 -> data stack_space[128] .space
-00000000000000000000000000000000 -> data stack_space[129] .space
-00000000000000000000000000000000 -> data stack_space[130] .space
-00000000000000000000000000000000 -> data stack_space[131] .space
-00000000000000000000000000000000 -> data stack_space[132] .space
-00000000000000000000000000000000 -> data stack_space[133] .space
-00000000000000000000000000000000 -> data stack_space[134] .space
-00000000000000000000000000000000 -> data stack_space[135] .space
-00000000000000000000000000000000 -> data stack_space[136] .space
-00000000000000000000000000000000 -> data stack_space[137] .space
-00000000000000000000000000000000 -> data stack_space[138] .space
-00000000000000000000000000000000 -> data stack_space[139] .space
-00000000000000000000000000000000 -> data stack_space[140] .space
-00000000000000000000000000000000 -> data stack_space[141] .space
-00000000000000000000000000000000 -> data stack_space[142] .space
-00000000000000000000000000000000 -> data stack_space[143] .space
-00000000000000000000000000000000 -> data stack_space[144] .space
-00000000000000000000000000000000 -> data stack_space[145] .space
-00000000000000000000000000000000 -> data stack_space[146] .space
-00000000000000000000000000000000 -> data stack_space[147] .space
-00000000000000000000000000000000 -> data stack_space[148] .space
-00000000000000000000000000000000 -> data stack_space[149] .space
-00000000000000000000000000000000 -> data stack_space[150] .space
-00000000000000000000000000000000 -> data stack_space[151] .space
-00000000000000000000000000000000 -> data stack_space[152] .space
-00000000000000000000000000000000 -> data stack_space[153] .space
-00000000000000000000000000000000 -> data stack_space[154] .space
-00000000000000000000000000000000 -> data stack_space[155] .space
-00000000000000000000000000000000 -> data stack_space[156] .space
-00000000000000000000000000000000 -> data stack_space[157] .space
-00000000000000000000000000000000 -> data stack_space[158] .space
-00000000000000000000000000000000 -> data stack_space[159] .space
-00000000000000000000000000000000 -> data stack_space[160] .space
-00000000000000000000000000000000 -> data stack_space[161] .space
-00000000000000000000000000000000 -> data stack_space[162] .space
-00000000000000000000000000000000 -> data stack_space[163] .space
-00000000000000000000000000000000 -> data stack_space[164] .space
-00000000000000000000000000000000 -> data stack_space[165] .space
-00000000000000000000000000000000 -> data stack_space[166] .space
-00000000000000000000000000000000 -> data stack_space[167] .space
-00000000000000000000000000000000 -> data stack_space[168] .space
-00000000000000000000000000000000 -> data stack_space[169] .space
-00000000000000000000000000000000 -> data stack_space[170] .space
-00000000000000000000000000000000 -> data stack_space[171] .space
-00000000000000000000000000000000 -> data stack_space[172] .space
-00000000000000000000000000000000 -> data stack_space[173] .space
-00000000000000000000000000000000 -> data stack_space[174] .space
-00000000000000000000000000000000 -> data stack_space[175] .space
-00000000000000000000000000000000 -> data stack_space[176] .space
-00000000000000000000000000000000 -> data stack_space[177] .space
-00000000000000000000000000000000 -> data stack_space[178] .space
-00000000000000000000000000000000 -> data stack_space[179] .space
-00000000000000000000000000000000 -> data stack_space[180] .space
-00000000000000000000000000000000 -> data stack_space[181] .space
-00000000000000000000000000000000 -> data stack_space[182] .space
-00000000000000000000000000000000 -> data stack_space[183] .space
-00000000000000000000000000000000 -> data stack_space[184] .space
-00000000000000000000000000000000 -> data stack_space[185] .space
-00000000000000000000000000000000 -> data stack_space[186] .space
-00000000000000000000000000000000 -> data stack_space[187] .space
-00000000000000000000000000000000 -> data stack_space[188] .space
-00000000000000000000000000000000 -> data stack_space[189] .space
-00000000000000000000000000000000 -> data stack_space[190] .space
-00000000000000000000000000000000 -> data stack_space[191] .space
-00000000000000000000000000000000 -> data stack_space[192] .space
-00000000000000000000000000000000 -> data stack_space[193] .space
-00000000000000000000000000000000 -> data stack_space[194] .space
-00000000000000000000000000000000 -> data stack_space[195] .space
-00000000000000000000000000000000 -> data stack_space[196] .space
-00000000000000000000000000000000 -> data stack_space[197] .space
-00000000000000000000000000000000 -> data stack_space[198] .space
-00000000000000000000000000000000 -> data stack_space[199] .space
-00000000000000000000000000000000 -> data stack_space[200] .space
-00000000000000000000000000000000 -> data stack_space[201] .space
-00000000000000000000000000000000 -> data stack_space[202] .space
-00000000000000000000000000000000 -> data stack_space[203] .space
-00000000000000000000000000000000 -> data stack_space[204] .space
-00000000000000000000000000000000 -> data stack_space[205] .space
-00000000000000000000000000000000 -> data stack_space[206] .space
-00000000000000000000000000000000 -> data stack_space[207] .space
-00000000000000000000000000000000 -> data stack_space[208] .space
-00000000000000000000000000000000 -> data stack_space[209] .space
-00000000000000000000000000000000 -> data stack_space[210] .space
-00000000000000000000000000000000 -> data stack_space[211] .space
-00000000000000000000000000000000 -> data stack_space[212] .space
-00000000000000000000000000000000 -> data stack_space[213] .space
-00000000000000000000000000000000 -> data stack_space[214] .space
-00000000000000000000000000000000 -> data stack_space[215] .space
-00000000000000000000000000000000 -> data stack_space[216] .space
-00000000000000000000000000000000 -> data stack_space[217] .space
-00000000000000000000000000000000 -> data stack_space[218] .space
-00000000000000000000000000000000 -> data stack_space[219] .space
-00000000000000000000000000000000 -> data stack_space[220] .space
-00000000000000000000000000000000 -> data stack_space[221] .space
-00000000000000000000000000000000 -> data stack_space[222] .space
-00000000000000000000000000000000 -> data stack_space[223] .space
-00000000000000000000000000000000 -> data stack_space[224] .space
-00000000000000000000000000000000 -> data stack_space[225] .space
-00000000000000000000000000000000 -> data stack_space[226] .space
-00000000000000000000000000000000 -> data stack_space[227] .space
-00000000000000000000000000000000 -> data stack_space[228] .space
-00000000000000000000000000000000 -> data stack_space[229] .space
-00000000000000000000000000000000 -> data stack_space[230] .space
-00000000000000000000000000000000 -> data stack_space[231] .space
-00000000000000000000000000000000 -> data stack_space[232] .space
-00000000000000000000000000000000 -> data stack_space[233] .space
-00000000000000000000000000000000 -> data stack_space[234] .space
-00000000000000000000000000000000 -> data stack_space[235] .space
-00000000000000000000000000000000 -> data stack_space[236] .space
-00000000000000000000000000000000 -> data stack_space[237] .space
-00000000000000000000000000000000 -> data stack_space[238] .space
-00000000000000000000000000000000 -> data stack_space[239] .space
-00000000000000000000000000000000 -> data stack_space[240] .space
-00000000000000000000000000000000 -> data stack_space[241] .space
-00000000000000000000000000000000 -> data stack_space[242] .space
-00000000000000000000000000000000 -> data stack_space[243] .space
-00000000000000000000000000000000 -> data stack_space[244] .space
-00000000000000000000000000000000 -> data stack_space[245] .space
-00000000000000000000000000000000 -> data stack_space[246] .space
-00000000000000000000000000000000 -> data stack_space[247] .space
-00000000000000000000000000000000 -> data stack_space[248] .space
-00000000000000000000000000000000 -> data stack_space[249] .space
-00000000000000000000000000000000 -> data stack_space[250] .space
-00000000000000000000000000000000 -> data stack_space[251] .space
-00000000000000000000000000000000 -> data stack_space[252] .space
-00000000000000000000000000000000 -> data stack_space[253] .space
-00000000000000000000000000000000 -> data stack_space[254] .space
-00000000000000000000000000000000 -> data stack_space[255] .space
 00000000000000000000000000000000 -> data var_vec_a[0] .space
 00000000000000000000000000000000 -> data var_vec_a[1] .space
 00000000000000000000000000000000 -> data var_vec_a[2] .space

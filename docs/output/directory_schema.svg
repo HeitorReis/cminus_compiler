@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2280" height="1978" viewBox="0 0 2280 1978">
+  <defs>
+    <linearGradient id="importanceGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#417dff" />
+      <stop offset="100%" stop-color="#d62828" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12" />
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" fill="#f5f7fb" />
+  <text x="40" y="42" font-family="Verdana, DejaVu Sans, sans-serif" font-size="28" font-weight="700" fill="#0f172a">
+    cminus_compiler directory schema
+  </text>
+  <text x="40" y="70" font-family="Verdana, DejaVu Sans, sans-serif" font-size="14" fill="#334155">
+    Blue means less critical to the compiler pipeline. Red means more critical. Parent nodes are promoted to the max score of their subtree.
+  </text>
+  <text x="40" y="94" font-family="Verdana, DejaVu Sans, sans-serif" font-size="13" fill="#475569">
+    Internal .git and __pycache__ directories are intentionally excluded from the visual tree.
+  </text>
+  <rect x="40" y="112" width="360" height="18" rx="9" fill="url(#importanceGradient)" stroke="#94a3b8" stroke-width="1" />
+  <text x="40" y="154" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#475569">0 = less important</text>
+  <text x="310" y="154" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#475569">100 = more important</text>
+  <g filter="url(#shadow)">
+    <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 243.0, 500.0 243.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 409.0, 500.0 409.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 567.0, 500.0 567.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 812.0, 500.0 812.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 1128.0, 500.0 1128.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 1365.0, 500.0 1365.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 1531.0, 500.0 1531.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 1697.0, 500.0 1697.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 380.0 1049.0 C 446.0 1049.0, 434.0 1863.0, 500.0 1863.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 840.0 812.0 C 906.0 812.0, 894.0 733.0, 960.0 733.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 840.0 812.0 C 906.0 812.0, 894.0 899.0, 960.0 899.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 1300.0 733.0 C 1366.0 733.0, 1354.0 733.0, 1420.0 733.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 1760.0 733.0 C 1826.0 733.0, 1814.0 733.0, 1880.0 733.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 840.0 1128.0 C 906.0 1128.0, 894.0 1057.0, 960.0 1057.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" /> <path d="M 840.0 1128.0 C 906.0 1128.0, 894.0 1207.0, 960.0 1207.0" fill="none" stroke="#8fa7c7" stroke-width="2.2" stroke-linecap="round" opacity="0.9" />
+    <rect x="40.0" y="976.0" width="340" height="146.0" rx="16" ry="16" fill="#d62828" stroke="#9a1d1d" stroke-width="2.2" />
+<rect x="40.0" y="976.0" width="340" height="32" rx="16" ry="16" fill="#c12424" opacity="0.95" />
+<text x="58.0" y="998.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">cminus_compiler/</text>
+<text x="58.0" y="1024.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 100/100</text>
+<text x="58.0" y="1044.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Repository root that ties together the C</text>
+<text x="58.0" y="1060.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">front-end, Python backend, tests,</text>
+<text x="58.0" y="1076.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">generated artifacts, and processor</text>
+<text x="58.0" y="1092.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">targets.</text> <rect x="500.0" y="170.0" width="340" height="146.0" rx="16" ry="16" fill="#d32a2c" stroke="#981e20" stroke-width="2.2" />
+<rect x="500.0" y="170.0" width="340" height="32" rx="16" ry="16" fill="#be2628" opacity="0.95" />
+<text x="518.0" y="192.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">src/</text>
+<text x="518.0" y="218.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 98/100</text>
+<text x="518.0" y="238.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Front-end core: AST construction</text>
+<text x="518.0" y="254.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">helpers, scope management, semantic</text>
+<text x="518.0" y="270.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">analysis, symbol tables, and IR</text>
+<text x="518.0" y="286.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">emission.</text> <rect x="500.0" y="344.0" width="340" height="130.0" rx="16" ry="16" fill="#d22b2e" stroke="#971f21" stroke-width="2.2" />
+<rect x="500.0" y="344.0" width="340" height="32" rx="16" ry="16" fill="#bd2729" opacity="0.95" />
+<text x="518.0" y="366.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">codegen/</text>
+<text x="518.0" y="392.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 97/100</text>
+<text x="518.0" y="412.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Python backend that translates IR into</text>
+<text x="518.0" y="428.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">assembly and machine code. Essential for</text>
+<text x="518.0" y="444.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">the full compiler pipeline.</text> <rect x="500.0" y="502.0" width="340" height="130.0" rx="16" ry="16" fill="#d02b31" stroke="#961f23" stroke-width="2.2" />
+<rect x="500.0" y="502.0" width="340" height="32" rx="16" ry="16" fill="#bb272c" opacity="0.95" />
+<text x="518.0" y="524.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">parser/</text>
+<text x="518.0" y="550.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 96/100</text>
+<text x="518.0" y="570.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Flex lexer and Bison grammar. Without</text>
+<text x="518.0" y="586.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">this directory the compiler cannot turn</text>
+<text x="518.0" y="602.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">source text into structured syntax.</text> <rect x="500.0" y="747.0" width="340" height="130.0" rx="16" ry="16" fill="#bb374f" stroke="#872839" stroke-width="2.2" />
+<rect x="500.0" y="747.0" width="340" height="32" rx="16" ry="16" fill="#a83247" opacity="0.95" />
+<text x="518.0" y="769.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">docs/</text>
+<text x="518.0" y="795.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 82/100</text>
+<text x="518.0" y="815.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Project documentation, regression</text>
+<text x="518.0" y="831.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">inputs, and the current artifact handoff</text>
+<text x="518.0" y="847.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">area used by the pipeline.</text> <rect x="960.0" y="660.0" width="340" height="146.0" rx="16" ry="16" fill="#bb374f" stroke="#872839" stroke-width="2.2" />
+<rect x="960.0" y="660.0" width="340" height="32" rx="16" ry="16" fill="#a83247" opacity="0.95" />
+<text x="978.0" y="682.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">output/</text>
+<text x="978.0" y="708.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 82/100</text>
+<text x="978.0" y="728.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Generated IR, assembly, machine code,</text>
+<text x="978.0" y="744.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">and logs. Important because the backend</text>
+<text x="978.0" y="760.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">currently reads the IR handoff from</text>
+<text x="978.0" y="776.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">here.</text> <rect x="1420.0" y="668.0" width="340" height="130.0" rx="16" ry="16" fill="#7a5dad" stroke="#58437d" stroke-width="2.2" />
+<rect x="1420.0" y="668.0" width="340" height="32" rx="16" ry="16" fill="#6e549c" opacity="0.95" />
+<text x="1438.0" y="690.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">all_machine_codes/</text>
+<text x="1438.0" y="716.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 38/100</text>
+<text x="1438.0" y="736.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Batch-run machine-code snapshots</text>
+<text x="1438.0" y="752.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">gathered for comparison across test</text>
+<text x="1438.0" y="768.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">programs.</text> <rect x="1880.0" y="676.0" width="340" height="114.0" rx="16" ry="16" fill="#6e64be" stroke="#4f4889" stroke-width="2.2" />
+<rect x="1880.0" y="676.0" width="340" height="32" rx="16" ry="16" fill="#635aab" opacity="0.95" />
+<text x="1898.0" y="698.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">logs/</text>
+<text x="1898.0" y="724.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 30/100</text>
+<text x="1898.0" y="744.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Per-test compiler and backend logs</text>
+<text x="1898.0" y="760.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">captured during `make run_all`.</text> <rect x="960.0" y="834.0" width="340" height="130.0" rx="16" ry="16" fill="#934e89" stroke="#6a3863" stroke-width="2.2" />
+<rect x="960.0" y="834.0" width="340" height="32" rx="16" ry="16" fill="#84467b" opacity="0.95" />
+<text x="978.0" y="856.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">test_files/</text>
+<text x="978.0" y="882.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 55/100</text>
+<text x="978.0" y="902.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Sample and regression programs used to</text>
+<text x="978.0" y="918.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">validate parsing, semantics, IR</text>
+<text x="978.0" y="934.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">generation, and backend lowering.</text> <rect x="500.0" y="1063.0" width="340" height="130.0" rx="16" ry="16" fill="#ac4064" stroke="#7c2e48" stroke-width="2.2" />
+<rect x="500.0" y="1063.0" width="340" height="32" rx="16" ry="16" fill="#9b3a5a" opacity="0.95" />
+<text x="518.0" y="1085.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">Processor(v2026-1)/</text>
+<text x="518.0" y="1111.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 72/100</text>
+<text x="518.0" y="1131.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Active hardware processor project that</text>
+<text x="518.0" y="1147.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">represents the execution target for the</text>
+<text x="518.0" y="1163.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">backend machine code.</text> <rect x="960.0" y="992.0" width="340" height="130.0" rx="16" ry="16" fill="#a94268" stroke="#7a304b" stroke-width="2.2" />
+<rect x="960.0" y="992.0" width="340" height="32" rx="16" ry="16" fill="#983b5e" opacity="0.95" />
+<text x="978.0" y="1014.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">modules/</text>
+<text x="978.0" y="1040.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 70/100</text>
+<text x="978.0" y="1060.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Verilog modules that implement the</text>
+<text x="978.0" y="1076.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">processor datapath and control used by</text>
+<text x="978.0" y="1092.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">the active hardware target.</text> <rect x="960.0" y="1150.0" width="340" height="114.0" rx="16" ry="16" fill="#5c6ed8" stroke="#424f9c" stroke-width="2.2" />
+<rect x="960.0" y="1150.0" width="340" height="32" rx="16" ry="16" fill="#5363c2" opacity="0.95" />
+<text x="978.0" y="1172.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">db/</text>
+<text x="978.0" y="1198.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 18/100</text>
+<text x="978.0" y="1218.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Quartus-generated database and cache</text>
+<text x="978.0" y="1234.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">files for the active processor project.</text> <rect x="500.0" y="1292.0" width="340" height="146.0" rx="16" ry="16" fill="#6b65c3" stroke="#4d498c" stroke-width="2.2" />
+<rect x="500.0" y="1292.0" width="340" height="32" rx="16" ry="16" fill="#605bb0" opacity="0.95" />
+<text x="518.0" y="1314.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">build/</text>
+<text x="518.0" y="1340.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 28/100</text>
+<text x="518.0" y="1360.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Generated lexer/parser sources and</text>
+<text x="518.0" y="1376.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">object files used during builds.</text>
+<text x="518.0" y="1392.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Disposable, but needed for a local</text>
+<text x="518.0" y="1408.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">compilation step.</text> <rect x="500.0" y="1466.0" width="340" height="130.0" rx="16" ry="16" fill="#6867c7" stroke="#4b4a8f" stroke-width="2.2" />
+<rect x="500.0" y="1466.0" width="340" height="32" rx="16" ry="16" fill="#5e5db3" opacity="0.95" />
+<text x="518.0" y="1488.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">bin/</text>
+<text x="518.0" y="1514.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 26/100</text>
+<text x="518.0" y="1534.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Built executable output (`c-c`).</text>
+<text x="518.0" y="1550.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Important for running locally, but fully</text>
+<text x="518.0" y="1566.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">reproducible from source.</text> <rect x="500.0" y="1624.0" width="340" height="146.0" rx="16" ry="16" fill="#5f6cd4" stroke="#444e99" stroke-width="2.2" />
+<rect x="500.0" y="1624.0" width="340" height="32" rx="16" ry="16" fill="#5661bf" opacity="0.95" />
+<text x="518.0" y="1646.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">vpp/</text>
+<text x="518.0" y="1672.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 20/100</text>
+<text x="518.0" y="1692.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Visual Paradigm project files for design</text>
+<text x="518.0" y="1708.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">documentation. Useful for communication,</text>
+<text x="518.0" y="1724.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">but not required by the compiler</text>
+<text x="518.0" y="1740.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">pipeline.</text> <rect x="500.0" y="1798.0" width="340" height="130.0" rx="16" ry="16" fill="#5373e5" stroke="#3c53a5" stroke-width="2.2" />
+<rect x="500.0" y="1798.0" width="340" height="32" rx="16" ry="16" fill="#4b68ce" opacity="0.95" />
+<text x="518.0" y="1820.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="16" font-weight="700" fill="#f8fafc">.vscode/</text>
+<text x="518.0" y="1846.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#f8fafc" opacity="0.92">Importance: 12/100</text>
+<text x="518.0" y="1866.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">Local editor settings. Helpful for</text>
+<text x="518.0" y="1882.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">development convenience, but not</text>
+<text x="518.0" y="1898.0" font-family="Verdana, DejaVu Sans, sans-serif" font-size="12.5" fill="#f8fafc" opacity="0.96">required for the compiler to work.</text>
+  </g>
+</svg>

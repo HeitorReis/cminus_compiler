@@ -1,5 +1,27 @@
+gcd:
+  param u
+  param v
+  t0 := v == 0
+  if_false t0 goto L0
+  return u
+L0:
+  arg v
+  t1 := u / v
+  t2 := t1 * v
+  t3 := u - t2
+  arg t3
+  t4 := call gcd, 2
+  return t4
+L1:
+  return _
 main:
-  g := 7
-  arg g
+  t5 := call input, 0
+  x := t5
+  t6 := call input, 0
+  y := t6
+  arg x
+  arg y
+  t7 := call gcd, 2
+  arg t7
   call output, 1
-  return 0
+  return _

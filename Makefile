@@ -39,7 +39,18 @@ SRC_FILES := main.c \
             $(SRC_DIR)/utils.c \
 			$(SRC_DIR)/ir.c \
 
-TEST_FILES := $(wildcard $(DOCS_DIR)/teste*.txt)
+RUN_ALL_TEST_FILES := \
+	$(DOCS_DIR)/sort.txt \
+	$(DOCS_DIR)/teste2.txt \
+	$(DOCS_DIR)/gcd.txt \
+	$(DOCS_DIR)/teste4.txt \
+	$(DOCS_DIR)/teste5.txt \
+	$(DOCS_DIR)/factorial.txt \
+	$(DOCS_DIR)/fibonacci.txt \
+	$(DOCS_DIR)/teste8.txt \
+	$(DOCS_DIR)/teste9.txt \
+	$(DOCS_DIR)/teste10.txt \
+	$(DOCS_DIR)/teste11.txt
 			
 # === Rules ===
 
@@ -54,11 +65,13 @@ $(YACC_C) $(YACC_H): $(YACC_FILE) | $(BUILD_DIR)
 	bison -d -v -g $(YACC_FILE)
 	mv -f parser.tab.c $(BUILD_DIR)/
 	mv -f parser.tab.h $(BUILD_DIR)/
+	touch $(YACC_C) $(YACC_H)
 
 
 # Generate lexer using flex
 $(LEX_C): $(LEX_FILE) $(YACC_H) | $(BUILD_DIR)
 	flex -o $(LEX_C) $(LEX_FILE)
+	touch $(LEX_C)
 
 # Compile .c files in the project root
 $(BUILD_DIR)/%.o: %.c $(YACC_H) | $(BUILD_DIR)
@@ -82,36 +95,28 @@ $(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS)
 
 # Run with test files based on the user-specified TEST variable
 run: $(EXEC)
-ifeq ($(TEST),1)
-	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),2)
-	$(EXEC) $(DOCS_DIR)/teste2.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),3)
-	$(EXEC) $(DOCS_DIR)/teste3.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),4)
-	$(EXEC) $(DOCS_DIR)/teste4.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),5)
-	$(EXEC) $(DOCS_DIR)/teste5.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),6)
-	$(EXEC) $(DOCS_DIR)/teste6.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),7)
-	$(EXEC) $(DOCS_DIR)/teste7.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),8)
-	$(EXEC) $(DOCS_DIR)/teste8.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),9)
-	$(EXEC) $(DOCS_DIR)/teste9.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),10)
-	$(EXEC) $(DOCS_DIR)/teste10.txt > docs/output/log_compiler.txt
-else ifeq ($(TEST),11)
-	$(EXEC) $(DOCS_DIR)/teste11.txt > docs/output/log_compiler.txt
-else
-	$(EXEC) $(DOCS_DIR)/teste.txt > docs/output/log_compiler.txt
-endif
+	@case "$(TEST)" in \
+		""|1|sort|teste) test_file="$(DOCS_DIR)/sort.txt" ;; \
+		2|teste2) test_file="$(DOCS_DIR)/teste2.txt" ;; \
+		3|gcd|teste3) test_file="$(DOCS_DIR)/gcd.txt" ;; \
+		4|teste4) test_file="$(DOCS_DIR)/teste4.txt" ;; \
+		5|teste5) test_file="$(DOCS_DIR)/teste5.txt" ;; \
+		6|factorial|teste6) test_file="$(DOCS_DIR)/factorial.txt" ;; \
+		7|fibonacci|teste7) test_file="$(DOCS_DIR)/fibonacci.txt" ;; \
+		8|teste8) test_file="$(DOCS_DIR)/teste8.txt" ;; \
+		9|teste9) test_file="$(DOCS_DIR)/teste9.txt" ;; \
+		10|teste10) test_file="$(DOCS_DIR)/teste10.txt" ;; \
+		11|teste11) test_file="$(DOCS_DIR)/teste11.txt" ;; \
+		*) echo "Unknown TEST='$(TEST)'"; exit 1 ;; \
+	esac; \
+	$(EXEC) "$$test_file" > docs/output/log_compiler.txt
 	python3 -u codegen/main.py > docs/output/log_codegen.txt
 
 # Run all test files and collect machine code outputs
 run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
-	@for test_file in $(TEST_FILES); do \
+	@rm -f $(ALL_OUTPUT_DIR)/*_machine_code.txt
+	@rm -f $(ALL_LOG_DIR)/*.log
+	@for test_file in $(RUN_ALL_TEST_FILES); do \
 		echo "Running $$test_file"; \
 		base=$$(basename $$test_file .txt); \
 		rm -f $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \

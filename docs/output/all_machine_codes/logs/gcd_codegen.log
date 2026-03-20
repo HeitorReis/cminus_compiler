@@ -145,7 +145,7 @@
 [TRANSLATE] -> Detalhes: Destino='t4', Expressão='call gcd, 2'
 [TRANSLATE] -> Caminho: Chamada de Função
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r9'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r11', 'r9', 'r10'}
 [UNASSIGN_REG] Desmapeado r7 de 'u'.
 [UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'v': 'r8', 't3': 'r11'}
 [UNASSIGN_REG] Desmapeado r8 de 'v'.
@@ -197,22 +197,22 @@
 [ENSURE] Tentando garantir 't4' em um registrador.
 [ENSURE] -> Sucesso! 't4' já está em r15.
 [ADD_INSTR] Adicionando instrução para 'gcd': mov: r0 = r15
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'gcd': bi: gcd_epilogue
 
 --- [TRANSLATE] Processando IR: L1: ---
 [TRANSLATE] -> Rótulo detectado: L1:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
 [ADD_INSTR] Adicionando instrução para 'gcd': L1:
 
 --- [TRANSLATE] Processando IR: return _ ---
 [TRANSLATE] -> Caminho: Retorno de Função
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'gcd': bi: gcd_epilogue
 -> Finalizando a função 'gcd', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 10 instruções.

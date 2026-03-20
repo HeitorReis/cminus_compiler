@@ -115,23 +115,26 @@ Mnemonic
 	load
 	0001
 	Rd ← [Ro+imm]
-	5.3 Branch & Link (Type=11)
+5.3 Branch & Link (Type=11)
 Mnemonic
-	Funct pattern
-	Semantics
+		Funct pattern
+		Semantics
 	b
-	0X0X
-	PC ← PC+offset (no link)
+		0X0X
+		if i=1: PC ← PC+offset
+		if i=0: PC ← Ro
 	bl
-	1X0X
-	Rlink ← PC+4; PC ← PC+offset
+		1X0X
+		Rlink ← PC+1;
+		if i=1: PC ← PC+offset
+		if i=0: PC ← Ro
 	l
-	0100
-	Rlink ← PC+4 (link only, no jump)
+		0100
+		PC ← Rlink (return / branch to saved link register)
 	ll
-	1100
-	Rlink ← PC+4; Save PC (link & save)
-	Note: X bits are reserved or ignored based on immediate vs. register form.
+		1100
+		Rlink ← PC+1; PC ← Rlink
+		Note: the processor decodes branch control from Funct[23] and Funct[22]. The immediate bit selects between PC-relative immediate branch and direct branch-to-register.
 ________________
 
 

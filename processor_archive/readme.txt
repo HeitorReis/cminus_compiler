@@ -1,1 +1,0 @@
-verilog ".v" codes that compose the processor architecture

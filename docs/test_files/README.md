@@ -2,21 +2,21 @@
 
 This folder contains sample C-minus inputs used to exercise the current compiler pipeline.
 
-## Samples Wired Into `make run`
+## Canonical Samples Wired Into `make run`
 
-- `teste.txt`
+- `sort.txt`
   - Selection sort using a global array and an array parameter
 - `teste2.txt`
   - Global array reads, writes, and arithmetic
-- `teste3.txt`
+- `gcd.txt`
   - Recursive GCD
 - `teste4.txt`
   - Recursive halving with intermediate outputs
 - `teste5.txt`
   - Void recursion with countdown behavior
-- `teste6.txt`
+- `factorial.txt`
   - Recursive factorial
-- `teste7.txt`
+- `fibonacci.txt`
   - Recursive Fibonacci
 - `teste8.txt`
   - Modulo lowering regression
@@ -34,6 +34,17 @@ This folder contains sample C-minus inputs used to exercise the current compiler
 - `testing.txt`
   - Human checklist, not compiler input
 
+## Legacy Numeric Aliases
+
+- `teste.txt`
+  - Legacy alias for `sort.txt`
+- `teste3.txt`
+  - Legacy alias for `gcd.txt`
+- `teste6.txt`
+  - Legacy alias for `factorial.txt`
+- `teste7.txt`
+  - Legacy alias for `fibonacci.txt`
+
 ## Commands
 
 Run one mapped sample:
@@ -42,17 +53,26 @@ Run one mapped sample:
 make run TEST=2
 ```
 
+Run one named sample:
+
+```sh
+make run TEST=sort
+make run TEST=gcd
+make run TEST=factorial
+make run TEST=fibonacci
+```
+
 Run all mapped regression samples:
 
 ```sh
 make run_all
 ```
 
-Important current behavior:
+Current behavior:
 
-- `make run_all` only matches `teste*.txt`
+- `make run` accepts both numeric selectors and the canonical names above
+- `make run_all` runs an explicit positive regression suite, including the named files above
 - It does not include `invalid_missing_return.txt`
-- `make run` currently uses `python`, so on `python3`-only systems the manual flow is more reliable
 
 Manual invalid-case run:
 
