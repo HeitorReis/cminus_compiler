@@ -117,11 +117,11 @@
 [ENSURE] Tentando garantir 't2' em um registrador.
 [ENSURE] -> Sucesso! 't2' já está em r10.
 [ADD_INSTR] Adicionando instrução para 'sum4': mov: r0 = r10
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r8', 'r6'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r6', 'r8'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'sum4': bi: sum4_epilogue
 -> Finalizando a função 'sum4', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r8', 'r6'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r6', 'r8'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 9 instruções.
@@ -321,7 +321,7 @@ main_epilogue:
 stack_space: .space 64
 ---------------------------------------------
 --- DEBUG OUTPUT ---
-00001110000000000000000000011111 -> bi: main
+00001110000000000000000000100000 -> bi: main
 00000010000111101111010000000001 -> subi: r29 = r29, 1
 00000100000000000111001110100000 -> store: [r29] = r28
 00000010000111101111010000000001 -> subi: r29 = r29, 1
@@ -346,7 +346,7 @@ stack_space: .space 64
 00000100000101001000001111000000 -> load: r9 = [r30]
 00000000000001010010000100100000 -> add: r10 = r8, r9
 00000000100000000000000101000000 -> mov: r0 = r10
-00001110000000000000000000000000 -> bi: sum4_epilogue
+00001110000000000000000000000001 -> bi: sum4_epilogue
 00000000100011101000001111100000 -> mov: r29 = r31
 00000100000111111000001110100000 -> load: r31 = [r29]
 00000010000011101111010000000001 -> addi: r29 = r29, 1
@@ -367,7 +367,7 @@ stack_space: .space 64
 00000000100000011000000011100000 -> mov: r3 = r7
 00000010100001000000000000101111 -> movi: r8 = main_Lret0
 00000000100011100000000100000000 -> mov: r28 = r8
-00001110100000000000001111010010 -> bl: sum4
+00001110100000000000001111010011 -> bl: sum4
 00000000100001001000000000000000 -> mov: r9 = r0
 00000010000011101111010000000001 -> addi: r29 = r29, 1
 00000010000111110111110000000001 -> subi: r30 = r31, 1
@@ -380,7 +380,7 @@ stack_space: .space 64
 00000000101000000000000000100000 -> out: r1
 00000010100001011000000000000000 -> movi: r11 = 0
 00000000100000000000000101100000 -> mov: r0 = r11
-00001110000000000000000000000000 -> bi: main_epilogue
+00001110000000000000000000000001 -> bi: main_epilogue
 00001110000000000000000000000000 -> ret -> bi 0
 00000000000000000000000000000000 -> data stack_space[0] .space
 00000000000000000000000000000000 -> data stack_space[1] .space

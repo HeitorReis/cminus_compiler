@@ -283,7 +283,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16', 'r4', 'r12', 'r7', 'r14', 'r17', 'r21', 'r18', 'r8', 'r15', 'r5', 'r11', 'r20', 'r19', 'r10'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r5', 'r12', 'r14', 'r11', 'r21', 'r8', 'r10', 'r18', 'r7', 'r16', 'r17', 'r15', 'r20', 'r4', 'r19'}
 [SPILL] Derramando registrador r21, que contém 't15'.
 [SPILL] -> 't15' é um temporário. Salvando na pilha em [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
@@ -363,7 +363,7 @@ var_vec_b: .space 3
 var_result_vec: .space 3
 ---------------------------------------------
 --- DEBUG OUTPUT ---
-00001110000000000000000000000000 -> bi: main
+00001110000000000000000000000001 -> bi: main
 00000010100011101000000000111111 -> movi: r29 = 63
 00000000100011111000001110100000 -> mov: r31 = r29
 00000010000111101111010000010000 -> subi: r29 = r29, 16
@@ -394,7 +394,7 @@ var_result_vec: .space 3
 00000100000110110000001111000000 -> load: r22 = [r30]
 00000000100000001000001011000000 -> mov: r1 = r22
 00000000101000000000000000100000 -> out: r1
-00001110000000000000000000000000 -> bi: main_epilogue
+00001110000000000000000000000001 -> bi: main_epilogue
 00001110000000000000000000000000 -> ret -> bi 0
 00000000000000000000000000000000 -> data stack_space[0] .space
 00000000000000000000000000000000 -> data stack_space[1] .space

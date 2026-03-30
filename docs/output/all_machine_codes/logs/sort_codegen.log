@@ -31,7 +31,7 @@
 
 [Processando Função] -> 'minloc'
 -> IR isolado para 'minloc' contém 28 instruções.
-[DEBUG] Função 'minloc': all_vars=['a', 'low', 'high', 'k', 'x', 'i'], defined_vars={'x', 'i', 'k'}, params=['a', 'low', 'high']
+[DEBUG] Função 'minloc': all_vars=['a', 'low', 'high', 'k', 'x', 'i'], defined_vars={'i', 'x', 'k'}, params=['a', 'low', 'high']
 --> Parâmetros para 'minloc': ['a', 'low', 'high']
 --> Variáveis Locais para 'minloc': ['k', 'x', 'i']
 --> Criando o layout da pilha para 'minloc'...
@@ -304,7 +304,7 @@
 
 --- [TRANSLATE] Processando IR: goto L3 ---
 [TRANSLATE] -> Desvio incondicional detectado: L3
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r17', 'r16', 'r7'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r14', 'r13', 'r16', 'r7', 'r17'}
 [SPILL_ALL] -> Salvando variável local 'x' do registrador r17 na pilha [fp, #-5].
 [ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 5
 [ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r17
@@ -364,16 +364,18 @@
 [UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
 
 --- [TRANSLATE] Processando IR: goto L0 ---
-[TRANSLATE_SKIP] -> Ignorando 'goto' redundante após um 'goto'.
-
---- [TRANSLATE] Processando IR: L1: ---
-[TRANSLATE] -> Rótulo detectado: L1:
+[TRANSLATE] -> Desvio incondicional detectado: L0
 [SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r19 na pilha [fp, #-6].
 [ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 6
 [ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r19
+[ADD_INSTR] Adicionando instrução para 'minloc': bi: L0
 [UNASSIGN_REG] Desmapeado r19 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: L1: ---
+[TRANSLATE] -> Rótulo detectado: L1:
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
 [ADD_INSTR] Adicionando instrução para 'minloc': L1:
 
 --- [TRANSLATE] Processando IR: return k ---
@@ -393,16 +395,17 @@
 
 [Processando Função] -> 'sort'
 -> IR isolado para 'sort' contém 27 instruções.
-[DEBUG] Função 'sort': all_vars=['a', 'low', 'high', 'i', 'k'], defined_vars={'i', 'k'}, params=['a', 'low', 'high']
+[DEBUG] Função 'sort': all_vars=['a', 'low', 'high', 'i', 'k', 't'], defined_vars={'i', 't', 'k'}, params=['a', 'low', 'high']
 --> Parâmetros para 'sort': ['a', 'low', 'high']
---> Variáveis Locais para 'sort': ['i', 'k']
+--> Variáveis Locais para 'sort': ['i', 'k', 't']
 --> Criando o layout da pilha para 'sort'...
     -> Parâmetro rápido 'a' em [fp, #-1]
     -> Parâmetro rápido 'low' em [fp, #-2]
     -> Parâmetro rápido 'high' em [fp, #-3]
     -> Mapeando 'i' para o offset [fp, #-4] (size=1)
     -> Mapeando 'k' para o offset [fp, #-5] (size=1)
---> Tamanho total do frame para 'sort': 15 palavras.
+    -> Mapeando 't' para o offset [fp, #-6] (size=1)
+--> Tamanho total do frame para 'sort': 16 palavras.
 [ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r1
 [ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 2
@@ -494,8 +497,8 @@
 [UNASSIGN_REG] Desmapeado r5 de 'high'.
 [UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'t10': 'r6', 'i': 'r7'}
 [SPILL] Derramando registrador r6, que contém 't10'.
-[SPILL] -> 't10' é um temporário. Salvando na pilha em [fp, #-6].
-[ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 6
+[SPILL] -> 't10' é um temporário. Salvando na pilha em [fp, #-7].
+[ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 7
 [ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r6
 [UNASSIGN_REG] Desmapeado r6 de 't10'.
 [UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'i': 'r7'}
@@ -596,13 +599,13 @@
 [TRANSLATE] -> Caminho: Atribuição Simples
 [ENSURE] Tentando garantir 't14' em um registrador.
 [ENSURE] -> Sucesso! 't14' já está em r15.
+[TRANSLATE_ASSIGN] -> Armazenando 't' na sua posição da pilha.
+[ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 6
+[ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r15
 [UPDATE_MAP] Mapeando 't' para o registrador r15 (que contém o valor de origem).
 [ASSIGN_REG] Mapeando 't' para r15.
 [ASSIGN_REG] -> Registrador r15 já continha 't14'. Liberando o mapeamento antigo.
 [UNASSIGN_REG] Desmapeado r15 de 't14'.
-[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13'}
-[FREE_TEMP] Liberando registrador r15 que continha o temporário 't'.
-[UNASSIGN_REG] Desmapeado r15 de 't'.
 [UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13'}
 
 --- [TRANSLATE] Processando IR: t15 := a + i ---
@@ -635,7 +638,7 @@
 [ADD_INSTR] Adicionando instrução para 'sort': load: r18 = [r17]
 [FREE_TEMP] Liberando registrador r17 que continha o temporário 't15'.
 [UNASSIGN_REG] Desmapeado r17 de 't15'.
-[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 'i': 'r16', 't16': 'r18'}
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 't': 'r15', 'i': 'r16', 't16': 'r18'}
 
 --- [TRANSLATE] Processando IR: t17 := a + k ---
 [TRANSLATE] -> Detalhes: Destino='t17', Expressão='a + k'
@@ -660,9 +663,9 @@
 [ENSURE] -> Sucesso! 't17' já está em r19.
 [ADD_INSTR] Adicionando instrução para 'sort': store: [r19] = r18
 [UNASSIGN_REG] Desmapeado r18 de 't16'.
-[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 'i': 'r16', 't17': 'r19'}
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 't': 'r15', 'i': 'r16', 't17': 'r19'}
 [UNASSIGN_REG] Desmapeado r19 de 't17'.
-[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 'i': 'r16'}
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 't': 'r15', 'i': 'r16'}
 
 --- [TRANSLATE] Processando IR: t18 := a + i ---
 [TRANSLATE] -> Detalhes: Destino='t18', Expressão='a + i'
@@ -681,16 +684,12 @@
 [TRANSLATE] -> Detalhes: Destino='*t18', Expressão='t'
 [TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
 [ENSURE] Tentando garantir 't' em um registrador.
-[GET_TEMP] Solicitando registrador para o temporário 't'.
-[GET_FREE] -> Encontrado registrador livre: r21. Restantes: 19.
-[ASSIGN_REG] Mapeando 't' para r21.
-[GET_TEMP] -> 't' alocado no registrador r21.
-[ENSURE] -> Variável temporária 't' alocada em r21.
+[ENSURE] -> Sucesso! 't' já está em r15.
 [TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
 [ENSURE] Tentando garantir 't18' em um registrador.
 [ENSURE] -> Sucesso! 't18' já está em r20.
-[ADD_INSTR] Adicionando instrução para 'sort': store: [r20] = r21
-[UNASSIGN_REG] Desmapeado r21 de 't'.
+[ADD_INSTR] Adicionando instrução para 'sort': store: [r20] = r15
+[UNASSIGN_REG] Desmapeado r15 de 't'.
 [UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 'i': 'r16', 't18': 'r20'}
 [UNASSIGN_REG] Desmapeado r20 de 't18'.
 [UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 'i': 'r16'}
@@ -702,43 +701,43 @@
 [ENSURE] -> Sucesso! 'i' já está em r16.
 [TRANSLATE] -> Operando 2 é um imediato: 1
 [GET_TEMP] Solicitando registrador para o temporário 't19'.
-[GET_FREE] -> Encontrado registrador livre: r22. Restantes: 20.
-[ASSIGN_REG] Mapeando 't19' para r22.
-[GET_TEMP] -> 't19' alocado no registrador r22.
-[ADD_INSTR] Adicionando instrução para 'sort': addi: r22 = r16, 1
+[GET_FREE] -> Encontrado registrador livre: r21. Restantes: 20.
+[ASSIGN_REG] Mapeando 't19' para r21.
+[GET_TEMP] -> 't19' alocado no registrador r21.
+[ADD_INSTR] Adicionando instrução para 'sort': addi: r21 = r16, 1
 
 --- [TRANSLATE] Processando IR: i := t19 ---
 [TRANSLATE] -> Detalhes: Destino='i', Expressão='t19'
 [TRANSLATE] -> Caminho: Atribuição Simples
 [ENSURE] Tentando garantir 't19' em um registrador.
-[ENSURE] -> Sucesso! 't19' já está em r22.
+[ENSURE] -> Sucesso! 't19' já está em r21.
 [TRANSLATE_ASSIGN] -> Armazenando 'i' na sua posição da pilha.
 [ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 4
-[ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r22
-[UPDATE_MAP] Mapeando 'i' para o registrador r22 (que contém o valor de origem).
-[ASSIGN_REG] Mapeando 'i' para r22.
+[ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r21
+[UPDATE_MAP] Mapeando 'i' para o registrador r21 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 'i' para r21.
 [ASSIGN_REG] -> Variável 'i' já estava em r16. Liberando o mapeamento antigo.
 [UNASSIGN_REG] Desmapeado r16 de 'i'.
-[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 't19': 'r22'}
-[ASSIGN_REG] -> Registrador r22 já continha 't19'. Liberando o mapeamento antigo.
-[UNASSIGN_REG] Desmapeado r22 de 't19'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13', 't19': 'r21'}
+[ASSIGN_REG] -> Registrador r21 já continha 't19'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r21 de 't19'.
 [UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'k': 'r12', 'a': 'r13'}
 
 --- [TRANSLATE] Processando IR: goto L4 ---
 [TRANSLATE] -> Desvio incondicional detectado: L4
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r11', 'r18', 'r21', 'r20', 'r22', 'r15', 'r17', 'r14', 'r12', 'r19'}
-[SPILL_ALL] -> Salvando variável local 'i' do registrador r22 na pilha [fp, #-4].
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r18', 'r19', 'r15', 'r17', 'r21', 'r11', 'r12', 'r14', 'r20'}
+[SPILL_ALL] -> Salvando variável local 'i' do registrador r21 na pilha [fp, #-4].
 [ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 4
-[ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r22
+[ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r21
 [SPILL_ALL] -> Salvando variável local 'k' do registrador r12 na pilha [fp, #-5].
 [ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 5
 [ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r12
 [ADD_INSTR] Adicionando instrução para 'sort': bi: L4
 [UNASSIGN_REG] Desmapeado r12 de 'k'.
-[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'a': 'r13', 'i': 'r22'}
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'a': 'r13', 'i': 'r21'}
 [UNASSIGN_REG] Desmapeado r13 de 'a'.
-[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {'i': 'r22'}
-[UNASSIGN_REG] Desmapeado r22 de 'i'.
+[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {'i': 'r21'}
+[UNASSIGN_REG] Desmapeado r21 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
 
 --- [TRANSLATE] Processando IR: L5: ---
@@ -888,7 +887,7 @@
 
 --- [TRANSLATE] Processando IR: goto L6 ---
 [TRANSLATE] -> Desvio incondicional detectado: L6
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r8', 'r7'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r11', 'r8', 'r7', 'r10'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r11 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r11
@@ -975,7 +974,7 @@
 
 --- [TRANSLATE] Processando IR: L8: ---
 [TRANSLATE] -> Rótulo detectado: L8:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r16', 'r13'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16'}
 [UNASSIGN_REG] Desmapeado r17 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {}
 [ADD_INSTR] Adicionando instrução para 'main': L8:
@@ -1044,7 +1043,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r21', 'r13', 'r22', 'r20', 'r16'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r22', 'r21', 'r13', 'r16', 'r20'}
 [UNASSIGN_REG] Desmapeado r18 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 18 registradores livres. Mapeamentos: {'t29': 'r22'}
 [SPILL] Derramando registrador r22, que contém 't29'.
@@ -1099,31 +1098,33 @@
 [UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {}
 
 --- [TRANSLATE] Processando IR: goto L8 ---
-[TRANSLATE_SKIP] -> Ignorando 'goto' redundante após um 'goto'.
-
---- [TRANSLATE] Processando IR: L9: ---
-[TRANSLATE] -> Rótulo detectado: L9:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r25', 'r23'}
+[TRANSLATE] -> Desvio incondicional detectado: L8
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r23', 'r25'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r25 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r25
+[ADD_INSTR] Adicionando instrução para 'main': bi: L8
 [UNASSIGN_REG] Desmapeado r25 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: L9: ---
+[TRANSLATE] -> Rótulo detectado: L9:
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
 [ADD_INSTR] Adicionando instrução para 'main': L9:
 
 --- [TRANSLATE] Processando IR: return _ ---
 [TRANSLATE] -> Caminho: Retorno de Função
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r23'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'main': bi: main_epilogue
 -> Finalizando a função 'main', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r23'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
 --- Fim da Passagem 2 ---
 
 --- Montagem Final: Construindo o arquivo assembly completo ---
-[Montagem] Processando função 'minloc' com 63 instruções.
-[Montagem] Processando função 'sort' com 58 instruções.
-[Montagem] Processando função 'main' com 63 instruções.
+[Montagem] Processando função 'minloc' com 64 instruções.
+[Montagem] Processando função 'sort' com 60 instruções.
+[Montagem] Processando função 'main' com 64 instruções.
 [Montagem] Adicionando a seção .data.
 [Montagem] -> Variáveis a serem declaradas: ['vet']
 === GERAÇÃO DE ASSEMBLY CONCLUÍDA ===
@@ -1197,6 +1198,7 @@ L3:
 	store: [r30] = r19
 	subi: r30 = r31, 6
 	store: [r30] = r19
+	bi: L0
 L1:
 	subi: r30 = r31, 4
 	load: r20 = [r30]
@@ -1216,7 +1218,7 @@ sort:
 	subi: r29 = r29, 1
 	store: [r29] = r31
 	mov: r31 = r29
-	subi: r29 = r29, 15
+	subi: r29 = r29, 16
 	subi: r30 = r31, 1
 	store: [r30] = r1
 	subi: r30 = r31, 2
@@ -1235,7 +1237,7 @@ L4:
 	load: r7 = [r30]
 	subs: r0 = r7, r6
 	bigteq: L5
-	subi: r30 = r31, 6
+	subi: r30 = r31, 7
 	store: [r30] = r6
 	subi: r30 = r31, 1
 	load: r8 = [r30]
@@ -1257,6 +1259,8 @@ sort_Lret0:
 	load: r13 = [r30]
 	add: r14 = r13, r12
 	load: r15 = [r14]
+	subi: r30 = r31, 6
+	store: [r30] = r15
 	subi: r30 = r31, 4
 	load: r16 = [r30]
 	add: r17 = r13, r16
@@ -1264,12 +1268,12 @@ sort_Lret0:
 	add: r19 = r13, r12
 	store: [r19] = r18
 	add: r20 = r13, r16
-	store: [r20] = r21
-	addi: r22 = r16, 1
+	store: [r20] = r15
+	addi: r21 = r16, 1
 	subi: r30 = r31, 4
-	store: [r30] = r22
+	store: [r30] = r21
 	subi: r30 = r31, 4
-	store: [r30] = r22
+	store: [r30] = r21
 	subi: r30 = r31, 5
 	store: [r30] = r12
 	bi: L4
@@ -1348,6 +1352,7 @@ L8:
 	store: [r30] = r25
 	subi: r30 = r31, 1
 	store: [r30] = r25
+	bi: L8
 L9:
 	bi: main_epilogue
 main_epilogue:
@@ -1358,7 +1363,7 @@ stack_space: .space 64
 var_vet: .space 2
 ---------------------------------------------
 --- DEBUG OUTPUT ---
-00001110000000000000000010001010 -> bi: main
+00001110000000000000000010001110 -> bi: main
 00000010000111101111010000000001 -> subi: r29 = r29, 1
 00000100000000000111001110100000 -> store: [r29] = r28
 00000010000111101111010000000001 -> subi: r29 = r29, 1
@@ -1395,7 +1400,7 @@ var_vet: .space 2
 00000010000111110111110000000011 -> subi: r30 = r31, 3
 00000100000101011000001111000000 -> load: r11 = [r30]
 00000001000100000010100101100000 -> subs: r0 = r10, r11
-01001110000000000000000000011000 -> bigteq: L1
+01001110000000000000000000011010 -> bigteq: L1
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000101100000001111000000 -> load: r12 = [r30]
 00000000000001101011000101000000 -> add: r13 = r12, r10
@@ -1403,7 +1408,7 @@ var_vet: .space 2
 00000010000111110111110000000101 -> subi: r30 = r31, 5
 00000100000101111000001111000000 -> load: r15 = [r30]
 00000001000100000011100111100000 -> subs: r0 = r14, r15
-01001110000000000000000000001001 -> bigteq: L2
+01001110000000000000000000001010 -> bigteq: L2
 00000000000010000011000101000000 -> add: r16 = r12, r10
 00000100000110001000001000000000 -> load: r17 = [r16]
 00000010000111110111110000000101 -> subi: r30 = r31, 5
@@ -1412,7 +1417,7 @@ var_vet: .space 2
 00000100000000000010101111000000 -> store: [r30] = r10
 00000010000111110111110000000101 -> subi: r30 = r31, 5
 00000100000000000100011111000000 -> store: [r30] = r17
-00001110000000000000000000000000 -> bi: L3
+00001110000000000000000000000001 -> bi: L3
 00000010000111110111110000000110 -> subi: r30 = r31, 6
 00000100000110010000001111000000 -> load: r18 = [r30]
 00000010000010011100100000000001 -> addi: r19 = r18, 1
@@ -1420,10 +1425,11 @@ var_vet: .space 2
 00000100000000000100111111000000 -> store: [r30] = r19
 00000010000111110111110000000110 -> subi: r30 = r31, 6
 00000100000000000100111111000000 -> store: [r30] = r19
+00001110000000000000001111100010 -> bi: L0
 00000010000111110111110000000100 -> subi: r30 = r31, 4
 00000100000110100000001111000000 -> load: r20 = [r30]
 00000000100000000000001010000000 -> mov: r0 = r20
-00001110000000000000000000000000 -> bi: minloc_epilogue
+00001110000000000000000000000001 -> bi: minloc_epilogue
 00000000100011101000001111100000 -> mov: r29 = r31
 00000100000111111000001110100000 -> load: r31 = [r29]
 00000010000011101111010000000001 -> addi: r29 = r29, 1
@@ -1435,7 +1441,7 @@ var_vet: .space 2
 00000010000111101111010000000001 -> subi: r29 = r29, 1
 00000100000000000111111110100000 -> store: [r29] = r31
 00000000100011111000001110100000 -> mov: r31 = r29
-00000010000111101111010000001111 -> subi: r29 = r29, 15
+00000010000111101111010000010000 -> subi: r29 = r29, 16
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000000000000011111000000 -> store: [r30] = r1
 00000010000111110111110000000010 -> subi: r30 = r31, 2
@@ -1452,8 +1458,8 @@ var_vet: .space 2
 00000010000111110111110000000100 -> subi: r30 = r31, 4
 00000100000100111000001111000000 -> load: r7 = [r30]
 00000001000100000001110011000000 -> subs: r0 = r7, r6
-01001110000000000000000000100101 -> bigteq: L5
-00000010000111110111110000000110 -> subi: r30 = r31, 6
+01001110000000000000000000101000 -> bigteq: L5
+00000010000111110111110000000111 -> subi: r30 = r31, 7
 00000100000000000001101111000000 -> store: [r30] = r6
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000101000000001111000000 -> load: r8 = [r30]
@@ -1464,7 +1470,7 @@ var_vet: .space 2
 00000010000111110111110000000011 -> subi: r30 = r31, 3
 00000100000101010000001111000000 -> load: r10 = [r30]
 00000000100000011000000101000000 -> mov: r3 = r10
-00000010100001011000000001101101 -> movi: r11 = sort_Lret0
+00000010100001011000000001101110 -> movi: r11 = sort_Lret0
 00000000100011100000000101100000 -> mov: r28 = r11
 00001110100000000000001110010100 -> bl: minloc
 00000000100001100000000000000000 -> mov: r12 = r0
@@ -1474,6 +1480,8 @@ var_vet: .space 2
 00000100000101101000001111000000 -> load: r13 = [r30]
 00000000000001110011010110000000 -> add: r14 = r13, r12
 00000100000101111000000111000000 -> load: r15 = [r14]
+00000010000111110111110000000110 -> subi: r30 = r31, 6
+00000100000000000011111111000000 -> store: [r30] = r15
 00000010000111110111110000000100 -> subi: r30 = r31, 4
 00000100000110000000001111000000 -> load: r16 = [r30]
 00000000000010001011011000000000 -> add: r17 = r13, r16
@@ -1481,16 +1489,16 @@ var_vet: .space 2
 00000000000010011011010110000000 -> add: r19 = r13, r12
 00000100000000000100101001100000 -> store: [r19] = r18
 00000000000010100011011000000000 -> add: r20 = r13, r16
-00000100000000000101011010000000 -> store: [r20] = r21
-00000010000010110100000000000001 -> addi: r22 = r16, 1
+00000100000000000011111010000000 -> store: [r20] = r15
+00000010000010101100000000000001 -> addi: r21 = r16, 1
 00000010000111110111110000000100 -> subi: r30 = r31, 4
-00000100000000000101101111000000 -> store: [r30] = r22
+00000100000000000101011111000000 -> store: [r30] = r21
 00000010000111110111110000000100 -> subi: r30 = r31, 4
-00000100000000000101101111000000 -> store: [r30] = r22
+00000100000000000101011111000000 -> store: [r30] = r21
 00000010000111110111110000000101 -> subi: r30 = r31, 5
 00000100000000000011001111000000 -> store: [r30] = r12
-00001110000000000000001111010100 -> bi: L4
-00001110000000000000000000000000 -> bi: sort_epilogue
+00001110000000000000001111010011 -> bi: L4
+00001110000000000000000000000001 -> bi: sort_epilogue
 00000000100011101000001111100000 -> mov: r29 = r31
 00000100000111111000001110100000 -> load: r31 = [r29]
 00000010000011101111010000000001 -> addi: r29 = r29, 1
@@ -1507,7 +1515,7 @@ var_vet: .space 2
 00000100000100101000001111000000 -> load: r5 = [r30]
 00000010100000110000000000000010 -> movi: r6 = 2
 00000001000100000001010011000000 -> subs: r0 = r5, r6
-01001110000000000000000000001100 -> bigteq: L7
+01001110000000000000000000001101 -> bigteq: L7
 00000000100100111000000000000000 -> in: r7
 00000010100001000000000001000000 -> movi: r8 = 64
 00000010000111110111110000000001 -> subi: r30 = r31, 1
@@ -1519,7 +1527,7 @@ var_vet: .space 2
 00000100000000000010111111000000 -> store: [r30] = r11
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000000000010111111000000 -> store: [r30] = r11
-00001110000000000000001111101111 -> bi: L6
+00001110000000000000001111110000 -> bi: L6
 00000010100001100000000001000000 -> movi: r12 = 64
 00000010000111110111110000000010 -> subi: r30 = r31, 2
 00000100000000000011001111000000 -> store: [r30] = r12
@@ -1530,9 +1538,9 @@ var_vet: .space 2
 00000000100000010000000111000000 -> mov: r2 = r14
 00000010100001111000000000000010 -> movi: r15 = 2
 00000000100000011000000111100000 -> mov: r3 = r15
-00000010100010000000000010101111 -> movi: r16 = main_Lret0
+00000010100010000000000010110010 -> movi: r16 = main_Lret0
 00000000100011100000001000000000 -> mov: r28 = r16
-00001110100000000000001110011001 -> bl: sort
+00001110100000000000001110011000 -> bl: sort
 00000010100010001000000000000000 -> movi: r17 = 0
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000000000100011111000000 -> store: [r30] = r17
@@ -1540,7 +1548,7 @@ var_vet: .space 2
 00000100000110010000001111000000 -> load: r18 = [r30]
 00000010100010011000000000000010 -> movi: r19 = 2
 00000001000100000100101001100000 -> subs: r0 = r18, r19
-01001110000000000000000000010000 -> bigteq: L9
+01001110000000000000000000010010 -> bigteq: L9
 00000010100010100000000001000000 -> movi: r20 = 64
 00000000000010101101001001000000 -> add: r21 = r20, r18
 00000100000110110000001010100000 -> load: r22 = [r21]
@@ -1557,7 +1565,8 @@ var_vet: .space 2
 00000100000000000110011111000000 -> store: [r30] = r25
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000000000110011111000000 -> store: [r30] = r25
-00001110000000000000000000000000 -> bi: main_epilogue
+00001110000000000000001111101011 -> bi: L8
+00001110000000000000000000000001 -> bi: main_epilogue
 00001110000000000000000000000000 -> ret -> bi 0
 00000000000000000000000000000000 -> data stack_space[0] .space
 00000000000000000000000000000000 -> data stack_space[1] .space

@@ -1,4 +1,5 @@
-/* Selection sort over a 2-element array. */
+/* programa para ordena��o por sele��o de 
+   uma matriz com dez elementos. */
 
 int vet[ 2 ];
 

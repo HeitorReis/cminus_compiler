@@ -63,3 +63,5 @@ Processor(v2026-1)
 tools
 docs/generate_directory_schema.py
 docs/processor_branch_audit.md
+/vpp
+/vpp

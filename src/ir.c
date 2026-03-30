@@ -32,6 +32,7 @@ static const char* kind_to_string(AstNodeKind kind) {
         case AST_RETURN: return "AST_RETURN";
         case AST_ASSIGN: return "AST_ASSIGN";
         case AST_BINOP: return "AST_BINOP";
+        case AST_OP: return "AST_OP";
         case AST_CALL: return "AST_CALL";
         case AST_ID: return "AST_ID";
         case AST_NUM: return "AST_NUM";
@@ -350,7 +351,7 @@ static Operand generate_ir_for_expr(AstNode* node, IRList* list, SymbolTable* sy
             AstNode* left_node = node->firstChild;
             if (!left_node) break;
             AstNode* op_node = left_node->nextSibling;
-            if (!op_node || op_node->name == NULL) break;
+            if (!op_node || op_node->kind != AST_OP || op_node->name == NULL) break;
             AstNode* right_node = op_node->nextSibling;
             if (!right_node) break;
 

@@ -71,12 +71,7 @@ void declareSymbol(
     int          dataType,
     int          array_size
 );
-void useSymbol(
-    SymbolTable *table,
-    const char  *name,
-    const char  *scope,
-    int          useLine
-);
+void registerSymbolUse(Symbol *symbol, int useLine);
 
 Symbol *getSymbol(
     SymbolTable *table,

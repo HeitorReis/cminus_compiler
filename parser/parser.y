@@ -2,6 +2,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include "analysis_state.h"
     #include "symbol_table.h"
     #include "utils.h"
     #include "syntax_tree.h"
@@ -16,8 +17,6 @@
     extern char *currentScope;
     extern SymbolTable symtab;
     extern AstNode *syntax_tree;
-
-    int errorCount = 0;
 
     int yylex(void);
     void yyerror(const char *msg);
@@ -34,6 +33,7 @@
 
 %token <sval> ID
 %token <ival> NUM
+%token LEX_ERROR
 
 %type <ast> program declaration_list declaration
 %type <ast> var_declaration fun_declaration 
@@ -83,6 +83,7 @@
 program:
     declaration_list {
         syntax_tree = newNode(AST_PROGRAM);
+        syntax_tree->lineno = $1 ? $1->lineno : 0;
         for (AstNode *n = $1; n; ) {
             AstNode *next = n->nextSibling; // save next node
             n->nextSibling = NULL; // detach current node from the list
@@ -239,6 +240,7 @@ param_list
     }
     | param {
         AstNode *n = newNode(AST_PARAM_LIST);
+        n->lineno = $1 ? $1->lineno : yylineno;
         addChild(n, $1); // single parameter
         $$ = n; // return the parameter list
     }
@@ -347,18 +349,25 @@ statement
 
 expression_stmt
     : expression SEMICOLON { $$ = $1; }
-    | SEMICOLON { $$ = NULL; }
+    | SEMICOLON {
+        /* Preserve empty statements so control-flow bodies keep a valid AST shape. */
+        AstNode *n = newNode(AST_BLOCK);
+        n->lineno = yylineno;
+        $$ = n;
+    }
     ;
 
 selection_stmt
     : IF LPAREN expression RPAREN statement %prec LOWER_THAN_ELSE {
         AstNode *n = newNode(AST_IF);
+        n->lineno = $3 ? $3->lineno : yylineno;
         addChild(n, $3); // condition
         addChild(n, $5); // then statement
         $$ = n;
     }
     | IF LPAREN expression RPAREN statement ELSE statement {
         AstNode *n = newNode(AST_IF);
+        n->lineno = $3 ? $3->lineno : yylineno;
         addChild(n, $3); // condition
         addChild(n, $5); // then statement
         addChild(n, $7); // else statement
@@ -369,6 +378,7 @@ selection_stmt
 iteration_stmt
     : WHILE LPAREN expression RPAREN statement {
         AstNode *n = newNode(AST_WHILE);
+        n->lineno = $3 ? $3->lineno : yylineno;
         addChild(n, $3); // condition
         addChild(n, $5); // body statement
         $$ = n;
@@ -408,12 +418,6 @@ expression
 
 var
     : ID {
-        useSymbol(
-            &symtab, 
-            $1, 
-            currentScope, 
-            yylineno
-        );
         $$ = newIdNode($1, yylineno);
         free($1);
     }
@@ -423,8 +427,6 @@ var
         n->lineno = yylineno;
         addChild(n, $3);         // Adiciona a expressão do índice (ex: "k") como filho do nó.
         $$ = n;
-
-        useSymbol(&symtab, $1, currentScope, yylineno);
         free($1);
     }
     ;
@@ -432,7 +434,7 @@ var
 simple_expression:
     additive_expression relop additive_expression {
         AstNode *n = newNode(AST_BINOP);
-        n->lineno = yylineno; // Set the line number manually
+        n->lineno = $2 ? $2->lineno : yylineno;
         addChild(n, $1); // left operand
         addChild(n, $2); // operator
         addChild(n, $3); // right operand
@@ -461,6 +463,7 @@ relop
 additive_expression
     : additive_expression addop term {
         AstNode *n = newNode(AST_BINOP);
+        n->lineno = $2 ? $2->lineno : yylineno;
         addChild(n, $1); // left operand
         addChild(n, $2); // operator
         addChild(n, $3); // right operand
@@ -477,7 +480,7 @@ addop
 term
     : term mulop factor {
         AstNode *n = newNode(AST_BINOP);
-        n->lineno = yylineno; // Set the line number manually
+        n->lineno = $2 ? $2->lineno : yylineno;
         addChild(n, $1); // left operand
         addChild(n, $2); // operator
         addChild(n, $3); // right operand
@@ -503,12 +506,6 @@ factor
 
 call:
     ID LPAREN args RPAREN {
-        useSymbol(
-            &symtab, 
-            $1, 
-            currentScope, 
-            yylineno
-        );
         AstNode *n = newNode(AST_CALL);
         n->name = strdup($1); // function name
         n->lineno = yylineno; // Set the line number manually
@@ -539,6 +536,10 @@ arg_list
 %%
 
 void yyerror(const char *msg) {
+    if (consumePendingLexicalError()) {
+        return;
+    }
+
     fprintf(stderr, "Line %d: %s\n", yylineno, msg);
-    errorCount++;
+    recordSyntaxError();
 }

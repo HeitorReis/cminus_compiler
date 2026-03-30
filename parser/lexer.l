@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h> 
 #include "parser.tab.h"   
+#include "analysis_state.h"
 
 extern int yylineno;        
 int tokenNUM;               
@@ -63,7 +64,11 @@ void ignore_comment();
 
 <<EOF>>       { printf("[LEX][%d] EOF\n", yylineno); return 0; }
 
-.             { fprintf(stderr, "[LEX][%d] ERROR: unexpected '%s'\n", yylineno, yytext); }
+.             {
+                fprintf(stderr, "Line %d: lexical error: unexpected '%s'\n", yylineno, yytext);
+                recordLexicalError();
+                return LEX_ERROR;
+                }
 
 %%
 

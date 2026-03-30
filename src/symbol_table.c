@@ -1,15 +1,34 @@
 #include "symbol_table.h"
 #include "utils.h"
-#include "parser.tab.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void yyerror(const char *msg);
-
 #define TYPE_INT 1
 #define TYPE_VOID 2
 #define TYPE_ARRAY 3
+
+static void appendLine(LineNode **head, int line) {
+    LineNode *node = malloc(sizeof(*node));
+    if (!node) {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    node->line = line;
+    node->next = NULL;
+
+    if (!*head) {
+        *head = node;
+        return;
+    }
+
+    LineNode *tail = *head;
+    while (tail->next) {
+        tail = tail->next;
+    }
+    tail->next = node;
+}
 
 static Symbol *findSymbol(
     SymbolTable *table, 
@@ -79,12 +98,14 @@ void declareSymbol(
 ) {
     Symbol *sym = getSymbol(table, name, scope);
     if (sym) {
-        /* existing symbol → append another declLine */
-        yyerror("redeclared identifier");
+        appendLine(&sym->declLines, declLine);
     } else {
         /* brand-new symbol */
         sym = malloc(sizeof(*sym));
-        if (!sym) { perror("malloc"); exit(1); }
+        if (!sym) {
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
         sym->name     = strdup(name);
         sym->scope    = strdup(scope);
         sym->kind     = kind;
@@ -103,44 +124,24 @@ void declareSymbol(
                 sym->baseType = 0;          // Não se aplica
             }
         }
-        
-        LineNode *dln = malloc(sizeof(*dln));
-        if (!dln) { perror("malloc"); exit(1); }
-        dln->line = declLine;
-        dln->next = NULL;
-        sym->declLines = dln;
+
+        sym->declLines = NULL;
         sym->useLines  = NULL;
         sym->paramCount = 0;  /* no params yet */
         sym->paramTypes = NULL; /* no param types yet */
+        appendLine(&sym->declLines, declLine);
         /* insert into table head */
         sym->next      = table->head;
         table->head    = sym;
     }
 }
 
-/* record a use (or error if undeclared) */
-void useSymbol(
-    SymbolTable *table,
-    const char  *name,
-    const char  *scope,
-    int          useLine
-) {
-    Symbol *sym = resolveSymbol(table, name, scope);
-    if (!sym) {
-        yyerror("use of undeclared identifier");
-    return;
+void registerSymbolUse(Symbol *symbol, int useLine) {
+    if (!symbol) {
+        return;
     }
-    LineNode *ln = malloc(sizeof(*ln));
-    if (!ln) { perror("malloc"); exit(1); }
-    ln->line = useLine;
-    ln->next = sym->useLines;
-    sym->useLines = ln;
-    printf(
-        "[SYM_TABLE DBG] useSymbol: '%s' in scope '%s' at line %d\n",
-        name, 
-        scope, 
-        useLine
-    );
+
+    appendLine(&symbol->useLines, useLine);
 }
 
 void setFunctionParams(
@@ -150,23 +151,25 @@ void setFunctionParams(
     int paramCount,
     int *paramTypes
 ) {
-    Symbol *sym = resolveSymbol(table, name, scope);
-    if (!sym || sym->kind != SYMBOL_FUNC) return;
+    Symbol *sym = getSymbol(table, name, scope);
+    if (!sym || sym->kind != SYMBOL_FUNC) {
+        return;
+    }
+
+    free(sym->paramTypes);
+    sym->paramTypes = NULL;
     sym->paramCount = paramCount;
     sym->array_size = 0;
     if (paramCount <= 0) {
         sym->paramTypes = NULL;
     } else {
         sym->paramTypes = malloc(paramCount * sizeof(int));
-        if (!sym->paramTypes) { perror("malloc"); exit(1); }
+        if (!sym->paramTypes) {
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
         memcpy(sym->paramTypes, paramTypes, paramCount * sizeof(int));
     }
-    printf(
-        "[SYM_TABLE DBG] setFunctionParams: '%s' in scope '%s' with %d params\n",
-        name, 
-        scope, 
-        paramCount
-    );
 }
 
 int getParamCount(
@@ -174,7 +177,7 @@ int getParamCount(
     const char *name,
     const char *scope
 ) {
-    Symbol *sym = resolveSymbol(table, name, scope);
+    Symbol *sym = getSymbol(table, name, scope);
     return sym ? sym->paramCount : -1;
 }
 
@@ -184,7 +187,7 @@ int getParamType(
     const char *scope,
     int index
 ) {
-    Symbol *sym = resolveSymbol(table, name, scope);
+    Symbol *sym = getSymbol(table, name, scope);
     if (!sym || index < 0 || index >= sym->paramCount) {
         return -1; // invalid request
     }

@@ -19,6 +19,7 @@ static const char *kindName(AstNodeKind k) {
         case AST_RETURN:                return "AST_RETURN";
         case AST_ASSIGN:                return "AST_ASSIGN";
         case AST_BINOP:                 return "AST_BINOP";
+        case AST_OP:                    return "AST_OP";
         case AST_CALL:                  return "AST_CALL";
         case AST_ID:                    return "AST_ID";
         case AST_NUM:                   return "AST_NUM";
@@ -60,10 +61,10 @@ AstNode *newNumNode(int value, int lineno) {
     return n;
 }
 
-AstNode *newOpNode(char *op, int lineno) {
-    AstNode *n = newNode(AST_BINOP);  // or AST_BINOP_KIND if you had separate kinds
+AstNode *newOpNode(const char *op, int lineno) {
+    AstNode *n = newNode(AST_OP);
     n->lineno = lineno;
-    n->name = strdup(op);                    // store the token code (e.g. PLUS, LTE, etc.)
+    n->name = strdup(op);
     return n;
 }
 
@@ -101,11 +102,14 @@ void printAst(const AstNode *node, int indent) {
         case AST_WHILE:         printf("While (lineno=%d)\n", node->lineno); break;
         case AST_RETURN:        printf("Return (lineno=%d)\n", node->lineno); break;
         case AST_ASSIGN:        printf("Assign (lineno=%d)\n", node->lineno); break;
-        case AST_BINOP:         
+        case AST_BINOP:
             if (node->name)
                 printf("BinOp(op='%s', lineno=%d)\n", node->name, node->lineno);
             else
                 printf("BinOp (lineno=%d)\n", node->lineno);
+            break;
+        case AST_OP:
+            printf("Op(op='%s', lineno=%d)\n", node->name ? node->name : "<null>", node->lineno);
             break;
         case AST_CALL:          printf("Call(name=%s, lineno=%d)\n", node->name, node->lineno); break;
         case AST_ID:            printf("Id(name=%s, lineno=%d)\n", node->name, node->lineno); break;

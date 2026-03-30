@@ -21,6 +21,7 @@ typedef enum {
     AST_RETURN,
     AST_ASSIGN,
     AST_BINOP,
+    AST_OP,
     AST_CALL,
     AST_ID,
     AST_NUM,
@@ -43,7 +44,7 @@ typedef struct AstNode {
 AstNode *newNode(AstNodeKind kind);
 AstNode *newIdNode(const char *name, int lineno);
 AstNode *newNumNode(int value, int lineno);
-AstNode *newOpNode(char *op, int lineno);
+AstNode *newOpNode(const char *op, int lineno);
 
 /* Build tree */
 void addChild(AstNode *parent, AstNode *child);

@@ -19,6 +19,7 @@ LEX_C := $(BUILD_DIR)/lex.yy.c
 OBJECTS := $(BUILD_DIR)/main.o \
            $(BUILD_DIR)/parser.tab.o \
            $(BUILD_DIR)/lex.yy.o \
+           $(BUILD_DIR)/analysis_state.o \
            $(BUILD_DIR)/semantic.o \
            $(BUILD_DIR)/symbol_table.o \
            $(BUILD_DIR)/syntax_tree.o \
@@ -33,6 +34,7 @@ LDFLAGS := -lfl
 
 # === Source list ===
 SRC_FILES := main.c \
+            $(SRC_DIR)/analysis_state.c \
             $(SRC_DIR)/semantic.c \
             $(SRC_DIR)/symbol_table.c \
             $(SRC_DIR)/syntax_tree.c \
@@ -129,6 +131,12 @@ run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
 			echo "No machine code generated for $$test_file" >> $(ALL_LOG_DIR)/$${base}_codegen.log; \
 		fi; \
 	done
+
+test_analysis: $(EXEC)
+	python3 tools/run_analysis_regressions.py
+
+generate_analysis_vpp:
+	python3 tools/generate_vpp_analysis_diagram.py
 
 # Cleanup intermediate files and binary
 clean:

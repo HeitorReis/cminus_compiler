@@ -18,6 +18,11 @@ ARG_REGS = ['r1', 'r2', 'r3']
 
 # Contador para alocar regiões únicas de memória para cada chamada de função
 CALL_ALLOC_COUNTER = collections.defaultdict(int)
+IR_TEMP_RE = re.compile(r"^t\d+$|^t_ret_\d+$")
+
+
+def is_ir_temp(name):
+    return bool(IR_TEMP_RE.fullmatch(name))
 
 class DataMemoryManager:
     """
@@ -144,7 +149,7 @@ class RegisterAllocator:
             self.func_context.add_instruction(f"\tmovi: {reg} = {var_name}")
             return reg
         
-        if var_name.startswith('t'):
+        if is_ir_temp(var_name):
             # Se for uma variável temporária, aloca um novo registrador.
             reg = self.get_reg_for_temp(var_name)
             print(f"[ENSURE] -> Variável temporária '{var_name}' alocada em {reg}.")
@@ -216,7 +221,7 @@ class RegisterAllocator:
         Libera um registrador se ele contiver uma temporária.
         """
         var_name = self.reg_to_var.get(reg)
-        if var_name and var_name.startswith('t'):
+        if var_name and is_ir_temp(var_name):
             print(f"[FREE_TEMP] Liberando registrador {reg} que continha o temporário '{var_name}'.")
             self._unassign_reg(reg)
     
@@ -235,7 +240,7 @@ class RegisterAllocator:
         print(f"[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {self.dirty_regs}")
         for reg in list(self.dirty_regs):
             var_name = self.reg_to_var.get(reg)
-            if var_name and not var_name.startswith('t'):
+            if var_name and not is_ir_temp(var_name):
                 # --- LÓGICA CORRIGIDA ---
                 # Primeiro, verifique se a variável é local ou um parâmetro.
                 if var_name in self.func_context.stack_layout:
@@ -272,7 +277,7 @@ class RegisterAllocator:
             var_name = self.reg_to_var.get(reg)
             if not var_name:
                 continue
-            if var_name.startswith('t'):
+            if is_ir_temp(var_name):
                 self._spill_reg(reg, force=True)
             else:
                 self._unassign_reg(reg)
@@ -282,7 +287,7 @@ class RegisterAllocator:
         """Remove mapeamentos apenas de variáveis reais (não temporárias)."""
         for reg in list(self.reg_to_var.keys()):
             var_name = self.reg_to_var.get(reg)
-            if var_name and not var_name.startswith('t'):
+            if var_name and not is_ir_temp(var_name):
                 self._unassign_reg(reg)
                 self.dirty_regs.discard(reg)
 
@@ -316,7 +321,7 @@ class RegisterAllocator:
         # Tenta primeiro encontrar um registrador com uma variável real para derramar
         for reg in self.lru_order:
             var_name = self.reg_to_var.get(reg)
-            if var_name and not var_name.startswith('t'):
+            if var_name and not is_ir_temp(var_name):
                 reg_to_spill = reg
                 break
         
@@ -342,7 +347,7 @@ class RegisterAllocator:
 
         print(f"[SPILL] Derramando registrador {reg}, que contém '{var_name}'.")
 
-        is_temp = var_name.startswith('t')
+        is_temp = is_ir_temp(var_name)
         should_store = force or reg in self.dirty_regs or is_temp
         if should_store:
             if not is_temp:
@@ -430,6 +435,8 @@ class FunctionContext:
     def add_instruction(self, instruction):
         print(f"[ADD_INSTR] Adicionando instrução para '{self.name}': {instruction.strip()}")
         self.instructions.append(instruction)
+        if instruction.strip().endswith(':'):
+            self.last_instr_type = None
 
     def emit_frame_address(self, target_reg, offset):
         if offset > 0:
@@ -605,7 +612,7 @@ def translate_instruction(instr_parts, func_ctx):
             
             addr_reg = None
             # Diferencia o tratamento para temporárias vs. variáveis nomeadas
-            if ptr_name.startswith('t'):
+            if is_ir_temp(ptr_name):
                 # Se for uma temporária (ex: *t9), ela JÁ contém o endereço.
                 # Então, precisamos do VALOR dela em um registrador.
                 print(f"[TRANSLATE] -> Ponteiro é uma temporária ('{ptr_name}'). Usando seu valor como endereço.")
@@ -630,7 +637,7 @@ def translate_instruction(instr_parts, func_ctx):
             
             src_reg = alloc.ensure_var_in_reg(value_to_store)
             
-            if addr_var_name.startswith('t'):
+            if is_ir_temp(addr_var_name):
                 print("[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.")
                 addr_reg = alloc.ensure_var_in_reg(addr_var_name)
             else:
@@ -697,7 +704,7 @@ def translate_instruction(instr_parts, func_ctx):
 
             # 4. Se a origem era um temporário (ex: b := t1), podemos liberar
             #    o registrador se ele não for mais necessário para `dest_var`.
-            if src_val.startswith('t'):
+            if is_ir_temp(src_val):
                 alloc.free_reg_if_temp(src_reg)
 
 
@@ -855,7 +862,7 @@ def generate_assembly(ir_list):
             if ':=' in line:
                 dest = line.split(':=', 1)[0].strip()
                 dest_var = re.sub(r'^\*', '', dest).strip()
-                if not dest_var.startswith('t') and not LABEL_RE.match(dest_var) and dest_var != '_':
+                if not is_ir_temp(dest_var) and not LABEL_RE.match(dest_var) and dest_var != '_':
                     defined_vars.add(dest_var)
                 if '.space' in line:
                     decl_parts = [p.strip() for p in line.split(':=', 1)[1].split(',')]
@@ -868,7 +875,7 @@ def generate_assembly(ir_list):
             matches = VAR_RE.findall(line)
             for var in matches:
                 if (var in functions                
-                    or var.startswith('t')          
+                    or is_ir_temp(var)
                     or var in IR_KEYWORDS           
                     or LABEL_RE.match(var)          
                     or var == '_'                   

@@ -145,7 +145,7 @@
 [TRANSLATE] -> Detalhes: Destino='t4', Expressão='call gcd, 2'
 [TRANSLATE] -> Caminho: Chamada de Função
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r11', 'r9', 'r10'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r11', 'r10'}
 [UNASSIGN_REG] Desmapeado r7 de 'u'.
 [UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'v': 'r8', 't3': 'r11'}
 [UNASSIGN_REG] Desmapeado r8 de 'v'.
@@ -197,22 +197,22 @@
 [ENSURE] Tentando garantir 't4' em um registrador.
 [ENSURE] -> Sucesso! 't4' já está em r15.
 [ADD_INSTR] Adicionando instrução para 'gcd': mov: r0 = r15
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'gcd': bi: gcd_epilogue
 
 --- [TRANSLATE] Processando IR: L1: ---
 [TRANSLATE] -> Rótulo detectado: L1:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
 [ADD_INSTR] Adicionando instrução para 'gcd': L1:
 
 --- [TRANSLATE] Processando IR: return _ ---
 [TRANSLATE] -> Caminho: Retorno de Função
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'gcd': bi: gcd_epilogue
 -> Finalizando a função 'gcd', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r15'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 10 instruções.
@@ -467,7 +467,7 @@ main_epilogue:
 stack_space: .space 64
 ---------------------------------------------
 --- DEBUG OUTPUT ---
-00001110000000000000000000101111 -> bi: main
+00001110000000000000000000110000 -> bi: main
 00000010000111101111010000000001 -> subi: r29 = r29, 1
 00000100000000000111001110100000 -> store: [r29] = r28
 00000010000111101111010000000001 -> subi: r29 = r29, 1
@@ -482,11 +482,11 @@ stack_space: .space 64
 00000100000100100000001111000000 -> load: r4 = [r30]
 00000010100000101000000000000000 -> movi: r5 = 0
 00000001000100000001000010100000 -> subs: r0 = r4, r5
-00101110000000000000000000000100 -> bineq: L0
+00101110000000000000000000000101 -> bineq: L0
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000100110000001111000000 -> load: r6 = [r30]
 00000000100000000000000011000000 -> mov: r0 = r6
-00001110000000000000000000010110 -> bi: gcd_epilogue
+00001110000000000000000000010111 -> bi: gcd_epilogue
 00000010000111110111110000000001 -> subi: r30 = r31, 1
 00000100000100111000001111000000 -> load: r7 = [r30]
 00000010000111110111110000000010 -> subi: r30 = r31, 2
@@ -504,11 +504,11 @@ stack_space: .space 64
 00000000100000010000000110100000 -> mov: r2 = r13
 00000010100001110000000000100110 -> movi: r14 = gcd_Lret0
 00000000100011100000000111000000 -> mov: r28 = r14
-00001110100000000000001111011011 -> bl: gcd
+00001110100000000000001111011100 -> bl: gcd
 00000000100001111000000000000000 -> mov: r15 = r0
 00000000100000000000000111100000 -> mov: r0 = r15
+00001110000000000000000000000010 -> bi: gcd_epilogue
 00001110000000000000000000000001 -> bi: gcd_epilogue
-00001110000000000000000000000000 -> bi: gcd_epilogue
 00000000100011101000001111100000 -> mov: r29 = r31
 00000100000111111000001110100000 -> load: r31 = [r29]
 00000010000011101111010000000001 -> addi: r29 = r29, 1
@@ -536,7 +536,7 @@ stack_space: .space 64
 00000000100000010000000011100000 -> mov: r2 = r7
 00000010100001000000000001000110 -> movi: r8 = main_Lret0
 00000000100011100000000100000000 -> mov: r28 = r8
-00001110100000000000001110111011 -> bl: gcd
+00001110100000000000001110111100 -> bl: gcd
 00000000100001001000000000000000 -> mov: r9 = r0
 00000010000111110111110000000011 -> subi: r30 = r31, 3
 00000100000000000010011111000000 -> store: [r30] = r9
@@ -544,7 +544,7 @@ stack_space: .space 64
 00000100000101010000001111000000 -> load: r10 = [r30]
 00000000100000001000000101000000 -> mov: r1 = r10
 00000000101000000000000000100000 -> out: r1
-00001110000000000000000000000000 -> bi: main_epilogue
+00001110000000000000000000000001 -> bi: main_epilogue
 00001110000000000000000000000000 -> ret -> bi 0
 00000000000000000000000000000000 -> data stack_space[0] .space
 00000000000000000000000000000000 -> data stack_space[1] .space

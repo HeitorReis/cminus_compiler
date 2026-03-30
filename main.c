@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "parser.tab.h"
+#include "src/analysis_state.h"
 #include "src/symbol_table.h"
 #include "src/utils.h"
 #include "src/syntax_tree.h"
@@ -17,6 +18,8 @@ extern FILE *yyin;        /* Flex’s input file pointer */
 void declareBuiltins(SymbolTable *table);
 
 int main(int argc, char **argv) {
+    int exit_status = EXIT_SUCCESS;
+
     /* 1. Check command‐line arguments */
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);
@@ -30,6 +33,10 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
+    resetAnalysisState();
+    syntax_tree = NULL;
+    remove("docs/output/generated_IR.txt");
+
     /* 2.5 Initialize the symbol table and scope stack */
     printf("Initializing symbol table and scope stack...\n");
     initScopeStack();
@@ -41,30 +48,57 @@ int main(int argc, char **argv) {
     printf("Parsing '%s'...\n", argv[1]);
     int parseResult = yyparse();
 
-    /* 4. Report and clean up */
-    if (parseResult == 0) {
-        printf("Parse successful.\n");
-        printSymbolTable(&symtab);
-        printf("Symbol table printed successfully.\n");
-    } else {
-        fprintf(stderr, "Parse failed with code %d.\n", parseResult);
+    if (gAnalysisState.lexical_error_count > 0) {
+        fprintf(stderr, "Lexical analysis failed with %d error(s).\n",
+                gAnalysisState.lexical_error_count);
+        exit_status = EXIT_FAILURE;
+        goto cleanup;
     }
+
+    if (gAnalysisState.syntax_error_count > 0) {
+        fprintf(stderr, "Syntactic analysis failed with %d error(s).\n",
+                gAnalysisState.syntax_error_count);
+        exit_status = EXIT_FAILURE;
+        goto cleanup;
+    }
+
+    if (parseResult != 0) {
+        fprintf(stderr, "Parse failed with code %d.\n", parseResult);
+        exit_status = EXIT_FAILURE;
+        goto cleanup;
+    }
+
+    printf("Parse successful.\n");
 
     if (syntax_tree) {
         printf("\n=== AST ===\n");
         printAst(syntax_tree, 0);
     }
 
-    if (parseResult == 0) {
-        semanticAnalyze(syntax_tree, &symtab);
+    if (syntax_tree) {
+        SemanticReport report = semanticAnalyze(syntax_tree, &symtab);
+
+        if (report.error_count > 0) {
+            fprintf(stderr, "Semantic analysis failed with %d error(s).\n",
+                    report.error_count);
+            exit_status = EXIT_FAILURE;
+        }
+
+        if (report.missing_main) {
+            fprintf(stderr, "Semantic analysis failed: missing global function 'main'.\n");
+            exit_status = EXIT_FAILURE;
+        }
+
+        printSymbolTable(&symtab);
     }
 
+cleanup:
     if (syntax_tree) {
         freeAst(syntax_tree);
     }
 
     fclose(yyin);
-    return parseResult == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
+    return exit_status;
 }
 
 void declareBuiltins(SymbolTable *table) {

@@ -3,7 +3,6 @@
 
 #include "syntax_tree.h"
 #include "symbol_table.h"
-#include "ir.h"
 
 extern char *currentScope;
 
@@ -15,12 +14,10 @@ typedef enum {
 } ExpType;
 
 typedef struct {
-    SymbolTable *symtab;
-    ExpType      curRetType;   // track return‐type inside each function
-    int          errorCount;
-} SemanticContext;
+    int error_count;
+    int missing_main;
+} SemanticReport;
 
-// walk the whole program
-void semanticAnalyze(AstNode *root, SymbolTable *symtab);
+SemanticReport semanticAnalyze(AstNode *root, SymbolTable *symtab);
 
 #endif

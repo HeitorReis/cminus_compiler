@@ -348,7 +348,7 @@ class FullCode:
                 raise ValueError(f"numeric branch offset out of range in '{instruction.original}'")
 
             target_address = self._resolve_symbol_or_int(target)
-            offset = target_address - (current_address + 1)
+            offset = target_address - current_address
             if -512 <= offset <= 511:
                 return {'kind': 'single', 'size': 1}
             move_size = 1 if -512 <= target_address <= 511 else 2
@@ -495,7 +495,7 @@ class FullCode:
                     offset = int(target)
                 else:
                     target_address = self.text_labels[target]
-                    offset = target_address - (current_address + 1)
+                    offset = target_address - current_address
                 binary += '0' * 10 + twos_complement(offset, 10)
             return binary
 
