@@ -31,7 +31,7 @@
 
 [Processando Função] -> 'minloc'
 -> IR isolado para 'minloc' contém 28 instruções.
-[DEBUG] Função 'minloc': all_vars=['a', 'low', 'high', 'k', 'x', 'i'], defined_vars={'i', 'x', 'k'}, params=['a', 'low', 'high']
+[DEBUG] Função 'minloc': all_vars=['a', 'low', 'high', 'k', 'x', 'i'], defined_vars={'x', 'i', 'k'}, params=['a', 'low', 'high']
 --> Parâmetros para 'minloc': ['a', 'low', 'high']
 --> Variáveis Locais para 'minloc': ['k', 'x', 'i']
 --> Criando o layout da pilha para 'minloc'...
@@ -154,13 +154,13 @@
 
 --- [TRANSLATE] Processando IR: L0: ---
 [TRANSLATE] -> Rótulo detectado: L0:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r7', 'r9'}
-[SPILL_ALL] -> Salvando variável local 'x' do registrador r8 na pilha [fp, #-5].
-[ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 5
-[ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r8
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r7', 'r8'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r9 na pilha [fp, #-6].
 [ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 6
 [ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r9
+[SPILL_ALL] -> Salvando variável local 'x' do registrador r8 na pilha [fp, #-5].
+[ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 5
+[ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r8
 [UNASSIGN_REG] Desmapeado r4 de 'k'.
 [UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'a': 'r5', 'low': 'r6', 'x': 'r8', 'i': 'r9'}
 [UNASSIGN_REG] Desmapeado r5 de 'a'.
@@ -304,7 +304,7 @@
 
 --- [TRANSLATE] Processando IR: goto L3 ---
 [TRANSLATE] -> Desvio incondicional detectado: L3
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r14', 'r13', 'r16', 'r7', 'r17'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r16', 'r17', 'r7'}
 [SPILL_ALL] -> Salvando variável local 'x' do registrador r17 na pilha [fp, #-5].
 [ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 5
 [ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r17
@@ -725,13 +725,13 @@
 
 --- [TRANSLATE] Processando IR: goto L4 ---
 [TRANSLATE] -> Desvio incondicional detectado: L4
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r18', 'r19', 'r15', 'r17', 'r21', 'r11', 'r12', 'r14', 'r20'}
-[SPILL_ALL] -> Salvando variável local 'i' do registrador r21 na pilha [fp, #-4].
-[ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 4
-[ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r21
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r11', 'r14', 'r17', 'r20', 'r15', 'r18', 'r12', 'r21'}
 [SPILL_ALL] -> Salvando variável local 'k' do registrador r12 na pilha [fp, #-5].
 [ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 5
 [ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r12
+[SPILL_ALL] -> Salvando variável local 'i' do registrador r21 na pilha [fp, #-4].
+[ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 4
+[ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r21
 [ADD_INSTR] Adicionando instrução para 'sort': bi: L4
 [UNASSIGN_REG] Desmapeado r12 de 'k'.
 [UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {'a': 'r13', 'i': 'r21'}
@@ -887,7 +887,7 @@
 
 --- [TRANSLATE] Processando IR: goto L6 ---
 [TRANSLATE] -> Desvio incondicional detectado: L6
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r11', 'r8', 'r7', 'r10'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r11', 'r10', 'r7', 'r8'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r11 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r11
@@ -974,7 +974,7 @@
 
 --- [TRANSLATE] Processando IR: L8: ---
 [TRANSLATE] -> Rótulo detectado: L8:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r16', 'r13'}
 [UNASSIGN_REG] Desmapeado r17 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {}
 [ADD_INSTR] Adicionando instrução para 'main': L8:
@@ -1043,7 +1043,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r22', 'r21', 'r13', 'r16', 'r20'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16', 'r20', 'r22', 'r21'}
 [UNASSIGN_REG] Desmapeado r18 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 18 registradores livres. Mapeamentos: {'t29': 'r22'}
 [SPILL] Derramando registrador r22, que contém 't29'.
@@ -1161,10 +1161,10 @@ minloc:
 	addi: r9 = r6, 1
 	subi: r30 = r31, 6
 	store: [r30] = r9
-	subi: r30 = r31, 5
-	store: [r30] = r8
 	subi: r30 = r31, 6
 	store: [r30] = r9
+	subi: r30 = r31, 5
+	store: [r30] = r8
 L0:
 	subi: r30 = r31, 6
 	load: r10 = [r30]
@@ -1272,10 +1272,10 @@ sort_Lret0:
 	addi: r21 = r16, 1
 	subi: r30 = r31, 4
 	store: [r30] = r21
-	subi: r30 = r31, 4
-	store: [r30] = r21
 	subi: r30 = r31, 5
 	store: [r30] = r12
+	subi: r30 = r31, 4
+	store: [r30] = r21
 	bi: L4
 L5:
 	bi: sort_epilogue
@@ -1391,10 +1391,10 @@ var_vet: .space 2
 00000010000001001001100000000001 -> addi: r9 = r6, 1
 00000010000111110111110000000110 -> subi: r30 = r31, 6
 00000100000000000010011111000000 -> store: [r30] = r9
-00000010000111110111110000000101 -> subi: r30 = r31, 5
-00000100000000000010001111000000 -> store: [r30] = r8
 00000010000111110111110000000110 -> subi: r30 = r31, 6
 00000100000000000010011111000000 -> store: [r30] = r9
+00000010000111110111110000000101 -> subi: r30 = r31, 5
+00000100000000000010001111000000 -> store: [r30] = r8
 00000010000111110111110000000110 -> subi: r30 = r31, 6
 00000100000101010000001111000000 -> load: r10 = [r30]
 00000010000111110111110000000011 -> subi: r30 = r31, 3
@@ -1493,10 +1493,10 @@ var_vet: .space 2
 00000010000010101100000000000001 -> addi: r21 = r16, 1
 00000010000111110111110000000100 -> subi: r30 = r31, 4
 00000100000000000101011111000000 -> store: [r30] = r21
-00000010000111110111110000000100 -> subi: r30 = r31, 4
-00000100000000000101011111000000 -> store: [r30] = r21
 00000010000111110111110000000101 -> subi: r30 = r31, 5
 00000100000000000011001111000000 -> store: [r30] = r12
+00000010000111110111110000000100 -> subi: r30 = r31, 4
+00000100000000000101011111000000 -> store: [r30] = r21
 00001110000000000000001111010011 -> bi: L4
 00001110000000000000000000000001 -> bi: sort_epilogue
 00000000100011101000001111100000 -> mov: r29 = r31

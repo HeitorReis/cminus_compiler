@@ -1,6 +1,4 @@
 Initializing symbol table and scope stack...
-[SYM_TABLE DBG] setFunctionParams: 'input' in scope 'global' with 0 params
-[SYM_TABLE DBG] setFunctionParams: 'output' in scope 'global' with 1 params
 Symbol table initialized successfully.
 Parsing 'docs/test_files/gcd.txt'...
 [LEX][1] SKIP_COMMENT
@@ -10,107 +8,98 @@ Parsing 'docs/test_files/gcd.txt'...
 [LEX][3] INT      -> 'int'
 [LEX][3] ID       -> 'u'
 [LEX][3] COMMA    -> ','
-[AST DBG] newNode kind=AST_PARAM -> 0x5e8e4b48b860
-[AST DBG] newNode kind=AST_PARAM_LIST -> 0x5e8e4b48b8c0
-[AST DBG] addChild parent=0x5e8e4b48b8c0(AST_PARAM_LIST, lineno=3) child=0x5e8e4b48b860(AST_PARAM, lineno=3)
+[AST DBG] newNode kind=AST_PARAM -> 0x639f544bd860
+[AST DBG] newNode kind=AST_PARAM_LIST -> 0x639f544bd8c0
+[AST DBG] addChild parent=0x639f544bd8c0(AST_PARAM_LIST, lineno=3) child=0x639f544bd860(AST_PARAM, lineno=3)
 [LEX][3] INT      -> 'int'
 [LEX][3] ID       -> 'v'
 [LEX][3] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_PARAM -> 0x5e8e4b48b9b0
-[AST DBG] addChild parent=0x5e8e4b48b8c0(AST_PARAM_LIST, lineno=3) child=0x5e8e4b48b9b0(AST_PARAM, lineno=3)
+[AST DBG] newNode kind=AST_PARAM -> 0x639f544bd9b0
+[AST DBG] addChild parent=0x639f544bd8c0(AST_PARAM_LIST, lineno=3) child=0x639f544bd9b0(AST_PARAM, lineno=3)
 [LEX][4] LBRACE   -> '{'
 [LEX][5] IF       -> 'if'
 [LEX][5] LPAREN   -> '('
 [LEX][5] ID       -> 'v'
 [LEX][5] EQ       -> '=='
-[SYM_TABLE DBG] useSymbol: 'v' in scope 'gcd#block0' at line 5
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48ba70
-[AST DBG] newIdNode("v") -> 0x5e8e4b48ba70
-[AST DBG] newNode kind=AST_OP -> 0x5e8e4b48bad0
+[AST DBG] newNode kind=AST_ID -> 0x639f544bda50
+[AST DBG] newIdNode("v") -> 0x639f544bda50
+[AST DBG] newNode kind=AST_OP -> 0x639f544bdab0
 [LEX][5] NUM      -> '0' (0)
-[AST DBG] newNode kind=AST_NUM -> 0x5e8e4b48bb10
-[AST DBG] newNumNode(0) -> 0x5e8e4b48bb10
+[AST DBG] newNode kind=AST_NUM -> 0x639f544bdaf0
+[AST DBG] newNumNode(0) -> 0x639f544bdaf0
 [LEX][5] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_BINOP -> 0x5e8e4b48bb50
-[AST DBG] addChild parent=0x5e8e4b48bb50(AST_BINOP, lineno=5) child=0x5e8e4b48ba70(AST_ID, lineno=5)
-[AST DBG] addChild parent=0x5e8e4b48bb50(AST_BINOP, lineno=5) child=0x5e8e4b48bad0(AST_OP, lineno=5)
-[AST DBG] addChild parent=0x5e8e4b48bb50(AST_BINOP, lineno=5) child=0x5e8e4b48bb10(AST_NUM, lineno=5)
-[PARSER DBG] binop: left=0x5e8e4b48ba70 op=0x5e8e4b48bad0 right=0x5e8e4b48bb10
+[AST DBG] newNode kind=AST_BINOP -> 0x639f544bdb30
+[AST DBG] addChild parent=0x639f544bdb30(AST_BINOP, lineno=5) child=0x639f544bda50(AST_ID, lineno=5)
+[AST DBG] addChild parent=0x639f544bdb30(AST_BINOP, lineno=5) child=0x639f544bdab0(AST_OP, lineno=5)
+[AST DBG] addChild parent=0x639f544bdb30(AST_BINOP, lineno=5) child=0x639f544bdaf0(AST_NUM, lineno=5)
+[PARSER DBG] binop: left=0x639f544bda50 op=0x639f544bdab0 right=0x639f544bdaf0
 [LEX][5] RETURN   -> 'return'
 [LEX][5] ID       -> 'u'
 [LEX][5] SEMI     -> ';'
-[SYM_TABLE DBG] useSymbol: 'u' in scope 'gcd#block0' at line 5
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48bbd0
-[AST DBG] newIdNode("u") -> 0x5e8e4b48bbd0
-[AST DBG] newNode kind=AST_RETURN -> 0x5e8e4b48bc30
-[AST DBG] addChild parent=0x5e8e4b48bc30(AST_RETURN, lineno=5) child=0x5e8e4b48bbd0(AST_ID, lineno=5)
+[AST DBG] newNode kind=AST_ID -> 0x639f544bdb90
+[AST DBG] newIdNode("u") -> 0x639f544bdb90
+[AST DBG] newNode kind=AST_RETURN -> 0x639f544bdbf0
+[AST DBG] addChild parent=0x639f544bdbf0(AST_RETURN, lineno=5) child=0x639f544bdb90(AST_ID, lineno=5)
 [LEX][6] ELSE     -> 'else'
 [LEX][6] RETURN   -> 'return'
 [LEX][6] ID       -> 'gcd'
 [LEX][6] LPAREN   -> '('
 [LEX][6] ID       -> 'v'
 [LEX][6] COMMA    -> ','
-[SYM_TABLE DBG] useSymbol: 'v' in scope 'gcd#block0' at line 6
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48bcb0
-[AST DBG] newIdNode("v") -> 0x5e8e4b48bcb0
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x5e8e4b48bd10
-[AST DBG] addChild parent=0x5e8e4b48bd10(AST_ARG_LIST, lineno=6) child=0x5e8e4b48bcb0(AST_ID, lineno=6)
+[AST DBG] newNode kind=AST_ID -> 0x639f544bdc50
+[AST DBG] newIdNode("v") -> 0x639f544bdc50
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x639f544bdcb0
+[AST DBG] addChild parent=0x639f544bdcb0(AST_ARG_LIST, lineno=6) child=0x639f544bdc50(AST_ID, lineno=6)
 [LEX][6] ID       -> 'u'
 [LEX][6] MINUS    -> '-'
-[SYM_TABLE DBG] useSymbol: 'u' in scope 'gcd#block0' at line 6
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48bd70
-[AST DBG] newIdNode("u") -> 0x5e8e4b48bd70
-[AST DBG] newNode kind=AST_OP -> 0x5e8e4b48bdd0
+[AST DBG] newNode kind=AST_ID -> 0x639f544bdcf0
+[AST DBG] newIdNode("u") -> 0x639f544bdcf0
+[AST DBG] newNode kind=AST_OP -> 0x639f544bdd50
 [LEX][6] ID       -> 'u'
 [LEX][6] DIV      -> '/'
-[SYM_TABLE DBG] useSymbol: 'u' in scope 'gcd#block0' at line 6
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48be50
-[AST DBG] newIdNode("u") -> 0x5e8e4b48be50
-[AST DBG] newNode kind=AST_OP -> 0x5e8e4b48beb0
+[AST DBG] newNode kind=AST_ID -> 0x639f544bddb0
+[AST DBG] newIdNode("u") -> 0x639f544bddb0
+[AST DBG] newNode kind=AST_OP -> 0x639f544bde10
 [LEX][6] ID       -> 'v'
 [LEX][6] TIMES    -> '*'
-[SYM_TABLE DBG] useSymbol: 'v' in scope 'gcd#block0' at line 6
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48bf30
-[AST DBG] newIdNode("v") -> 0x5e8e4b48bf30
-[AST DBG] newNode kind=AST_BINOP -> 0x5e8e4b48bf90
-[AST DBG] addChild parent=0x5e8e4b48bf90(AST_BINOP, lineno=6) child=0x5e8e4b48be50(AST_ID, lineno=6)
-[AST DBG] addChild parent=0x5e8e4b48bf90(AST_BINOP, lineno=6) child=0x5e8e4b48beb0(AST_OP, lineno=6)
-[AST DBG] addChild parent=0x5e8e4b48bf90(AST_BINOP, lineno=6) child=0x5e8e4b48bf30(AST_ID, lineno=6)
-[AST DBG] newNode kind=AST_OP -> 0x5e8e4b48bfd0
+[AST DBG] newNode kind=AST_ID -> 0x639f544bde70
+[AST DBG] newIdNode("v") -> 0x639f544bde70
+[AST DBG] newNode kind=AST_BINOP -> 0x639f544bded0
+[AST DBG] addChild parent=0x639f544bded0(AST_BINOP, lineno=6) child=0x639f544bddb0(AST_ID, lineno=6)
+[AST DBG] addChild parent=0x639f544bded0(AST_BINOP, lineno=6) child=0x639f544bde10(AST_OP, lineno=6)
+[AST DBG] addChild parent=0x639f544bded0(AST_BINOP, lineno=6) child=0x639f544bde70(AST_ID, lineno=6)
+[AST DBG] newNode kind=AST_OP -> 0x639f544bdf10
 [LEX][6] ID       -> 'v'
 [LEX][6] RPAREN   -> ')'
-[SYM_TABLE DBG] useSymbol: 'v' in scope 'gcd#block0' at line 6
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48c050
-[AST DBG] newIdNode("v") -> 0x5e8e4b48c050
-[AST DBG] newNode kind=AST_BINOP -> 0x5e8e4b48c0b0
-[AST DBG] addChild parent=0x5e8e4b48c0b0(AST_BINOP, lineno=6) child=0x5e8e4b48bf90(AST_BINOP, lineno=6)
-[AST DBG] addChild parent=0x5e8e4b48c0b0(AST_BINOP, lineno=6) child=0x5e8e4b48bfd0(AST_OP, lineno=6)
-[AST DBG] addChild parent=0x5e8e4b48c0b0(AST_BINOP, lineno=6) child=0x5e8e4b48c050(AST_ID, lineno=6)
-[AST DBG] newNode kind=AST_BINOP -> 0x5e8e4b48c0f0
-[AST DBG] addChild parent=0x5e8e4b48c0f0(AST_BINOP, lineno=6) child=0x5e8e4b48bd70(AST_ID, lineno=6)
-[AST DBG] addChild parent=0x5e8e4b48c0f0(AST_BINOP, lineno=6) child=0x5e8e4b48bdd0(AST_OP, lineno=6)
-[AST DBG] addChild parent=0x5e8e4b48c0f0(AST_BINOP, lineno=6) child=0x5e8e4b48c0b0(AST_BINOP, lineno=6)
-[AST DBG] addChild parent=0x5e8e4b48bd10(AST_ARG_LIST, lineno=6) child=0x5e8e4b48c0f0(AST_BINOP, lineno=6)
-[SYM_TABLE DBG] useSymbol: 'gcd' in scope 'gcd#block0' at line 6
-[AST DBG] newNode kind=AST_CALL -> 0x5e8e4b48c130
-[AST DBG] addChild parent=0x5e8e4b48c130(AST_CALL, lineno=6) child=0x5e8e4b48bd10(AST_ARG_LIST, lineno=6)
+[AST DBG] newNode kind=AST_ID -> 0x639f544bdf70
+[AST DBG] newIdNode("v") -> 0x639f544bdf70
+[AST DBG] newNode kind=AST_BINOP -> 0x639f544bdfd0
+[AST DBG] addChild parent=0x639f544bdfd0(AST_BINOP, lineno=6) child=0x639f544bded0(AST_BINOP, lineno=6)
+[AST DBG] addChild parent=0x639f544bdfd0(AST_BINOP, lineno=6) child=0x639f544bdf10(AST_OP, lineno=6)
+[AST DBG] addChild parent=0x639f544bdfd0(AST_BINOP, lineno=6) child=0x639f544bdf70(AST_ID, lineno=6)
+[AST DBG] newNode kind=AST_BINOP -> 0x639f544be010
+[AST DBG] addChild parent=0x639f544be010(AST_BINOP, lineno=6) child=0x639f544bdcf0(AST_ID, lineno=6)
+[AST DBG] addChild parent=0x639f544be010(AST_BINOP, lineno=6) child=0x639f544bdd50(AST_OP, lineno=6)
+[AST DBG] addChild parent=0x639f544be010(AST_BINOP, lineno=6) child=0x639f544bdfd0(AST_BINOP, lineno=6)
+[AST DBG] addChild parent=0x639f544bdcb0(AST_ARG_LIST, lineno=6) child=0x639f544be010(AST_BINOP, lineno=6)
+[AST DBG] newNode kind=AST_CALL -> 0x639f544be050
+[AST DBG] addChild parent=0x639f544be050(AST_CALL, lineno=6) child=0x639f544bdcb0(AST_ARG_LIST, lineno=6)
 [LEX][6] SEMI     -> ';'
-[AST DBG] newNode kind=AST_RETURN -> 0x5e8e4b48c190
-[AST DBG] addChild parent=0x5e8e4b48c190(AST_RETURN, lineno=6) child=0x5e8e4b48c130(AST_CALL, lineno=6)
-[AST DBG] newNode kind=AST_IF -> 0x5e8e4b48c1d0
-[AST DBG] addChild parent=0x5e8e4b48c1d0(AST_IF, lineno=5) child=0x5e8e4b48bb50(AST_BINOP, lineno=5)
-[AST DBG] addChild parent=0x5e8e4b48c1d0(AST_IF, lineno=5) child=0x5e8e4b48bc30(AST_RETURN, lineno=5)
-[AST DBG] addChild parent=0x5e8e4b48c1d0(AST_IF, lineno=5) child=0x5e8e4b48c190(AST_RETURN, lineno=6)
+[AST DBG] newNode kind=AST_RETURN -> 0x639f544be090
+[AST DBG] addChild parent=0x639f544be090(AST_RETURN, lineno=6) child=0x639f544be050(AST_CALL, lineno=6)
+[AST DBG] newNode kind=AST_IF -> 0x639f544be0d0
+[AST DBG] addChild parent=0x639f544be0d0(AST_IF, lineno=5) child=0x639f544bdb30(AST_BINOP, lineno=5)
+[AST DBG] addChild parent=0x639f544be0d0(AST_IF, lineno=5) child=0x639f544bdbf0(AST_RETURN, lineno=5)
+[AST DBG] addChild parent=0x639f544be0d0(AST_IF, lineno=5) child=0x639f544be090(AST_RETURN, lineno=6)
 [LEX][7] SKIP_COMMENT
 [LEX][8] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5e8e4b48c210
-[AST DBG] addChild parent=0x5e8e4b48c210(AST_BLOCK, lineno=8) child=0x5e8e4b48c1d0(AST_IF, lineno=5)
-[PARSER DBG] compound_stmt: scope=gcd#block0 decls=(nil) stmts=0x5e8e4b48c1d0
-[AST DBG] newNode kind=AST_FUN_DECL -> 0x5e8e4b48c250
-[AST DBG] addChild parent=0x5e8e4b48c250(AST_FUN_DECL, lineno=3) child=0x5e8e4b48b8c0(AST_PARAM_LIST, lineno=3)
-[AST DBG] addChild parent=0x5e8e4b48c250(AST_FUN_DECL, lineno=3) child=0x5e8e4b48c210(AST_BLOCK, lineno=8)
-[SYM_TABLE DBG] setFunctionParams: 'gcd' in scope 'global' with 2 params
-[PARSER DBG] fun_declaration: name=gcd, params=0x5e8e4b48b8c0, body=0x5e8e4b48c210
+[AST DBG] newNode kind=AST_BLOCK -> 0x639f544be110
+[AST DBG] addChild parent=0x639f544be110(AST_BLOCK, lineno=8) child=0x639f544be0d0(AST_IF, lineno=5)
+[PARSER DBG] compound_stmt: scope=gcd#block0 decls=(nil) stmts=0x639f544be0d0
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x639f544be150
+[AST DBG] addChild parent=0x639f544be150(AST_FUN_DECL, lineno=3) child=0x639f544bd8c0(AST_PARAM_LIST, lineno=3)
+[AST DBG] addChild parent=0x639f544be150(AST_FUN_DECL, lineno=3) child=0x639f544be110(AST_BLOCK, lineno=8)
+[PARSER DBG] fun_declaration: name=gcd, params=0x639f544bd8c0, body=0x639f544be110
 [LEX][10] VOID     -> 'void'
 [LEX][10] ID       -> 'main'
 [LEX][10] LPAREN   -> '('
@@ -120,98 +109,76 @@ Parsing 'docs/test_files/gcd.txt'...
 [LEX][11] INT      -> 'int'
 [LEX][11] ID       -> 'x'
 [LEX][11] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e8e4b48c450
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x639f544be350
 [PARSER DBG] var_declaration: name=x[LEX][11] INT      -> 'int'
 [LEX][11] ID       -> 'y'
 [LEX][11] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e8e4b48c560
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x639f544be460
 [PARSER DBG] var_declaration: name=y[LEX][12] ID       -> 'x'
 [LEX][12] ASSIGN   -> '='
-[SYM_TABLE DBG] useSymbol: 'x' in scope 'main#block1' at line 12
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48c5e0
-[AST DBG] newIdNode("x") -> 0x5e8e4b48c5e0
+[AST DBG] newNode kind=AST_ID -> 0x639f544be4c0
+[AST DBG] newIdNode("x") -> 0x639f544be4c0
 [LEX][12] ID       -> 'input'
 [LEX][12] LPAREN   -> '('
 [LEX][12] RPAREN   -> ')'
-[SYM_TABLE DBG] useSymbol: 'input' in scope 'main#block1' at line 12
-[AST DBG] newNode kind=AST_CALL -> 0x5e8e4b48c660
+[AST DBG] newNode kind=AST_CALL -> 0x639f544be520
 [LEX][12] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5e8e4b48c6c0
-[AST DBG] addChild parent=0x5e8e4b48c6c0(AST_ASSIGN, lineno=12) child=0x5e8e4b48c5e0(AST_ID, lineno=12)
-[AST DBG] addChild parent=0x5e8e4b48c6c0(AST_ASSIGN, lineno=12) child=0x5e8e4b48c660(AST_CALL, lineno=12)
-[PARSER DBG] assignment: var=0x5e8e4b48c5e0 expr=0x5e8e4b48c660
+[AST DBG] newNode kind=AST_ASSIGN -> 0x639f544be580
+[AST DBG] addChild parent=0x639f544be580(AST_ASSIGN, lineno=12) child=0x639f544be4c0(AST_ID, lineno=12)
+[AST DBG] addChild parent=0x639f544be580(AST_ASSIGN, lineno=12) child=0x639f544be520(AST_CALL, lineno=12)
+[PARSER DBG] assignment: var=0x639f544be4c0 expr=0x639f544be520
 [LEX][12] ID       -> 'y'
 [LEX][12] ASSIGN   -> '='
-[SYM_TABLE DBG] useSymbol: 'y' in scope 'main#block1' at line 12
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48c720
-[AST DBG] newIdNode("y") -> 0x5e8e4b48c720
+[AST DBG] newNode kind=AST_ID -> 0x639f544be5c0
+[AST DBG] newIdNode("y") -> 0x639f544be5c0
 [LEX][12] ID       -> 'input'
 [LEX][12] LPAREN   -> '('
 [LEX][12] RPAREN   -> ')'
-[SYM_TABLE DBG] useSymbol: 'input' in scope 'main#block1' at line 12
-[AST DBG] newNode kind=AST_CALL -> 0x5e8e4b48c7a0
+[AST DBG] newNode kind=AST_CALL -> 0x639f544be620
 [LEX][12] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5e8e4b48c800
-[AST DBG] addChild parent=0x5e8e4b48c800(AST_ASSIGN, lineno=12) child=0x5e8e4b48c720(AST_ID, lineno=12)
-[AST DBG] addChild parent=0x5e8e4b48c800(AST_ASSIGN, lineno=12) child=0x5e8e4b48c7a0(AST_CALL, lineno=12)
-[PARSER DBG] assignment: var=0x5e8e4b48c720 expr=0x5e8e4b48c7a0
+[AST DBG] newNode kind=AST_ASSIGN -> 0x639f544be680
+[AST DBG] addChild parent=0x639f544be680(AST_ASSIGN, lineno=12) child=0x639f544be5c0(AST_ID, lineno=12)
+[AST DBG] addChild parent=0x639f544be680(AST_ASSIGN, lineno=12) child=0x639f544be620(AST_CALL, lineno=12)
+[PARSER DBG] assignment: var=0x639f544be5c0 expr=0x639f544be620
 [LEX][13] ID       -> 'output'
 [LEX][13] LPAREN   -> '('
 [LEX][13] ID       -> 'gcd'
 [LEX][13] LPAREN   -> '('
 [LEX][13] ID       -> 'x'
 [LEX][13] COMMA    -> ','
-[SYM_TABLE DBG] useSymbol: 'x' in scope 'main#block1' at line 13
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48c8a0
-[AST DBG] newIdNode("x") -> 0x5e8e4b48c8a0
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x5e8e4b48c900
-[AST DBG] addChild parent=0x5e8e4b48c900(AST_ARG_LIST, lineno=13) child=0x5e8e4b48c8a0(AST_ID, lineno=13)
+[AST DBG] newNode kind=AST_ID -> 0x639f544be700
+[AST DBG] newIdNode("x") -> 0x639f544be700
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x639f544be760
+[AST DBG] addChild parent=0x639f544be760(AST_ARG_LIST, lineno=13) child=0x639f544be700(AST_ID, lineno=13)
 [LEX][13] ID       -> 'y'
 [LEX][13] RPAREN   -> ')'
-[SYM_TABLE DBG] useSymbol: 'y' in scope 'main#block1' at line 13
-[AST DBG] newNode kind=AST_ID -> 0x5e8e4b48c960
-[AST DBG] newIdNode("y") -> 0x5e8e4b48c960
-[AST DBG] addChild parent=0x5e8e4b48c900(AST_ARG_LIST, lineno=13) child=0x5e8e4b48c960(AST_ID, lineno=13)
-[SYM_TABLE DBG] useSymbol: 'gcd' in scope 'main#block1' at line 13
-[AST DBG] newNode kind=AST_CALL -> 0x5e8e4b48c9c0
-[AST DBG] addChild parent=0x5e8e4b48c9c0(AST_CALL, lineno=13) child=0x5e8e4b48c900(AST_ARG_LIST, lineno=13)
+[AST DBG] newNode kind=AST_ID -> 0x639f544be7a0
+[AST DBG] newIdNode("y") -> 0x639f544be7a0
+[AST DBG] addChild parent=0x639f544be760(AST_ARG_LIST, lineno=13) child=0x639f544be7a0(AST_ID, lineno=13)
+[AST DBG] newNode kind=AST_CALL -> 0x639f544be800
+[AST DBG] addChild parent=0x639f544be800(AST_CALL, lineno=13) child=0x639f544be760(AST_ARG_LIST, lineno=13)
 [LEX][13] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x5e8e4b48ca20
-[AST DBG] addChild parent=0x5e8e4b48ca20(AST_ARG_LIST, lineno=13) child=0x5e8e4b48c9c0(AST_CALL, lineno=13)
-[SYM_TABLE DBG] useSymbol: 'output' in scope 'main#block1' at line 13
-[AST DBG] newNode kind=AST_CALL -> 0x5e8e4b48ca60
-[AST DBG] addChild parent=0x5e8e4b48ca60(AST_CALL, lineno=13) child=0x5e8e4b48ca20(AST_ARG_LIST, lineno=13)
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x639f544be840
+[AST DBG] addChild parent=0x639f544be840(AST_ARG_LIST, lineno=13) child=0x639f544be800(AST_CALL, lineno=13)
+[AST DBG] newNode kind=AST_CALL -> 0x639f544be880
+[AST DBG] addChild parent=0x639f544be880(AST_CALL, lineno=13) child=0x639f544be840(AST_ARG_LIST, lineno=13)
 [LEX][13] SEMI     -> ';'
 [LEX][14] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5e8e4b48cac0
-[AST DBG] addChild parent=0x5e8e4b48cac0(AST_BLOCK, lineno=14) child=0x5e8e4b48c450(AST_VAR_DECL, lineno=11)
-[AST DBG] addChild parent=0x5e8e4b48cac0(AST_BLOCK, lineno=14) child=0x5e8e4b48c6c0(AST_ASSIGN, lineno=12)
-[AST DBG] addChild parent=0x5e8e4b48cac0(AST_BLOCK, lineno=14) child=0x5e8e4b48c800(AST_ASSIGN, lineno=12)
-[AST DBG] addChild parent=0x5e8e4b48cac0(AST_BLOCK, lineno=14) child=0x5e8e4b48ca60(AST_CALL, lineno=13)
-[PARSER DBG] compound_stmt: scope=main#block1 decls=0x5e8e4b48c450 stmts=0x5e8e4b48c6c0
-[AST DBG] newNode kind=AST_FUN_DECL -> 0x5e8e4b48cb00
-[AST DBG] addChild parent=0x5e8e4b48cb00(AST_FUN_DECL, lineno=10) child=0x5e8e4b48cac0(AST_BLOCK, lineno=14)
-[SYM_TABLE DBG] setFunctionParams: 'main' in scope 'global' with 0 params
-[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x5e8e4b48cac0
+[AST DBG] newNode kind=AST_BLOCK -> 0x639f544be8c0
+[AST DBG] addChild parent=0x639f544be8c0(AST_BLOCK, lineno=14) child=0x639f544be350(AST_VAR_DECL, lineno=11)
+[AST DBG] addChild parent=0x639f544be8c0(AST_BLOCK, lineno=14) child=0x639f544be580(AST_ASSIGN, lineno=12)
+[AST DBG] addChild parent=0x639f544be8c0(AST_BLOCK, lineno=14) child=0x639f544be680(AST_ASSIGN, lineno=12)
+[AST DBG] addChild parent=0x639f544be8c0(AST_BLOCK, lineno=14) child=0x639f544be880(AST_CALL, lineno=13)
+[PARSER DBG] compound_stmt: scope=main#block1 decls=0x639f544be350 stmts=0x639f544be580
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x639f544be900
+[AST DBG] addChild parent=0x639f544be900(AST_FUN_DECL, lineno=10) child=0x639f544be8c0(AST_BLOCK, lineno=14)
+[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x639f544be8c0
 [PARSER DBG] declaration_list: added main
 [LEX][15] EOF
-[AST DBG] newNode kind=AST_PROGRAM -> 0x5e8e4b48cb40
-[AST DBG] addChild parent=0x5e8e4b48cb40(AST_PROGRAM, lineno=3) child=0x5e8e4b48c250(AST_FUN_DECL, lineno=3)
-[AST DBG] addChild parent=0x5e8e4b48cb40(AST_PROGRAM, lineno=3) child=0x5e8e4b48cb00(AST_FUN_DECL, lineno=10)
+[AST DBG] newNode kind=AST_PROGRAM -> 0x639f544be940
+[AST DBG] addChild parent=0x639f544be940(AST_PROGRAM, lineno=3) child=0x639f544be150(AST_FUN_DECL, lineno=3)
+[AST DBG] addChild parent=0x639f544be940(AST_PROGRAM, lineno=3) child=0x639f544be900(AST_FUN_DECL, lineno=10)
 Parse successful.
-======= SYMBOL TABLE =======
-Name            Scope      Kind   Decl Lines           Use Lines            Type  
---------------------------------------------------------------------------
-y               main#block1 VAR    11	13,12	INT
-x               main#block1 VAR    11	13,12	INT
-main            global     FUNC   10		VOID
-v               gcd        VAR    3	6,6,6,5	INT
-u               gcd        VAR    3	6,6,5	INT
-gcd             global     FUNC   3	13,6	INT
-output          global     FUNC   0	13	VOID
-input           global     FUNC   0	12,12	INT
-======= END OF TABLE =======
-Symbol table printed successfully.
 
 === AST ===
 Program (lineno=3)
@@ -257,87 +224,6 @@ Program (lineno=3)
             ArgList (lineno=13)
               Id(name=x, lineno=13)
               Id(name=y, lineno=13)
-[Semantic DBG] analyzeProgram: entering program node
-[Semantic DBG] declaration: kind=3 name="gcd" at line 3
-[Semantic DBG] analyzeDeclaration: kind=3 name="gcd" line=3
-[Semantic DBG] FunDecl: name="gcd" line=3
-[Semantic DBG]   return-type = int
-[Semantic DBG]  switched currentScope = gcd
-[Semantic DBG]   Found parameter list
-[Semantic DBG]   Param: name="u" line=3
-[Semantic DBG]   Param: name="v" line=3
-[Semantic DBG] analyzeBlock: scope="gcd#block0"
-[Semantic DBG]   Statement: kind=8 line=5
-[Semantic DBG] → analyzeStatement(stmt=0x5e8e4b48c1d0, kind=8, line=5)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48bb50, kind=12, line=5)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48ba70, kind=15, line=5)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48ba70) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48bb10, kind=16, line=5)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48bb10) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48bb50) returns 1
-[Semantic DBG] → analyzeStatement(stmt=0x5e8e4b48bc30, kind=10, line=5)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48bbd0, kind=15, line=5)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48bbd0) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x5e8e4b48bc30)
-[Semantic DBG] → analyzeStatement(stmt=0x5e8e4b48c190, kind=10, line=6)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c130, kind=14, line=6)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48bcb0, kind=15, line=6)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48bcb0) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c0f0, kind=12, line=6)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48bd70, kind=15, line=6)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48bd70) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c0b0, kind=12, line=6)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48bf90, kind=12, line=6)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48be50, kind=15, line=6)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48be50) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48bf30, kind=15, line=6)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48bf30) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48bf90) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c050, kind=15, line=6)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c050) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c0b0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c0f0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c130) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x5e8e4b48c190)
-[Semantic DBG] ← analyzeStatement(stmt=0x5e8e4b48c1d0)
-[Semantic DBG]   currentScope restored to global
-[Semantic DBG] declaration: kind=3 name="main" at line 10
-[Semantic DBG] analyzeDeclaration: kind=3 name="main" line=10
-[Semantic DBG] FunDecl: name="main" line=10
-[Semantic DBG]   return-type = void
-[Semantic DBG]  switched currentScope = main
-[Semantic DBG]   No parameters, just a block
-[Semantic DBG] analyzeBlock: scope="main#block1"
-[Semantic DBG] analyzeDeclaration: kind=2 name="x" line=11
-[Semantic DBG]   VarDecl: Found simple var 'x'
-[Semantic DBG] analyzeDeclaration: kind=2 name="y" line=11
-[Semantic DBG]   VarDecl: Found simple var 'y'
-[Semantic DBG]   Statement: kind=11 line=12
-[Semantic DBG] → analyzeStatement(stmt=0x5e8e4b48c6c0, kind=11, line=12)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c6c0, kind=11, line=12)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c660, kind=14, line=12)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c660) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c6c0) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x5e8e4b48c6c0)
-[Semantic DBG]   Statement: kind=11 line=12
-[Semantic DBG] → analyzeStatement(stmt=0x5e8e4b48c800, kind=11, line=12)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c800, kind=11, line=12)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c7a0, kind=14, line=12)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c7a0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c800) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x5e8e4b48c800)
-[Semantic DBG]   Statement: kind=14 line=13
-[Semantic DBG] → analyzeStatement(stmt=0x5e8e4b48ca60, kind=14, line=13)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48ca60, kind=14, line=13)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c9c0, kind=14, line=13)
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c8a0, kind=15, line=13)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c8a0) returns 1
-[Semantic DBG] → analyzeExpression(expr=0x5e8e4b48c960, kind=15, line=13)
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c960) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48c9c0) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x5e8e4b48ca60) returns 2
-[Semantic DBG] ← analyzeStatement(stmt=0x5e8e4b48ca60)
-[Semantic DBG]   currentScope restored to global
 Semantic analysis completed successfully with no errors.
 
 === IR ===
@@ -540,3 +426,15 @@ main:
   return _
 --- END IR DUMP ---
 IR dump has been saved to: docs/output/generated_IR.txt
+======= SYMBOL TABLE =======
+Name            Scope      Kind   Decl Lines           Use Lines            Type  
+--------------------------------------------------------------------------
+y               main#block1 VAR    11	12,13	INT
+x               main#block1 VAR    11	12,13	INT
+main            global     FUNC   10		VOID
+v               gcd        VAR    3	5,6,6,6	INT
+u               gcd        VAR    3	5,6,6	INT
+gcd             global     FUNC   3	6,13	INT
+output          global     FUNC   0	13	VOID
+input           global     FUNC   0	12,12	INT
+======= END OF TABLE =======

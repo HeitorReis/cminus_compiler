@@ -31,7 +31,7 @@
 
 [Processando Função] -> 'minloc'
 -> IR isolado para 'minloc' contém 28 instruções.
-[DEBUG] Função 'minloc': all_vars=['a', 'low', 'high', 'k', 'x', 'i'], defined_vars={'k', 'i', 'x'}, params=['a', 'low', 'high']
+[DEBUG] Função 'minloc': all_vars=['a', 'low', 'high', 'k', 'x', 'i'], defined_vars={'x', 'i', 'k'}, params=['a', 'low', 'high']
 --> Parâmetros para 'minloc': ['a', 'low', 'high']
 --> Variáveis Locais para 'minloc': ['k', 'x', 'i']
 --> Criando o layout da pilha para 'minloc'...
@@ -154,7 +154,7 @@
 
 --- [TRANSLATE] Processando IR: L0: ---
 [TRANSLATE] -> Rótulo detectado: L0:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r7', 'r8', 'r9'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r9', 'r7'}
 [SPILL_ALL] -> Salvando variável local 'x' do registrador r8 na pilha [fp, #-5].
 [ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 5
 [ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r8
@@ -304,7 +304,7 @@
 
 --- [TRANSLATE] Processando IR: goto L3 ---
 [TRANSLATE] -> Desvio incondicional detectado: L3
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r14', 'r7', 'r13', 'r17', 'r16'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r14', 'r17', 'r13', 'r7', 'r16'}
 [SPILL_ALL] -> Salvando variável local 'x' do registrador r17 na pilha [fp, #-5].
 [ADD_INSTR] Adicionando instrução para 'minloc': subi: r30 = r31, 5
 [ADD_INSTR] Adicionando instrução para 'minloc': store: [r30] = r17
@@ -395,7 +395,7 @@
 
 [Processando Função] -> 'sort'
 -> IR isolado para 'sort' contém 27 instruções.
-[DEBUG] Função 'sort': all_vars=['a', 'low', 'high', 'i', 'k', 't'], defined_vars={'k', 'i', 't'}, params=['a', 'low', 'high']
+[DEBUG] Função 'sort': all_vars=['a', 'low', 'high', 'i', 'k', 't'], defined_vars={'k', 't', 'i'}, params=['a', 'low', 'high']
 --> Parâmetros para 'sort': ['a', 'low', 'high']
 --> Variáveis Locais para 'sort': ['i', 'k', 't']
 --> Criando o layout da pilha para 'sort'...
@@ -725,7 +725,7 @@
 
 --- [TRANSLATE] Processando IR: goto L4 ---
 [TRANSLATE] -> Desvio incondicional detectado: L4
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r20', 'r18', 'r21', 'r11', 'r12', 'r14', 'r15', 'r17'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r14', 'r17', 'r21', 'r15', 'r19', 'r12', 'r11', 'r20', 'r18'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r21 na pilha [fp, #-4].
 [ADD_INSTR] Adicionando instrução para 'sort': subi: r30 = r31, 4
 [ADD_INSTR] Adicionando instrução para 'sort': store: [r30] = r21
@@ -887,7 +887,7 @@
 
 --- [TRANSLATE] Processando IR: goto L6 ---
 [TRANSLATE] -> Desvio incondicional detectado: L6
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r11', 'r7', 'r8', 'r10'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r11', 'r7', 'r10'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r11 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r11
@@ -974,7 +974,7 @@
 
 --- [TRANSLATE] Processando IR: L8: ---
 [TRANSLATE] -> Rótulo detectado: L8:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r16', 'r13'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16'}
 [UNASSIGN_REG] Desmapeado r17 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {}
 [ADD_INSTR] Adicionando instrução para 'main': L8:
@@ -1043,7 +1043,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r21', 'r20', 'r22', 'r16'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r21', 'r22', 'r16', 'r20'}
 [UNASSIGN_REG] Desmapeado r18 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 18 registradores livres. Mapeamentos: {'t29': 'r22'}
 [SPILL] Derramando registrador r22, que contém 't29'.

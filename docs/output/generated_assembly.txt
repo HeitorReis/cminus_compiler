@@ -2,231 +2,29 @@
 .global main
 
 	bi: main
-minloc:
-	subi: r29 = r29, 1
-	store: [r29] = r28
-	subi: r29 = r29, 1
-	store: [r29] = r31
-	mov: r31 = r29
-	subi: r29 = r29, 16
-	subi: r30 = r31, 1
-	store: [r30] = r1
-	subi: r30 = r31, 2
-	store: [r30] = r2
-	subi: r30 = r31, 3
-	store: [r30] = r3
-	subi: r30 = r31, 2
-	load: r4 = [r30]
-	subi: r30 = r31, 4
-	store: [r30] = r4
-	subi: r30 = r31, 1
-	load: r5 = [r30]
-	subi: r30 = r31, 2
-	load: r6 = [r30]
-	add: r7 = r5, r6
-	load: r8 = [r7]
-	subi: r30 = r31, 5
-	store: [r30] = r8
-	addi: r9 = r6, 1
-	subi: r30 = r31, 6
-	store: [r30] = r9
-	subi: r30 = r31, 5
-	store: [r30] = r8
-	subi: r30 = r31, 6
-	store: [r30] = r9
-L0:
-	subi: r30 = r31, 6
-	load: r10 = [r30]
-	subi: r30 = r31, 3
-	load: r11 = [r30]
-	subs: r0 = r10, r11
-	bigteq: L1
-	subi: r30 = r31, 1
-	load: r12 = [r30]
-	add: r13 = r12, r10
-	load: r14 = [r13]
-	subi: r30 = r31, 5
-	load: r15 = [r30]
-	subs: r0 = r14, r15
-	bigteq: L2
-	add: r16 = r12, r10
-	load: r17 = [r16]
-	subi: r30 = r31, 5
-	store: [r30] = r17
-	subi: r30 = r31, 4
-	store: [r30] = r10
-	subi: r30 = r31, 5
-	store: [r30] = r17
-	bi: L3
-L2:
-L3:
-	subi: r30 = r31, 6
-	load: r18 = [r30]
-	addi: r19 = r18, 1
-	subi: r30 = r31, 6
-	store: [r30] = r19
-	subi: r30 = r31, 6
-	store: [r30] = r19
-	bi: L0
-L1:
-	subi: r30 = r31, 4
-	load: r20 = [r30]
-	mov: r0 = r20
-	bi: minloc_epilogue
-minloc_epilogue:
-	mov: r29 = r31
-	load: r31 = [r29]
-	addi: r29 = r29, 1
-	load: r28 = [r29]
-	addi: r29 = r29, 1
-	b: r28
-
-sort:
-	subi: r29 = r29, 1
-	store: [r29] = r28
-	subi: r29 = r29, 1
-	store: [r29] = r31
-	mov: r31 = r29
-	subi: r29 = r29, 16
-	subi: r30 = r31, 1
-	store: [r30] = r1
-	subi: r30 = r31, 2
-	store: [r30] = r2
-	subi: r30 = r31, 3
-	store: [r30] = r3
-	subi: r30 = r31, 2
-	load: r4 = [r30]
-	subi: r30 = r31, 4
-	store: [r30] = r4
-L4:
-	subi: r30 = r31, 3
-	load: r5 = [r30]
-	subi: r6 = r5, 1
-	subi: r30 = r31, 4
-	load: r7 = [r30]
-	subs: r0 = r7, r6
-	bigteq: L5
-	subi: r30 = r31, 7
-	store: [r30] = r6
-	subi: r30 = r31, 1
-	load: r8 = [r30]
-	mov: r1 = r8
-	subi: r30 = r31, 4
-	load: r9 = [r30]
-	mov: r2 = r9
-	subi: r30 = r31, 3
-	load: r10 = [r30]
-	mov: r3 = r10
-	movi: r11 = sort_Lret0
-	mov: r28 = r11
-	bl: minloc
-sort_Lret0:
-	mov: r12 = r0
-	subi: r30 = r31, 5
-	store: [r30] = r12
-	subi: r30 = r31, 1
-	load: r13 = [r30]
-	add: r14 = r13, r12
-	load: r15 = [r14]
-	subi: r30 = r31, 6
-	store: [r30] = r15
-	subi: r30 = r31, 4
-	load: r16 = [r30]
-	add: r17 = r13, r16
-	load: r18 = [r17]
-	add: r19 = r13, r12
-	store: [r19] = r18
-	add: r20 = r13, r16
-	store: [r20] = r15
-	addi: r21 = r16, 1
-	subi: r30 = r31, 4
-	store: [r30] = r21
-	subi: r30 = r31, 4
-	store: [r30] = r21
-	subi: r30 = r31, 5
-	store: [r30] = r12
-	bi: L4
-L5:
-	bi: sort_epilogue
-sort_epilogue:
-	mov: r29 = r31
-	load: r31 = [r29]
-	addi: r29 = r29, 1
-	load: r28 = [r29]
-	addi: r29 = r29, 1
-	b: r28
-
 main:
 	movi: r29 = 63
 	mov: r31 = r29
-	subi: r29 = r29, 12
-	movi: r4 = 0
+	subi: r29 = r29, 1
+	movi: r4 = 2
 	subi: r30 = r31, 1
 	store: [r30] = r4
-L6:
+	movi: r5 = 1
 	subi: r30 = r31, 1
-	load: r5 = [r30]
-	movi: r6 = 2
-	subs: r0 = r5, r6
-	bigteq: L7
-	in: r7
-	movi: r8 = 64
+	store: [r30] = r5
 	subi: r30 = r31, 1
-	load: r9 = [r30]
-	add: r10 = r8, r9
-	store: [r10] = r7
-	addi: r11 = r9, 1
-	subi: r30 = r31, 1
-	store: [r30] = r11
-	subi: r30 = r31, 1
-	store: [r30] = r11
-	bi: L6
-L7:
-	movi: r12 = 64
-	subi: r30 = r31, 2
-	store: [r30] = r12
-	subi: r30 = r31, 2
-	load: r13 = [r30]
-	mov: r1 = r13
-	movi: r14 = 0
-	mov: r2 = r14
-	movi: r15 = 2
-	mov: r3 = r15
-	movi: r16 = main_Lret0
-	mov: r28 = r16
-	bl: sort
-main_Lret0:
-	movi: r17 = 0
-	subi: r30 = r31, 1
-	store: [r30] = r17
-L8:
-	subi: r30 = r31, 1
-	load: r18 = [r30]
-	movi: r19 = 2
-	subs: r0 = r18, r19
-	bigteq: L9
-	movi: r20 = 64
-	add: r21 = r20, r18
-	load: r22 = [r21]
-	subi: r30 = r31, 3
-	store: [r30] = r22
-	subi: r30 = r31, 3
-	load: r23 = [r30]
-	mov: r1 = r23
+	load: r6 = [r30]
+	mov: r1 = r6
 	out: r1
 	subi: r30 = r31, 1
-	load: r24 = [r30]
-	addi: r25 = r24, 1
-	subi: r30 = r31, 1
-	store: [r30] = r25
-	subi: r30 = r31, 1
-	store: [r30] = r25
-	bi: L8
-L9:
+	load: r7 = [r30]
+	mov: r1 = r7
+	out: r1
+	movi: r8 = 0
+	mov: r0 = r8
 	bi: main_epilogue
 main_epilogue:
 	ret:
 
 .data
 stack_space: .space 64
-var_vet: .space 2

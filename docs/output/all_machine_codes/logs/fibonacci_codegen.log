@@ -157,7 +157,7 @@
 [TRANSLATE] -> Detalhes: Destino='t4', Expressão='call fib, 1'
 [TRANSLATE] -> Caminho: Chamada de Função
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r8', 'r10', 'r12'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r10', 'r8', 'r12'}
 [SPILL] Derramando registrador r10, que contém 't2'.
 [SPILL] -> 't2' é um temporário. Salvando na pilha em [fp, #-3].
 [ADD_INSTR] Adicionando instrução para 'fib': subi: r30 = r31, 3
@@ -227,11 +227,11 @@
 [ENSURE] Tentando garantir 't5' em um registrador.
 [ENSURE] -> Sucesso! 't5' já está em r17.
 [ADD_INSTR] Adicionando instrução para 'fib': mov: r0 = r17
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r17', 'r16', 'r15'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16', 'r17', 'r14', 'r15'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'fib': bi: fib_epilogue
 -> Finalizando a função 'fib', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r14', 'r17', 'r16', 'r15'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r16', 'r17', 'r14', 'r15'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 6 instruções.

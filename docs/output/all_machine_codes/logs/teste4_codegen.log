@@ -152,22 +152,22 @@
 [ENSURE] Tentando garantir 't2' em um registrador.
 [ENSURE] -> Sucesso! 't2' já está em r11.
 [ADD_INSTR] Adicionando instrução para 'mod_2': mov: r0 = r11
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r10', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r9'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'mod_2': bi: mod_2_epilogue
 
 --- [TRANSLATE] Processando IR: L1: ---
 [TRANSLATE] -> Rótulo detectado: L1:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r10', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r9'}
 [ADD_INSTR] Adicionando instrução para 'mod_2': L1:
 
 --- [TRANSLATE] Processando IR: return _ ---
 [TRANSLATE] -> Caminho: Retorno de Função
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r10', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r9'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'mod_2': bi: mod_2_epilogue
 -> Finalizando a função 'mod_2', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r10', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r9'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 9 instruções.

@@ -161,11 +161,11 @@
 [ENSURE] Tentando garantir 't3' em um registrador.
 [ENSURE] -> Sucesso! 't3' já está em r13.
 [ADD_INSTR] Adicionando instrução para 'fact': mov: r0 = r13
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r10', 'r9', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r9', 'r13'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'fact': bi: fact_epilogue
 -> Finalizando a função 'fact', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r13', 'r10', 'r9', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r11', 'r9', 'r13'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 6 instruções.
@@ -226,7 +226,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r5', 'r6'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r6', 'r5'}
 [SPILL_ALL] -> Salvando variável local 'r' do registrador r6 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r6

@@ -31,8 +31,6 @@ This folder contains sample C-minus inputs used to exercise the current compiler
 
 - `invalid_missing_return.txt`
   - Semantic-error sample for non-void return-path checking
-- `testing.txt`
-  - Human checklist, not compiler input
 
 ## Legacy Numeric Aliases
 
@@ -72,7 +70,6 @@ Current behavior:
 
 - `make run` accepts both numeric selectors and the canonical names above
 - `make run_all` runs an explicit positive regression suite, including the named files above
-- It does not include `invalid_missing_return.txt`
 
 Manual invalid-case run:
 

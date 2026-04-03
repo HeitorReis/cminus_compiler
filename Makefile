@@ -6,6 +6,8 @@ BIN_DIR := bin
 DOCS_DIR := docs/test_files
 ALL_OUTPUT_DIR := docs/output/all_machine_codes
 ALL_LOG_DIR := $(ALL_OUTPUT_DIR)/logs
+RUN_ALL_COMPLETE := $(strip $(filter 1 true yes on,$(COMPLETE)) $(filter complete c --complete -c,$(MAKECMDGOALS)))
+RUN_MACHINE_ARGS ?= --max-cycles 500 --default-input 0
 
 # === Files ===
 LEX_FILE := $(PARSER_DIR)/lexer.l
@@ -55,6 +57,8 @@ RUN_ALL_TEST_FILES := \
 	$(DOCS_DIR)/teste11.txt
 			
 # === Rules ===
+
+.PHONY: all run run_all complete c --complete -c test_analysis generate_analysis_vpp clean
 
 all: clean run
 
@@ -127,10 +131,19 @@ run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
 		python3 -u codegen/main.py > $(ALL_LOG_DIR)/$${base}_codegen.log 2>&1 || true; \
 		if [ -f docs/output/generated_machine_code.txt ]; then \
 			cp docs/output/generated_machine_code.txt $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
+			if [ -n "$(RUN_ALL_COMPLETE)" ]; then \
+				python3 -u tools/run_machine_code.py $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt $(RUN_MACHINE_ARGS) > $(ALL_LOG_DIR)/$${base}_machine_run.log 2>&1 || true; \
+			fi; \
 		else \
 			echo "No machine code generated for $$test_file" >> $(ALL_LOG_DIR)/$${base}_codegen.log; \
+			if [ -n "$(RUN_ALL_COMPLETE)" ]; then \
+				echo "Machine-code runner skipped because no machine code was generated for $$test_file" > $(ALL_LOG_DIR)/$${base}_machine_run.log; \
+			fi; \
 		fi; \
 	done
+
+complete c --complete -c:
+	@:
 
 test_analysis: $(EXEC)
 	python3 tools/run_analysis_regressions.py

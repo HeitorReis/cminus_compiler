@@ -1,6 +1,4 @@
 Initializing symbol table and scope stack...
-[SYM_TABLE DBG] setFunctionParams: 'input' in scope 'global' with 0 params
-[SYM_TABLE DBG] setFunctionParams: 'output' in scope 'global' with 1 params
 Symbol table initialized successfully.
 Parsing 'docs/test_files/teste10.txt'...
 [LEX][1] INT      -> 'int'
@@ -12,64 +10,51 @@ Parsing 'docs/test_files/teste10.txt'...
 [LEX][3] INT      -> 'int'
 [LEX][3] ID       -> 'x'
 [LEX][3] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x644f366938a0
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x62584792e8a0
 [PARSER DBG] var_declaration: name=x[LEX][4] ID       -> 'x'
 [LEX][4] ASSIGN   -> '='
-[SYM_TABLE DBG] useSymbol: 'x' in scope 'main#block0' at line 4
-[AST DBG] newNode kind=AST_ID -> 0x644f36693920
-[AST DBG] newIdNode("x") -> 0x644f36693920
+[AST DBG] newNode kind=AST_ID -> 0x62584792e900
+[AST DBG] newIdNode("x") -> 0x62584792e900
 [LEX][4] NUM      -> '600' (600)
-[AST DBG] newNode kind=AST_NUM -> 0x644f36693980
-[AST DBG] newNumNode(600) -> 0x644f36693980
+[AST DBG] newNode kind=AST_NUM -> 0x62584792e960
+[AST DBG] newNumNode(600) -> 0x62584792e960
 [LEX][4] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x644f366939c0
-[AST DBG] addChild parent=0x644f366939c0(AST_ASSIGN, lineno=4) child=0x644f36693920(AST_ID, lineno=4)
-[AST DBG] addChild parent=0x644f366939c0(AST_ASSIGN, lineno=4) child=0x644f36693980(AST_NUM, lineno=4)
-[PARSER DBG] assignment: var=0x644f36693920 expr=0x644f36693980
+[AST DBG] newNode kind=AST_ASSIGN -> 0x62584792e9a0
+[AST DBG] addChild parent=0x62584792e9a0(AST_ASSIGN, lineno=4) child=0x62584792e900(AST_ID, lineno=4)
+[AST DBG] addChild parent=0x62584792e9a0(AST_ASSIGN, lineno=4) child=0x62584792e960(AST_NUM, lineno=4)
+[PARSER DBG] assignment: var=0x62584792e900 expr=0x62584792e960
 [LEX][5] ID       -> 'output'
 [LEX][5] LPAREN   -> '('
 [LEX][5] ID       -> 'x'
 [LEX][5] RPAREN   -> ')'
-[SYM_TABLE DBG] useSymbol: 'x' in scope 'main#block0' at line 5
-[AST DBG] newNode kind=AST_ID -> 0x644f36693a40
-[AST DBG] newIdNode("x") -> 0x644f36693a40
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x644f36693aa0
-[AST DBG] addChild parent=0x644f36693aa0(AST_ARG_LIST, lineno=5) child=0x644f36693a40(AST_ID, lineno=5)
-[SYM_TABLE DBG] useSymbol: 'output' in scope 'main#block0' at line 5
-[AST DBG] newNode kind=AST_CALL -> 0x644f36693ae0
-[AST DBG] addChild parent=0x644f36693ae0(AST_CALL, lineno=5) child=0x644f36693aa0(AST_ARG_LIST, lineno=5)
+[AST DBG] newNode kind=AST_ID -> 0x62584792ea00
+[AST DBG] newIdNode("x") -> 0x62584792ea00
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x62584792ea60
+[AST DBG] addChild parent=0x62584792ea60(AST_ARG_LIST, lineno=5) child=0x62584792ea00(AST_ID, lineno=5)
+[AST DBG] newNode kind=AST_CALL -> 0x62584792eaa0
+[AST DBG] addChild parent=0x62584792eaa0(AST_CALL, lineno=5) child=0x62584792ea60(AST_ARG_LIST, lineno=5)
 [LEX][5] SEMI     -> ';'
 [LEX][6] RETURN   -> 'return'
 [LEX][6] NUM      -> '0' (0)
-[AST DBG] newNode kind=AST_NUM -> 0x644f36693b40
-[AST DBG] newNumNode(0) -> 0x644f36693b40
+[AST DBG] newNode kind=AST_NUM -> 0x62584792eae0
+[AST DBG] newNumNode(0) -> 0x62584792eae0
 [LEX][6] SEMI     -> ';'
-[AST DBG] newNode kind=AST_RETURN -> 0x644f36693b80
-[AST DBG] addChild parent=0x644f36693b80(AST_RETURN, lineno=6) child=0x644f36693b40(AST_NUM, lineno=6)
+[AST DBG] newNode kind=AST_RETURN -> 0x62584792eb20
+[AST DBG] addChild parent=0x62584792eb20(AST_RETURN, lineno=6) child=0x62584792eae0(AST_NUM, lineno=6)
 [LEX][7] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x644f36693bc0
-[AST DBG] addChild parent=0x644f36693bc0(AST_BLOCK, lineno=7) child=0x644f366938a0(AST_VAR_DECL, lineno=3)
-[AST DBG] addChild parent=0x644f36693bc0(AST_BLOCK, lineno=7) child=0x644f366939c0(AST_ASSIGN, lineno=4)
-[AST DBG] addChild parent=0x644f36693bc0(AST_BLOCK, lineno=7) child=0x644f36693ae0(AST_CALL, lineno=5)
-[AST DBG] addChild parent=0x644f36693bc0(AST_BLOCK, lineno=7) child=0x644f36693b80(AST_RETURN, lineno=6)
-[PARSER DBG] compound_stmt: scope=main#block0 decls=0x644f366938a0 stmts=0x644f366939c0
-[AST DBG] newNode kind=AST_FUN_DECL -> 0x644f36693c00
-[AST DBG] addChild parent=0x644f36693c00(AST_FUN_DECL, lineno=1) child=0x644f36693bc0(AST_BLOCK, lineno=7)
-[SYM_TABLE DBG] setFunctionParams: 'main' in scope 'global' with 0 params
-[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x644f36693bc0
+[AST DBG] newNode kind=AST_BLOCK -> 0x62584792eb60
+[AST DBG] addChild parent=0x62584792eb60(AST_BLOCK, lineno=7) child=0x62584792e8a0(AST_VAR_DECL, lineno=3)
+[AST DBG] addChild parent=0x62584792eb60(AST_BLOCK, lineno=7) child=0x62584792e9a0(AST_ASSIGN, lineno=4)
+[AST DBG] addChild parent=0x62584792eb60(AST_BLOCK, lineno=7) child=0x62584792eaa0(AST_CALL, lineno=5)
+[AST DBG] addChild parent=0x62584792eb60(AST_BLOCK, lineno=7) child=0x62584792eb20(AST_RETURN, lineno=6)
+[PARSER DBG] compound_stmt: scope=main#block0 decls=0x62584792e8a0 stmts=0x62584792e9a0
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x62584792eba0
+[AST DBG] addChild parent=0x62584792eba0(AST_FUN_DECL, lineno=1) child=0x62584792eb60(AST_BLOCK, lineno=7)
+[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x62584792eb60
 [LEX][8] EOF
-[AST DBG] newNode kind=AST_PROGRAM -> 0x644f36693c40
-[AST DBG] addChild parent=0x644f36693c40(AST_PROGRAM, lineno=1) child=0x644f36693c00(AST_FUN_DECL, lineno=1)
+[AST DBG] newNode kind=AST_PROGRAM -> 0x62584792ebe0
+[AST DBG] addChild parent=0x62584792ebe0(AST_PROGRAM, lineno=1) child=0x62584792eba0(AST_FUN_DECL, lineno=1)
 Parse successful.
-======= SYMBOL TABLE =======
-Name            Scope      Kind   Decl Lines           Use Lines            Type  
---------------------------------------------------------------------------
-x               main#block0 VAR    3	5,4	INT
-main            global     FUNC   1		INT
-output          global     FUNC   0	5	VOID
-input           global     FUNC   0		INT
-======= END OF TABLE =======
-Symbol table printed successfully.
 
 === AST ===
 Program (lineno=1)
@@ -84,36 +69,6 @@ Program (lineno=1)
           Id(name=x, lineno=5)
       Return (lineno=6)
         Num(value=0, lineno=6)
-[Semantic DBG] analyzeProgram: entering program node
-[Semantic DBG] declaration: kind=3 name="main" at line 1
-[Semantic DBG] analyzeDeclaration: kind=3 name="main" line=1
-[Semantic DBG] FunDecl: name="main" line=1
-[Semantic DBG]   return-type = int
-[Semantic DBG]  switched currentScope = main
-[Semantic DBG]   No parameters, just a block
-[Semantic DBG] analyzeBlock: scope="main#block0"
-[Semantic DBG] analyzeDeclaration: kind=2 name="x" line=3
-[Semantic DBG]   VarDecl: Found simple var 'x'
-[Semantic DBG]   Statement: kind=11 line=4
-[Semantic DBG] → analyzeStatement(stmt=0x644f366939c0, kind=11, line=4)
-[Semantic DBG] → analyzeExpression(expr=0x644f366939c0, kind=11, line=4)
-[Semantic DBG] → analyzeExpression(expr=0x644f36693980, kind=16, line=4)
-[Semantic DBG] ← analyzeExpression(expr=0x644f36693980) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x644f366939c0) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x644f366939c0)
-[Semantic DBG]   Statement: kind=14 line=5
-[Semantic DBG] → analyzeStatement(stmt=0x644f36693ae0, kind=14, line=5)
-[Semantic DBG] → analyzeExpression(expr=0x644f36693ae0, kind=14, line=5)
-[Semantic DBG] → analyzeExpression(expr=0x644f36693a40, kind=15, line=5)
-[Semantic DBG] ← analyzeExpression(expr=0x644f36693a40) returns 1
-[Semantic DBG] ← analyzeExpression(expr=0x644f36693ae0) returns 2
-[Semantic DBG] ← analyzeStatement(stmt=0x644f36693ae0)
-[Semantic DBG]   Statement: kind=10 line=6
-[Semantic DBG] → analyzeStatement(stmt=0x644f36693b80, kind=10, line=6)
-[Semantic DBG] → analyzeExpression(expr=0x644f36693b40, kind=16, line=6)
-[Semantic DBG] ← analyzeExpression(expr=0x644f36693b40) returns 1
-[Semantic DBG] ← analyzeStatement(stmt=0x644f36693b80)
-[Semantic DBG]   currentScope restored to global
 Semantic analysis completed successfully with no errors.
 
 === IR ===
@@ -176,3 +131,11 @@ main:
   return 0
 --- END IR DUMP ---
 IR dump has been saved to: docs/output/generated_IR.txt
+======= SYMBOL TABLE =======
+Name            Scope      Kind   Decl Lines           Use Lines            Type  
+--------------------------------------------------------------------------
+x               main#block0 VAR    3	4,5	INT
+main            global     FUNC   1		INT
+output          global     FUNC   0	5	VOID
+input           global     FUNC   0		INT
+======= END OF TABLE =======

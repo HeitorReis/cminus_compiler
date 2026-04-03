@@ -117,11 +117,11 @@
 [ENSURE] Tentando garantir 't2' em um registrador.
 [ENSURE] -> Sucesso! 't2' já está em r10.
 [ADD_INSTR] Adicionando instrução para 'sum4': mov: r0 = r10
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r6', 'r8'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r10', 'r6'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'sum4': bi: sum4_epilogue
 -> Finalizando a função 'sum4', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r6', 'r8'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r10', 'r6'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 9 instruções.
@@ -208,7 +208,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r8'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r9'}
 [SPILL_ALL] -> Salvando variável local 'r' do registrador r9 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r9

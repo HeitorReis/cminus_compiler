@@ -20,6 +20,13 @@ The project does not currently have a dedicated `build` target. The practical en
 - `make run_all`
   - Cleans, rebuilds, and runs the configured positive regression suite.
   - The suite uses canonical names for `sort`, `gcd`, `factorial`, and `fibonacci`, plus the remaining numbered fixtures.
+- `make run_all complete`
+- `make run_all c`
+- `make run_all COMPLETE=1`
+  - Runs the same positive regression suite, then also executes `python3 tools/run_machine_code.py` for each generated machine-code file.
+  - Writes per-test runner summaries to `docs/output/all_machine_codes/logs/*_machine_run.log`.
+  - The default runner arguments are `--max-cycles 500 --default-input 0`; override them with `RUN_MACHINE_ARGS="..."` when needed.
+  - GNU make treats dash-prefixed words as its own CLI options, so the dashed spellings only work behind `--`: `make -- run_all --complete` or `make -- run_all -c`.
 - `make test_analysis`
   - Builds the front-end and runs the analysis-phase regression suite in temporary working directories.
   - Covers lexical, syntactic, semantic, undeclared-identifier, missing-`main`, and VPP-generation checks.
@@ -111,6 +118,7 @@ The repository also contains a Python runner that simulates the current `Process
 ```sh
 python3 tools/run_machine_code.py --max-cycles 50
 python3 tools/run_machine_code.py docs/output/generated_machine_code.txt --max-cycles 50
+python3 tools/run_machine_code.py docs/output/generated_machine_code.txt --max-cycles 50 --default-input 0
 ```
 
 If no machine-code file is passed, the runner automatically loads `docs/output/generated_machine_code.txt` when that file exists.
@@ -125,6 +133,8 @@ Useful options:
   - provide peripheral input values for `in` instructions
 - `--prompt-inputs`
   - force stdin prompts when an `in` instruction needs a value and no `--input` values remain
+- `--default-input <value>`
+  - inject a fallback input value when an `in` instruction blocks and no explicit `--input` values remain
 
 The runner models:
 
