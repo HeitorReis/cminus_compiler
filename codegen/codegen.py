@@ -702,7 +702,13 @@ def translate_instruction(instr_parts, func_ctx):
             #    encontrado em `src_reg`. Isso é uma otimização para uso imediato.
             alloc.update_var_from_reg(dest_var, src_reg)
 
-            # 4. Se a origem era um temporário (ex: b := t1), podemos liberar
+            # 4. Variáveis globais não são armazenadas imediatamente. Elas precisam
+            #    ser marcadas como "dirty" para que o spill persista o valor em .data
+            #    antes de chamadas, saltos ou retornos.
+            if dest_var not in func_ctx.stack_layout and not is_ir_temp(dest_var):
+                alloc.dirty_regs.add(src_reg)
+
+            # 5. Se a origem era um temporário (ex: b := t1), podemos liberar
             #    o registrador se ele não for mais necessário para `dest_var`.
             if is_ir_temp(src_val):
                 alloc.free_reg_if_temp(src_reg)

@@ -126,7 +126,7 @@ static void generate_global_declarations(AstNode* node, IRList* list) {
             if (child->array_size > 0) {
                 emit(list, IR_DEC, new_name(child->name), new_name(".space"), new_const(child->array_size));
             } else {
-                // Não emitimos .word para globais simples, o backend já faz isso
+                emit(list, IR_DEC, new_name(child->name), new_name(".word"), new_const(0));
             }
         }
     }
@@ -253,6 +253,8 @@ static void generate_ir_for_node(AstNode* node, IRList* list, SymbolTable* symta
                 printf("[IR_DBG]   Processing GLOBAL declaration for '%s'\n", node->name);
                 if (node->array_size > 0) {
                     emit(list, IR_DEC, new_name(node->name), new_name(".space"), new_const(node->array_size));
+                } else {
+                    emit(list, IR_DEC, new_name(node->name), new_name(".word"), new_const(0));
                 }
             } else {
                 printf("[IR_DBG]   Processing LOCAL declaration for '%s' in scope '%s'\n", node->name, currentScope);

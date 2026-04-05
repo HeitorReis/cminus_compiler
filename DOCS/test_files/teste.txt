@@ -1,13 +1,23 @@
+int N;
+int vet[5];
+
+void rec_plus(int pos){
+	if (pos >= N){
+		return;
+	}
+	vet[pos] = pos + 1;
+	rec_plus(pos + 1);
+	return;
+}
+
 void main(void)
 {
 	int i;
+	N = 5;
 	i = 0;
-	while (i < 2){
+	rec_plus(0);
+	while(i < N){
+		output(vet[i]);
 		i = i + 1;
-		output(i);
-	}
-	while (i > 0){
-		output(i);
-		i = i - 1
 	}
 }

@@ -6,6 +6,7 @@ from assembler import FullCode
 ir_path = "docs/output/generated_IR.txt"
 assembly_path = "docs/output/generated_assembly.txt"
 machine_code_path = "docs/output/generated_machine_code.txt"
+debug_assembly_path = "docs/output/debug_assembly.txt"
 
 # Lê o Código Intermediário
 try:
@@ -32,6 +33,9 @@ with open(assembly_path, 'r') as assembly_file:
 
 machine_code = FullCode(assembly_lines)
 
+with open(debug_assembly_path, "w") as debug_assembly_file:
+    debug_assembly_file.write(machine_code.debug_output)
+
 if 'Error' not in machine_code.response:
     # Escreve o código de máquina puro no ficheiro de saída
     with open(machine_code_path, 'w') as machine_code_file:
@@ -40,6 +44,7 @@ if 'Error' not in machine_code.response:
     # Imprime a versão de depuração detalhada no terminal
     print("--- DEBUG OUTPUT ---")
     print(machine_code.debug_output)
+    print(f"Mapeamento assembly->máquina salvo em: {debug_assembly_path}")
     print(f"\nCódigo de máquina gerado com sucesso em: {machine_code_path}")
 else:
     # Imprime a mensagem de erro detalhada

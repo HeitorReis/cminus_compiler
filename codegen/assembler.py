@@ -95,6 +95,7 @@ class FullCode:
         self.literal_addresses = {}
         self._instruction_sizes = {}
         self._instruction_plans = {}
+        self.machine_code_listing = []
 
         try:
             self._parse_source()
@@ -386,6 +387,7 @@ class FullCode:
     def _encode(self):
         encoded_lines = []
         debug_lines = []
+        listing_lines = []
 
         instruction_index = 0
         current_address = 0
@@ -399,6 +401,7 @@ class FullCode:
                 binary = self._encode_concrete(concrete, current_address)
                 encoded_lines.append(binary)
                 debug_lines.append(f"{binary} -> {concrete['debug']}")
+                listing_lines.append(concrete['instruction'].original)
                 current_address += 1
             instruction_index += 1
 
@@ -406,17 +409,21 @@ class FullCode:
             if directive == 'word':
                 encoded_lines.append(format(value & WORD_MASK_32, '032b'))
                 debug_lines.append(f"{encoded_lines[-1]} -> data {label} .word {value}")
+                listing_lines.append(f"data {label} .word {value}")
             else:
                 for index in range(value):
                     encoded_lines.append('0' * 32)
                     debug_lines.append(f"{encoded_lines[-1]} -> data {label}[{index}] .space")
+                    listing_lines.append(f"data {label}[{index}] .space")
 
         for value, label in self.literal_pool.items():
             encoded_lines.append(format(value & WORD_MASK_32, '032b'))
             debug_lines.append(f"{encoded_lines[-1]} -> literal {label} = {value}")
+            listing_lines.append(f"literal {label} = {value}")
 
         self.full_code = '\n'.join(encoded_lines)
         self.debug_output = '\n'.join(debug_lines)
+        self.machine_code_listing = listing_lines
 
     def _expand_instruction(self, instruction, plan, current_address):
         if plan['kind'] == 'ret':
@@ -566,6 +573,9 @@ class FullCode:
                     ro = int(line[22:27], 2)
                     opcode_text = f"{opcode_name} {supp_name} {cond_name} r{rd} = r{rh}, r{ro}"
 
-            decoded.append(f"Line {line_number}: {opcode_text}")
+            line_text = f"Line {line_number}: {opcode_text}"
+            if line_number < len(self.machine_code_listing):
+                line_text += f" | asm: {self.machine_code_listing[line_number]}"
+            decoded.append(line_text)
 
         return '\n'.join(decoded)

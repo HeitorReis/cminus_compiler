@@ -17,6 +17,12 @@ The project does not currently have a dedicated `build` target. The practical en
 - `make run TEST=<id>`
   - Runs one of the wired sample inputs from `docs/test_files/`.
   - Accepts legacy numeric selectors such as `TEST=3` and canonical names such as `TEST=gcd`.
+  - `TEST=1` now selects `docs/test_files/teste.txt`; the empty default still selects `docs/test_files/sort.txt`.
+- `make run TEST=<id> trace`
+- `make run TEST=<id> TRACE=1`
+  - Runs the selected sample, then executes `python3 tools/run_machine_code.py --trace` against the generated machine code.
+  - Writes the runner stdout to `docs/output/log_analysis.txt` and refreshes `docs/output/result_analysis.txt`.
+  - GNU make treats dash-prefixed words as its own CLI options, so the dashed spelling only works behind `--`: `make -- run TEST=<id> --trace`.
 - `make run_all`
   - Cleans, rebuilds, and runs the configured positive regression suite.
   - The suite uses canonical names for `sort`, `gcd`, `factorial`, and `fibonacci`, plus the remaining numbered fixtures.
@@ -55,6 +61,7 @@ python3 -u codegen/main.py > docs/output/log_codegen.txt
    - Reads `docs/output/generated_IR.txt`.
    - Generates `docs/output/generated_assembly.txt`.
    - Assembles into `docs/output/generated_machine_code.txt`.
+   - Writes the machine-word to assembly listing to `docs/output/debug_assembly.txt`.
    - Writes a decoded machine-code log to `docs/output/debug_machine_code.txt`.
 
 The C and Python halves communicate through the IR text file rather than through a shared in-memory representation.
@@ -105,7 +112,10 @@ Main pipeline outputs are written under `docs/output/`:
 - `generated_IR.txt`
 - `generated_assembly.txt`
 - `generated_machine_code.txt`
+- `debug_assembly.txt`
 - `debug_machine_code.txt`
+- `result_analysis.txt`
+- `log_analysis.txt`
 - `log_compiler.txt`
 - `log_codegen.txt`
 
@@ -119,9 +129,12 @@ The repository also contains a Python runner that simulates the current `Process
 python3 tools/run_machine_code.py --max-cycles 50
 python3 tools/run_machine_code.py docs/output/generated_machine_code.txt --max-cycles 50
 python3 tools/run_machine_code.py docs/output/generated_machine_code.txt --max-cycles 50 --default-input 0
+python3 tools/run_machine_code.py docs/output/generated_machine_code.txt --max-cycles 50 --trace
 ```
 
 If no machine-code file is passed, the runner automatically loads `docs/output/generated_machine_code.txt` when that file exists.
+When the default generated machine-code file is used, the runner also writes the text report to `docs/output/result_analysis.txt`.
+If `docs/output/debug_assembly.txt` is available, `--trace` also prints the matching assembly instruction for each executed machine word.
 
 Useful options:
 
@@ -135,6 +148,10 @@ Useful options:
   - force stdin prompts when an `in` instruction needs a value and no `--input` values remain
 - `--default-input <value>`
   - inject a fallback input value when an `in` instruction blocks and no explicit `--input` values remain
+- `--analysis-output <path>`
+  - write the rendered analysis report to a specific file
+- `--assembly-listing <path>`
+  - load a `<binary> -> <assembly>` listing so trace lines can include the originating assembly instruction
 
 The runner models:
 

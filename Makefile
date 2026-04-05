@@ -7,6 +7,7 @@ DOCS_DIR := docs/test_files
 ALL_OUTPUT_DIR := docs/output/all_machine_codes
 ALL_LOG_DIR := $(ALL_OUTPUT_DIR)/logs
 RUN_ALL_COMPLETE := $(strip $(filter 1 true yes on,$(COMPLETE)) $(filter complete c --complete -c,$(MAKECMDGOALS)))
+RUN_TRACE := $(strip $(filter 1 true yes on,$(TRACE)) $(filter trace --trace,$(MAKECMDGOALS)))
 RUN_MACHINE_ARGS ?= --max-cycles 500 --default-input 0
 
 # === Files ===
@@ -58,7 +59,7 @@ RUN_ALL_TEST_FILES := \
 			
 # === Rules ===
 
-.PHONY: all run run_all complete c --complete -c test_analysis generate_analysis_vpp clean
+.PHONY: all run run_all complete c --complete -c trace --trace test_analysis generate_analysis_vpp clean
 
 all: clean run
 
@@ -102,7 +103,8 @@ $(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS)
 # Run with test files based on the user-specified TEST variable
 run: $(EXEC)
 	@case "$(TEST)" in \
-		""|1|sort|teste) test_file="$(DOCS_DIR)/sort.txt" ;; \
+		""|sort) test_file="$(DOCS_DIR)/sort.txt" ;; \
+		1|teste) test_file="$(DOCS_DIR)/teste.txt" ;; \
 		2|teste2) test_file="$(DOCS_DIR)/teste2.txt" ;; \
 		3|gcd|teste3) test_file="$(DOCS_DIR)/gcd.txt" ;; \
 		4|teste4) test_file="$(DOCS_DIR)/teste4.txt" ;; \
@@ -117,6 +119,13 @@ run: $(EXEC)
 	esac; \
 	$(EXEC) "$$test_file" > docs/output/log_compiler.txt
 	python3 -u codegen/main.py > docs/output/log_codegen.txt
+	@if [ -n "$(RUN_TRACE)" ]; then \
+		if [ -f docs/output/generated_machine_code.txt ]; then \
+			python3 -u tools/run_machine_code.py $(RUN_MACHINE_ARGS) --trace > docs/output/log_analysis.txt; \
+		else \
+			echo "Machine-code runner skipped because no machine code was generated." > docs/output/log_analysis.txt; \
+		fi; \
+	fi
 
 # Run all test files and collect machine code outputs
 run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
@@ -143,6 +152,9 @@ run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
 	done
 
 complete c --complete -c:
+	@:
+
+trace --trace:
 	@:
 
 test_analysis: $(EXEC)

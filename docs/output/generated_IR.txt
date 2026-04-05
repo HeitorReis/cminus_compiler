@@ -1,8 +1,35 @@
+  N := .word , 0
+  vet := .space , 5
+rec_plus:
+  param pos
+  t0 := pos >= N
+  if_false t0 goto L0
+  return _
+L0:
+L1:
+  t1 := pos + 1
+  t2 := &vet
+  t3 := t2 + pos
+  *t3 := t1
+  t4 := pos + 1
+  arg t4
+  call rec_plus, 1
+  return _
 main:
-  x := 2
-  x := 1
-  arg x
+  N := 5
+  i := 0
+  arg 0
+  call rec_plus, 1
+L2:
+  t5 := i < N
+  if_false t5 goto L3
+  t6 := &vet
+  t7 := t6 + i
+  t8 := *t7
+  arg t8
   call output, 1
-  arg x
-  call output, 1
-  return 0
+  t9 := i + 1
+  i := t9
+  goto L2
+L3:
+  return _

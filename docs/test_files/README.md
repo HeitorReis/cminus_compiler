@@ -6,6 +6,8 @@ This folder contains sample C-minus inputs used to exercise the current compiler
 
 - `sort.txt`
   - Selection sort using a global array and an array parameter
+- `teste.txt`
+  - Simple loop/output fixture used by `TEST=1` and `TEST=teste`
 - `teste2.txt`
   - Global array reads, writes, and arithmetic
 - `gcd.txt`
@@ -34,8 +36,6 @@ This folder contains sample C-minus inputs used to exercise the current compiler
 
 ## Legacy Numeric Aliases
 
-- `teste.txt`
-  - Legacy alias for `sort.txt`
 - `teste3.txt`
   - Legacy alias for `gcd.txt`
 - `teste6.txt`
@@ -69,6 +69,7 @@ make run_all
 Current behavior:
 
 - `make run` accepts both numeric selectors and the canonical names above
+- `TEST=1` selects `teste.txt`, while the default empty selector still runs `sort.txt`
 - `make run_all` runs an explicit positive regression suite, including the named files above
 
 Manual invalid-case run:
