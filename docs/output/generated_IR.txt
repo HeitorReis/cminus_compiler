@@ -1,35 +1,92 @@
-  N := .word , 0
-  vet := .space , 5
-rec_plus:
-  param pos
-  t0 := pos >= N
-  if_false t0 goto L0
-  return _
+  vet := .space , 2
+minloc:
+  param a
+  param low
+  param high
+  k := low
+  t0 := a + low
+  t1 := *t0
+  x := t1
+  t2 := low + 1
+  i := t2
 L0:
-L1:
-  t1 := pos + 1
-  t2 := &vet
-  t3 := t2 + pos
-  *t3 := t1
-  t4 := pos + 1
-  arg t4
-  call rec_plus, 1
-  return _
-main:
-  N := 5
-  i := 0
-  arg 0
-  call rec_plus, 1
-L2:
-  t5 := i < N
-  if_false t5 goto L3
-  t6 := &vet
-  t7 := t6 + i
+  t3 := i < high
+  if_false t3 goto L1
+  t4 := a + i
+  t5 := *t4
+  t6 := t5 < x
+  if_false t6 goto L2
+  t7 := a + i
   t8 := *t7
-  arg t8
-  call output, 1
+  x := t8
+  k := i
+  goto L3
+L2:
+L3:
   t9 := i + 1
   i := t9
-  goto L2
-L3:
+  goto L0
+L1:
+  return k
+sort:
+  param a
+  param low
+  param high
+  i := low
+L4:
+  t10 := high - 1
+  t11 := i < t10
+  if_false t11 goto L5
+  arg a
+  arg i
+  arg high
+  t12 := call minloc, 3
+  k := t12
+  t13 := a + k
+  t14 := *t13
+  t := t14
+  t15 := a + i
+  t16 := *t15
+  t17 := a + k
+  *t17 := t16
+  t18 := a + i
+  *t18 := t
+  t19 := i + 1
+  i := t19
+  goto L4
+L5:
+  return _
+main:
+  i := 0
+L6:
+  t20 := i < 2
+  if_false t20 goto L7
+  t21 := call input, 0
+  t22 := &vet
+  t23 := t22 + i
+  *t23 := t21
+  t24 := i + 1
+  i := t24
+  goto L6
+L7:
+  t25 := &vet
+  arg t25
+  arg 0
+  arg 2
+  call sort, 3
+  i := 0
+L8:
+  t26 := i < 2
+  if_false t26 goto L9
+  t27 := call input, 0
+  aux := t27
+  t28 := &vet
+  t29 := t28 + i
+  t30 := *t29
+  arg t30
+  call output, 1
+  t31 := i + 1
+  i := t31
+  goto L8
+L9:
   return _

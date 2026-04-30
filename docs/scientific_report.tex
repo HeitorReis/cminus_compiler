@@ -121,6 +121,26 @@ O assembler foi reestruturado como um tradutor em duas passagens:
 \end{itemize}
 Essa abordagem removeu dependências frágeis do comportamento linear anterior, principalmente em \texttt{movi} para imediatos grandes e \emph{long branches}.
 
+\section{Modelos SysML do compilador}
+Os modelos SysML foram atualizados no arquivo \texttt{vpp/cminus-compiler-expanded.vpp} para mostrar o compilador como a ferramenta que faz a ponte entre o programa em C-minus e o código binário de 32 bits aceito pela arquitetura ARM simplificada. O processador aparece apenas como arquitetura-alvo; o foco dos diagramas fica no compilador.
+
+O \textbf{Diagrama de Atividades - Fluxo de Compilação C- para Código Binário ARM Simplificado} mostra o caminho completo da compilação. Ele começa em \texttt{Início da compilação}, recebe o código C-, faz análise léxica, sintática e semântica, consulta a tabela de símbolos, gera código intermediário, mapeia variáveis e temporários para registradores, gera assembly, resolve rótulos, codifica as instruções em binário de 32 bits, valida o resultado e gera o arquivo final \texttt{.txt}. Esse diagrama usa colunas de responsabilidade, ou \emph{swimlanes}, para separar os módulos: entrada do usuário, analisadores, tabela de símbolos, gerador de IR, alocador de registradores, gerador de assembly, resolvedor de rótulos, codificador binário e validador/gerador de arquivo.
+
+O mesmo diagrama também mostra os fluxos alternativos de erro. Se os tokens forem inválidos, é gerado erro léxico. Se a sintaxe estiver errada, é gerado erro sintático. Se a semântica falhar, é gerado erro semântico. Se o binário final tiver tamanho ou campos inválidos, é gerado erro de codificação. Todos esses fluxos passam por \texttt{Gerar relatório de erro} e chegam ao \texttt{Fim da compilação}.
+
+O \textbf{Diagrama de Blocos - Arquitetura Interna do Compilador} representa a estrutura interna do compilador. O bloco principal é \texttt{Compilador C- para ARM Simplificado}, contendo os blocos de gerenciamento, análise léxica, análise sintática, análise semântica, tabela de símbolos, geração de código intermediário, alocação de registradores, geração de assembly, resolução de rótulos, codificação binária, validação e geração do arquivo de saída. O gerador de assembly mostra as instruções consideradas no modelo: \texttt{mov}, \texttt{add}, \texttt{sub}, \texttt{subs}, \texttt{mul}, \texttt{div}, \texttt{and}, \texttt{or}, \texttt{xor}, \texttt{not}, \texttt{load}, \texttt{store}, \texttt{b}, \texttt{bl}, \texttt{bgt}, \texttt{blt}, \texttt{beq} e \texttt{bneq}. O codificador binário foi detalhado com os sub-blocos \texttt{CondEncoder}, \texttt{TypeEncoder}, \texttt{SuppEncoder}, \texttt{FunctEncoder}, \texttt{RegisterEncoder} e \texttt{Operand2Encoder}.
+
+O \textbf{Diagrama Interno - Codificador Binário} separa essa última etapa para deixar o formato da instrução mais fácil de ler. Ele mostra que o codificador recebe \texttt{assemblyResolvido}, passa pelos encoders de condição, tipo, suporte, função, registradores e \texttt{Operand2}, e entrega \texttt{instrucoesBinarias} para o validador. Essa visão evita misturar a arquitetura interna do processador com o trabalho do compilador; o hardware aparece apenas como formato-alvo aceito pelo binário.
+
+Nos modelos que envolvem a codificação binária, a instrução final segue o formato normativo:
+\begin{center}
+\texttt{Cond[31:28] | Type[27:26] | Supp[25:24] | Funct[23:20] | Rd[19:15] | Rh[14:10] | Operand\_2[9:0]}
+\end{center}
+
+O \textbf{Diagrama de Rastreabilidade - C- para IR, Assembly e Binário} complementa os modelos com um exemplo pequeno de \texttt{input()}, comparação e \texttt{output()}. Ele mostra o encadeamento \texttt{Código C- -> Código intermediário -> Assembly -> Código binário}. No binário conceitual, o caractere \texttt{x} indica campos de imediato ou deslocamento que dependem da resolução de rótulos e da posição final da instrução.
+
+Assim, os diagramas deixam claro que o compilador traduz C-minus para IR, depois para assembly da arquitetura-alvo e finalmente para uma linha binária de 32 bits por instrução, pronta para ser usada como \texttt{single\_port\_rom\_init.txt} ou arquivo \texttt{.txt} equivalente de inicialização da memória de instruções. Os modelos antigos de fases isoladas e cópias do frontend/backend foram removidos do arquivo \texttt{.vpp} para não deixar versões duplicadas ou contraditórias.
+
 \section{Passo a passo do desenvolvimento e da lógica de implementação}
 \subsection{Etapa 1: análise léxica e sintática}
 O compilador inicia em \texttt{main.c}, inicializa a pilha de escopos, declara \texttt{input()} e \texttt{output(x)} e invoca o parser. O parser usa Flex/Bison para reconhecer a gramática C-minus e construir a AST. Cada declaração local, parâmetro ou função é registrada na tabela de símbolos no escopo ativo.

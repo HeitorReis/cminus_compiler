@@ -37,7 +37,9 @@ The project does not currently have a dedicated `build` target. The practical en
   - Builds the front-end and runs the analysis-phase regression suite in temporary working directories.
   - Covers lexical, syntactic, semantic, undeclared-identifier, missing-`main`, and VPP-generation checks.
 - `make generate_analysis_vpp`
-  - Regenerates the canonical Visual Paradigm analysis diagram inside `vpp/cminus-compiler-expanded.vpp`.
+  - Regenerates the canonical Visual Paradigm SysML diagrams inside `vpp/cminus-compiler-expanded.vpp`.
+- `make generate_sysml_vpp`
+  - Alias for the same SysML diagram generator.
 
 If your environment only provides `python3`, the most reliable manual flow is:
 
@@ -77,18 +79,29 @@ python3 tools/run_analysis_regressions.py
 
 The suite uses temporary working directories so that negative cases can assert the absence of `generated_IR.txt` without depending on repository state.
 
-## Visual Paradigm Diagram
+## Visual Paradigm SysML Diagrams
 
 `vpp/cminus-compiler-expanded.vpp` is the canonical Visual Paradigm artifact for the project.
-The analysis-phase activity diagram is generated, not edited manually:
+The compiler SysML diagrams are generated, not edited manually:
 
 ```sh
 make generate_analysis_vpp
+make generate_sysml_vpp
 python3 tools/generate_vpp_analysis_diagram.py
-python3 tools/generate_vpp_analysis_diagram.py /tmp/cminus-analysis.vpp
+python3 tools/generate_vpp_analysis_diagram.py /tmp/cminus-sysml.vpp
 ```
 
-The generator creates or replaces the single diagram named `Compilador - Fase de Análise` and leaves legacy diagrams intact.
+The generator creates or replaces the current compiler-only diagram set and removes old Visual Paradigm diagrams that are outside this scope:
+
+- `Diagrama de Atividades - Fluxo de Compilação C- para Código Binário ARM Simplificado`
+- `Diagrama de Blocos - Arquitetura Interna do Compilador`
+- `Diagrama Interno - Codificador Binário`
+- `Diagrama de Rastreabilidade - C- para IR, Assembly e Binário`
+
+The activity diagram uses columns of responsibility for the compiler modules, from the C- input through lexical, syntactic and semantic analysis, IR, register allocation, assembly generation, label resolution, binary encoding, validation and final `.txt` output.
+The block diagrams keep the processor only as the target instruction format: the compiler block contains the lexer, parser, semantic analyzer, symbol table, IR generator, register allocator, simplified ARM assembly generator, label resolver, binary encoder, binary validator, and output file generator.
+The encoder view shows the 32-bit fields `Cond[31:28]`, `Type[27:26]`, `Supp[25:24]`, `Funct[23:20]`, `Rd[19:15]`, `Rh[14:10]`, and `Operand2[9:0]`.
+The traceability diagram maps one C- example into intermediate code, assembly, and conceptual binary output.
 
 ## Current Language Coverage
 

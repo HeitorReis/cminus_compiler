@@ -59,7 +59,7 @@ RUN_ALL_TEST_FILES := \
 			
 # === Rules ===
 
-.PHONY: all run run_all complete c --complete -c trace --trace test_analysis generate_analysis_vpp clean
+.PHONY: all run run_all complete c --complete -c trace --trace test_analysis generate_analysis_vpp generate_sysml_vpp clean
 
 all: clean run
 
@@ -162,6 +162,8 @@ test_analysis: $(EXEC)
 
 generate_analysis_vpp:
 	python3 tools/generate_vpp_analysis_diagram.py
+
+generate_sysml_vpp: generate_analysis_vpp
 
 # Cleanup intermediate files and binary
 clean:
