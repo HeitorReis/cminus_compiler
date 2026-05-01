@@ -194,49 +194,57 @@ int getParamType(
     return sym->paramTypes[index];
 }
 
-void printSymbolTable(const SymbolTable *table) {
+void printSymbolTableToStream(FILE *out, const SymbolTable *table) {
     const char *kindStr, *typeStr;
+    if (!out) {
+        return;
+    }
 
-    puts("======= SYMBOL TABLE =======");
-    printf(
+    fputs("======= SYMBOL TABLE =======\n", out);
+    fprintf(
+        out,
         "%-15s %-10s %-6s %-20s %-20s %-6s\n",
         "Name", "Scope", "Kind", "Decl Lines", "Use Lines", "Type"
     );
-    puts("--------------------------------------------------------------------------");
+    fputs("--------------------------------------------------------------------------\n", out);
 
     for (Symbol *s = table->head; s; s = s->next) {
         kindStr = (s->kind == SYMBOL_VAR ? "VAR" : "FUNC");
         typeStr = (s->dataType == TYPE_INT ? "INT" : "VOID");
 
         /* Print basic info */
-        printf("%-15s %-10s %-6s ", s->name, s->scope, kindStr);
+        fprintf(out, "%-15s %-10s %-6s ", s->name, s->scope, kindStr);
 
         /* Print all declaration lines as comma-separated */
         for (LineNode *ln = s->declLines; ln; ln = ln->next) {
-            printf("%d", ln->line);
-            if (ln->next) printf(",");
+            fprintf(out, "%d", ln->line);
+            if (ln->next) fprintf(out, ",");
         }
 
-        printf("\t");
+        fprintf(out, "\t");
 
         /* Print all use lines as comma-separated */
         for (LineNode *ln = s->useLines; ln; ln = ln->next) {
-            printf("%d", ln->line);
-            if (ln->next) printf(",");
+            fprintf(out, "%d", ln->line);
+            if (ln->next) fprintf(out, ",");
         }
         
-        printf("\t");
+        fprintf(out, "\t");
 
         if (s->dataType == TYPE_ARRAY) {
             const char* baseTypeStr = (s->baseType == TYPE_INT) ? "INT" : "?";
             // Imprime no formato "ARRAY(10, INT)"
-            printf("ARRAY(%d, %s)\n", s->array_size, baseTypeStr);
+            fprintf(out, "ARRAY(%d, %s)\n", s->array_size, baseTypeStr);
         } else {
             // Comportamento antigo para INT e VOID
             const char *typeStr = (s->dataType == TYPE_INT ? "INT" : "VOID");
-            printf("%s\n", typeStr);
+            fprintf(out, "%s\n", typeStr);
         }
     }
 
-    puts("======= END OF TABLE =======");
+    fputs("======= END OF TABLE =======\n", out);
+}
+
+void printSymbolTable(const SymbolTable *table) {
+    printSymbolTableToStream(stdout, table);
 }

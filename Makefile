@@ -3,9 +3,14 @@ SRC_DIR := src
 PARSER_DIR := parser
 BUILD_DIR := build
 BIN_DIR := bin
-DOCS_DIR := docs/test_files
-ALL_OUTPUT_DIR := docs/output/all_machine_codes
-ALL_LOG_DIR := $(ALL_OUTPUT_DIR)/logs
+DOCS_DIR := docs/input/cminus
+GENERATED_DIR := docs/generated
+FRONTEND_LOG_DIR := $(GENERATED_DIR)/diagnostics/frontend
+CODEGEN_LOG_DIR := $(GENERATED_DIR)/diagnostics/codegen
+MACHINE_RUNNER_DIR := $(GENERATED_DIR)/diagnostics/machine_runner
+FINAL_MACHINE_CODE := $(GENERATED_DIR)/final/assembler/machine_code/generated_machine_code.txt
+ALL_OUTPUT_DIR := $(GENERATED_DIR)/batch/final_machine_code
+ALL_LOG_DIR := $(GENERATED_DIR)/batch/diagnostics
 RUN_ALL_COMPLETE := $(strip $(filter 1 true yes on,$(COMPLETE)) $(filter complete c --complete -c,$(MAKECMDGOALS)))
 RUN_TRACE := $(strip $(filter 1 true yes on,$(TRACE)) $(filter trace --trace,$(MAKECMDGOALS)))
 RUN_MACHINE_ARGS ?= --max-cycles 500 --default-input 0
@@ -64,7 +69,7 @@ RUN_ALL_TEST_FILES := \
 all: clean run
 
 # Create necessary directories
-$(BUILD_DIR) $(BIN_DIR) $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR):
+$(BUILD_DIR) $(BIN_DIR) $(GENERATED_DIR) $(FRONTEND_LOG_DIR) $(CODEGEN_LOG_DIR) $(MACHINE_RUNNER_DIR) $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR):
 	mkdir -p $@
 
 # Generate parser using bison with flags -d -v -g
@@ -101,7 +106,7 @@ $(EXEC): $(BUILD_DIR) $(BIN_DIR) $(YACC_C) $(LEX_C) $(OBJECTS)
 	$(CXX) $(CFLAGS) $(OBJECTS) -o $(EXEC) $(LDFLAGS)
 
 # Run with test files based on the user-specified TEST variable
-run: $(EXEC)
+run: $(EXEC) | $(FRONTEND_LOG_DIR) $(CODEGEN_LOG_DIR) $(MACHINE_RUNNER_DIR)
 	@case "$(TEST)" in \
 		""|sort) test_file="$(DOCS_DIR)/sort.txt" ;; \
 		1|teste) test_file="$(DOCS_DIR)/teste.txt" ;; \
@@ -117,13 +122,13 @@ run: $(EXEC)
 		11|teste11) test_file="$(DOCS_DIR)/teste11.txt" ;; \
 		*) echo "Unknown TEST='$(TEST)'"; exit 1 ;; \
 	esac; \
-	$(EXEC) "$$test_file" > docs/output/log_compiler.txt
-	python3 -u codegen/main.py > docs/output/log_codegen.txt
+	$(EXEC) "$$test_file" > $(FRONTEND_LOG_DIR)/compiler.log
+	python3 -u codegen/main.py > $(CODEGEN_LOG_DIR)/codegen.log
 	@if [ -n "$(RUN_TRACE)" ]; then \
-		if [ -f docs/output/generated_machine_code.txt ]; then \
-			python3 -u tools/run_machine_code.py $(RUN_MACHINE_ARGS) --trace > docs/output/log_analysis.txt; \
+		if [ -f $(FINAL_MACHINE_CODE) ]; then \
+			python3 -u tools/run_machine_code.py $(RUN_MACHINE_ARGS) --trace > $(MACHINE_RUNNER_DIR)/analysis_trace.log; \
 		else \
-			echo "Machine-code runner skipped because no machine code was generated." > docs/output/log_analysis.txt; \
+			echo "Machine-code runner skipped because no machine code was generated." > $(MACHINE_RUNNER_DIR)/analysis_trace.log; \
 		fi; \
 	fi
 
@@ -135,11 +140,11 @@ run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
 		echo "Running $$test_file"; \
 		base=$$(basename $$test_file .txt); \
 		rm -f $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
-		rm -f docs/output/generated_machine_code.txt; \
+		rm -f $(FINAL_MACHINE_CODE); \
 		$(EXEC) $$test_file > $(ALL_LOG_DIR)/$${base}_compiler.log 2>&1 || true; \
 		python3 -u codegen/main.py > $(ALL_LOG_DIR)/$${base}_codegen.log 2>&1 || true; \
-		if [ -f docs/output/generated_machine_code.txt ]; then \
-			cp docs/output/generated_machine_code.txt $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
+		if [ -f $(FINAL_MACHINE_CODE) ]; then \
+			cp $(FINAL_MACHINE_CODE) $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
 			if [ -n "$(RUN_ALL_COMPLETE)" ]; then \
 				python3 -u tools/run_machine_code.py $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt $(RUN_MACHINE_ARGS) > $(ALL_LOG_DIR)/$${base}_machine_run.log 2>&1 || true; \
 			fi; \

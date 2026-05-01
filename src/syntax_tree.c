@@ -86,39 +86,44 @@ void addChild(AstNode *parent, AstNode *child) {
 }
 
 /* Indented printing for debugging */
-void printAst(const AstNode *node, int indent) {
+void printAstToStream(FILE *out, const AstNode *node, int indent) {
     if (!node) return;
-    for (int i = 0; i < indent; i++) putchar(' ');
+    if (!out) return;
+    for (int i = 0; i < indent; i++) fputc(' ', out);
     switch (node->kind) {
-        case AST_ARG_LIST:      printf("ArgList (lineno=%d)\n", node->lineno); break;
-        case AST_PROGRAM:       printf("Program (lineno=%d)\n", node->lineno); break;
-        case AST_VAR_DECL:      printf("VarDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
-        case AST_FUN_DECL:      printf("FunDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
-        case AST_PARAM:         printf("Param(name=%s, lineno=%d)\n", node->name, node->lineno); break;
-        case AST_PARAM_LIST:    printf("ParamList (lineno=%d)\n", node->lineno); break;
-        case AST_PARAM_ARRAY:   printf("ParamArray(name=%s, lineno=%d)\n", node->name, node->lineno); break;
-        case AST_BLOCK:         printf("Block (lineno=%d)\n", node->lineno); break;
-        case AST_IF:            printf("If (lineno=%d)\n", node->lineno); break;
-        case AST_WHILE:         printf("While (lineno=%d)\n", node->lineno); break;
-        case AST_RETURN:        printf("Return (lineno=%d)\n", node->lineno); break;
-        case AST_ASSIGN:        printf("Assign (lineno=%d)\n", node->lineno); break;
+        case AST_ARG_LIST:      fprintf(out, "ArgList (lineno=%d)\n", node->lineno); break;
+        case AST_PROGRAM:       fprintf(out, "Program (lineno=%d)\n", node->lineno); break;
+        case AST_VAR_DECL:      fprintf(out, "VarDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_FUN_DECL:      fprintf(out, "FunDecl(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_PARAM:         fprintf(out, "Param(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_PARAM_LIST:    fprintf(out, "ParamList (lineno=%d)\n", node->lineno); break;
+        case AST_PARAM_ARRAY:   fprintf(out, "ParamArray(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_BLOCK:         fprintf(out, "Block (lineno=%d)\n", node->lineno); break;
+        case AST_IF:            fprintf(out, "If (lineno=%d)\n", node->lineno); break;
+        case AST_WHILE:         fprintf(out, "While (lineno=%d)\n", node->lineno); break;
+        case AST_RETURN:        fprintf(out, "Return (lineno=%d)\n", node->lineno); break;
+        case AST_ASSIGN:        fprintf(out, "Assign (lineno=%d)\n", node->lineno); break;
         case AST_BINOP:
             if (node->name)
-                printf("BinOp(op='%s', lineno=%d)\n", node->name, node->lineno);
+                fprintf(out, "BinOp(op='%s', lineno=%d)\n", node->name, node->lineno);
             else
-                printf("BinOp (lineno=%d)\n", node->lineno);
+                fprintf(out, "BinOp (lineno=%d)\n", node->lineno);
             break;
         case AST_OP:
-            printf("Op(op='%s', lineno=%d)\n", node->name ? node->name : "<null>", node->lineno);
+            fprintf(out, "Op(op='%s', lineno=%d)\n", node->name ? node->name : "<null>", node->lineno);
             break;
-        case AST_CALL:          printf("Call(name=%s, lineno=%d)\n", node->name, node->lineno); break;
-        case AST_ID:            printf("Id(name=%s, lineno=%d)\n", node->name, node->lineno); break;
-        case AST_NUM:           printf("Num(value=%d, lineno=%d)\n", node->value, node->lineno); break;
-        case AST_ARRAY_ACCESS:  printf("ArrayAccess(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_CALL:          fprintf(out, "Call(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_ID:            fprintf(out, "Id(name=%s, lineno=%d)\n", node->name, node->lineno); break;
+        case AST_NUM:           fprintf(out, "Num(value=%d, lineno=%d)\n", node->value, node->lineno); break;
+        case AST_ARRAY_ACCESS:  fprintf(out, "ArrayAccess(name=%s, lineno=%d)\n", node->name, node->lineno); break;
     }
     /* children */
     for (AstNode *c = node->firstChild; c; c = c->nextSibling)
-        printAst(c, indent + 2);
+        printAstToStream(out, c, indent + 2);
+}
+
+void printAst(const AstNode *node, int indent) {
+    printAstToStream(stdout, node, indent);
 }
 
 /* Recursively free the tree */

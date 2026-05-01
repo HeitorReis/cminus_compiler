@@ -1,12 +1,23 @@
 # Importa a função e a classe diretamente dos seus arquivos correspondentes
+from pathlib import Path
+
 from codegen import generate_assembly
 from assembler import FullCode
 
-# Caminhos relativos à raiz do projeto
-ir_path = "docs/output/generated_IR.txt"
-assembly_path = "docs/output/generated_assembly.txt"
-machine_code_path = "docs/output/generated_machine_code.txt"
-debug_assembly_path = "docs/output/debug_assembly.txt"
+# Caminhos relativos à raiz do projeto, separados por módulo e função.
+ir_path = Path("docs/generated/intermediate/semantic/ir/generated_IR.txt")
+assembly_path = Path("docs/generated/intermediate/codegen/assembly/generated_assembly.txt")
+machine_code_path = Path("docs/generated/final/assembler/machine_code/generated_machine_code.txt")
+debug_assembly_path = Path("docs/generated/diagnostics/assembler/assembly_to_machine.txt")
+debug_machine_code_path = Path("docs/generated/diagnostics/assembler/machine_code_decoded.txt")
+
+for output_path in (
+    assembly_path,
+    machine_code_path,
+    debug_assembly_path,
+    debug_machine_code_path,
+):
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
 # Lê o Código Intermediário
 try:
@@ -52,5 +63,5 @@ else:
 
 debug_log = machine_code.decode_machine_code()
 print("--- MACHINE CODE DECODED ---")
-with open("docs/output/debug_machine_code.txt", "w") as debug_file:
+with open(debug_machine_code_path, "w") as debug_file:
     debug_file.write(debug_log)

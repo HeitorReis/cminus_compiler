@@ -13,7 +13,7 @@ typedef struct {
     int error_count;
 } SemanticContext;
 
-static const char *const IR_OUTPUT_PATH = "docs/output/generated_IR.txt";
+static const char *const IR_OUTPUT_PATH = "docs/generated/intermediate/semantic/ir/generated_IR.txt";
 
 static void analyzeProgram(AstNode *prog, SemanticContext *ctx);
 static void analyzeDeclaration(AstNode *decl, SemanticContext *ctx);

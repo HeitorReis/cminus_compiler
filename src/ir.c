@@ -573,7 +573,7 @@ static void print_instruction_to_stream(FILE* out, IRInstruction* instr) {
 void print_ir(IRList* list, char* file_path) {
     FILE* outfile = fopen(file_path, "w");
     if (!outfile) {
-        fprintf(stderr, "\n[Compiler Warning] Could not open '%s' for writing. Ensure 'docs/output' directory exists.\n", file_path);
+        fprintf(stderr, "\n[Compiler Warning] Could not open '%s' for writing. Ensure the generated docs directory exists.\n", file_path);
     }
 
     printf("\n--- BEGIN IR DUMP (Terminal) ---\n");

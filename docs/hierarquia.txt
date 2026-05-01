@@ -1,0 +1,9 @@
+docs/input/cminus/: arquivos de entrada/testes.
+docs/documentation/: documentação e relatório.
+docs/generated/frontend/syntax_tree/ast.txt: árvore sintática.
+docs/generated/frontend/symbol_table/symbol_table.txt: tabela de símbolos.
+docs/generated/intermediate/semantic/ir/generated_IR.txt: IR intermediário.
+docs/generated/intermediate/codegen/assembly/generated_assembly.txt: assembly intermediário usado pelo assembler.
+docs/generated/final/assembler/machine_code/generated_machine_code.txt: saída final de máquina.
+docs/generated/diagnostics/: logs e arquivos de debug.
+docs/generated/batch/: saídas do run_all, separando códigos finais e logs.

@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/stat.h>
 #include "parser.tab.h"
 #include "src/analysis_state.h"
 #include "src/symbol_table.h"
@@ -16,6 +19,16 @@ SymbolTable symtab;  /* Global symbol table */
 extern FILE *yyin;        /* Flex’s input file pointer */
 
 void declareBuiltins(SymbolTable *table);
+static void ensureOutputDirs(void);
+static void ensureDir(const char *path);
+static void writeAstFile(const AstNode *root);
+static void writeSymbolTableFile(const SymbolTable *table);
+
+static const char *const IR_OUTPUT_PATH = "docs/generated/intermediate/semantic/ir/generated_IR.txt";
+static const char *const AST_OUTPUT_DIR = "docs/generated/frontend/syntax_tree";
+static const char *const AST_OUTPUT_PATH = "docs/generated/frontend/syntax_tree/ast.txt";
+static const char *const SYMBOL_TABLE_OUTPUT_DIR = "docs/generated/frontend/symbol_table";
+static const char *const SYMBOL_TABLE_OUTPUT_PATH = "docs/generated/frontend/symbol_table/symbol_table.txt";
 
 int main(int argc, char **argv) {
     int exit_status = EXIT_SUCCESS;
@@ -35,7 +48,8 @@ int main(int argc, char **argv) {
 
     resetAnalysisState();
     syntax_tree = NULL;
-    remove("docs/output/generated_IR.txt");
+    ensureOutputDirs();
+    remove(IR_OUTPUT_PATH);
 
     /* 2.5 Initialize the symbol table and scope stack */
     printf("Initializing symbol table and scope stack...\n");
@@ -73,6 +87,7 @@ int main(int argc, char **argv) {
     if (syntax_tree) {
         printf("\n=== AST ===\n");
         printAst(syntax_tree, 0);
+        writeAstFile(syntax_tree);
     }
 
     if (syntax_tree) {
@@ -90,6 +105,7 @@ int main(int argc, char **argv) {
         }
 
         printSymbolTable(&symtab);
+        writeSymbolTableFile(&symtab);
     }
 
 cleanup:
@@ -108,4 +124,45 @@ void declareBuiltins(SymbolTable *table) {
     declareSymbol(table, "output", "global", SYMBOL_FUNC, 0, TYPE_VOID, 0);
     int p[1] = { TYPE_INT };
     setFunctionParams(table, "output", "global", 1, p);
+}
+
+static void ensureDir(const char *path) {
+    if (mkdir(path, 0777) != 0 && errno != EEXIST) {
+        fprintf(stderr, "Warning: could not create directory '%s': %s\n", path, strerror(errno));
+    }
+}
+
+static void ensureOutputDirs(void) {
+    ensureDir("docs");
+    ensureDir("docs/generated");
+    ensureDir("docs/generated/frontend");
+    ensureDir(AST_OUTPUT_DIR);
+    ensureDir(SYMBOL_TABLE_OUTPUT_DIR);
+    ensureDir("docs/generated/intermediate");
+    ensureDir("docs/generated/intermediate/semantic");
+    ensureDir("docs/generated/intermediate/semantic/ir");
+}
+
+static void writeAstFile(const AstNode *root) {
+    FILE *out = fopen(AST_OUTPUT_PATH, "w");
+    if (!out) {
+        fprintf(stderr, "Warning: could not write AST file '%s': %s\n", AST_OUTPUT_PATH, strerror(errno));
+        return;
+    }
+
+    printAstToStream(out, root, 0);
+    fclose(out);
+    printf("AST has been saved to: %s\n", AST_OUTPUT_PATH);
+}
+
+static void writeSymbolTableFile(const SymbolTable *table) {
+    FILE *out = fopen(SYMBOL_TABLE_OUTPUT_PATH, "w");
+    if (!out) {
+        fprintf(stderr, "Warning: could not write symbol table file '%s': %s\n", SYMBOL_TABLE_OUTPUT_PATH, strerror(errno));
+        return;
+    }
+
+    printSymbolTableToStream(out, table);
+    fclose(out);
+    printf("Symbol table has been saved to: %s\n", SYMBOL_TABLE_OUTPUT_PATH);
 }

@@ -2,6 +2,8 @@
 #ifndef SYMBOL_TABLE_H
 #define SYMBOL_TABLE_H
 
+#include <stdio.h>
+
 /* distinguish variables vs. functions */
 typedef enum {
     SYMBOL_VAR,
@@ -57,6 +59,7 @@ int getParamType(
 
 /* debug: print all entries in a human‐readable table */
 void printSymbolTable(const SymbolTable *table);
+void printSymbolTableToStream(FILE *out, const SymbolTable *table);
 
 /* initialize before parse */
 void initSymbolTable(SymbolTable *table);

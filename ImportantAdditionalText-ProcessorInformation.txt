@@ -11,9 +11,9 @@ ________________
 
 
 2. Instruction Bit‑Field Layout
-|31      28|27 26|25 24|23    20|19    15|14    10|9               0|
+|31        28|27   26|25    24|23      20|19      15|14      10|9              0|
 |------------|-------|--------|----------|----------|----------|----------------|
-|  Cond     |Type |Supp | Funct  |  Rd    |  Rh    |   Operand₂       |
+|    Cond    |  Type |  Supp  |   Funct  |    Rd    |    Rh    |    Operand₂    |
 * Cond [31:28]: 4‑bit condition code (e.g. always, EQ, NEQ, GT…) determines whether the instruction is executed based on CPSR flags.
 * Type [27:26]: Top‑two bits of the primary OpCode: 00=DataProc, 01=Load/Store, 11=Branch.
 * Supp [25:24]: Support suffix bits – immediate (i), CPSR update (s), both (is), or none (na).

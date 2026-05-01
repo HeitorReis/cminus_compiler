@@ -51,6 +51,7 @@ void addChild(AstNode *parent, AstNode *child);
 
 /* Utilities */
 void printAst(const AstNode *node, int indent);
+void printAstToStream(FILE *out, const AstNode *node, int indent);
 void freeAst(AstNode *node);
 
 #endif /* SYNTAX_TREE_H */
