@@ -30,10 +30,10 @@ minloc:
 	addi: r9 = r6, 1
 	subi: r30 = r31, 6
 	store: [r30] = r9
-	subi: r30 = r31, 5
-	store: [r30] = r8
 	subi: r30 = r31, 6
 	store: [r30] = r9
+	subi: r30 = r31, 5
+	store: [r30] = r8
 L0:
 	subi: r30 = r31, 6
 	load: r10 = [r30]
@@ -159,7 +159,7 @@ sort_epilogue:
 main:
 	movi: r29 = 63
 	mov: r31 = r29
-	subi: r29 = r29, 14
+	subi: r29 = r29, 15
 	movi: r4 = 0
 	subi: r30 = r31, 1
 	store: [r30] = r4
@@ -183,9 +183,9 @@ L6:
 	bi: L6
 L7:
 	movi: r12 = 64
-	subi: r30 = r31, 3
+	subi: r30 = r31, 4
 	store: [r30] = r12
-	subi: r30 = r31, 3
+	subi: r30 = r31, 4
 	load: r13 = [r30]
 	mov: r1 = r13
 	movi: r14 = 0
@@ -197,36 +197,36 @@ L7:
 	bl: sort
 main_Lret0:
 	movi: r17 = 0
-	subi: r30 = r31, 1
+	subi: r30 = r31, 2
 	store: [r30] = r17
 L8:
-	subi: r30 = r31, 1
+	subi: r30 = r31, 2
 	load: r18 = [r30]
 	movi: r19 = 2
 	subs: r0 = r18, r19
 	bigteq: L9
 	in: r20
-	subi: r30 = r31, 2
+	subi: r30 = r31, 3
 	store: [r30] = r20
 	movi: r21 = 64
-	subi: r30 = r31, 1
+	subi: r30 = r31, 2
 	load: r22 = [r30]
 	add: r23 = r21, r22
 	load: r24 = [r23]
-	subi: r30 = r31, 2
+	subi: r30 = r31, 3
 	store: [r30] = r20
-	subi: r30 = r31, 4
+	subi: r30 = r31, 5
 	store: [r30] = r24
-	subi: r30 = r31, 4
+	subi: r30 = r31, 5
 	load: r25 = [r30]
 	mov: r1 = r25
 	out: r1
-	subi: r30 = r31, 1
+	subi: r30 = r31, 2
 	load: r26 = [r30]
 	addi: r4 = r26, 1
-	subi: r30 = r31, 1
+	subi: r30 = r31, 2
 	store: [r30] = r4
-	subi: r30 = r31, 1
+	subi: r30 = r31, 2
 	store: [r30] = r4
 	bi: L8
 L9:

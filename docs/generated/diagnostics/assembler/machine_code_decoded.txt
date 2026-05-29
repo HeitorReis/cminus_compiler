@@ -26,10 +26,10 @@ Line 24: store na do r0 = r8, r30 | asm: store: [r30] = r8
 Line 25: add i do r9 = r6, 1 | asm: addi: r9 = r6, 1
 Line 26: sub i do r30 = r31, 6 | asm: subi: r30 = r31, 6
 Line 27: store na do r0 = r9, r30 | asm: store: [r30] = r9
-Line 28: sub i do r30 = r31, 5 | asm: subi: r30 = r31, 5
-Line 29: store na do r0 = r8, r30 | asm: store: [r30] = r8
-Line 30: sub i do r30 = r31, 6 | asm: subi: r30 = r31, 6
-Line 31: store na do r0 = r9, r30 | asm: store: [r30] = r9
+Line 28: sub i do r30 = r31, 6 | asm: subi: r30 = r31, 6
+Line 29: store na do r0 = r9, r30 | asm: store: [r30] = r9
+Line 30: sub i do r30 = r31, 5 | asm: subi: r30 = r31, 5
+Line 31: store na do r0 = r8, r30 | asm: store: [r30] = r8
 Line 32: sub i do r30 = r31, 6 | asm: subi: r30 = r31, 6
 Line 33: load na do r10 = r0, r30 | asm: load: r10 = [r30]
 Line 34: sub i do r30 = r31, 3 | asm: subi: r30 = r31, 3
@@ -142,7 +142,7 @@ Line 140: add i do r29 = r29, 1 | asm: addi: r29 = r29, 1
 Line 141: b do r28 | asm: b: r28
 Line 142: mov i do r29 = r0, 63 | asm: movi: r29 = 63
 Line 143: mov na do r31 = r0, r29 | asm: mov: r31 = r29
-Line 144: sub i do r29 = r29, 14 | asm: subi: r29 = r29, 14
+Line 144: sub i do r29 = r29, 15 | asm: subi: r29 = r29, 15
 Line 145: mov i do r4 = r0, 0 | asm: movi: r4 = 0
 Line 146: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
 Line 147: store na do r0 = r4, r30 | asm: store: [r30] = r4
@@ -164,9 +164,9 @@ Line 162: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
 Line 163: store na do r0 = r11, r30 | asm: store: [r30] = r11
 Line 164: b i do -16 | asm: bi: L6
 Line 165: mov i do r12 = r0, 64 | asm: movi: r12 = 64
-Line 166: sub i do r30 = r31, 3 | asm: subi: r30 = r31, 3
+Line 166: sub i do r30 = r31, 4 | asm: subi: r30 = r31, 4
 Line 167: store na do r0 = r12, r30 | asm: store: [r30] = r12
-Line 168: sub i do r30 = r31, 3 | asm: subi: r30 = r31, 3
+Line 168: sub i do r30 = r31, 4 | asm: subi: r30 = r31, 4
 Line 169: load na do r13 = r0, r30 | asm: load: r13 = [r30]
 Line 170: mov na do r1 = r0, r13 | asm: mov: r1 = r13
 Line 171: mov i do r14 = r0, 0 | asm: movi: r14 = 0
@@ -177,35 +177,35 @@ Line 175: mov i do r16 = r0, 178 | asm: movi: r16 = main_Lret0
 Line 176: mov na do r28 = r0, r16 | asm: mov: r28 = r16
 Line 177: bl i do -104 | asm: bl: sort
 Line 178: mov i do r17 = r0, 0 | asm: movi: r17 = 0
-Line 179: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 179: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
 Line 180: store na do r0 = r17, r30 | asm: store: [r30] = r17
-Line 181: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 181: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
 Line 182: load na do r18 = r0, r30 | asm: load: r18 = [r30]
 Line 183: mov i do r19 = r0, 2 | asm: movi: r19 = 2
 Line 184: sub s do r0 = r18, r19 | asm: subs: r0 = r18, r19
 Line 185: b i gteq 25 | asm: bigteq: L9
 Line 186: in na do r20 = r0, r0 | asm: in: r20
-Line 187: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
+Line 187: sub i do r30 = r31, 3 | asm: subi: r30 = r31, 3
 Line 188: store na do r0 = r20, r30 | asm: store: [r30] = r20
 Line 189: mov i do r21 = r0, 64 | asm: movi: r21 = 64
-Line 190: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 190: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
 Line 191: load na do r22 = r0, r30 | asm: load: r22 = [r30]
 Line 192: add na do r23 = r21, r22 | asm: add: r23 = r21, r22
 Line 193: load na do r24 = r0, r23 | asm: load: r24 = [r23]
-Line 194: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
+Line 194: sub i do r30 = r31, 3 | asm: subi: r30 = r31, 3
 Line 195: store na do r0 = r20, r30 | asm: store: [r30] = r20
-Line 196: sub i do r30 = r31, 4 | asm: subi: r30 = r31, 4
+Line 196: sub i do r30 = r31, 5 | asm: subi: r30 = r31, 5
 Line 197: store na do r0 = r24, r30 | asm: store: [r30] = r24
-Line 198: sub i do r30 = r31, 4 | asm: subi: r30 = r31, 4
+Line 198: sub i do r30 = r31, 5 | asm: subi: r30 = r31, 5
 Line 199: load na do r25 = r0, r30 | asm: load: r25 = [r30]
 Line 200: mov na do r1 = r0, r25 | asm: mov: r1 = r25
 Line 201: out na do r0 = r0, r1 | asm: out: r1
-Line 202: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 202: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
 Line 203: load na do r26 = r0, r30 | asm: load: r26 = [r30]
 Line 204: add i do r4 = r26, 1 | asm: addi: r4 = r26, 1
-Line 205: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 205: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
 Line 206: store na do r0 = r4, r30 | asm: store: [r30] = r4
-Line 207: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 207: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
 Line 208: store na do r0 = r4, r30 | asm: store: [r30] = r4
 Line 209: b i do -28 | asm: bi: L8
 Line 210: b i do 1 | asm: bi: main_epilogue

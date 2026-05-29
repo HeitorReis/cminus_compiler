@@ -126,7 +126,7 @@ run: $(EXEC) | $(FRONTEND_LOG_DIR) $(CODEGEN_LOG_DIR) $(MACHINE_RUNNER_DIR)
 	python3 -u codegen/main.py > $(CODEGEN_LOG_DIR)/codegen.log
 	@if [ -n "$(RUN_TRACE)" ]; then \
 		if [ -f $(FINAL_MACHINE_CODE) ]; then \
-			python3 -u tools/run_machine_code.py $(RUN_MACHINE_ARGS) --trace > $(MACHINE_RUNNER_DIR)/analysis_trace.log; \
+			python3 -u tools/run_machine_code.py $(RUN_MACHINE_ARGS) --trace < /dev/null > $(MACHINE_RUNNER_DIR)/analysis_trace.log; \
 		else \
 			echo "Machine-code runner skipped because no machine code was generated." > $(MACHINE_RUNNER_DIR)/analysis_trace.log; \
 		fi; \
@@ -146,7 +146,7 @@ run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
 		if [ -f $(FINAL_MACHINE_CODE) ]; then \
 			cp $(FINAL_MACHINE_CODE) $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt; \
 			if [ -n "$(RUN_ALL_COMPLETE)" ]; then \
-				python3 -u tools/run_machine_code.py $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt $(RUN_MACHINE_ARGS) > $(ALL_LOG_DIR)/$${base}_machine_run.log 2>&1 || true; \
+				python3 -u tools/run_machine_code.py $(ALL_OUTPUT_DIR)/$${base}_machine_code.txt $(RUN_MACHINE_ARGS) < /dev/null > $(ALL_LOG_DIR)/$${base}_machine_run.log 2>&1 || true; \
 			fi; \
 		else \
 			echo "No machine code generated for $$test_file" >> $(ALL_LOG_DIR)/$${base}_codegen.log; \

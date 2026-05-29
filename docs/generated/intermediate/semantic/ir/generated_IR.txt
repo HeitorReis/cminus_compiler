@@ -74,19 +74,19 @@ L7:
   arg 0
   arg 2
   call sort, 3
-  i := 0
+  j := 0
 L8:
-  t26 := i < 2
+  t26 := j < 2
   if_false t26 goto L9
   t27 := call input, 0
   aux := t27
   t28 := &vet
-  t29 := t28 + i
+  t29 := t28 + j
   t30 := *t29
   arg t30
   call output, 1
-  t31 := i + 1
-  i := t31
+  t31 := j + 1
+  j := t31
   goto L8
 L9:
   return _

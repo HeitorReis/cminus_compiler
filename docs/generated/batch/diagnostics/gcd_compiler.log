@@ -1,0 +1,442 @@
+Initializing symbol table and scope stack...
+Symbol table initialized successfully.
+Parsing 'docs/input/cminus/gcd.txt'...
+[LEX][1] SKIP_COMMENT
+[LEX][3] INT      -> 'int'
+[LEX][3] ID       -> 'gcd'
+[LEX][3] LPAREN   -> '('
+[LEX][3] INT      -> 'int'
+[LEX][3] ID       -> 'u'
+[LEX][3] COMMA    -> ','
+[AST DBG] newNode kind=AST_PARAM -> 0x58223096e860
+[AST DBG] newNode kind=AST_PARAM_LIST -> 0x58223096e8c0
+[AST DBG] addChild parent=0x58223096e8c0(AST_PARAM_LIST, lineno=3) child=0x58223096e860(AST_PARAM, lineno=3)
+[LEX][3] INT      -> 'int'
+[LEX][3] ID       -> 'v'
+[LEX][3] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_PARAM -> 0x58223096e9b0
+[AST DBG] addChild parent=0x58223096e8c0(AST_PARAM_LIST, lineno=3) child=0x58223096e9b0(AST_PARAM, lineno=3)
+[LEX][4] LBRACE   -> '{'
+[LEX][5] IF       -> 'if'
+[LEX][5] LPAREN   -> '('
+[LEX][5] ID       -> 'v'
+[LEX][5] EQ       -> '=='
+[AST DBG] newNode kind=AST_ID -> 0x58223096ea50
+[AST DBG] newIdNode("v") -> 0x58223096ea50
+[AST DBG] newNode kind=AST_OP -> 0x58223096eab0
+[LEX][5] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x58223096eaf0
+[AST DBG] newNumNode(0) -> 0x58223096eaf0
+[LEX][5] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_BINOP -> 0x58223096eb30
+[AST DBG] addChild parent=0x58223096eb30(AST_BINOP, lineno=5) child=0x58223096ea50(AST_ID, lineno=5)
+[AST DBG] addChild parent=0x58223096eb30(AST_BINOP, lineno=5) child=0x58223096eab0(AST_OP, lineno=5)
+[AST DBG] addChild parent=0x58223096eb30(AST_BINOP, lineno=5) child=0x58223096eaf0(AST_NUM, lineno=5)
+[PARSER DBG] binop: left=0x58223096ea50 op=0x58223096eab0 right=0x58223096eaf0
+[LEX][5] RETURN   -> 'return'
+[LEX][5] ID       -> 'u'
+[LEX][5] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ID -> 0x58223096eb90
+[AST DBG] newIdNode("u") -> 0x58223096eb90
+[AST DBG] newNode kind=AST_RETURN -> 0x58223096ebf0
+[AST DBG] addChild parent=0x58223096ebf0(AST_RETURN, lineno=5) child=0x58223096eb90(AST_ID, lineno=5)
+[LEX][6] ELSE     -> 'else'
+[LEX][6] RETURN   -> 'return'
+[LEX][6] ID       -> 'gcd'
+[LEX][6] LPAREN   -> '('
+[LEX][6] ID       -> 'v'
+[LEX][6] COMMA    -> ','
+[AST DBG] newNode kind=AST_ID -> 0x58223096ec50
+[AST DBG] newIdNode("v") -> 0x58223096ec50
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x58223096ecb0
+[AST DBG] addChild parent=0x58223096ecb0(AST_ARG_LIST, lineno=6) child=0x58223096ec50(AST_ID, lineno=6)
+[LEX][6] ID       -> 'u'
+[LEX][6] MINUS    -> '-'
+[AST DBG] newNode kind=AST_ID -> 0x58223096ecf0
+[AST DBG] newIdNode("u") -> 0x58223096ecf0
+[AST DBG] newNode kind=AST_OP -> 0x58223096ed50
+[LEX][6] ID       -> 'u'
+[LEX][6] DIV      -> '/'
+[AST DBG] newNode kind=AST_ID -> 0x58223096edb0
+[AST DBG] newIdNode("u") -> 0x58223096edb0
+[AST DBG] newNode kind=AST_OP -> 0x58223096ee10
+[LEX][6] ID       -> 'v'
+[LEX][6] TIMES    -> '*'
+[AST DBG] newNode kind=AST_ID -> 0x58223096ee70
+[AST DBG] newIdNode("v") -> 0x58223096ee70
+[AST DBG] newNode kind=AST_BINOP -> 0x58223096eed0
+[AST DBG] addChild parent=0x58223096eed0(AST_BINOP, lineno=6) child=0x58223096edb0(AST_ID, lineno=6)
+[AST DBG] addChild parent=0x58223096eed0(AST_BINOP, lineno=6) child=0x58223096ee10(AST_OP, lineno=6)
+[AST DBG] addChild parent=0x58223096eed0(AST_BINOP, lineno=6) child=0x58223096ee70(AST_ID, lineno=6)
+[AST DBG] newNode kind=AST_OP -> 0x58223096ef10
+[LEX][6] ID       -> 'v'
+[LEX][6] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_ID -> 0x58223096ef70
+[AST DBG] newIdNode("v") -> 0x58223096ef70
+[AST DBG] newNode kind=AST_BINOP -> 0x58223096efd0
+[AST DBG] addChild parent=0x58223096efd0(AST_BINOP, lineno=6) child=0x58223096eed0(AST_BINOP, lineno=6)
+[AST DBG] addChild parent=0x58223096efd0(AST_BINOP, lineno=6) child=0x58223096ef10(AST_OP, lineno=6)
+[AST DBG] addChild parent=0x58223096efd0(AST_BINOP, lineno=6) child=0x58223096ef70(AST_ID, lineno=6)
+[AST DBG] newNode kind=AST_BINOP -> 0x58223096f010
+[AST DBG] addChild parent=0x58223096f010(AST_BINOP, lineno=6) child=0x58223096ecf0(AST_ID, lineno=6)
+[AST DBG] addChild parent=0x58223096f010(AST_BINOP, lineno=6) child=0x58223096ed50(AST_OP, lineno=6)
+[AST DBG] addChild parent=0x58223096f010(AST_BINOP, lineno=6) child=0x58223096efd0(AST_BINOP, lineno=6)
+[AST DBG] addChild parent=0x58223096ecb0(AST_ARG_LIST, lineno=6) child=0x58223096f010(AST_BINOP, lineno=6)
+[AST DBG] newNode kind=AST_CALL -> 0x58223096f050
+[AST DBG] addChild parent=0x58223096f050(AST_CALL, lineno=6) child=0x58223096ecb0(AST_ARG_LIST, lineno=6)
+[LEX][6] SEMI     -> ';'
+[AST DBG] newNode kind=AST_RETURN -> 0x58223096f090
+[AST DBG] addChild parent=0x58223096f090(AST_RETURN, lineno=6) child=0x58223096f050(AST_CALL, lineno=6)
+[AST DBG] newNode kind=AST_IF -> 0x58223096f0d0
+[AST DBG] addChild parent=0x58223096f0d0(AST_IF, lineno=5) child=0x58223096eb30(AST_BINOP, lineno=5)
+[AST DBG] addChild parent=0x58223096f0d0(AST_IF, lineno=5) child=0x58223096ebf0(AST_RETURN, lineno=5)
+[AST DBG] addChild parent=0x58223096f0d0(AST_IF, lineno=5) child=0x58223096f090(AST_RETURN, lineno=6)
+[LEX][7] SKIP_COMMENT
+[LEX][8] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x58223096f110
+[AST DBG] addChild parent=0x58223096f110(AST_BLOCK, lineno=8) child=0x58223096f0d0(AST_IF, lineno=5)
+[PARSER DBG] compound_stmt: scope=gcd#block0 decls=(nil) stmts=0x58223096f0d0
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x58223096f150
+[AST DBG] addChild parent=0x58223096f150(AST_FUN_DECL, lineno=3) child=0x58223096e8c0(AST_PARAM_LIST, lineno=3)
+[AST DBG] addChild parent=0x58223096f150(AST_FUN_DECL, lineno=3) child=0x58223096f110(AST_BLOCK, lineno=8)
+[PARSER DBG] fun_declaration: name=gcd, params=0x58223096e8c0, body=0x58223096f110
+[LEX][10] VOID     -> 'void'
+[LEX][10] ID       -> 'main'
+[LEX][10] LPAREN   -> '('
+[LEX][10] VOID     -> 'void'
+[LEX][10] RPAREN   -> ')'
+[LEX][11] LBRACE   -> '{'
+[LEX][11] INT      -> 'int'
+[LEX][11] ID       -> 'x'
+[LEX][11] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x58223096f350
+[PARSER DBG] var_declaration: name=x[LEX][11] INT      -> 'int'
+[LEX][11] ID       -> 'y'
+[LEX][11] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x58223096f460
+[PARSER DBG] var_declaration: name=y[LEX][12] ID       -> 'x'
+[LEX][12] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x58223096f4c0
+[AST DBG] newIdNode("x") -> 0x58223096f4c0
+[LEX][12] ID       -> 'input'
+[LEX][12] LPAREN   -> '('
+[LEX][12] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_CALL -> 0x58223096f520
+[LEX][12] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x58223096f580
+[AST DBG] addChild parent=0x58223096f580(AST_ASSIGN, lineno=12) child=0x58223096f4c0(AST_ID, lineno=12)
+[AST DBG] addChild parent=0x58223096f580(AST_ASSIGN, lineno=12) child=0x58223096f520(AST_CALL, lineno=12)
+[PARSER DBG] assignment: var=0x58223096f4c0 expr=0x58223096f520
+[LEX][12] ID       -> 'y'
+[LEX][12] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x58223096f5c0
+[AST DBG] newIdNode("y") -> 0x58223096f5c0
+[LEX][12] ID       -> 'input'
+[LEX][12] LPAREN   -> '('
+[LEX][12] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_CALL -> 0x58223096f620
+[LEX][12] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x58223096f680
+[AST DBG] addChild parent=0x58223096f680(AST_ASSIGN, lineno=12) child=0x58223096f5c0(AST_ID, lineno=12)
+[AST DBG] addChild parent=0x58223096f680(AST_ASSIGN, lineno=12) child=0x58223096f620(AST_CALL, lineno=12)
+[PARSER DBG] assignment: var=0x58223096f5c0 expr=0x58223096f620
+[LEX][13] ID       -> 'output'
+[LEX][13] LPAREN   -> '('
+[LEX][13] ID       -> 'gcd'
+[LEX][13] LPAREN   -> '('
+[LEX][13] ID       -> 'x'
+[LEX][13] COMMA    -> ','
+[AST DBG] newNode kind=AST_ID -> 0x58223096f700
+[AST DBG] newIdNode("x") -> 0x58223096f700
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x58223096f760
+[AST DBG] addChild parent=0x58223096f760(AST_ARG_LIST, lineno=13) child=0x58223096f700(AST_ID, lineno=13)
+[LEX][13] ID       -> 'y'
+[LEX][13] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_ID -> 0x58223096f7a0
+[AST DBG] newIdNode("y") -> 0x58223096f7a0
+[AST DBG] addChild parent=0x58223096f760(AST_ARG_LIST, lineno=13) child=0x58223096f7a0(AST_ID, lineno=13)
+[AST DBG] newNode kind=AST_CALL -> 0x58223096f800
+[AST DBG] addChild parent=0x58223096f800(AST_CALL, lineno=13) child=0x58223096f760(AST_ARG_LIST, lineno=13)
+[LEX][13] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x58223096f840
+[AST DBG] addChild parent=0x58223096f840(AST_ARG_LIST, lineno=13) child=0x58223096f800(AST_CALL, lineno=13)
+[AST DBG] newNode kind=AST_CALL -> 0x58223096f880
+[AST DBG] addChild parent=0x58223096f880(AST_CALL, lineno=13) child=0x58223096f840(AST_ARG_LIST, lineno=13)
+[LEX][13] SEMI     -> ';'
+[LEX][14] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x58223096f8c0
+[AST DBG] addChild parent=0x58223096f8c0(AST_BLOCK, lineno=14) child=0x58223096f350(AST_VAR_DECL, lineno=11)
+[AST DBG] addChild parent=0x58223096f8c0(AST_BLOCK, lineno=14) child=0x58223096f580(AST_ASSIGN, lineno=12)
+[AST DBG] addChild parent=0x58223096f8c0(AST_BLOCK, lineno=14) child=0x58223096f680(AST_ASSIGN, lineno=12)
+[AST DBG] addChild parent=0x58223096f8c0(AST_BLOCK, lineno=14) child=0x58223096f880(AST_CALL, lineno=13)
+[PARSER DBG] compound_stmt: scope=main#block1 decls=0x58223096f350 stmts=0x58223096f580
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x58223096f900
+[AST DBG] addChild parent=0x58223096f900(AST_FUN_DECL, lineno=10) child=0x58223096f8c0(AST_BLOCK, lineno=14)
+[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x58223096f8c0
+[PARSER DBG] declaration_list: added main
+[LEX][15] EOF
+[AST DBG] newNode kind=AST_PROGRAM -> 0x58223096f940
+[AST DBG] addChild parent=0x58223096f940(AST_PROGRAM, lineno=3) child=0x58223096f150(AST_FUN_DECL, lineno=3)
+[AST DBG] addChild parent=0x58223096f940(AST_PROGRAM, lineno=3) child=0x58223096f900(AST_FUN_DECL, lineno=10)
+Parse successful.
+
+=== AST ===
+Program (lineno=3)
+  FunDecl(name=gcd, lineno=3)
+    ParamList (lineno=3)
+      Param(name=u, lineno=3)
+      Param(name=v, lineno=3)
+    Block (lineno=8)
+      If (lineno=5)
+        BinOp (lineno=5)
+          Id(name=v, lineno=5)
+          Op(op='==', lineno=5)
+          Num(value=0, lineno=5)
+        Return (lineno=5)
+          Id(name=u, lineno=5)
+        Return (lineno=6)
+          Call(name=gcd, lineno=6)
+            ArgList (lineno=6)
+              Id(name=v, lineno=6)
+              BinOp (lineno=6)
+                Id(name=u, lineno=6)
+                Op(op='-', lineno=6)
+                BinOp (lineno=6)
+                  BinOp (lineno=6)
+                    Id(name=u, lineno=6)
+                    Op(op='/', lineno=6)
+                    Id(name=v, lineno=6)
+                  Op(op='*', lineno=6)
+                  Id(name=v, lineno=6)
+  FunDecl(name=main, lineno=10)
+    Block (lineno=14)
+      VarDecl(name=x, lineno=11)
+      VarDecl(name=y, lineno=11)
+      Assign (lineno=12)
+        Id(name=x, lineno=12)
+        Call(name=input, lineno=12)
+      Assign (lineno=12)
+        Id(name=y, lineno=12)
+        Call(name=input, lineno=12)
+      Call(name=output, lineno=13)
+        ArgList (lineno=13)
+          Call(name=gcd, lineno=13)
+            ArgList (lineno=13)
+              Id(name=x, lineno=13)
+              Id(name=y, lineno=13)
+AST has been saved to: docs/generated/frontend/syntax_tree/ast.txt
+Semantic analysis completed successfully with no errors.
+
+=== IR ===
+
+[IR_DBG] === Starting IR Generation ===
+[IR_DBG] Pass 1: Searching for global variable declarations...
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_PROGRAM at line 3
+[IR_DBG]   Case AST_PROGRAM
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_FUN_DECL at line 3
+[IR_DBG]   Case AST_FUN_DECL for 'gcd'
+[IR_DBG] Creating new name operand: gcd
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] Creating new name operand: u
+[IR_DBG] Emitting instruction with opcode 19
+[IR_DBG] Creating new name operand: v
+[IR_DBG] Emitting instruction with opcode 19
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 8
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_IF at line 5
+[IR_DBG]   Case AST_IF
+[IR_DBG] Creating new label: L0
+[IR_DBG] Creating new label: L1
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 5
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '=='
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 5
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: v
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 5
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t0
+[IR_DBG] Emitting instruction with opcode 9
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Emitting instruction with opcode 17
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_RETURN at line 5
+[IR_DBG]   Case AST_RETURN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 5
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: u
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_RETURN
+[IR_DBG] Emitting instruction with opcode 16
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_RETURN at line 6
+[IR_DBG]   Case AST_RETURN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 6
+[IR_DBG]    Case AST_CALL for function 'gcd'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 6
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: v
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 6
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '-'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 6
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: u
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 6
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '*'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 6
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '/'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 6
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: u
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 6
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: v
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t1
+[IR_DBG] Emitting instruction with opcode 8
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 6
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: v
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t2
+[IR_DBG] Emitting instruction with opcode 7
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Creating new temporary: t3
+[IR_DBG] Emitting instruction with opcode 6
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] Creating new temporary: t4
+[IR_DBG] Creating new constant: 2
+[IR_DBG] Creating new name operand: gcd
+[IR_DBG] Emitting instruction with opcode 22
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_RETURN
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_IF
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_FUN_DECL
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_FUN_DECL at line 10
+[IR_DBG]   Case AST_FUN_DECL for 'main'
+[IR_DBG] Creating new name operand: main
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 14
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 12
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 12
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 12
+[IR_DBG]    Case AST_CALL for function 'input'
+[IR_DBG] Creating new temporary: t5
+[IR_DBG] Creating new constant: 0
+[IR_DBG] Creating new name operand: input
+[IR_DBG] Emitting instruction with opcode 22
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] Creating new name operand: x
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 12
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 12
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 12
+[IR_DBG]    Case AST_CALL for function 'input'
+[IR_DBG] Creating new temporary: t6
+[IR_DBG] Creating new constant: 0
+[IR_DBG] Creating new name operand: input
+[IR_DBG] Emitting instruction with opcode 22
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] Creating new name operand: y
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 13
+[IR_DBG]   Case AST_CALL (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 13
+[IR_DBG]    Case AST_CALL for function 'output'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 13
+[IR_DBG]    Case AST_CALL for function 'gcd'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 13
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: x
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 13
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: y
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] Creating new temporary: t7
+[IR_DBG] Creating new constant: 2
+[IR_DBG] Creating new name operand: gcd
+[IR_DBG] Emitting instruction with opcode 22
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] Creating new constant: 1
+[IR_DBG] Creating new name operand: output
+[IR_DBG] Emitting instruction with opcode 21
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_FUN_DECL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_PROGRAM
+[IR_DBG] === Finished IR Generation ===
+
+--- BEGIN IR DUMP (Terminal) ---
+gcd:
+  param u
+  param v
+  t0 := v == 0
+  if_false t0 goto L0
+  return u
+L0:
+  arg v
+  t1 := u / v
+  t2 := t1 * v
+  t3 := u - t2
+  arg t3
+  t4 := call gcd, 2
+  return t4
+L1:
+  return _
+main:
+  t5 := call input, 0
+  x := t5
+  t6 := call input, 0
+  y := t6
+  arg x
+  arg y
+  t7 := call gcd, 2
+  arg t7
+  call output, 1
+  return _
+--- END IR DUMP ---
+IR dump has been saved to: docs/generated/intermediate/semantic/ir/generated_IR.txt
+======= SYMBOL TABLE =======
+Name            Scope      Kind   Decl Lines           Use Lines            Type  
+--------------------------------------------------------------------------
+y               main#block1 VAR    11	12,13	INT
+x               main#block1 VAR    11	12,13	INT
+main            global     FUNC   10		VOID
+v               gcd        VAR    3	5,6,6,6	INT
+u               gcd        VAR    3	5,6,6	INT
+gcd             global     FUNC   3	6,13	INT
+output          global     FUNC   0	13	VOID
+input           global     FUNC   0	12,12	INT
+======= END OF TABLE =======
+Symbol table has been saved to: docs/generated/frontend/symbol_table/symbol_table.txt
