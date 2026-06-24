@@ -68,6 +68,24 @@ python3 -u codegen/main.py > docs/generated/diagnostics/codegen/codegen.log
 
 The C and Python halves communicate through the IR text file rather than through a shared in-memory representation.
 
+## Technical Documentation By Module
+
+The detailed implementation documentation is in
+`docs/documentation/compiler_modules.md`. It groups the project by functional
+module and documents the role of the main functions, classes, generated
+artifacts, processor interface, and verification tools.
+
+Current module groups:
+
+- Front-end orchestration: `main.c` and `Makefile`.
+- Lexical and syntactic analysis: `parser/lexer.l` and `parser/parser.y`.
+- Front-end data structures: AST, scope stack, symbol table, and diagnostic state under `src/`.
+- Semantic analysis and IR generation: `src/semantic.c` and `src/ir.c`.
+- Python backend: `codegen/codegen.py`, `codegen/symbol_table.py`, and `codegen/constants.py`.
+- Assembler and encoder: `codegen/assembler.py`.
+- Regression and execution tools: `tools/run_analysis_regressions.py`, `codegen/assembler_regressions.py`, and `tools/run_machine_code.py`.
+- Hardware target: `Processor(v2026-1)` and its Verilog modules.
+
 ## Analysis Regression Suite
 
 The dedicated front-end regression runner captures stdout/stderr in memory and avoids redirecting logs into tracked files:

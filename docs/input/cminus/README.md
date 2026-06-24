@@ -31,8 +31,18 @@ This folder contains sample C-minus inputs used to exercise the current compiler
 
 ## Files Not Wired Into `make run`
 
+- `invalid_lexical_error.txt`
+  - Negative lexical sample; the lexer must report an unexpected character and the pipeline must stop before AST/IR generation
+- `invalid_syntax_error.txt`
+  - Negative syntax sample; Bison must report a syntax error and semantic analysis must not run
+- `invalid_undeclared_identifier.txt`
+  - Semantic-error sample for use of an identifier that cannot be resolved in the active scope chain
 - `invalid_missing_return.txt`
   - Semantic-error sample for non-void return-path checking
+- `invalid_missing_main.txt`
+  - Semantic-error sample for programs without a global `main` function
+
+These invalid files are exercised by `make test_analysis` through `tools/run_analysis_regressions.py`, not by the positive `make run_all` suite.
 
 ## Legacy Numeric Aliases
 
@@ -78,3 +88,5 @@ Manual invalid-case run:
 make bin/c-c
 bin/c-c docs/input/cminus/invalid_missing_return.txt
 ```
+
+The compiler should leave `docs/generated/intermediate/semantic/ir/generated_IR.txt` absent for lexical, syntactic, and semantic failures.

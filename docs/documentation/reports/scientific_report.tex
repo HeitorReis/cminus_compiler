@@ -12,7 +12,7 @@
 
 \geometry{margin=2.5cm}
 
-\title{Relatório Científico de Desenvolvimento, Correção e Verificação do Compilador C-minus para uma ISA ARM-like}
+\title{Relatório Científico de Desenvolvimento, Correção e Verificação do Sistema Processador ARM-like e Compilador C-minus}
 \author{Projeto C-minus Compiler}
 \date{\today}
 
@@ -21,27 +21,28 @@
 \maketitle
 
 \begin{abstract}
-Este relatório apresenta a arquitetura, a lógica de implementação, a correção e a verificação do compilador C-minus presente neste repositório. O trabalho adota como especificação normativa o documento \texttt{ImportantAdditionalText-ProcessorInformation.txt}, que define uma ISA de 32 bits com largura fixa, campo de condição, bits de suporte para imediato e atualização do CPSR, e organização uniforme dos campos \texttt{Rd}, \texttt{Rh} e \texttt{Operand\_2}. A contribuição principal desta etapa foi uma correção ampla do toolchain do compilador, cobrindo parser, tabela de símbolos, análise semântica, geração de IR, geração de assembly e montagem em código de máquina. Além da descrição detalhada do desenvolvimento, o relatório documenta os erros encontrados, as correções aplicadas, a metodologia de validação e as limitações residuais que permanecem fora de escopo, em especial as divergências entre o compilador corrigido e os módulos de \texttt{processor\_archive/}.
+Este relatório apresenta a arquitetura, a lógica de implementação, a correção e a verificação de um sistema didático formado pelo processador ARM-like \texttt{Processor(v2026-1)} e pelo compilador C-minus integrado ao seu fluxo de desenvolvimento. O trabalho adota como especificação normativa o documento \texttt{ImportantAdditionalText-ProcessorInformation.txt}, que define uma ISA de 32 bits com largura fixa, campo de condição, bits de suporte para imediato e atualização do CPSR, e organização uniforme dos campos \texttt{Rd}, \texttt{Rh} e \texttt{Operand\_2}. A contribuição principal desta etapa foi alinhar o toolchain ao processador, cobrindo parser, tabela de símbolos, análise semântica, geração de IR, geração de assembly, montagem em código de máquina e simulação. Além da descrição detalhada do desenvolvimento, o relatório documenta os erros encontrados, as correções aplicadas, a metodologia de validação e a interface atual entre compilador, montador, simulador e hardware.
 \end{abstract}
 
 \section{Introdução}
-O compilador C-minus é organizado como um pipeline clássico dividido em frontend, IR e backend. O frontend, implementado em C com Flex e Bison, realiza análise léxica, sintática e semântica. Em seguida, o compilador gera uma representação intermediária textual, usada como entrada para um backend em Python responsável por produzir assembly e, por fim, código de máquina.
+O eixo deste projeto é um processador didático ARM-like, descrito em Verilog, que recebe programas por meio de uma memória de instruções e executa uma ISA própria de 32 bits. O compilador C-minus foi incorporado a esse projeto para reduzir a distância entre programas de alto nível e a validação do hardware, permitindo gerar assembly e código de máquina compatíveis com a implementação atual do \texttt{Processor(v2026-1)}.
 
-O objetivo desta correção foi tornar o compilador consistente com a ISA ARM-like normativa descrita em \texttt{ImportantAdditionalText-ProcessorInformation.txt}, sem modificar os módulos do processador mantidos em \texttt{processor\_archive/}. A decisão de manter o hardware fora do escopo exige que este relatório diferencie explicitamente o que foi corrigido no compilador daquilo que permanece como incompatibilidade residual entre software e hardware.
+O compilador C-minus é organizado como um pipeline clássico dividido em frontend, IR e backend. O frontend, implementado em C com Flex e Bison, realiza análise léxica, sintática e semântica. Em seguida, o compilador gera uma representação intermediária textual, usada como entrada para um backend em Python responsável por produzir assembly e, por fim, código de máquina. O objetivo desta correção foi tornar esse pipeline consistente com a ISA ARM-like normativa descrita em \texttt{ImportantAdditionalText-ProcessorInformation.txt} e com o comportamento atualmente auditado no processador. O relatório diferencia o que pertence ao compilador, ao montador, ao simulador em Python e ao RTL para evitar misturar decisões de software com sinais de hardware.
 
 \section{Objetivos e escopo}
 Os objetivos técnicos desta etapa foram:
 \begin{itemize}[leftmargin=1.5em]
+    \item documentar o sistema como uma integração entre processador, compilador, montador e simulador;
     \item corrigir falhas funcionais no frontend, na IR, no backend e no assembler;
     \item alinhar a codificação binária e o modelo de execução do compilador à ISA normativa;
     \item tornar o pipeline reproduzível, com testes positivos e negativos;
     \item registrar de forma científica a lógica de implementação, a auditoria técnica e as limitações remanescentes.
 \end{itemize}
 
-O escopo cobre apenas o compilador e sua documentação. O hardware arquivado em \texttt{processor\_archive/} permanece inalterado. Portanto, este texto distingue:
+O escopo cobre o processador atual, o compilador, sua documentação e os pontos de integração entre software e hardware. Portanto, este texto distingue:
 \begin{itemize}[leftmargin=1.5em]
     \item \textbf{correções internas do toolchain}, que foram implementadas e validadas; e
-    \item \textbf{mismatches residuais com o hardware}, que foram apenas documentados.
+    \item \textbf{contratos de integração com o hardware}, que descrevem como o binário gerado se relaciona com a ROM, a RAM, o PC, o CPSR e a lógica de branch/link.
 \end{itemize}
 
 \section{ISA normativa e modelo-alvo}
@@ -69,21 +70,25 @@ Essa ISA impõe quatro decisões de projeto importantes:
     \item o backend precisa respeitar uma convenção de chamadas consistente com as restrições do conjunto de registradores.
 \end{enumerate}
 
+No caminho atualmente usado pelo compilador, instruções de memória são emitidas com endereço em registrador, no formato conceitual \texttt{load: rd = [ro]} e \texttt{store: [ro] = rh}. Isso acompanha o RTL de \texttt{DataMemory.v}, cuja porta de endereço recebe o valor de \texttt{Ro}.
+
 \subsection{Convenção de software adotada}
-Embora a ISA normativa preveja instruções de \emph{branch \& link}, o compilador preserva a convenção de software já usada no projeto:
+Embora a ISA normativa preveja instruções de \emph{branch \& link}, o compilador preserva uma convenção de software explicita para nomes especiais de registradores:
 \begin{itemize}[leftmargin=1.5em]
     \item \texttt{r0}: valor de retorno;
     \item \texttt{r1--r3}: três primeiros argumentos;
-    \item \texttt{r28}: registrador de link tratado pelo compilador;
+    \item \texttt{r28}: registrador de link lógico usado no assembly gerado;
     \item \texttt{r29}: \emph{stack pointer};
     \item \texttt{r31}: \emph{frame pointer}.
 \end{itemize}
-Essa escolha mantém compatibilidade com o backend já existente, ao custo de uma divergência residual em relação ao hardware arquivado, discutida na Seção~\ref{sec:limitacoes}.
+No RTL atual, \texttt{bl} também grava um registrador de link dedicado dentro de \texttt{registerBank.v}. Assim, \texttt{b: r28} significa branch por registrador geral, enquanto o retorno pelo link dedicado é uma classe de branch separada, controlada por \texttt{Funct[22]}.
 
 \subsection{Modelo de memória do toolchain}
-O compilador foi unificado para assumir uma pilha lógica de 256 palavras, com \texttt{sp} inicial em 255 e seção de dados posicionada a partir desse limite. Essa decisão padroniza frontend, backend e assembler, evitando inconsistências internas de endereçamento. Entretanto, tal convenção ainda exige reconciliação explícita com a implementação de memória presente no hardware arquivado.
+O compilador foi unificado para assumir uma pilha lógica de 64 palavras, com \texttt{sp} inicial em 63 e seção de dados posicionada a partir de \texttt{DATA\_SECTION\_BASE = 64} no namespace do back-end. No RTL e no simulador, a RAM de dados possui 64 posições; portanto, a porta de endereço efetiva usa 6 bits, em coerência com \texttt{DataMemory.v}.
 
 \section{Arquitetura do compilador}
+Uma descricao modular e mais detalhada das funcoes, classes e matrizes de decisao do projeto esta em \texttt{docs/documentation/compiler\_modules.md}. Este relatorio resume essa documentacao para manter o texto cientifico legivel.
+
 \subsection{Frontend}
 O frontend está distribuído entre \texttt{parser/} e \texttt{src/}. O lexer reconhece palavras-chave, identificadores, literais inteiros, operadores aritméticos e relacionais, pontuação e comentários. O parser produz uma AST n-ária. Em paralelo, ações semânticas registram declarações e usos na tabela de símbolos.
 
@@ -213,7 +218,7 @@ Mais de 3 argumentos & ABI incompleta no gerador de chamadas & passagem em pilha
 Pseudo-\texttt{movi} inválido & expansão parcial e endereço literal incorreto & \emph{literal pool} com expansão correta & suporte a constantes e endereços grandes \\
 Branch fora de alcance & uso incorreto do espaço de operando e contagem de tamanho imprecisa & expansão para branch longo via registrador & conformidade com imediato de 10 bits \\
 Parser de mnemonics condicionado & análise de sufixos sensível à ordem textual & parser de sufixos em ambas as ordens & assembler mais robusto \\
-Modelo de memória inconsistente & constantes divergentes entre backend e assembler & constante compartilhada de 256 palavras & endereçamento interno unificado \\
+Modelo de memória inconsistente & constantes divergentes entre backend e assembler & constantes compartilhadas: pilha de 64 palavras, \texttt{sp}=63 e base de dados 64 & endereçamento interno unificado \\
 \bottomrule
 \end{longtable}
 
@@ -275,19 +280,19 @@ Do ponto de vista arquitetural, o ganho principal foi a remoção de contratos i
 
 \section{Limitações residuais}
 \label{sec:limitacoes}
-As seguintes limitações permanecem fora do escopo desta correção:
+As seguintes limitações e cuidados permanecem relevantes:
 \begin{itemize}[leftmargin=1.5em]
-    \item \textbf{Hardware arquivado não atualizado}: os módulos de \texttt{processor\_archive/} não foram modificados, apesar de divergirem da ISA normativa em pontos relevantes de branch, memória e link.
-    \item \textbf{Convenção de software em \texttt{r28}}: o compilador mantém \texttt{r28} como registrador de link lógico, enquanto o hardware arquivado possui também um registrador de link separado.
-    \item \textbf{Modelo de memória}: o compilador assume uma região de pilha com 256 palavras e dados acima dessa faixa, o que exige reconciliação explícita com a RAM descrita no hardware arquivado.
+    \item \textbf{Link lógico e link dedicado}: o assembly usa o nome \texttt{lr} para \texttt{r28}, mas o RTL também possui um registrador de link dedicado para instruções \texttt{bl} e retorno por link.
+    \item \textbf{Modelo de memória}: o back-end separa pilha e dados por convenção textual, enquanto a RAM efetiva do processador tem 64 endereços; por isso a carga na ROM/RAM deve respeitar o mapeamento de 6 bits do hardware.
     \item \textbf{Análise de retorno conservadora}: a verificação de retorno cobre os casos estruturais mais relevantes, mas não tenta provar propriedades avançadas de fluxo de controle.
+    \item \textbf{Logs verbosos}: o front-end e o back-end ainda mantêm mensagens de depuração extensas, úteis para auditoria, mas ruidosas para uma ferramenta final.
 \end{itemize}
 
 \section{Trabalhos futuros}
 Os próximos passos tecnicamente recomendados são:
 \begin{itemize}[leftmargin=1.5em]
-    \item reconciliar explicitamente o hardware arquivado com a ISA normativa adotada pelo compilador;
-    \item substituir a convenção de link em \texttt{r28} por uma solução alinhada ao hardware final escolhido;
+    \item consolidar a ABI para decidir quando usar \texttt{r28} como link lógico e quando usar o retorno por link dedicado do RTL;
+    \item automatizar a atualização de \texttt{Processor(v2026-1)/modules/single\_port\_rom\_init.txt} a partir do binário gerado;
     \item ampliar a suíte com testes de regressão para recursão profunda, pressão de registradores e arrays multidimensionais simulados;
     \item produzir resultados experimentais com simulação do processador, medindo corretude binária fim a fim.
 \end{itemize}
@@ -311,8 +316,8 @@ Operador \texttt{\%} na linguagem & permitido pela gramática & implementado por
 Escopo por bloco & esperado em linguagem C-like & implementado & ausente antes da correção \\
 Funções \texttt{int} sem retorno total & devem ser rejeitadas & implementado & verificação conservadora \\
 Passagem de mais de 3 argumentos & depende da ABI & implementado & chamador empilha excedentes \\
-Modelo de memória do compilador & consistente entre fases & implementado & 256 palavras no toolchain \\
-Compatibilidade com \texttt{processor\_archive/} & desejável & parcial & permanece fora de escopo \\
+Modelo de memória do compilador & consistente entre fases & implementado & pilha de 64 palavras e RAM efetiva de 64 endereços \\
+Compatibilidade com \texttt{Processor(v2026-1)} & desejável & parcial & branch/link e tamanho de memória documentados; carga automatica da ROM ainda e trabalho futuro \\
 \bottomrule
 \end{longtable}
 

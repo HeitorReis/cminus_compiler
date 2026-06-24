@@ -12,11 +12,20 @@ This document describes the **current** branch implementation in `Processor(v202
 The source of truth for this explanation is the Verilog in:
 
 - `Processor(v2026-1)/integrated.v`
+- `Processor(v2026-1)/Processor.v`
 - `Processor(v2026-1)/modules/ControlUnit.v`
 - `Processor(v2026-1)/modules/PC_main.v`
 - `Processor(v2026-1)/modules/registerBank.v`
 - `Processor(v2026-1)/modules/ALUControl.v`
 - `Processor(v2026-1)/modules/alu.v`
+
+Project-level Quartus details:
+
+- top-level entity: `Processor`
+- family/device: Cyclone IV E / `EP4CE115F29C7`
+- instruction memory initialization file: `Processor(v2026-1)/modules/single_port_rom_init.txt`
+- instruction memory depth: 1024 words
+- data memory depth: 64 words
 
 ---
 
@@ -321,7 +330,45 @@ branch-to-link  -> load PC from dedicated link register
 
 ---
 
-## 6. Effect on previous audit findings
+## 6. Compiler and simulator interface
+
+The compiler emits one 32-bit binary word per line in:
+
+```text
+docs/generated/final/assembler/machine_code/generated_machine_code.txt
+```
+
+For the Quartus processor path, these words must be copied or transformed into the ROM initialization file used by `InstructionMemory.v`:
+
+```text
+Processor(v2026-1)/modules/single_port_rom_init.txt
+```
+
+The Python runner in `tools/run_machine_code.py` models the same branch/link behavior described above. It is intentionally useful as a fast software check before loading the machine code into the Verilog ROM.
+
+### Top-level interaction signals
+
+| Signal | Current meaning |
+| --- | --- |
+| `SW[16]` | reset |
+| `SW[15]` | peripheral input release signal for `in`; release occurs on falling edge while halted |
+| `SW[17]` | clock pause gate in `Processor.v` |
+| `SW[7:0]` | input value for `in` |
+| `LEDR[0]` | `write_condition` from the CPSR condition verifier |
+| `output_value` / `HEX6-HEX7` | last value written by `out` |
+| `pc` / `HEX0-HEX3` | current instruction address |
+
+### Register convention used by the compiler
+
+The assembly backend uses `r28` as a logical link register name in generated assembly. In the RTL, however, `bl` writes a dedicated hardware `LinkRegister` inside `registerBank.v`, and `PC_main.v` can return through that dedicated link path when `should_branch_to_link` is active. This distinction matters when reading generated assembly versus hardware control signals:
+
+- `b: r28` is a register-form branch to the value stored in general register `r28`;
+- branch-to-link is a separate hardware branch class controlled by `Funct[22]`;
+- `bl` stores `PC+1` in the dedicated link register when the branch condition passes.
+
+---
+
+## 7. Effect on previous audit findings
 
 The following earlier findings are no longer true after the RTL fix:
 
@@ -336,7 +383,7 @@ The following hardware properties remain true:
 
 ---
 
-## 7. Remaining processor-side caveat
+## 8. Remaining processor-side caveat
 
 The branch class with:
 

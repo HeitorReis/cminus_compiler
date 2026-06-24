@@ -105,16 +105,16 @@ Mnemonic
 	mov
 	1000
 	Rd = Op₂
-	5.2 Load/Store (Type=01)
+5.2 Load/Store (Type=01)
 Mnemonic
 	Funct [23:20]
 	Semantics
 	store
 	0000
-	[Ro+imm] ← Rh
+	[Ro] ← Rh in the current Processor(v2026-1) RTL. The assembler/backend emit register-addressed load/store for generated programs.
 	load
 	0001
-	Rd ← [Ro+imm]
+	Rd ← [Ro] in the current Processor(v2026-1) RTL. Immediate-form memory operands are not used by the compiler pipeline.
 5.3 Branch & Link (Type=11)
 Mnemonic
 		Funct pattern

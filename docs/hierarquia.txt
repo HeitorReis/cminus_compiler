@@ -1,5 +1,8 @@
 docs/input/cminus/: arquivos de entrada/testes.
 docs/documentation/: documentação e relatório.
+docs/documentation/compiler_modules.md: documentação técnica modular do compilador, com funções, classes, matrizes de fluxo, convenção de registradores e relação com o Processor(v2026-1).
+docs/documentation/processor_branch_audit.md: auditoria da lógica atual de branch, branch-and-link e retorno por link dedicado do Processor(v2026-1).
+docs/documentation/reports/scientific_report.tex: relatório técnico complementar em LaTeX sobre arquitetura, correções e verificação do compilador.
 docs/generated/frontend/syntax_tree/ast.txt: árvore sintática.
 docs/generated/frontend/symbol_table/symbol_table.txt: tabela de símbolos.
 docs/generated/intermediate/semantic/ir/generated_IR.txt: IR intermediário.
@@ -7,3 +10,5 @@ docs/generated/intermediate/codegen/assembly/generated_assembly.txt: assembly in
 docs/generated/final/assembler/machine_code/generated_machine_code.txt: saída final de máquina.
 docs/generated/diagnostics/: logs e arquivos de debug.
 docs/generated/batch/: saídas do run_all, separando códigos finais e logs.
+scientific-report/Relatorio_AOC.tex: relatório principal no formato ABNT sobre o compilador C- e o processador alvo.
+Processor(v2026-1)/: projeto Quartus/Verilog do processador alvo usado pelo compilador e pelo simulador de código de máquina.

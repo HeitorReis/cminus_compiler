@@ -6,7 +6,8 @@ int fact(int n)
 
 void main(void)
 {
-    int r;
-    r = fact(5);
+    int r; int n;
+    n = input();
+    r = fact(n);
     output(r);
 }
