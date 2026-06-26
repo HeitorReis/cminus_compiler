@@ -1,86 +1,129 @@
-Line 0: b i do 1 | asm: bi: main
-Line 1: mov i do r29 = r0, 63 | asm: movi: r29 = 63
-Line 2: mov na do r31 = r0, r29 | asm: mov: r31 = r29
+Line 0: b i do 40 | asm: bi: main
+Line 1: sub i do r29 = r29, 1 | asm: subi: r29 = r29, 1
+Line 2: store na do r0 = r28, r29 | asm: store: [r29] = r28
 Line 3: sub i do r29 = r29, 1 | asm: subi: r29 = r29, 1
-Line 4: mov i do r4 = r0, 2 | asm: movi: r4 = 2
-Line 5: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
-Line 6: store na do r0 = r4, r30 | asm: store: [r30] = r4
-Line 7: mov i do r5 = r0, 1 | asm: movi: r5 = 1
-Line 8: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
-Line 9: store na do r0 = r5, r30 | asm: store: [r30] = r5
-Line 10: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
-Line 11: load na do r6 = r0, r30 | asm: load: r6 = [r30]
-Line 12: mov na do r1 = r0, r6 | asm: mov: r1 = r6
-Line 13: out na do r0 = r0, r1 | asm: out: r1
-Line 14: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
-Line 15: load na do r7 = r0, r30 | asm: load: r7 = [r30]
-Line 16: mov na do r1 = r0, r7 | asm: mov: r1 = r7
-Line 17: out na do r0 = r0, r1 | asm: out: r1
-Line 18: mov i do r8 = r0, 0 | asm: movi: r8 = 0
-Line 19: mov na do r0 = r0, r8 | asm: mov: r0 = r8
-Line 20: b i do 1 | asm: bi: main_epilogue
-Line 21: b i do 0 | asm: ret:
-Line 22: add na do r0 = r0, r0 | asm: data stack_space[0] .space
-Line 23: add na do r0 = r0, r0 | asm: data stack_space[1] .space
-Line 24: add na do r0 = r0, r0 | asm: data stack_space[2] .space
-Line 25: add na do r0 = r0, r0 | asm: data stack_space[3] .space
-Line 26: add na do r0 = r0, r0 | asm: data stack_space[4] .space
-Line 27: add na do r0 = r0, r0 | asm: data stack_space[5] .space
-Line 28: add na do r0 = r0, r0 | asm: data stack_space[6] .space
-Line 29: add na do r0 = r0, r0 | asm: data stack_space[7] .space
-Line 30: add na do r0 = r0, r0 | asm: data stack_space[8] .space
-Line 31: add na do r0 = r0, r0 | asm: data stack_space[9] .space
-Line 32: add na do r0 = r0, r0 | asm: data stack_space[10] .space
-Line 33: add na do r0 = r0, r0 | asm: data stack_space[11] .space
-Line 34: add na do r0 = r0, r0 | asm: data stack_space[12] .space
-Line 35: add na do r0 = r0, r0 | asm: data stack_space[13] .space
-Line 36: add na do r0 = r0, r0 | asm: data stack_space[14] .space
-Line 37: add na do r0 = r0, r0 | asm: data stack_space[15] .space
-Line 38: add na do r0 = r0, r0 | asm: data stack_space[16] .space
-Line 39: add na do r0 = r0, r0 | asm: data stack_space[17] .space
-Line 40: add na do r0 = r0, r0 | asm: data stack_space[18] .space
-Line 41: add na do r0 = r0, r0 | asm: data stack_space[19] .space
-Line 42: add na do r0 = r0, r0 | asm: data stack_space[20] .space
-Line 43: add na do r0 = r0, r0 | asm: data stack_space[21] .space
-Line 44: add na do r0 = r0, r0 | asm: data stack_space[22] .space
-Line 45: add na do r0 = r0, r0 | asm: data stack_space[23] .space
-Line 46: add na do r0 = r0, r0 | asm: data stack_space[24] .space
-Line 47: add na do r0 = r0, r0 | asm: data stack_space[25] .space
-Line 48: add na do r0 = r0, r0 | asm: data stack_space[26] .space
-Line 49: add na do r0 = r0, r0 | asm: data stack_space[27] .space
-Line 50: add na do r0 = r0, r0 | asm: data stack_space[28] .space
-Line 51: add na do r0 = r0, r0 | asm: data stack_space[29] .space
-Line 52: add na do r0 = r0, r0 | asm: data stack_space[30] .space
-Line 53: add na do r0 = r0, r0 | asm: data stack_space[31] .space
-Line 54: add na do r0 = r0, r0 | asm: data stack_space[32] .space
-Line 55: add na do r0 = r0, r0 | asm: data stack_space[33] .space
-Line 56: add na do r0 = r0, r0 | asm: data stack_space[34] .space
-Line 57: add na do r0 = r0, r0 | asm: data stack_space[35] .space
-Line 58: add na do r0 = r0, r0 | asm: data stack_space[36] .space
-Line 59: add na do r0 = r0, r0 | asm: data stack_space[37] .space
-Line 60: add na do r0 = r0, r0 | asm: data stack_space[38] .space
-Line 61: add na do r0 = r0, r0 | asm: data stack_space[39] .space
-Line 62: add na do r0 = r0, r0 | asm: data stack_space[40] .space
-Line 63: add na do r0 = r0, r0 | asm: data stack_space[41] .space
-Line 64: add na do r0 = r0, r0 | asm: data stack_space[42] .space
-Line 65: add na do r0 = r0, r0 | asm: data stack_space[43] .space
-Line 66: add na do r0 = r0, r0 | asm: data stack_space[44] .space
-Line 67: add na do r0 = r0, r0 | asm: data stack_space[45] .space
-Line 68: add na do r0 = r0, r0 | asm: data stack_space[46] .space
-Line 69: add na do r0 = r0, r0 | asm: data stack_space[47] .space
-Line 70: add na do r0 = r0, r0 | asm: data stack_space[48] .space
-Line 71: add na do r0 = r0, r0 | asm: data stack_space[49] .space
-Line 72: add na do r0 = r0, r0 | asm: data stack_space[50] .space
-Line 73: add na do r0 = r0, r0 | asm: data stack_space[51] .space
-Line 74: add na do r0 = r0, r0 | asm: data stack_space[52] .space
-Line 75: add na do r0 = r0, r0 | asm: data stack_space[53] .space
-Line 76: add na do r0 = r0, r0 | asm: data stack_space[54] .space
-Line 77: add na do r0 = r0, r0 | asm: data stack_space[55] .space
-Line 78: add na do r0 = r0, r0 | asm: data stack_space[56] .space
-Line 79: add na do r0 = r0, r0 | asm: data stack_space[57] .space
-Line 80: add na do r0 = r0, r0 | asm: data stack_space[58] .space
-Line 81: add na do r0 = r0, r0 | asm: data stack_space[59] .space
-Line 82: add na do r0 = r0, r0 | asm: data stack_space[60] .space
-Line 83: add na do r0 = r0, r0 | asm: data stack_space[61] .space
-Line 84: add na do r0 = r0, r0 | asm: data stack_space[62] .space
-Line 85: add na do r0 = r0, r0 | asm: data stack_space[63] .space
+Line 4: store na do r0 = r31, r29 | asm: store: [r29] = r31
+Line 5: mov na do r31 = r0, r29 | asm: mov: r31 = r29
+Line 6: sub i do r29 = r29, 5 | asm: subi: r29 = r29, 5
+Line 7: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 8: store na do r0 = r1, r30 | asm: store: [r30] = r1
+Line 9: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 10: load na do r4 = r0, r30 | asm: load: r4 = [r30]
+Line 11: mov i do r5 = r0, 2 | asm: movi: r5 = 2
+Line 12: sub s do r0 = r4, r5 | asm: subs: r0 = r4, r5
+Line 13: b i gteq 4 | asm: bigteq: L0
+Line 14: mov i do r6 = r0, 1 | asm: movi: r6 = 1
+Line 15: mov na do r0 = r0, r6 | asm: mov: r0 = r6
+Line 16: b i do 18 | asm: bi: fact_epilogue
+Line 17: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 18: load na do r7 = r0, r30 | asm: load: r7 = [r30]
+Line 19: sub i do r8 = r7, 1 | asm: subi: r8 = r7, 1
+Line 20: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
+Line 21: store na do r0 = r8, r30 | asm: store: [r30] = r8
+Line 22: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
+Line 23: load na do r9 = r0, r30 | asm: load: r9 = [r30]
+Line 24: mov na do r1 = r0, r9 | asm: mov: r1 = r9
+Line 25: mov i do r10 = r0, 28 | asm: movi: r10 = fact_Lret0
+Line 26: mov na do r28 = r0, r10 | asm: mov: r28 = r10
+Line 27: bl i do -26 | asm: bl: fact
+Line 28: mov na do r11 = r0, r0 | asm: mov: r11 = r0
+Line 29: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 30: load na do r12 = r0, r30 | asm: load: r12 = [r30]
+Line 31: mul na do r13 = r12, r11 | asm: mul: r13 = r12, r11
+Line 32: mov na do r0 = r0, r13 | asm: mov: r0 = r13
+Line 33: b i do 1 | asm: bi: fact_epilogue
+Line 34: mov na do r29 = r0, r31 | asm: mov: r29 = r31
+Line 35: load na do r31 = r0, r29 | asm: load: r31 = [r29]
+Line 36: add i do r29 = r29, 1 | asm: addi: r29 = r29, 1
+Line 37: load na do r28 = r0, r29 | asm: load: r28 = [r29]
+Line 38: add i do r29 = r29, 1 | asm: addi: r29 = r29, 1
+Line 39: b do r28 | asm: b: r28
+Line 40: mov i do r29 = r0, 63 | asm: movi: r29 = 63
+Line 41: mov na do r31 = r0, r29 | asm: mov: r31 = r29
+Line 42: sub i do r29 = r29, 4 | asm: subi: r29 = r29, 4
+Line 43: in na do r4 = r0, r0 | asm: in: r4
+Line 44: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 45: store na do r0 = r4, r30 | asm: store: [r30] = r4
+Line 46: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 47: store na do r0 = r4, r30 | asm: store: [r30] = r4
+Line 48: sub i do r30 = r31, 1 | asm: subi: r30 = r31, 1
+Line 49: load na do r5 = r0, r30 | asm: load: r5 = [r30]
+Line 50: mov na do r1 = r0, r5 | asm: mov: r1 = r5
+Line 51: mov i do r6 = r0, 54 | asm: movi: r6 = main_Lret0
+Line 52: mov na do r28 = r0, r6 | asm: mov: r28 = r6
+Line 53: bl i do -52 | asm: bl: fact
+Line 54: mov na do r7 = r0, r0 | asm: mov: r7 = r0
+Line 55: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
+Line 56: store na do r0 = r7, r30 | asm: store: [r30] = r7
+Line 57: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
+Line 58: store na do r0 = r7, r30 | asm: store: [r30] = r7
+Line 59: sub i do r30 = r31, 2 | asm: subi: r30 = r31, 2
+Line 60: load na do r8 = r0, r30 | asm: load: r8 = [r30]
+Line 61: mov na do r1 = r0, r8 | asm: mov: r1 = r8
+Line 62: out na do r0 = r0, r1 | asm: out: r1
+Line 63: b i do 1 | asm: bi: main_epilogue
+Line 64: b i do 0 | asm: ret:
+Line 65: add na do r0 = r0, r0 | asm: data stack_space[0] .space
+Line 66: add na do r0 = r0, r0 | asm: data stack_space[1] .space
+Line 67: add na do r0 = r0, r0 | asm: data stack_space[2] .space
+Line 68: add na do r0 = r0, r0 | asm: data stack_space[3] .space
+Line 69: add na do r0 = r0, r0 | asm: data stack_space[4] .space
+Line 70: add na do r0 = r0, r0 | asm: data stack_space[5] .space
+Line 71: add na do r0 = r0, r0 | asm: data stack_space[6] .space
+Line 72: add na do r0 = r0, r0 | asm: data stack_space[7] .space
+Line 73: add na do r0 = r0, r0 | asm: data stack_space[8] .space
+Line 74: add na do r0 = r0, r0 | asm: data stack_space[9] .space
+Line 75: add na do r0 = r0, r0 | asm: data stack_space[10] .space
+Line 76: add na do r0 = r0, r0 | asm: data stack_space[11] .space
+Line 77: add na do r0 = r0, r0 | asm: data stack_space[12] .space
+Line 78: add na do r0 = r0, r0 | asm: data stack_space[13] .space
+Line 79: add na do r0 = r0, r0 | asm: data stack_space[14] .space
+Line 80: add na do r0 = r0, r0 | asm: data stack_space[15] .space
+Line 81: add na do r0 = r0, r0 | asm: data stack_space[16] .space
+Line 82: add na do r0 = r0, r0 | asm: data stack_space[17] .space
+Line 83: add na do r0 = r0, r0 | asm: data stack_space[18] .space
+Line 84: add na do r0 = r0, r0 | asm: data stack_space[19] .space
+Line 85: add na do r0 = r0, r0 | asm: data stack_space[20] .space
+Line 86: add na do r0 = r0, r0 | asm: data stack_space[21] .space
+Line 87: add na do r0 = r0, r0 | asm: data stack_space[22] .space
+Line 88: add na do r0 = r0, r0 | asm: data stack_space[23] .space
+Line 89: add na do r0 = r0, r0 | asm: data stack_space[24] .space
+Line 90: add na do r0 = r0, r0 | asm: data stack_space[25] .space
+Line 91: add na do r0 = r0, r0 | asm: data stack_space[26] .space
+Line 92: add na do r0 = r0, r0 | asm: data stack_space[27] .space
+Line 93: add na do r0 = r0, r0 | asm: data stack_space[28] .space
+Line 94: add na do r0 = r0, r0 | asm: data stack_space[29] .space
+Line 95: add na do r0 = r0, r0 | asm: data stack_space[30] .space
+Line 96: add na do r0 = r0, r0 | asm: data stack_space[31] .space
+Line 97: add na do r0 = r0, r0 | asm: data stack_space[32] .space
+Line 98: add na do r0 = r0, r0 | asm: data stack_space[33] .space
+Line 99: add na do r0 = r0, r0 | asm: data stack_space[34] .space
+Line 100: add na do r0 = r0, r0 | asm: data stack_space[35] .space
+Line 101: add na do r0 = r0, r0 | asm: data stack_space[36] .space
+Line 102: add na do r0 = r0, r0 | asm: data stack_space[37] .space
+Line 103: add na do r0 = r0, r0 | asm: data stack_space[38] .space
+Line 104: add na do r0 = r0, r0 | asm: data stack_space[39] .space
+Line 105: add na do r0 = r0, r0 | asm: data stack_space[40] .space
+Line 106: add na do r0 = r0, r0 | asm: data stack_space[41] .space
+Line 107: add na do r0 = r0, r0 | asm: data stack_space[42] .space
+Line 108: add na do r0 = r0, r0 | asm: data stack_space[43] .space
+Line 109: add na do r0 = r0, r0 | asm: data stack_space[44] .space
+Line 110: add na do r0 = r0, r0 | asm: data stack_space[45] .space
+Line 111: add na do r0 = r0, r0 | asm: data stack_space[46] .space
+Line 112: add na do r0 = r0, r0 | asm: data stack_space[47] .space
+Line 113: add na do r0 = r0, r0 | asm: data stack_space[48] .space
+Line 114: add na do r0 = r0, r0 | asm: data stack_space[49] .space
+Line 115: add na do r0 = r0, r0 | asm: data stack_space[50] .space
+Line 116: add na do r0 = r0, r0 | asm: data stack_space[51] .space
+Line 117: add na do r0 = r0, r0 | asm: data stack_space[52] .space
+Line 118: add na do r0 = r0, r0 | asm: data stack_space[53] .space
+Line 119: add na do r0 = r0, r0 | asm: data stack_space[54] .space
+Line 120: add na do r0 = r0, r0 | asm: data stack_space[55] .space
+Line 121: add na do r0 = r0, r0 | asm: data stack_space[56] .space
+Line 122: add na do r0 = r0, r0 | asm: data stack_space[57] .space
+Line 123: add na do r0 = r0, r0 | asm: data stack_space[58] .space
+Line 124: add na do r0 = r0, r0 | asm: data stack_space[59] .space
+Line 125: add na do r0 = r0, r0 | asm: data stack_space[60] .space
+Line 126: add na do r0 = r0, r0 | asm: data stack_space[61] .space
+Line 127: add na do r0 = r0, r0 | asm: data stack_space[62] .space
+Line 128: add na do r0 = r0, r0 | asm: data stack_space[63] .space

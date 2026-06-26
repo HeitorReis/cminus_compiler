@@ -145,11 +145,11 @@
 
 --- [TRANSLATE] Processando IR: return _ ---
 [TRANSLATE] -> Caminho: Retorno de Função
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r9'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r10'}
 [TRANSLATE] -> Pular para a seção de epílogo.
 [ADD_INSTR] Adicionando instrução para 'count': bi: count_epilogue
 -> Finalizando a função 'count', fazendo spill de todos os registradores sujos.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r10', 'r9'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r9', 'r10'}
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 7 instruções.

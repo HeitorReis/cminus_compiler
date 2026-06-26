@@ -171,7 +171,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 9 instruções.
-[DEBUG] Função 'main': all_vars=['x', 'result'], defined_vars={'result', 'x'}, params=[]
+[DEBUG] Função 'main': all_vars=['x', 'result'], defined_vars={'x', 'result'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['x', 'result']
 --> Criando o layout da pilha para 'main'...
@@ -248,7 +248,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r7', 'r6'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r6', 'r7'}
 [SPILL_ALL] -> Salvando variável local 'result' do registrador r7 na pilha [fp, #-2].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r7

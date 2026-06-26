@@ -8,7 +8,7 @@ Parsing 'docs/input/cminus/sort.txt'...
 [LEX][5] NUM      -> '2' (2)
 [LEX][5] RBRACK   -> ']'
 [LEX][5] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d521770
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed4770
 [PARSER DBG] var_declaration (vector): name=vet, size=2[LEX][7] INT      -> 'int'
 [LEX][7] ID       -> 'minloc'
 [LEX][7] LPAREN   -> '('
@@ -16,99 +16,99 @@ Parsing 'docs/input/cminus/sort.txt'...
 [LEX][7] ID       -> 'a'
 [LEX][7] LBRACK   -> '['
 [LEX][7] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_PARAM_ARRAY -> 0x5c2b6d521970
-[AST DBG] newNode kind=AST_PARAM_LIST -> 0x5c2b6d5219d0
-[AST DBG] addChild parent=0x5c2b6d5219d0(AST_PARAM_LIST, lineno=7) child=0x5c2b6d521970(AST_PARAM_ARRAY, lineno=7)
+[AST DBG] newNode kind=AST_PARAM_ARRAY -> 0x5806c3ed4970
+[AST DBG] newNode kind=AST_PARAM_LIST -> 0x5806c3ed49d0
+[AST DBG] addChild parent=0x5806c3ed49d0(AST_PARAM_LIST, lineno=7) child=0x5806c3ed4970(AST_PARAM_ARRAY, lineno=7)
 [LEX][7] COMMA    -> ','
 [LEX][7] INT      -> 'int'
 [LEX][7] ID       -> 'low'
 [LEX][7] COMMA    -> ','
-[AST DBG] newNode kind=AST_PARAM -> 0x5c2b6d521ac0
-[AST DBG] addChild parent=0x5c2b6d5219d0(AST_PARAM_LIST, lineno=7) child=0x5c2b6d521ac0(AST_PARAM, lineno=7)
+[AST DBG] newNode kind=AST_PARAM -> 0x5806c3ed4ac0
+[AST DBG] addChild parent=0x5806c3ed49d0(AST_PARAM_LIST, lineno=7) child=0x5806c3ed4ac0(AST_PARAM, lineno=7)
 [LEX][7] INT      -> 'int'
 [LEX][7] ID       -> 'high'
 [LEX][7] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_PARAM -> 0x5c2b6d521bd0
-[AST DBG] addChild parent=0x5c2b6d5219d0(AST_PARAM_LIST, lineno=7) child=0x5c2b6d521bd0(AST_PARAM, lineno=7)
+[AST DBG] newNode kind=AST_PARAM -> 0x5806c3ed4bd0
+[AST DBG] addChild parent=0x5806c3ed49d0(AST_PARAM_LIST, lineno=7) child=0x5806c3ed4bd0(AST_PARAM, lineno=7)
 [LEX][8] LBRACE   -> '{'
 [LEX][8] INT      -> 'int'
 [LEX][8] ID       -> 'i'
 [LEX][8] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d521d20
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed4d20
 [PARSER DBG] var_declaration: name=i[LEX][8] INT      -> 'int'
 [LEX][8] ID       -> 'x'
 [LEX][8] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d521e30
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed4e30
 [PARSER DBG] var_declaration: name=x[LEX][8] INT      -> 'int'
 [LEX][8] ID       -> 'k'
 [LEX][8] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d521f40
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed4f40
 [PARSER DBG] var_declaration: name=k[LEX][9] ID       -> 'k'
 [LEX][9] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d521fa0
-[AST DBG] newIdNode("k") -> 0x5c2b6d521fa0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed4fa0
+[AST DBG] newIdNode("k") -> 0x5806c3ed4fa0
 [LEX][9] ID       -> 'low'
 [LEX][9] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522000
-[AST DBG] newIdNode("low") -> 0x5c2b6d522000
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d522060
-[AST DBG] addChild parent=0x5c2b6d522060(AST_ASSIGN, lineno=9) child=0x5c2b6d521fa0(AST_ID, lineno=9)
-[AST DBG] addChild parent=0x5c2b6d522060(AST_ASSIGN, lineno=9) child=0x5c2b6d522000(AST_ID, lineno=9)
-[PARSER DBG] assignment: var=0x5c2b6d521fa0 expr=0x5c2b6d522000
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5000
+[AST DBG] newIdNode("low") -> 0x5806c3ed5000
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed5060
+[AST DBG] addChild parent=0x5806c3ed5060(AST_ASSIGN, lineno=9) child=0x5806c3ed4fa0(AST_ID, lineno=9)
+[AST DBG] addChild parent=0x5806c3ed5060(AST_ASSIGN, lineno=9) child=0x5806c3ed5000(AST_ID, lineno=9)
+[PARSER DBG] assignment: var=0x5806c3ed4fa0 expr=0x5806c3ed5000
 [LEX][10] ID       -> 'x'
 [LEX][10] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5220a0
-[AST DBG] newIdNode("x") -> 0x5c2b6d5220a0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed50a0
+[AST DBG] newIdNode("x") -> 0x5806c3ed50a0
 [LEX][10] ID       -> 'a'
 [LEX][10] LBRACK   -> '['
 [LEX][10] ID       -> 'low'
 [LEX][10] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522120
-[AST DBG] newIdNode("low") -> 0x5c2b6d522120
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d522180
-[AST DBG] addChild parent=0x5c2b6d522180(AST_ARRAY_ACCESS, lineno=10) child=0x5c2b6d522120(AST_ID, lineno=10)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5120
+[AST DBG] newIdNode("low") -> 0x5806c3ed5120
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed5180
+[AST DBG] addChild parent=0x5806c3ed5180(AST_ARRAY_ACCESS, lineno=10) child=0x5806c3ed5120(AST_ID, lineno=10)
 [LEX][10] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d5221c0
-[AST DBG] addChild parent=0x5c2b6d5221c0(AST_ASSIGN, lineno=10) child=0x5c2b6d5220a0(AST_ID, lineno=10)
-[AST DBG] addChild parent=0x5c2b6d5221c0(AST_ASSIGN, lineno=10) child=0x5c2b6d522180(AST_ARRAY_ACCESS, lineno=10)
-[PARSER DBG] assignment: var=0x5c2b6d5220a0 expr=0x5c2b6d522180
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed51c0
+[AST DBG] addChild parent=0x5806c3ed51c0(AST_ASSIGN, lineno=10) child=0x5806c3ed50a0(AST_ID, lineno=10)
+[AST DBG] addChild parent=0x5806c3ed51c0(AST_ASSIGN, lineno=10) child=0x5806c3ed5180(AST_ARRAY_ACCESS, lineno=10)
+[PARSER DBG] assignment: var=0x5806c3ed50a0 expr=0x5806c3ed5180
 [LEX][11] ID       -> 'i'
 [LEX][11] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522200
-[AST DBG] newIdNode("i") -> 0x5c2b6d522200
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5200
+[AST DBG] newIdNode("i") -> 0x5806c3ed5200
 [LEX][11] ID       -> 'low'
 [LEX][11] PLUS     -> '+'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522260
-[AST DBG] newIdNode("low") -> 0x5c2b6d522260
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d5222c0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5260
+[AST DBG] newIdNode("low") -> 0x5806c3ed5260
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed52c0
 [LEX][11] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d522300
-[AST DBG] newNumNode(1) -> 0x5c2b6d522300
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed5300
+[AST DBG] newNumNode(1) -> 0x5806c3ed5300
 [LEX][11] SEMI     -> ';'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d522340
-[AST DBG] addChild parent=0x5c2b6d522340(AST_BINOP, lineno=11) child=0x5c2b6d522260(AST_ID, lineno=11)
-[AST DBG] addChild parent=0x5c2b6d522340(AST_BINOP, lineno=11) child=0x5c2b6d5222c0(AST_OP, lineno=11)
-[AST DBG] addChild parent=0x5c2b6d522340(AST_BINOP, lineno=11) child=0x5c2b6d522300(AST_NUM, lineno=11)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d522380
-[AST DBG] addChild parent=0x5c2b6d522380(AST_ASSIGN, lineno=11) child=0x5c2b6d522200(AST_ID, lineno=11)
-[AST DBG] addChild parent=0x5c2b6d522380(AST_ASSIGN, lineno=11) child=0x5c2b6d522340(AST_BINOP, lineno=11)
-[PARSER DBG] assignment: var=0x5c2b6d522200 expr=0x5c2b6d522340
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed5340
+[AST DBG] addChild parent=0x5806c3ed5340(AST_BINOP, lineno=11) child=0x5806c3ed5260(AST_ID, lineno=11)
+[AST DBG] addChild parent=0x5806c3ed5340(AST_BINOP, lineno=11) child=0x5806c3ed52c0(AST_OP, lineno=11)
+[AST DBG] addChild parent=0x5806c3ed5340(AST_BINOP, lineno=11) child=0x5806c3ed5300(AST_NUM, lineno=11)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed5380
+[AST DBG] addChild parent=0x5806c3ed5380(AST_ASSIGN, lineno=11) child=0x5806c3ed5200(AST_ID, lineno=11)
+[AST DBG] addChild parent=0x5806c3ed5380(AST_ASSIGN, lineno=11) child=0x5806c3ed5340(AST_BINOP, lineno=11)
+[PARSER DBG] assignment: var=0x5806c3ed5200 expr=0x5806c3ed5340
 [LEX][12] WHILE    -> 'while'
 [LEX][12] LPAREN   -> '('
 [LEX][12] ID       -> 'i'
 [LEX][12] LT       -> '<'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5223e0
-[AST DBG] newIdNode("i") -> 0x5c2b6d5223e0
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d522440
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed53e0
+[AST DBG] newIdNode("i") -> 0x5806c3ed53e0
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed5440
 [LEX][12] ID       -> 'high'
 [LEX][12] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5224a0
-[AST DBG] newIdNode("high") -> 0x5c2b6d5224a0
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d522500
-[AST DBG] addChild parent=0x5c2b6d522500(AST_BINOP, lineno=12) child=0x5c2b6d5223e0(AST_ID, lineno=12)
-[AST DBG] addChild parent=0x5c2b6d522500(AST_BINOP, lineno=12) child=0x5c2b6d522440(AST_OP, lineno=12)
-[AST DBG] addChild parent=0x5c2b6d522500(AST_BINOP, lineno=12) child=0x5c2b6d5224a0(AST_ID, lineno=12)
-[PARSER DBG] binop: left=0x5c2b6d5223e0 op=0x5c2b6d522440 right=0x5c2b6d5224a0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed54a0
+[AST DBG] newIdNode("high") -> 0x5806c3ed54a0
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed5500
+[AST DBG] addChild parent=0x5806c3ed5500(AST_BINOP, lineno=12) child=0x5806c3ed53e0(AST_ID, lineno=12)
+[AST DBG] addChild parent=0x5806c3ed5500(AST_BINOP, lineno=12) child=0x5806c3ed5440(AST_OP, lineno=12)
+[AST DBG] addChild parent=0x5806c3ed5500(AST_BINOP, lineno=12) child=0x5806c3ed54a0(AST_ID, lineno=12)
+[PARSER DBG] binop: left=0x5806c3ed53e0 op=0x5806c3ed5440 right=0x5806c3ed54a0
 [LEX][12] LBRACE   -> '{'
 [LEX][13] IF       -> 'if'
 [LEX][13] LPAREN   -> '('
@@ -116,108 +116,108 @@ Parsing 'docs/input/cminus/sort.txt'...
 [LEX][13] LBRACK   -> '['
 [LEX][13] ID       -> 'i'
 [LEX][13] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5225a0
-[AST DBG] newIdNode("i") -> 0x5c2b6d5225a0
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d522600
-[AST DBG] addChild parent=0x5c2b6d522600(AST_ARRAY_ACCESS, lineno=13) child=0x5c2b6d5225a0(AST_ID, lineno=13)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed55a0
+[AST DBG] newIdNode("i") -> 0x5806c3ed55a0
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed5600
+[AST DBG] addChild parent=0x5806c3ed5600(AST_ARRAY_ACCESS, lineno=13) child=0x5806c3ed55a0(AST_ID, lineno=13)
 [LEX][13] LT       -> '<'
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d522640
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed5640
 [LEX][13] ID       -> 'x'
 [LEX][13] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5226a0
-[AST DBG] newIdNode("x") -> 0x5c2b6d5226a0
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d522700
-[AST DBG] addChild parent=0x5c2b6d522700(AST_BINOP, lineno=13) child=0x5c2b6d522600(AST_ARRAY_ACCESS, lineno=13)
-[AST DBG] addChild parent=0x5c2b6d522700(AST_BINOP, lineno=13) child=0x5c2b6d522640(AST_OP, lineno=13)
-[AST DBG] addChild parent=0x5c2b6d522700(AST_BINOP, lineno=13) child=0x5c2b6d5226a0(AST_ID, lineno=13)
-[PARSER DBG] binop: left=0x5c2b6d522600 op=0x5c2b6d522640 right=0x5c2b6d5226a0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed56a0
+[AST DBG] newIdNode("x") -> 0x5806c3ed56a0
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed5700
+[AST DBG] addChild parent=0x5806c3ed5700(AST_BINOP, lineno=13) child=0x5806c3ed5600(AST_ARRAY_ACCESS, lineno=13)
+[AST DBG] addChild parent=0x5806c3ed5700(AST_BINOP, lineno=13) child=0x5806c3ed5640(AST_OP, lineno=13)
+[AST DBG] addChild parent=0x5806c3ed5700(AST_BINOP, lineno=13) child=0x5806c3ed56a0(AST_ID, lineno=13)
+[PARSER DBG] binop: left=0x5806c3ed5600 op=0x5806c3ed5640 right=0x5806c3ed56a0
 [LEX][13] LBRACE   -> '{'
 [LEX][14] ID       -> 'x'
 [LEX][14] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5227a0
-[AST DBG] newIdNode("x") -> 0x5c2b6d5227a0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed57a0
+[AST DBG] newIdNode("x") -> 0x5806c3ed57a0
 [LEX][14] ID       -> 'a'
 [LEX][14] LBRACK   -> '['
 [LEX][14] ID       -> 'i'
 [LEX][14] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522820
-[AST DBG] newIdNode("i") -> 0x5c2b6d522820
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d522880
-[AST DBG] addChild parent=0x5c2b6d522880(AST_ARRAY_ACCESS, lineno=14) child=0x5c2b6d522820(AST_ID, lineno=14)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5820
+[AST DBG] newIdNode("i") -> 0x5806c3ed5820
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed5880
+[AST DBG] addChild parent=0x5806c3ed5880(AST_ARRAY_ACCESS, lineno=14) child=0x5806c3ed5820(AST_ID, lineno=14)
 [LEX][14] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d5228c0
-[AST DBG] addChild parent=0x5c2b6d5228c0(AST_ASSIGN, lineno=14) child=0x5c2b6d5227a0(AST_ID, lineno=14)
-[AST DBG] addChild parent=0x5c2b6d5228c0(AST_ASSIGN, lineno=14) child=0x5c2b6d522880(AST_ARRAY_ACCESS, lineno=14)
-[PARSER DBG] assignment: var=0x5c2b6d5227a0 expr=0x5c2b6d522880
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed58c0
+[AST DBG] addChild parent=0x5806c3ed58c0(AST_ASSIGN, lineno=14) child=0x5806c3ed57a0(AST_ID, lineno=14)
+[AST DBG] addChild parent=0x5806c3ed58c0(AST_ASSIGN, lineno=14) child=0x5806c3ed5880(AST_ARRAY_ACCESS, lineno=14)
+[PARSER DBG] assignment: var=0x5806c3ed57a0 expr=0x5806c3ed5880
 [LEX][15] ID       -> 'k'
 [LEX][15] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522900
-[AST DBG] newIdNode("k") -> 0x5c2b6d522900
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5900
+[AST DBG] newIdNode("k") -> 0x5806c3ed5900
 [LEX][15] ID       -> 'i'
 [LEX][15] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522960
-[AST DBG] newIdNode("i") -> 0x5c2b6d522960
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d5229c0
-[AST DBG] addChild parent=0x5c2b6d5229c0(AST_ASSIGN, lineno=15) child=0x5c2b6d522900(AST_ID, lineno=15)
-[AST DBG] addChild parent=0x5c2b6d5229c0(AST_ASSIGN, lineno=15) child=0x5c2b6d522960(AST_ID, lineno=15)
-[PARSER DBG] assignment: var=0x5c2b6d522900 expr=0x5c2b6d522960
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5960
+[AST DBG] newIdNode("i") -> 0x5806c3ed5960
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed59c0
+[AST DBG] addChild parent=0x5806c3ed59c0(AST_ASSIGN, lineno=15) child=0x5806c3ed5900(AST_ID, lineno=15)
+[AST DBG] addChild parent=0x5806c3ed59c0(AST_ASSIGN, lineno=15) child=0x5806c3ed5960(AST_ID, lineno=15)
+[PARSER DBG] assignment: var=0x5806c3ed5900 expr=0x5806c3ed5960
 [LEX][16] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d522a00
-[AST DBG] addChild parent=0x5c2b6d522a00(AST_BLOCK, lineno=16) child=0x5c2b6d5228c0(AST_ASSIGN, lineno=14)
-[AST DBG] addChild parent=0x5c2b6d522a00(AST_BLOCK, lineno=16) child=0x5c2b6d5229c0(AST_ASSIGN, lineno=15)
-[PARSER DBG] compound_stmt: scope=minloc#block0#block1#block2 decls=(nil) stmts=0x5c2b6d5228c0
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed5a00
+[AST DBG] addChild parent=0x5806c3ed5a00(AST_BLOCK, lineno=16) child=0x5806c3ed58c0(AST_ASSIGN, lineno=14)
+[AST DBG] addChild parent=0x5806c3ed5a00(AST_BLOCK, lineno=16) child=0x5806c3ed59c0(AST_ASSIGN, lineno=15)
+[PARSER DBG] compound_stmt: scope=minloc#block0#block1#block2 decls=(nil) stmts=0x5806c3ed58c0
 [LEX][17] ID       -> 'i'
-[AST DBG] newNode kind=AST_IF -> 0x5c2b6d522a40
-[AST DBG] addChild parent=0x5c2b6d522a40(AST_IF, lineno=13) child=0x5c2b6d522700(AST_BINOP, lineno=13)
-[AST DBG] addChild parent=0x5c2b6d522a40(AST_IF, lineno=13) child=0x5c2b6d522a00(AST_BLOCK, lineno=16)
+[AST DBG] newNode kind=AST_IF -> 0x5806c3ed5a40
+[AST DBG] addChild parent=0x5806c3ed5a40(AST_IF, lineno=13) child=0x5806c3ed5700(AST_BINOP, lineno=13)
+[AST DBG] addChild parent=0x5806c3ed5a40(AST_IF, lineno=13) child=0x5806c3ed5a00(AST_BLOCK, lineno=16)
 [LEX][17] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522a80
-[AST DBG] newIdNode("i") -> 0x5c2b6d522a80
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5a80
+[AST DBG] newIdNode("i") -> 0x5806c3ed5a80
 [LEX][17] ID       -> 'i'
 [LEX][17] PLUS     -> '+'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522ae0
-[AST DBG] newIdNode("i") -> 0x5c2b6d522ae0
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d522b40
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5ae0
+[AST DBG] newIdNode("i") -> 0x5806c3ed5ae0
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed5b40
 [LEX][17] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d522b80
-[AST DBG] newNumNode(1) -> 0x5c2b6d522b80
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed5b80
+[AST DBG] newNumNode(1) -> 0x5806c3ed5b80
 [LEX][17] SEMI     -> ';'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d522bc0
-[AST DBG] addChild parent=0x5c2b6d522bc0(AST_BINOP, lineno=17) child=0x5c2b6d522ae0(AST_ID, lineno=17)
-[AST DBG] addChild parent=0x5c2b6d522bc0(AST_BINOP, lineno=17) child=0x5c2b6d522b40(AST_OP, lineno=17)
-[AST DBG] addChild parent=0x5c2b6d522bc0(AST_BINOP, lineno=17) child=0x5c2b6d522b80(AST_NUM, lineno=17)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d522c00
-[AST DBG] addChild parent=0x5c2b6d522c00(AST_ASSIGN, lineno=17) child=0x5c2b6d522a80(AST_ID, lineno=17)
-[AST DBG] addChild parent=0x5c2b6d522c00(AST_ASSIGN, lineno=17) child=0x5c2b6d522bc0(AST_BINOP, lineno=17)
-[PARSER DBG] assignment: var=0x5c2b6d522a80 expr=0x5c2b6d522bc0
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed5bc0
+[AST DBG] addChild parent=0x5806c3ed5bc0(AST_BINOP, lineno=17) child=0x5806c3ed5ae0(AST_ID, lineno=17)
+[AST DBG] addChild parent=0x5806c3ed5bc0(AST_BINOP, lineno=17) child=0x5806c3ed5b40(AST_OP, lineno=17)
+[AST DBG] addChild parent=0x5806c3ed5bc0(AST_BINOP, lineno=17) child=0x5806c3ed5b80(AST_NUM, lineno=17)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed5c00
+[AST DBG] addChild parent=0x5806c3ed5c00(AST_ASSIGN, lineno=17) child=0x5806c3ed5a80(AST_ID, lineno=17)
+[AST DBG] addChild parent=0x5806c3ed5c00(AST_ASSIGN, lineno=17) child=0x5806c3ed5bc0(AST_BINOP, lineno=17)
+[PARSER DBG] assignment: var=0x5806c3ed5a80 expr=0x5806c3ed5bc0
 [LEX][18] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d522c40
-[AST DBG] addChild parent=0x5c2b6d522c40(AST_BLOCK, lineno=18) child=0x5c2b6d522a40(AST_IF, lineno=13)
-[AST DBG] addChild parent=0x5c2b6d522c40(AST_BLOCK, lineno=18) child=0x5c2b6d522c00(AST_ASSIGN, lineno=17)
-[PARSER DBG] compound_stmt: scope=minloc#block0#block1 decls=(nil) stmts=0x5c2b6d522a40
-[AST DBG] newNode kind=AST_WHILE -> 0x5c2b6d522c80
-[AST DBG] addChild parent=0x5c2b6d522c80(AST_WHILE, lineno=12) child=0x5c2b6d522500(AST_BINOP, lineno=12)
-[AST DBG] addChild parent=0x5c2b6d522c80(AST_WHILE, lineno=12) child=0x5c2b6d522c40(AST_BLOCK, lineno=18)
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed5c40
+[AST DBG] addChild parent=0x5806c3ed5c40(AST_BLOCK, lineno=18) child=0x5806c3ed5a40(AST_IF, lineno=13)
+[AST DBG] addChild parent=0x5806c3ed5c40(AST_BLOCK, lineno=18) child=0x5806c3ed5c00(AST_ASSIGN, lineno=17)
+[PARSER DBG] compound_stmt: scope=minloc#block0#block1 decls=(nil) stmts=0x5806c3ed5a40
+[AST DBG] newNode kind=AST_WHILE -> 0x5806c3ed5c80
+[AST DBG] addChild parent=0x5806c3ed5c80(AST_WHILE, lineno=12) child=0x5806c3ed5500(AST_BINOP, lineno=12)
+[AST DBG] addChild parent=0x5806c3ed5c80(AST_WHILE, lineno=12) child=0x5806c3ed5c40(AST_BLOCK, lineno=18)
 [LEX][19] RETURN   -> 'return'
 [LEX][19] ID       -> 'k'
 [LEX][19] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d522cc0
-[AST DBG] newIdNode("k") -> 0x5c2b6d522cc0
-[AST DBG] newNode kind=AST_RETURN -> 0x5c2b6d522d20
-[AST DBG] addChild parent=0x5c2b6d522d20(AST_RETURN, lineno=19) child=0x5c2b6d522cc0(AST_ID, lineno=19)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed5cc0
+[AST DBG] newIdNode("k") -> 0x5806c3ed5cc0
+[AST DBG] newNode kind=AST_RETURN -> 0x5806c3ed5d20
+[AST DBG] addChild parent=0x5806c3ed5d20(AST_RETURN, lineno=19) child=0x5806c3ed5cc0(AST_ID, lineno=19)
 [LEX][20] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d522d60
-[AST DBG] addChild parent=0x5c2b6d522d60(AST_BLOCK, lineno=20) child=0x5c2b6d521d20(AST_VAR_DECL, lineno=8)
-[AST DBG] addChild parent=0x5c2b6d522d60(AST_BLOCK, lineno=20) child=0x5c2b6d522060(AST_ASSIGN, lineno=9)
-[AST DBG] addChild parent=0x5c2b6d522d60(AST_BLOCK, lineno=20) child=0x5c2b6d5221c0(AST_ASSIGN, lineno=10)
-[AST DBG] addChild parent=0x5c2b6d522d60(AST_BLOCK, lineno=20) child=0x5c2b6d522380(AST_ASSIGN, lineno=11)
-[AST DBG] addChild parent=0x5c2b6d522d60(AST_BLOCK, lineno=20) child=0x5c2b6d522c80(AST_WHILE, lineno=12)
-[AST DBG] addChild parent=0x5c2b6d522d60(AST_BLOCK, lineno=20) child=0x5c2b6d522d20(AST_RETURN, lineno=19)
-[PARSER DBG] compound_stmt: scope=minloc#block0 decls=0x5c2b6d521d20 stmts=0x5c2b6d522060
-[AST DBG] newNode kind=AST_FUN_DECL -> 0x5c2b6d522da0
-[AST DBG] addChild parent=0x5c2b6d522da0(AST_FUN_DECL, lineno=7) child=0x5c2b6d5219d0(AST_PARAM_LIST, lineno=7)
-[AST DBG] addChild parent=0x5c2b6d522da0(AST_FUN_DECL, lineno=7) child=0x5c2b6d522d60(AST_BLOCK, lineno=20)
-[PARSER DBG] fun_declaration: name=minloc, params=0x5c2b6d5219d0, body=0x5c2b6d522d60
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed5d60
+[AST DBG] addChild parent=0x5806c3ed5d60(AST_BLOCK, lineno=20) child=0x5806c3ed4d20(AST_VAR_DECL, lineno=8)
+[AST DBG] addChild parent=0x5806c3ed5d60(AST_BLOCK, lineno=20) child=0x5806c3ed5060(AST_ASSIGN, lineno=9)
+[AST DBG] addChild parent=0x5806c3ed5d60(AST_BLOCK, lineno=20) child=0x5806c3ed51c0(AST_ASSIGN, lineno=10)
+[AST DBG] addChild parent=0x5806c3ed5d60(AST_BLOCK, lineno=20) child=0x5806c3ed5380(AST_ASSIGN, lineno=11)
+[AST DBG] addChild parent=0x5806c3ed5d60(AST_BLOCK, lineno=20) child=0x5806c3ed5c80(AST_WHILE, lineno=12)
+[AST DBG] addChild parent=0x5806c3ed5d60(AST_BLOCK, lineno=20) child=0x5806c3ed5d20(AST_RETURN, lineno=19)
+[PARSER DBG] compound_stmt: scope=minloc#block0 decls=0x5806c3ed4d20 stmts=0x5806c3ed5060
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x5806c3ed5da0
+[AST DBG] addChild parent=0x5806c3ed5da0(AST_FUN_DECL, lineno=7) child=0x5806c3ed49d0(AST_PARAM_LIST, lineno=7)
+[AST DBG] addChild parent=0x5806c3ed5da0(AST_FUN_DECL, lineno=7) child=0x5806c3ed5d60(AST_BLOCK, lineno=20)
+[PARSER DBG] fun_declaration: name=minloc, params=0x5806c3ed49d0, body=0x5806c3ed5d60
 [PARSER DBG] declaration_list: added minloc
 [LEX][22] VOID     -> 'void'
 [LEX][22] ID       -> 'sort'
@@ -226,199 +226,199 @@ Parsing 'docs/input/cminus/sort.txt'...
 [LEX][22] ID       -> 'a'
 [LEX][22] LBRACK   -> '['
 [LEX][22] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_PARAM_ARRAY -> 0x5c2b6d522f60
-[AST DBG] newNode kind=AST_PARAM_LIST -> 0x5c2b6d522fc0
-[AST DBG] addChild parent=0x5c2b6d522fc0(AST_PARAM_LIST, lineno=22) child=0x5c2b6d522f60(AST_PARAM_ARRAY, lineno=22)
+[AST DBG] newNode kind=AST_PARAM_ARRAY -> 0x5806c3ed5f60
+[AST DBG] newNode kind=AST_PARAM_LIST -> 0x5806c3ed5fc0
+[AST DBG] addChild parent=0x5806c3ed5fc0(AST_PARAM_LIST, lineno=22) child=0x5806c3ed5f60(AST_PARAM_ARRAY, lineno=22)
 [LEX][22] COMMA    -> ','
 [LEX][22] INT      -> 'int'
 [LEX][22] ID       -> 'low'
 [LEX][22] COMMA    -> ','
-[AST DBG] newNode kind=AST_PARAM -> 0x5c2b6d5230b0
-[AST DBG] addChild parent=0x5c2b6d522fc0(AST_PARAM_LIST, lineno=22) child=0x5c2b6d5230b0(AST_PARAM, lineno=22)
+[AST DBG] newNode kind=AST_PARAM -> 0x5806c3ed60b0
+[AST DBG] addChild parent=0x5806c3ed5fc0(AST_PARAM_LIST, lineno=22) child=0x5806c3ed60b0(AST_PARAM, lineno=22)
 [LEX][22] INT      -> 'int'
 [LEX][22] ID       -> 'high'
 [LEX][22] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_PARAM -> 0x5c2b6d5231c0
-[AST DBG] addChild parent=0x5c2b6d522fc0(AST_PARAM_LIST, lineno=22) child=0x5c2b6d5231c0(AST_PARAM, lineno=22)
+[AST DBG] newNode kind=AST_PARAM -> 0x5806c3ed61c0
+[AST DBG] addChild parent=0x5806c3ed5fc0(AST_PARAM_LIST, lineno=22) child=0x5806c3ed61c0(AST_PARAM, lineno=22)
 [LEX][23] LBRACE   -> '{'
 [LEX][23] INT      -> 'int'
 [LEX][23] ID       -> 'i'
 [LEX][23] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d523310
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed6310
 [PARSER DBG] var_declaration: name=i[LEX][23] INT      -> 'int'
 [LEX][23] ID       -> 'k'
 [LEX][23] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d523420
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed6420
 [PARSER DBG] var_declaration: name=k[LEX][24] ID       -> 'i'
 [LEX][24] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523480
-[AST DBG] newIdNode("i") -> 0x5c2b6d523480
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6480
+[AST DBG] newIdNode("i") -> 0x5806c3ed6480
 [LEX][24] ID       -> 'low'
 [LEX][24] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5234e0
-[AST DBG] newIdNode("low") -> 0x5c2b6d5234e0
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d523540
-[AST DBG] addChild parent=0x5c2b6d523540(AST_ASSIGN, lineno=24) child=0x5c2b6d523480(AST_ID, lineno=24)
-[AST DBG] addChild parent=0x5c2b6d523540(AST_ASSIGN, lineno=24) child=0x5c2b6d5234e0(AST_ID, lineno=24)
-[PARSER DBG] assignment: var=0x5c2b6d523480 expr=0x5c2b6d5234e0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed64e0
+[AST DBG] newIdNode("low") -> 0x5806c3ed64e0
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed6540
+[AST DBG] addChild parent=0x5806c3ed6540(AST_ASSIGN, lineno=24) child=0x5806c3ed6480(AST_ID, lineno=24)
+[AST DBG] addChild parent=0x5806c3ed6540(AST_ASSIGN, lineno=24) child=0x5806c3ed64e0(AST_ID, lineno=24)
+[PARSER DBG] assignment: var=0x5806c3ed6480 expr=0x5806c3ed64e0
 [LEX][25] WHILE    -> 'while'
 [LEX][25] LPAREN   -> '('
 [LEX][25] ID       -> 'i'
 [LEX][25] LT       -> '<'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523580
-[AST DBG] newIdNode("i") -> 0x5c2b6d523580
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d5235e0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6580
+[AST DBG] newIdNode("i") -> 0x5806c3ed6580
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed65e0
 [LEX][25] ID       -> 'high'
 [LEX][25] MINUS    -> '-'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523640
-[AST DBG] newIdNode("high") -> 0x5c2b6d523640
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d5236a0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6640
+[AST DBG] newIdNode("high") -> 0x5806c3ed6640
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed66a0
 [LEX][25] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d5236e0
-[AST DBG] newNumNode(1) -> 0x5c2b6d5236e0
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed66e0
+[AST DBG] newNumNode(1) -> 0x5806c3ed66e0
 [LEX][25] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d523720
-[AST DBG] addChild parent=0x5c2b6d523720(AST_BINOP, lineno=25) child=0x5c2b6d523640(AST_ID, lineno=25)
-[AST DBG] addChild parent=0x5c2b6d523720(AST_BINOP, lineno=25) child=0x5c2b6d5236a0(AST_OP, lineno=25)
-[AST DBG] addChild parent=0x5c2b6d523720(AST_BINOP, lineno=25) child=0x5c2b6d5236e0(AST_NUM, lineno=25)
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d523760
-[AST DBG] addChild parent=0x5c2b6d523760(AST_BINOP, lineno=25) child=0x5c2b6d523580(AST_ID, lineno=25)
-[AST DBG] addChild parent=0x5c2b6d523760(AST_BINOP, lineno=25) child=0x5c2b6d5235e0(AST_OP, lineno=25)
-[AST DBG] addChild parent=0x5c2b6d523760(AST_BINOP, lineno=25) child=0x5c2b6d523720(AST_BINOP, lineno=25)
-[PARSER DBG] binop: left=0x5c2b6d523580 op=0x5c2b6d5235e0 right=0x5c2b6d523720
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed6720
+[AST DBG] addChild parent=0x5806c3ed6720(AST_BINOP, lineno=25) child=0x5806c3ed6640(AST_ID, lineno=25)
+[AST DBG] addChild parent=0x5806c3ed6720(AST_BINOP, lineno=25) child=0x5806c3ed66a0(AST_OP, lineno=25)
+[AST DBG] addChild parent=0x5806c3ed6720(AST_BINOP, lineno=25) child=0x5806c3ed66e0(AST_NUM, lineno=25)
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed6760
+[AST DBG] addChild parent=0x5806c3ed6760(AST_BINOP, lineno=25) child=0x5806c3ed6580(AST_ID, lineno=25)
+[AST DBG] addChild parent=0x5806c3ed6760(AST_BINOP, lineno=25) child=0x5806c3ed65e0(AST_OP, lineno=25)
+[AST DBG] addChild parent=0x5806c3ed6760(AST_BINOP, lineno=25) child=0x5806c3ed6720(AST_BINOP, lineno=25)
+[PARSER DBG] binop: left=0x5806c3ed6580 op=0x5806c3ed65e0 right=0x5806c3ed6720
 [LEX][25] LBRACE   -> '{'
 [LEX][26] INT      -> 'int'
 [LEX][26] ID       -> 't'
 [LEX][26] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d5238b0
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed68b0
 [PARSER DBG] var_declaration: name=t[LEX][27] ID       -> 'k'
 [LEX][27] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523910
-[AST DBG] newIdNode("k") -> 0x5c2b6d523910
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6910
+[AST DBG] newIdNode("k") -> 0x5806c3ed6910
 [LEX][27] ID       -> 'minloc'
 [LEX][27] LPAREN   -> '('
 [LEX][27] ID       -> 'a'
 [LEX][27] COMMA    -> ','
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523990
-[AST DBG] newIdNode("a") -> 0x5c2b6d523990
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x5c2b6d5239f0
-[AST DBG] addChild parent=0x5c2b6d5239f0(AST_ARG_LIST, lineno=27) child=0x5c2b6d523990(AST_ID, lineno=27)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6990
+[AST DBG] newIdNode("a") -> 0x5806c3ed6990
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x5806c3ed69f0
+[AST DBG] addChild parent=0x5806c3ed69f0(AST_ARG_LIST, lineno=27) child=0x5806c3ed6990(AST_ID, lineno=27)
 [LEX][27] ID       -> 'i'
 [LEX][27] COMMA    -> ','
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523a30
-[AST DBG] newIdNode("i") -> 0x5c2b6d523a30
-[AST DBG] addChild parent=0x5c2b6d5239f0(AST_ARG_LIST, lineno=27) child=0x5c2b6d523a30(AST_ID, lineno=27)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6a30
+[AST DBG] newIdNode("i") -> 0x5806c3ed6a30
+[AST DBG] addChild parent=0x5806c3ed69f0(AST_ARG_LIST, lineno=27) child=0x5806c3ed6a30(AST_ID, lineno=27)
 [LEX][27] ID       -> 'high'
 [LEX][27] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523a90
-[AST DBG] newIdNode("high") -> 0x5c2b6d523a90
-[AST DBG] addChild parent=0x5c2b6d5239f0(AST_ARG_LIST, lineno=27) child=0x5c2b6d523a90(AST_ID, lineno=27)
-[AST DBG] newNode kind=AST_CALL -> 0x5c2b6d523af0
-[AST DBG] addChild parent=0x5c2b6d523af0(AST_CALL, lineno=27) child=0x5c2b6d5239f0(AST_ARG_LIST, lineno=27)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6a90
+[AST DBG] newIdNode("high") -> 0x5806c3ed6a90
+[AST DBG] addChild parent=0x5806c3ed69f0(AST_ARG_LIST, lineno=27) child=0x5806c3ed6a90(AST_ID, lineno=27)
+[AST DBG] newNode kind=AST_CALL -> 0x5806c3ed6af0
+[AST DBG] addChild parent=0x5806c3ed6af0(AST_CALL, lineno=27) child=0x5806c3ed69f0(AST_ARG_LIST, lineno=27)
 [LEX][27] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d523b30
-[AST DBG] addChild parent=0x5c2b6d523b30(AST_ASSIGN, lineno=27) child=0x5c2b6d523910(AST_ID, lineno=27)
-[AST DBG] addChild parent=0x5c2b6d523b30(AST_ASSIGN, lineno=27) child=0x5c2b6d523af0(AST_CALL, lineno=27)
-[PARSER DBG] assignment: var=0x5c2b6d523910 expr=0x5c2b6d523af0
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed6b30
+[AST DBG] addChild parent=0x5806c3ed6b30(AST_ASSIGN, lineno=27) child=0x5806c3ed6910(AST_ID, lineno=27)
+[AST DBG] addChild parent=0x5806c3ed6b30(AST_ASSIGN, lineno=27) child=0x5806c3ed6af0(AST_CALL, lineno=27)
+[PARSER DBG] assignment: var=0x5806c3ed6910 expr=0x5806c3ed6af0
 [LEX][28] ID       -> 't'
 [LEX][28] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523b70
-[AST DBG] newIdNode("t") -> 0x5c2b6d523b70
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6b70
+[AST DBG] newIdNode("t") -> 0x5806c3ed6b70
 [LEX][28] ID       -> 'a'
 [LEX][28] LBRACK   -> '['
 [LEX][28] ID       -> 'k'
 [LEX][28] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523bf0
-[AST DBG] newIdNode("k") -> 0x5c2b6d523bf0
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d523c50
-[AST DBG] addChild parent=0x5c2b6d523c50(AST_ARRAY_ACCESS, lineno=28) child=0x5c2b6d523bf0(AST_ID, lineno=28)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6bf0
+[AST DBG] newIdNode("k") -> 0x5806c3ed6bf0
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed6c50
+[AST DBG] addChild parent=0x5806c3ed6c50(AST_ARRAY_ACCESS, lineno=28) child=0x5806c3ed6bf0(AST_ID, lineno=28)
 [LEX][28] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d523c90
-[AST DBG] addChild parent=0x5c2b6d523c90(AST_ASSIGN, lineno=28) child=0x5c2b6d523b70(AST_ID, lineno=28)
-[AST DBG] addChild parent=0x5c2b6d523c90(AST_ASSIGN, lineno=28) child=0x5c2b6d523c50(AST_ARRAY_ACCESS, lineno=28)
-[PARSER DBG] assignment: var=0x5c2b6d523b70 expr=0x5c2b6d523c50
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed6c90
+[AST DBG] addChild parent=0x5806c3ed6c90(AST_ASSIGN, lineno=28) child=0x5806c3ed6b70(AST_ID, lineno=28)
+[AST DBG] addChild parent=0x5806c3ed6c90(AST_ASSIGN, lineno=28) child=0x5806c3ed6c50(AST_ARRAY_ACCESS, lineno=28)
+[PARSER DBG] assignment: var=0x5806c3ed6b70 expr=0x5806c3ed6c50
 [LEX][29] ID       -> 'a'
 [LEX][29] LBRACK   -> '['
 [LEX][29] ID       -> 'k'
 [LEX][29] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523cf0
-[AST DBG] newIdNode("k") -> 0x5c2b6d523cf0
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d523d50
-[AST DBG] addChild parent=0x5c2b6d523d50(AST_ARRAY_ACCESS, lineno=29) child=0x5c2b6d523cf0(AST_ID, lineno=29)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6cf0
+[AST DBG] newIdNode("k") -> 0x5806c3ed6cf0
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed6d50
+[AST DBG] addChild parent=0x5806c3ed6d50(AST_ARRAY_ACCESS, lineno=29) child=0x5806c3ed6cf0(AST_ID, lineno=29)
 [LEX][29] ASSIGN   -> '='
 [LEX][29] ID       -> 'a'
 [LEX][29] LBRACK   -> '['
 [LEX][29] ID       -> 'i'
 [LEX][29] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523db0
-[AST DBG] newIdNode("i") -> 0x5c2b6d523db0
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d523e10
-[AST DBG] addChild parent=0x5c2b6d523e10(AST_ARRAY_ACCESS, lineno=29) child=0x5c2b6d523db0(AST_ID, lineno=29)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6db0
+[AST DBG] newIdNode("i") -> 0x5806c3ed6db0
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed6e10
+[AST DBG] addChild parent=0x5806c3ed6e10(AST_ARRAY_ACCESS, lineno=29) child=0x5806c3ed6db0(AST_ID, lineno=29)
 [LEX][29] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d523e50
-[AST DBG] addChild parent=0x5c2b6d523e50(AST_ASSIGN, lineno=29) child=0x5c2b6d523d50(AST_ARRAY_ACCESS, lineno=29)
-[AST DBG] addChild parent=0x5c2b6d523e50(AST_ASSIGN, lineno=29) child=0x5c2b6d523e10(AST_ARRAY_ACCESS, lineno=29)
-[PARSER DBG] assignment: var=0x5c2b6d523d50 expr=0x5c2b6d523e10
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed6e50
+[AST DBG] addChild parent=0x5806c3ed6e50(AST_ASSIGN, lineno=29) child=0x5806c3ed6d50(AST_ARRAY_ACCESS, lineno=29)
+[AST DBG] addChild parent=0x5806c3ed6e50(AST_ASSIGN, lineno=29) child=0x5806c3ed6e10(AST_ARRAY_ACCESS, lineno=29)
+[PARSER DBG] assignment: var=0x5806c3ed6d50 expr=0x5806c3ed6e10
 [LEX][30] ID       -> 'a'
 [LEX][30] LBRACK   -> '['
 [LEX][30] ID       -> 'i'
 [LEX][30] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523eb0
-[AST DBG] newIdNode("i") -> 0x5c2b6d523eb0
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d523f10
-[AST DBG] addChild parent=0x5c2b6d523f10(AST_ARRAY_ACCESS, lineno=30) child=0x5c2b6d523eb0(AST_ID, lineno=30)
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6eb0
+[AST DBG] newIdNode("i") -> 0x5806c3ed6eb0
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed6f10
+[AST DBG] addChild parent=0x5806c3ed6f10(AST_ARRAY_ACCESS, lineno=30) child=0x5806c3ed6eb0(AST_ID, lineno=30)
 [LEX][30] ASSIGN   -> '='
 [LEX][30] ID       -> 't'
 [LEX][30] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523f50
-[AST DBG] newIdNode("t") -> 0x5c2b6d523f50
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d523fb0
-[AST DBG] addChild parent=0x5c2b6d523fb0(AST_ASSIGN, lineno=30) child=0x5c2b6d523f10(AST_ARRAY_ACCESS, lineno=30)
-[AST DBG] addChild parent=0x5c2b6d523fb0(AST_ASSIGN, lineno=30) child=0x5c2b6d523f50(AST_ID, lineno=30)
-[PARSER DBG] assignment: var=0x5c2b6d523f10 expr=0x5c2b6d523f50
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6f50
+[AST DBG] newIdNode("t") -> 0x5806c3ed6f50
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed6fb0
+[AST DBG] addChild parent=0x5806c3ed6fb0(AST_ASSIGN, lineno=30) child=0x5806c3ed6f10(AST_ARRAY_ACCESS, lineno=30)
+[AST DBG] addChild parent=0x5806c3ed6fb0(AST_ASSIGN, lineno=30) child=0x5806c3ed6f50(AST_ID, lineno=30)
+[PARSER DBG] assignment: var=0x5806c3ed6f10 expr=0x5806c3ed6f50
 [LEX][31] ID       -> 'i'
 [LEX][31] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d523ff0
-[AST DBG] newIdNode("i") -> 0x5c2b6d523ff0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed6ff0
+[AST DBG] newIdNode("i") -> 0x5806c3ed6ff0
 [LEX][31] ID       -> 'i'
 [LEX][31] PLUS     -> '+'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d524050
-[AST DBG] newIdNode("i") -> 0x5c2b6d524050
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d5240b0
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed7050
+[AST DBG] newIdNode("i") -> 0x5806c3ed7050
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed70b0
 [LEX][31] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d5240f0
-[AST DBG] newNumNode(1) -> 0x5c2b6d5240f0
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed70f0
+[AST DBG] newNumNode(1) -> 0x5806c3ed70f0
 [LEX][31] SEMI     -> ';'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d524130
-[AST DBG] addChild parent=0x5c2b6d524130(AST_BINOP, lineno=31) child=0x5c2b6d524050(AST_ID, lineno=31)
-[AST DBG] addChild parent=0x5c2b6d524130(AST_BINOP, lineno=31) child=0x5c2b6d5240b0(AST_OP, lineno=31)
-[AST DBG] addChild parent=0x5c2b6d524130(AST_BINOP, lineno=31) child=0x5c2b6d5240f0(AST_NUM, lineno=31)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d524170
-[AST DBG] addChild parent=0x5c2b6d524170(AST_ASSIGN, lineno=31) child=0x5c2b6d523ff0(AST_ID, lineno=31)
-[AST DBG] addChild parent=0x5c2b6d524170(AST_ASSIGN, lineno=31) child=0x5c2b6d524130(AST_BINOP, lineno=31)
-[PARSER DBG] assignment: var=0x5c2b6d523ff0 expr=0x5c2b6d524130
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed7130
+[AST DBG] addChild parent=0x5806c3ed7130(AST_BINOP, lineno=31) child=0x5806c3ed7050(AST_ID, lineno=31)
+[AST DBG] addChild parent=0x5806c3ed7130(AST_BINOP, lineno=31) child=0x5806c3ed70b0(AST_OP, lineno=31)
+[AST DBG] addChild parent=0x5806c3ed7130(AST_BINOP, lineno=31) child=0x5806c3ed70f0(AST_NUM, lineno=31)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed7170
+[AST DBG] addChild parent=0x5806c3ed7170(AST_ASSIGN, lineno=31) child=0x5806c3ed6ff0(AST_ID, lineno=31)
+[AST DBG] addChild parent=0x5806c3ed7170(AST_ASSIGN, lineno=31) child=0x5806c3ed7130(AST_BINOP, lineno=31)
+[PARSER DBG] assignment: var=0x5806c3ed6ff0 expr=0x5806c3ed7130
 [LEX][32] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d5241b0
-[AST DBG] addChild parent=0x5c2b6d5241b0(AST_BLOCK, lineno=32) child=0x5c2b6d5238b0(AST_VAR_DECL, lineno=26)
-[AST DBG] addChild parent=0x5c2b6d5241b0(AST_BLOCK, lineno=32) child=0x5c2b6d523b30(AST_ASSIGN, lineno=27)
-[AST DBG] addChild parent=0x5c2b6d5241b0(AST_BLOCK, lineno=32) child=0x5c2b6d523c90(AST_ASSIGN, lineno=28)
-[AST DBG] addChild parent=0x5c2b6d5241b0(AST_BLOCK, lineno=32) child=0x5c2b6d523e50(AST_ASSIGN, lineno=29)
-[AST DBG] addChild parent=0x5c2b6d5241b0(AST_BLOCK, lineno=32) child=0x5c2b6d523fb0(AST_ASSIGN, lineno=30)
-[AST DBG] addChild parent=0x5c2b6d5241b0(AST_BLOCK, lineno=32) child=0x5c2b6d524170(AST_ASSIGN, lineno=31)
-[PARSER DBG] compound_stmt: scope=sort#block3#block4 decls=0x5c2b6d5238b0 stmts=0x5c2b6d523b30
-[AST DBG] newNode kind=AST_WHILE -> 0x5c2b6d5241f0
-[AST DBG] addChild parent=0x5c2b6d5241f0(AST_WHILE, lineno=25) child=0x5c2b6d523760(AST_BINOP, lineno=25)
-[AST DBG] addChild parent=0x5c2b6d5241f0(AST_WHILE, lineno=25) child=0x5c2b6d5241b0(AST_BLOCK, lineno=32)
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed71b0
+[AST DBG] addChild parent=0x5806c3ed71b0(AST_BLOCK, lineno=32) child=0x5806c3ed68b0(AST_VAR_DECL, lineno=26)
+[AST DBG] addChild parent=0x5806c3ed71b0(AST_BLOCK, lineno=32) child=0x5806c3ed6b30(AST_ASSIGN, lineno=27)
+[AST DBG] addChild parent=0x5806c3ed71b0(AST_BLOCK, lineno=32) child=0x5806c3ed6c90(AST_ASSIGN, lineno=28)
+[AST DBG] addChild parent=0x5806c3ed71b0(AST_BLOCK, lineno=32) child=0x5806c3ed6e50(AST_ASSIGN, lineno=29)
+[AST DBG] addChild parent=0x5806c3ed71b0(AST_BLOCK, lineno=32) child=0x5806c3ed6fb0(AST_ASSIGN, lineno=30)
+[AST DBG] addChild parent=0x5806c3ed71b0(AST_BLOCK, lineno=32) child=0x5806c3ed7170(AST_ASSIGN, lineno=31)
+[PARSER DBG] compound_stmt: scope=sort#block3#block4 decls=0x5806c3ed68b0 stmts=0x5806c3ed6b30
+[AST DBG] newNode kind=AST_WHILE -> 0x5806c3ed71f0
+[AST DBG] addChild parent=0x5806c3ed71f0(AST_WHILE, lineno=25) child=0x5806c3ed6760(AST_BINOP, lineno=25)
+[AST DBG] addChild parent=0x5806c3ed71f0(AST_WHILE, lineno=25) child=0x5806c3ed71b0(AST_BLOCK, lineno=32)
 [LEX][33] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d524230
-[AST DBG] addChild parent=0x5c2b6d524230(AST_BLOCK, lineno=33) child=0x5c2b6d523310(AST_VAR_DECL, lineno=23)
-[AST DBG] addChild parent=0x5c2b6d524230(AST_BLOCK, lineno=33) child=0x5c2b6d523540(AST_ASSIGN, lineno=24)
-[AST DBG] addChild parent=0x5c2b6d524230(AST_BLOCK, lineno=33) child=0x5c2b6d5241f0(AST_WHILE, lineno=25)
-[PARSER DBG] compound_stmt: scope=sort#block3 decls=0x5c2b6d523310 stmts=0x5c2b6d523540
-[AST DBG] newNode kind=AST_FUN_DECL -> 0x5c2b6d524270
-[AST DBG] addChild parent=0x5c2b6d524270(AST_FUN_DECL, lineno=22) child=0x5c2b6d522fc0(AST_PARAM_LIST, lineno=22)
-[AST DBG] addChild parent=0x5c2b6d524270(AST_FUN_DECL, lineno=22) child=0x5c2b6d524230(AST_BLOCK, lineno=33)
-[PARSER DBG] fun_declaration: name=sort, params=0x5c2b6d522fc0, body=0x5c2b6d524230
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed7230
+[AST DBG] addChild parent=0x5806c3ed7230(AST_BLOCK, lineno=33) child=0x5806c3ed6310(AST_VAR_DECL, lineno=23)
+[AST DBG] addChild parent=0x5806c3ed7230(AST_BLOCK, lineno=33) child=0x5806c3ed6540(AST_ASSIGN, lineno=24)
+[AST DBG] addChild parent=0x5806c3ed7230(AST_BLOCK, lineno=33) child=0x5806c3ed71f0(AST_WHILE, lineno=25)
+[PARSER DBG] compound_stmt: scope=sort#block3 decls=0x5806c3ed6310 stmts=0x5806c3ed6540
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x5806c3ed7270
+[AST DBG] addChild parent=0x5806c3ed7270(AST_FUN_DECL, lineno=22) child=0x5806c3ed5fc0(AST_PARAM_LIST, lineno=22)
+[AST DBG] addChild parent=0x5806c3ed7270(AST_FUN_DECL, lineno=22) child=0x5806c3ed7230(AST_BLOCK, lineno=33)
+[PARSER DBG] fun_declaration: name=sort, params=0x5806c3ed5fc0, body=0x5806c3ed7230
 [PARSER DBG] declaration_list: added sort
 [LEX][35] VOID     -> 'void'
 [LEX][35] ID       -> 'main'
@@ -429,219 +429,215 @@ Parsing 'docs/input/cminus/sort.txt'...
 [LEX][37] INT      -> 'int'
 [LEX][37] ID       -> 'i'
 [LEX][37] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d524470
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed7470
 [PARSER DBG] var_declaration: name=i[LEX][38] INT      -> 'int'
-[LEX][38] ID       -> 'j'
+[LEX][38] ID       -> 'aux'
 [LEX][38] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d524580
-[PARSER DBG] var_declaration: name=j[LEX][39] INT      -> 'int'
-[LEX][39] ID       -> 'aux'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5806c3ed7580
+[PARSER DBG] var_declaration: name=aux[LEX][39] ID       -> 'i'
+[LEX][39] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed75e0
+[AST DBG] newIdNode("i") -> 0x5806c3ed75e0
+[LEX][39] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed7640
+[AST DBG] newNumNode(0) -> 0x5806c3ed7640
 [LEX][39] SEMI     -> ';'
-[AST DBG] newNode kind=AST_VAR_DECL -> 0x5c2b6d524690
-[PARSER DBG] var_declaration: name=aux[LEX][40] ID       -> 'i'
-[LEX][40] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5246f0
-[AST DBG] newIdNode("i") -> 0x5c2b6d5246f0
-[LEX][40] NUM      -> '0' (0)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d524750
-[AST DBG] newNumNode(0) -> 0x5c2b6d524750
-[LEX][40] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d524790
-[AST DBG] addChild parent=0x5c2b6d524790(AST_ASSIGN, lineno=40) child=0x5c2b6d5246f0(AST_ID, lineno=40)
-[AST DBG] addChild parent=0x5c2b6d524790(AST_ASSIGN, lineno=40) child=0x5c2b6d524750(AST_NUM, lineno=40)
-[PARSER DBG] assignment: var=0x5c2b6d5246f0 expr=0x5c2b6d524750
-[LEX][41] WHILE    -> 'while'
-[LEX][41] LPAREN   -> '('
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed7680
+[AST DBG] addChild parent=0x5806c3ed7680(AST_ASSIGN, lineno=39) child=0x5806c3ed75e0(AST_ID, lineno=39)
+[AST DBG] addChild parent=0x5806c3ed7680(AST_ASSIGN, lineno=39) child=0x5806c3ed7640(AST_NUM, lineno=39)
+[PARSER DBG] assignment: var=0x5806c3ed75e0 expr=0x5806c3ed7640
+[LEX][40] WHILE    -> 'while'
+[LEX][40] LPAREN   -> '('
+[LEX][40] ID       -> 'i'
+[LEX][40] LT       -> '<'
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed76c0
+[AST DBG] newIdNode("i") -> 0x5806c3ed76c0
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed7720
+[LEX][40] NUM      -> '2' (2)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed7760
+[AST DBG] newNumNode(2) -> 0x5806c3ed7760
+[LEX][40] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed77a0
+[AST DBG] addChild parent=0x5806c3ed77a0(AST_BINOP, lineno=40) child=0x5806c3ed76c0(AST_ID, lineno=40)
+[AST DBG] addChild parent=0x5806c3ed77a0(AST_BINOP, lineno=40) child=0x5806c3ed7720(AST_OP, lineno=40)
+[AST DBG] addChild parent=0x5806c3ed77a0(AST_BINOP, lineno=40) child=0x5806c3ed7760(AST_NUM, lineno=40)
+[PARSER DBG] binop: left=0x5806c3ed76c0 op=0x5806c3ed7720 right=0x5806c3ed7760
+[LEX][40] LBRACE   -> '{'
+[LEX][41] ID       -> 'vet'
+[LEX][41] LBRACK   -> '['
 [LEX][41] ID       -> 'i'
-[LEX][41] LT       -> '<'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5247d0
-[AST DBG] newIdNode("i") -> 0x5c2b6d5247d0
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d524830
-[LEX][41] NUM      -> '2' (2)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d524870
-[AST DBG] newNumNode(2) -> 0x5c2b6d524870
+[LEX][41] RBRACK   -> ']'
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed7860
+[AST DBG] newIdNode("i") -> 0x5806c3ed7860
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed78c0
+[AST DBG] addChild parent=0x5806c3ed78c0(AST_ARRAY_ACCESS, lineno=41) child=0x5806c3ed7860(AST_ID, lineno=41)
+[LEX][41] ASSIGN   -> '='
+[LEX][41] ID       -> 'input'
+[LEX][41] LPAREN   -> '('
 [LEX][41] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d5248b0
-[AST DBG] addChild parent=0x5c2b6d5248b0(AST_BINOP, lineno=41) child=0x5c2b6d5247d0(AST_ID, lineno=41)
-[AST DBG] addChild parent=0x5c2b6d5248b0(AST_BINOP, lineno=41) child=0x5c2b6d524830(AST_OP, lineno=41)
-[AST DBG] addChild parent=0x5c2b6d5248b0(AST_BINOP, lineno=41) child=0x5c2b6d524870(AST_NUM, lineno=41)
-[PARSER DBG] binop: left=0x5c2b6d5247d0 op=0x5c2b6d524830 right=0x5c2b6d524870
-[LEX][41] LBRACE   -> '{'
-[LEX][42] ID       -> 'vet'
-[LEX][42] LBRACK   -> '['
+[AST DBG] newNode kind=AST_CALL -> 0x5806c3ed7900
+[LEX][41] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed7960
+[AST DBG] addChild parent=0x5806c3ed7960(AST_ASSIGN, lineno=41) child=0x5806c3ed78c0(AST_ARRAY_ACCESS, lineno=41)
+[AST DBG] addChild parent=0x5806c3ed7960(AST_ASSIGN, lineno=41) child=0x5806c3ed7900(AST_CALL, lineno=41)
+[PARSER DBG] assignment: var=0x5806c3ed78c0 expr=0x5806c3ed7900
 [LEX][42] ID       -> 'i'
-[LEX][42] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d524970
-[AST DBG] newIdNode("i") -> 0x5c2b6d524970
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d5249d0
-[AST DBG] addChild parent=0x5c2b6d5249d0(AST_ARRAY_ACCESS, lineno=42) child=0x5c2b6d524970(AST_ID, lineno=42)
 [LEX][42] ASSIGN   -> '='
-[LEX][42] ID       -> 'input'
-[LEX][42] LPAREN   -> '('
-[LEX][42] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_CALL -> 0x5c2b6d524a10
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed79a0
+[AST DBG] newIdNode("i") -> 0x5806c3ed79a0
+[LEX][42] ID       -> 'i'
+[LEX][42] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed7a00
+[AST DBG] newIdNode("i") -> 0x5806c3ed7a00
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed7a60
+[LEX][42] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed7aa0
+[AST DBG] newNumNode(1) -> 0x5806c3ed7aa0
 [LEX][42] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d524a70
-[AST DBG] addChild parent=0x5c2b6d524a70(AST_ASSIGN, lineno=42) child=0x5c2b6d5249d0(AST_ARRAY_ACCESS, lineno=42)
-[AST DBG] addChild parent=0x5c2b6d524a70(AST_ASSIGN, lineno=42) child=0x5c2b6d524a10(AST_CALL, lineno=42)
-[PARSER DBG] assignment: var=0x5c2b6d5249d0 expr=0x5c2b6d524a10
-[LEX][43] ID       -> 'i'
-[LEX][43] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d524ab0
-[AST DBG] newIdNode("i") -> 0x5c2b6d524ab0
-[LEX][43] ID       -> 'i'
-[LEX][43] PLUS     -> '+'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d524b10
-[AST DBG] newIdNode("i") -> 0x5c2b6d524b10
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d524b70
-[LEX][43] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d524bb0
-[AST DBG] newNumNode(1) -> 0x5c2b6d524bb0
-[LEX][43] SEMI     -> ';'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d524bf0
-[AST DBG] addChild parent=0x5c2b6d524bf0(AST_BINOP, lineno=43) child=0x5c2b6d524b10(AST_ID, lineno=43)
-[AST DBG] addChild parent=0x5c2b6d524bf0(AST_BINOP, lineno=43) child=0x5c2b6d524b70(AST_OP, lineno=43)
-[AST DBG] addChild parent=0x5c2b6d524bf0(AST_BINOP, lineno=43) child=0x5c2b6d524bb0(AST_NUM, lineno=43)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d524c30
-[AST DBG] addChild parent=0x5c2b6d524c30(AST_ASSIGN, lineno=43) child=0x5c2b6d524ab0(AST_ID, lineno=43)
-[AST DBG] addChild parent=0x5c2b6d524c30(AST_ASSIGN, lineno=43) child=0x5c2b6d524bf0(AST_BINOP, lineno=43)
-[PARSER DBG] assignment: var=0x5c2b6d524ab0 expr=0x5c2b6d524bf0
-[LEX][44] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d524c70
-[AST DBG] addChild parent=0x5c2b6d524c70(AST_BLOCK, lineno=44) child=0x5c2b6d524a70(AST_ASSIGN, lineno=42)
-[AST DBG] addChild parent=0x5c2b6d524c70(AST_BLOCK, lineno=44) child=0x5c2b6d524c30(AST_ASSIGN, lineno=43)
-[PARSER DBG] compound_stmt: scope=main#block5#block6 decls=(nil) stmts=0x5c2b6d524a70
-[AST DBG] newNode kind=AST_WHILE -> 0x5c2b6d524cb0
-[AST DBG] addChild parent=0x5c2b6d524cb0(AST_WHILE, lineno=41) child=0x5c2b6d5248b0(AST_BINOP, lineno=41)
-[AST DBG] addChild parent=0x5c2b6d524cb0(AST_WHILE, lineno=41) child=0x5c2b6d524c70(AST_BLOCK, lineno=44)
-[LEX][45] ID       -> 'sort'
-[LEX][45] LPAREN   -> '('
-[LEX][45] ID       -> 'vet'
-[LEX][45] COMMA    -> ','
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d524d10
-[AST DBG] newIdNode("vet") -> 0x5c2b6d524d10
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x5c2b6d524d70
-[AST DBG] addChild parent=0x5c2b6d524d70(AST_ARG_LIST, lineno=45) child=0x5c2b6d524d10(AST_ID, lineno=45)
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed7ae0
+[AST DBG] addChild parent=0x5806c3ed7ae0(AST_BINOP, lineno=42) child=0x5806c3ed7a00(AST_ID, lineno=42)
+[AST DBG] addChild parent=0x5806c3ed7ae0(AST_BINOP, lineno=42) child=0x5806c3ed7a60(AST_OP, lineno=42)
+[AST DBG] addChild parent=0x5806c3ed7ae0(AST_BINOP, lineno=42) child=0x5806c3ed7aa0(AST_NUM, lineno=42)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed7b20
+[AST DBG] addChild parent=0x5806c3ed7b20(AST_ASSIGN, lineno=42) child=0x5806c3ed79a0(AST_ID, lineno=42)
+[AST DBG] addChild parent=0x5806c3ed7b20(AST_ASSIGN, lineno=42) child=0x5806c3ed7ae0(AST_BINOP, lineno=42)
+[PARSER DBG] assignment: var=0x5806c3ed79a0 expr=0x5806c3ed7ae0
+[LEX][43] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed7b60
+[AST DBG] addChild parent=0x5806c3ed7b60(AST_BLOCK, lineno=43) child=0x5806c3ed7960(AST_ASSIGN, lineno=41)
+[AST DBG] addChild parent=0x5806c3ed7b60(AST_BLOCK, lineno=43) child=0x5806c3ed7b20(AST_ASSIGN, lineno=42)
+[PARSER DBG] compound_stmt: scope=main#block5#block6 decls=(nil) stmts=0x5806c3ed7960
+[AST DBG] newNode kind=AST_WHILE -> 0x5806c3ed7ba0
+[AST DBG] addChild parent=0x5806c3ed7ba0(AST_WHILE, lineno=40) child=0x5806c3ed77a0(AST_BINOP, lineno=40)
+[AST DBG] addChild parent=0x5806c3ed7ba0(AST_WHILE, lineno=40) child=0x5806c3ed7b60(AST_BLOCK, lineno=43)
+[LEX][44] ID       -> 'sort'
+[LEX][44] LPAREN   -> '('
+[LEX][44] ID       -> 'vet'
+[LEX][44] COMMA    -> ','
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed7c00
+[AST DBG] newIdNode("vet") -> 0x5806c3ed7c00
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x5806c3ed7c60
+[AST DBG] addChild parent=0x5806c3ed7c60(AST_ARG_LIST, lineno=44) child=0x5806c3ed7c00(AST_ID, lineno=44)
+[LEX][44] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed7ca0
+[AST DBG] newNumNode(0) -> 0x5806c3ed7ca0
+[LEX][44] COMMA    -> ','
+[AST DBG] addChild parent=0x5806c3ed7c60(AST_ARG_LIST, lineno=44) child=0x5806c3ed7ca0(AST_NUM, lineno=44)
+[LEX][44] NUM      -> '2' (2)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed7ce0
+[AST DBG] newNumNode(2) -> 0x5806c3ed7ce0
+[LEX][44] RPAREN   -> ')'
+[AST DBG] addChild parent=0x5806c3ed7c60(AST_ARG_LIST, lineno=44) child=0x5806c3ed7ce0(AST_NUM, lineno=44)
+[AST DBG] newNode kind=AST_CALL -> 0x5806c3ed7d20
+[AST DBG] addChild parent=0x5806c3ed7d20(AST_CALL, lineno=44) child=0x5806c3ed7c60(AST_ARG_LIST, lineno=44)
+[LEX][44] SEMI     -> ';'
+[LEX][45] ID       -> 'i'
+[LEX][45] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed7d60
+[AST DBG] newIdNode("i") -> 0x5806c3ed7d60
 [LEX][45] NUM      -> '0' (0)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d524db0
-[AST DBG] newNumNode(0) -> 0x5c2b6d524db0
-[LEX][45] COMMA    -> ','
-[AST DBG] addChild parent=0x5c2b6d524d70(AST_ARG_LIST, lineno=45) child=0x5c2b6d524db0(AST_NUM, lineno=45)
-[LEX][45] NUM      -> '2' (2)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d524df0
-[AST DBG] newNumNode(2) -> 0x5c2b6d524df0
-[LEX][45] RPAREN   -> ')'
-[AST DBG] addChild parent=0x5c2b6d524d70(AST_ARG_LIST, lineno=45) child=0x5c2b6d524df0(AST_NUM, lineno=45)
-[AST DBG] newNode kind=AST_CALL -> 0x5c2b6d524e30
-[AST DBG] addChild parent=0x5c2b6d524e30(AST_CALL, lineno=45) child=0x5c2b6d524d70(AST_ARG_LIST, lineno=45)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed7dc0
+[AST DBG] newNumNode(0) -> 0x5806c3ed7dc0
 [LEX][45] SEMI     -> ';'
-[LEX][46] ID       -> 'j'
-[LEX][46] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d524e70
-[AST DBG] newIdNode("j") -> 0x5c2b6d524e70
-[LEX][46] NUM      -> '0' (0)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d524ed0
-[AST DBG] newNumNode(0) -> 0x5c2b6d524ed0
-[LEX][46] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d524f10
-[AST DBG] addChild parent=0x5c2b6d524f10(AST_ASSIGN, lineno=46) child=0x5c2b6d524e70(AST_ID, lineno=46)
-[AST DBG] addChild parent=0x5c2b6d524f10(AST_ASSIGN, lineno=46) child=0x5c2b6d524ed0(AST_NUM, lineno=46)
-[PARSER DBG] assignment: var=0x5c2b6d524e70 expr=0x5c2b6d524ed0
-[LEX][47] WHILE    -> 'while'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed7e00
+[AST DBG] addChild parent=0x5806c3ed7e00(AST_ASSIGN, lineno=45) child=0x5806c3ed7d60(AST_ID, lineno=45)
+[AST DBG] addChild parent=0x5806c3ed7e00(AST_ASSIGN, lineno=45) child=0x5806c3ed7dc0(AST_NUM, lineno=45)
+[PARSER DBG] assignment: var=0x5806c3ed7d60 expr=0x5806c3ed7dc0
+[LEX][46] WHILE    -> 'while'
+[LEX][46] LPAREN   -> '('
+[LEX][46] ID       -> 'i'
+[LEX][46] LT       -> '<'
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed7e40
+[AST DBG] newIdNode("i") -> 0x5806c3ed7e40
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed7ea0
+[LEX][46] NUM      -> '2' (2)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed7ee0
+[AST DBG] newNumNode(2) -> 0x5806c3ed7ee0
+[LEX][46] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed7f20
+[AST DBG] addChild parent=0x5806c3ed7f20(AST_BINOP, lineno=46) child=0x5806c3ed7e40(AST_ID, lineno=46)
+[AST DBG] addChild parent=0x5806c3ed7f20(AST_BINOP, lineno=46) child=0x5806c3ed7ea0(AST_OP, lineno=46)
+[AST DBG] addChild parent=0x5806c3ed7f20(AST_BINOP, lineno=46) child=0x5806c3ed7ee0(AST_NUM, lineno=46)
+[PARSER DBG] binop: left=0x5806c3ed7e40 op=0x5806c3ed7ea0 right=0x5806c3ed7ee0
+[LEX][46] LBRACE   -> '{'
+[LEX][47] ID       -> 'aux'
+[LEX][47] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed7fc0
+[AST DBG] newIdNode("aux") -> 0x5806c3ed7fc0
+[LEX][47] ID       -> 'input'
 [LEX][47] LPAREN   -> '('
-[LEX][47] ID       -> 'j'
-[LEX][47] LT       -> '<'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d524f50
-[AST DBG] newIdNode("j") -> 0x5c2b6d524f50
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d524fb0
-[LEX][47] NUM      -> '2' (2)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d524ff0
-[AST DBG] newNumNode(2) -> 0x5c2b6d524ff0
 [LEX][47] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d525030
-[AST DBG] addChild parent=0x5c2b6d525030(AST_BINOP, lineno=47) child=0x5c2b6d524f50(AST_ID, lineno=47)
-[AST DBG] addChild parent=0x5c2b6d525030(AST_BINOP, lineno=47) child=0x5c2b6d524fb0(AST_OP, lineno=47)
-[AST DBG] addChild parent=0x5c2b6d525030(AST_BINOP, lineno=47) child=0x5c2b6d524ff0(AST_NUM, lineno=47)
-[PARSER DBG] binop: left=0x5c2b6d524f50 op=0x5c2b6d524fb0 right=0x5c2b6d524ff0
-[LEX][47] LBRACE   -> '{'
-[LEX][48] ID       -> 'aux'
-[LEX][48] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d5250d0
-[AST DBG] newIdNode("aux") -> 0x5c2b6d5250d0
-[LEX][48] ID       -> 'input'
+[AST DBG] newNode kind=AST_CALL -> 0x5806c3ed8020
+[LEX][47] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed8080
+[AST DBG] addChild parent=0x5806c3ed8080(AST_ASSIGN, lineno=47) child=0x5806c3ed7fc0(AST_ID, lineno=47)
+[AST DBG] addChild parent=0x5806c3ed8080(AST_ASSIGN, lineno=47) child=0x5806c3ed8020(AST_CALL, lineno=47)
+[PARSER DBG] assignment: var=0x5806c3ed7fc0 expr=0x5806c3ed8020
+[LEX][48] ID       -> 'output'
 [LEX][48] LPAREN   -> '('
+[LEX][48] ID       -> 'vet'
+[LEX][48] LBRACK   -> '['
+[LEX][48] ID       -> 'i'
+[LEX][48] RBRACK   -> ']'
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed8100
+[AST DBG] newIdNode("i") -> 0x5806c3ed8100
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5806c3ed8160
+[AST DBG] addChild parent=0x5806c3ed8160(AST_ARRAY_ACCESS, lineno=48) child=0x5806c3ed8100(AST_ID, lineno=48)
 [LEX][48] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_CALL -> 0x5c2b6d525130
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x5806c3ed81a0
+[AST DBG] addChild parent=0x5806c3ed81a0(AST_ARG_LIST, lineno=48) child=0x5806c3ed8160(AST_ARRAY_ACCESS, lineno=48)
+[AST DBG] newNode kind=AST_CALL -> 0x5806c3ed81e0
+[AST DBG] addChild parent=0x5806c3ed81e0(AST_CALL, lineno=48) child=0x5806c3ed81a0(AST_ARG_LIST, lineno=48)
 [LEX][48] SEMI     -> ';'
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d525190
-[AST DBG] addChild parent=0x5c2b6d525190(AST_ASSIGN, lineno=48) child=0x5c2b6d5250d0(AST_ID, lineno=48)
-[AST DBG] addChild parent=0x5c2b6d525190(AST_ASSIGN, lineno=48) child=0x5c2b6d525130(AST_CALL, lineno=48)
-[PARSER DBG] assignment: var=0x5c2b6d5250d0 expr=0x5c2b6d525130
-[LEX][49] ID       -> 'output'
-[LEX][49] LPAREN   -> '('
-[LEX][49] ID       -> 'vet'
-[LEX][49] LBRACK   -> '['
-[LEX][49] ID       -> 'j'
-[LEX][49] RBRACK   -> ']'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d525210
-[AST DBG] newIdNode("j") -> 0x5c2b6d525210
-[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5c2b6d525270
-[AST DBG] addChild parent=0x5c2b6d525270(AST_ARRAY_ACCESS, lineno=49) child=0x5c2b6d525210(AST_ID, lineno=49)
-[LEX][49] RPAREN   -> ')'
-[AST DBG] newNode kind=AST_ARG_LIST -> 0x5c2b6d5252b0
-[AST DBG] addChild parent=0x5c2b6d5252b0(AST_ARG_LIST, lineno=49) child=0x5c2b6d525270(AST_ARRAY_ACCESS, lineno=49)
-[AST DBG] newNode kind=AST_CALL -> 0x5c2b6d5252f0
-[AST DBG] addChild parent=0x5c2b6d5252f0(AST_CALL, lineno=49) child=0x5c2b6d5252b0(AST_ARG_LIST, lineno=49)
+[LEX][49] ID       -> 'i'
+[LEX][49] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed8220
+[AST DBG] newIdNode("i") -> 0x5806c3ed8220
+[LEX][49] ID       -> 'i'
+[LEX][49] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5806c3ed8280
+[AST DBG] newIdNode("i") -> 0x5806c3ed8280
+[AST DBG] newNode kind=AST_OP -> 0x5806c3ed82e0
+[LEX][49] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x5806c3ed8320
+[AST DBG] newNumNode(1) -> 0x5806c3ed8320
 [LEX][49] SEMI     -> ';'
-[LEX][50] ID       -> 'j'
-[LEX][50] ASSIGN   -> '='
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d525330
-[AST DBG] newIdNode("j") -> 0x5c2b6d525330
-[LEX][50] ID       -> 'j'
-[LEX][50] PLUS     -> '+'
-[AST DBG] newNode kind=AST_ID -> 0x5c2b6d525390
-[AST DBG] newIdNode("j") -> 0x5c2b6d525390
-[AST DBG] newNode kind=AST_OP -> 0x5c2b6d5253f0
-[LEX][50] NUM      -> '1' (1)
-[AST DBG] newNode kind=AST_NUM -> 0x5c2b6d525430
-[AST DBG] newNumNode(1) -> 0x5c2b6d525430
-[LEX][50] SEMI     -> ';'
-[AST DBG] newNode kind=AST_BINOP -> 0x5c2b6d525470
-[AST DBG] addChild parent=0x5c2b6d525470(AST_BINOP, lineno=50) child=0x5c2b6d525390(AST_ID, lineno=50)
-[AST DBG] addChild parent=0x5c2b6d525470(AST_BINOP, lineno=50) child=0x5c2b6d5253f0(AST_OP, lineno=50)
-[AST DBG] addChild parent=0x5c2b6d525470(AST_BINOP, lineno=50) child=0x5c2b6d525430(AST_NUM, lineno=50)
-[AST DBG] newNode kind=AST_ASSIGN -> 0x5c2b6d5254b0
-[AST DBG] addChild parent=0x5c2b6d5254b0(AST_ASSIGN, lineno=50) child=0x5c2b6d525330(AST_ID, lineno=50)
-[AST DBG] addChild parent=0x5c2b6d5254b0(AST_ASSIGN, lineno=50) child=0x5c2b6d525470(AST_BINOP, lineno=50)
-[PARSER DBG] assignment: var=0x5c2b6d525330 expr=0x5c2b6d525470
+[AST DBG] newNode kind=AST_BINOP -> 0x5806c3ed8360
+[AST DBG] addChild parent=0x5806c3ed8360(AST_BINOP, lineno=49) child=0x5806c3ed8280(AST_ID, lineno=49)
+[AST DBG] addChild parent=0x5806c3ed8360(AST_BINOP, lineno=49) child=0x5806c3ed82e0(AST_OP, lineno=49)
+[AST DBG] addChild parent=0x5806c3ed8360(AST_BINOP, lineno=49) child=0x5806c3ed8320(AST_NUM, lineno=49)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5806c3ed83a0
+[AST DBG] addChild parent=0x5806c3ed83a0(AST_ASSIGN, lineno=49) child=0x5806c3ed8220(AST_ID, lineno=49)
+[AST DBG] addChild parent=0x5806c3ed83a0(AST_ASSIGN, lineno=49) child=0x5806c3ed8360(AST_BINOP, lineno=49)
+[PARSER DBG] assignment: var=0x5806c3ed8220 expr=0x5806c3ed8360
+[LEX][50] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed83e0
+[AST DBG] addChild parent=0x5806c3ed83e0(AST_BLOCK, lineno=50) child=0x5806c3ed8080(AST_ASSIGN, lineno=47)
+[AST DBG] addChild parent=0x5806c3ed83e0(AST_BLOCK, lineno=50) child=0x5806c3ed81e0(AST_CALL, lineno=48)
+[AST DBG] addChild parent=0x5806c3ed83e0(AST_BLOCK, lineno=50) child=0x5806c3ed83a0(AST_ASSIGN, lineno=49)
+[PARSER DBG] compound_stmt: scope=main#block5#block7 decls=(nil) stmts=0x5806c3ed8080
+[AST DBG] newNode kind=AST_WHILE -> 0x5806c3ed8420
+[AST DBG] addChild parent=0x5806c3ed8420(AST_WHILE, lineno=46) child=0x5806c3ed7f20(AST_BINOP, lineno=46)
+[AST DBG] addChild parent=0x5806c3ed8420(AST_WHILE, lineno=46) child=0x5806c3ed83e0(AST_BLOCK, lineno=50)
 [LEX][51] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d5254f0
-[AST DBG] addChild parent=0x5c2b6d5254f0(AST_BLOCK, lineno=51) child=0x5c2b6d525190(AST_ASSIGN, lineno=48)
-[AST DBG] addChild parent=0x5c2b6d5254f0(AST_BLOCK, lineno=51) child=0x5c2b6d5252f0(AST_CALL, lineno=49)
-[AST DBG] addChild parent=0x5c2b6d5254f0(AST_BLOCK, lineno=51) child=0x5c2b6d5254b0(AST_ASSIGN, lineno=50)
-[PARSER DBG] compound_stmt: scope=main#block5#block7 decls=(nil) stmts=0x5c2b6d525190
-[AST DBG] newNode kind=AST_WHILE -> 0x5c2b6d525530
-[AST DBG] addChild parent=0x5c2b6d525530(AST_WHILE, lineno=47) child=0x5c2b6d525030(AST_BINOP, lineno=47)
-[AST DBG] addChild parent=0x5c2b6d525530(AST_WHILE, lineno=47) child=0x5c2b6d5254f0(AST_BLOCK, lineno=51)
-[LEX][52] RBRACE   -> '}'
-[AST DBG] newNode kind=AST_BLOCK -> 0x5c2b6d525570
-[AST DBG] addChild parent=0x5c2b6d525570(AST_BLOCK, lineno=52) child=0x5c2b6d524470(AST_VAR_DECL, lineno=37)
-[AST DBG] addChild parent=0x5c2b6d525570(AST_BLOCK, lineno=52) child=0x5c2b6d524790(AST_ASSIGN, lineno=40)
-[AST DBG] addChild parent=0x5c2b6d525570(AST_BLOCK, lineno=52) child=0x5c2b6d524cb0(AST_WHILE, lineno=41)
-[AST DBG] addChild parent=0x5c2b6d525570(AST_BLOCK, lineno=52) child=0x5c2b6d524e30(AST_CALL, lineno=45)
-[AST DBG] addChild parent=0x5c2b6d525570(AST_BLOCK, lineno=52) child=0x5c2b6d524f10(AST_ASSIGN, lineno=46)
-[AST DBG] addChild parent=0x5c2b6d525570(AST_BLOCK, lineno=52) child=0x5c2b6d525530(AST_WHILE, lineno=47)
-[PARSER DBG] compound_stmt: scope=main#block5 decls=0x5c2b6d524470 stmts=0x5c2b6d524790
-[AST DBG] newNode kind=AST_FUN_DECL -> 0x5c2b6d5255b0
-[AST DBG] addChild parent=0x5c2b6d5255b0(AST_FUN_DECL, lineno=35) child=0x5c2b6d525570(AST_BLOCK, lineno=52)
-[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x5c2b6d525570
+[AST DBG] newNode kind=AST_BLOCK -> 0x5806c3ed8460
+[AST DBG] addChild parent=0x5806c3ed8460(AST_BLOCK, lineno=51) child=0x5806c3ed7470(AST_VAR_DECL, lineno=37)
+[AST DBG] addChild parent=0x5806c3ed8460(AST_BLOCK, lineno=51) child=0x5806c3ed7680(AST_ASSIGN, lineno=39)
+[AST DBG] addChild parent=0x5806c3ed8460(AST_BLOCK, lineno=51) child=0x5806c3ed7ba0(AST_WHILE, lineno=40)
+[AST DBG] addChild parent=0x5806c3ed8460(AST_BLOCK, lineno=51) child=0x5806c3ed7d20(AST_CALL, lineno=44)
+[AST DBG] addChild parent=0x5806c3ed8460(AST_BLOCK, lineno=51) child=0x5806c3ed7e00(AST_ASSIGN, lineno=45)
+[AST DBG] addChild parent=0x5806c3ed8460(AST_BLOCK, lineno=51) child=0x5806c3ed8420(AST_WHILE, lineno=46)
+[PARSER DBG] compound_stmt: scope=main#block5 decls=0x5806c3ed7470 stmts=0x5806c3ed7680
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x5806c3ed84a0
+[AST DBG] addChild parent=0x5806c3ed84a0(AST_FUN_DECL, lineno=35) child=0x5806c3ed8460(AST_BLOCK, lineno=51)
+[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x5806c3ed8460
 [PARSER DBG] declaration_list: added main
-[LEX][52] EOF
-[AST DBG] newNode kind=AST_PROGRAM -> 0x5c2b6d5255f0
-[AST DBG] addChild parent=0x5c2b6d5255f0(AST_PROGRAM, lineno=5) child=0x5c2b6d521770(AST_VAR_DECL, lineno=5)
-[AST DBG] addChild parent=0x5c2b6d5255f0(AST_PROGRAM, lineno=5) child=0x5c2b6d522da0(AST_FUN_DECL, lineno=7)
-[AST DBG] addChild parent=0x5c2b6d5255f0(AST_PROGRAM, lineno=5) child=0x5c2b6d524270(AST_FUN_DECL, lineno=22)
-[AST DBG] addChild parent=0x5c2b6d5255f0(AST_PROGRAM, lineno=5) child=0x5c2b6d5255b0(AST_FUN_DECL, lineno=35)
+[LEX][51] EOF
+[AST DBG] newNode kind=AST_PROGRAM -> 0x5806c3ed84e0
+[AST DBG] addChild parent=0x5806c3ed84e0(AST_PROGRAM, lineno=5) child=0x5806c3ed4770(AST_VAR_DECL, lineno=5)
+[AST DBG] addChild parent=0x5806c3ed84e0(AST_PROGRAM, lineno=5) child=0x5806c3ed5da0(AST_FUN_DECL, lineno=7)
+[AST DBG] addChild parent=0x5806c3ed84e0(AST_PROGRAM, lineno=5) child=0x5806c3ed7270(AST_FUN_DECL, lineno=22)
+[AST DBG] addChild parent=0x5806c3ed84e0(AST_PROGRAM, lineno=5) child=0x5806c3ed84a0(AST_FUN_DECL, lineno=35)
 Parse successful.
 
 === AST ===
@@ -745,56 +741,55 @@ Program (lineno=5)
               Op(op='+', lineno=31)
               Num(value=1, lineno=31)
   FunDecl(name=main, lineno=35)
-    Block (lineno=52)
+    Block (lineno=51)
       VarDecl(name=i, lineno=37)
-      VarDecl(name=j, lineno=38)
-      VarDecl(name=aux, lineno=39)
-      Assign (lineno=40)
-        Id(name=i, lineno=40)
-        Num(value=0, lineno=40)
-      While (lineno=41)
-        BinOp (lineno=41)
-          Id(name=i, lineno=41)
-          Op(op='<', lineno=41)
-          Num(value=2, lineno=41)
-        Block (lineno=44)
+      VarDecl(name=aux, lineno=38)
+      Assign (lineno=39)
+        Id(name=i, lineno=39)
+        Num(value=0, lineno=39)
+      While (lineno=40)
+        BinOp (lineno=40)
+          Id(name=i, lineno=40)
+          Op(op='<', lineno=40)
+          Num(value=2, lineno=40)
+        Block (lineno=43)
+          Assign (lineno=41)
+            ArrayAccess(name=vet, lineno=41)
+              Id(name=i, lineno=41)
+            Call(name=input, lineno=41)
           Assign (lineno=42)
-            ArrayAccess(name=vet, lineno=42)
+            Id(name=i, lineno=42)
+            BinOp (lineno=42)
               Id(name=i, lineno=42)
-            Call(name=input, lineno=42)
-          Assign (lineno=43)
-            Id(name=i, lineno=43)
-            BinOp (lineno=43)
-              Id(name=i, lineno=43)
-              Op(op='+', lineno=43)
-              Num(value=1, lineno=43)
-      Call(name=sort, lineno=45)
-        ArgList (lineno=45)
-          Id(name=vet, lineno=45)
-          Num(value=0, lineno=45)
-          Num(value=2, lineno=45)
-      Assign (lineno=46)
-        Id(name=j, lineno=46)
-        Num(value=0, lineno=46)
-      While (lineno=47)
-        BinOp (lineno=47)
-          Id(name=j, lineno=47)
-          Op(op='<', lineno=47)
-          Num(value=2, lineno=47)
-        Block (lineno=51)
-          Assign (lineno=48)
-            Id(name=aux, lineno=48)
-            Call(name=input, lineno=48)
-          Call(name=output, lineno=49)
-            ArgList (lineno=49)
-              ArrayAccess(name=vet, lineno=49)
-                Id(name=j, lineno=49)
-          Assign (lineno=50)
-            Id(name=j, lineno=50)
-            BinOp (lineno=50)
-              Id(name=j, lineno=50)
-              Op(op='+', lineno=50)
-              Num(value=1, lineno=50)
+              Op(op='+', lineno=42)
+              Num(value=1, lineno=42)
+      Call(name=sort, lineno=44)
+        ArgList (lineno=44)
+          Id(name=vet, lineno=44)
+          Num(value=0, lineno=44)
+          Num(value=2, lineno=44)
+      Assign (lineno=45)
+        Id(name=i, lineno=45)
+        Num(value=0, lineno=45)
+      While (lineno=46)
+        BinOp (lineno=46)
+          Id(name=i, lineno=46)
+          Op(op='<', lineno=46)
+          Num(value=2, lineno=46)
+        Block (lineno=50)
+          Assign (lineno=47)
+            Id(name=aux, lineno=47)
+            Call(name=input, lineno=47)
+          Call(name=output, lineno=48)
+            ArgList (lineno=48)
+              ArrayAccess(name=vet, lineno=48)
+                Id(name=i, lineno=48)
+          Assign (lineno=49)
+            Id(name=i, lineno=49)
+            BinOp (lineno=49)
+              Id(name=i, lineno=49)
+              Op(op='+', lineno=49)
+              Num(value=1, lineno=49)
 AST has been saved to: docs/generated/frontend/syntax_tree/ast.txt
 Semantic analysis completed successfully with no errors.
 
@@ -1182,13 +1177,13 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG]   Case AST_FUN_DECL for 'main'
 [IR_DBG] Creating new name operand: main
 [IR_DBG] Emitting instruction with opcode 15
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 52
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 51
 [IR_DBG]   Case AST_BLOCK
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 40
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 39
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 40
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 39
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 40
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 39
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 0
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
@@ -1196,19 +1191,19 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 0
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_WHILE at line 41
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_WHILE at line 40
 [IR_DBG]   Case AST_WHILE
 [IR_DBG] Creating new label: L6
 [IR_DBG] Creating new label: L7
 [IR_DBG] Emitting instruction with opcode 15
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 41
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 40
 [IR_DBG]    Case AST_BINOP
 [IR_DBG]      Operator: '<'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 41
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 40
 [IR_DBG]    Case AST_ID
 [IR_DBG] Creating new name operand: i
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 41
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 40
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 2
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
@@ -1216,13 +1211,13 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 11
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
 [IR_DBG] Emitting instruction with opcode 17
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 44
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 43
 [IR_DBG]   Case AST_BLOCK
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 42
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 41
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 42
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 41
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 42
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 41
 [IR_DBG]    Case AST_CALL for function 'input'
 [IR_DBG] Creating new temporary: t21
 [IR_DBG] Creating new constant: 0
@@ -1230,7 +1225,7 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 22
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
 [IR_DBG]      Assigning to Array Access
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 42
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 41
 [IR_DBG]    Case AST_ID
 [IR_DBG] Creating new name operand: i
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
@@ -1242,18 +1237,18 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 2
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 43
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 42
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 43
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 42
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 43
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 42
 [IR_DBG]    Case AST_BINOP
 [IR_DBG]      Operator: '+'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 43
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 42
 [IR_DBG]    Case AST_ID
 [IR_DBG] Creating new name operand: i
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 43
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 42
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 1
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
@@ -1268,20 +1263,20 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 16
 [IR_DBG] Emitting instruction with opcode 15
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_WHILE
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 45
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 44
 [IR_DBG]   Case AST_CALL (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 45
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 44
 [IR_DBG]    Case AST_CALL for function 'sort'
 [IR_DBG] Creating new temporary: t25
 [IR_DBG] Creating new name operand: vet
 [IR_DBG] Emitting instruction with opcode 3
 [IR_DBG] Emitting instruction with opcode 20
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 45
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 44
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 0
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
 [IR_DBG] Emitting instruction with opcode 20
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 45
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 44
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 2
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
@@ -1291,31 +1286,31 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 21
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 46
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 45
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 46
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 45
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 46
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 45
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 0
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
-[IR_DBG] Creating new name operand: j
+[IR_DBG] Creating new name operand: i
 [IR_DBG] Emitting instruction with opcode 0
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_WHILE at line 47
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_WHILE at line 46
 [IR_DBG]   Case AST_WHILE
 [IR_DBG] Creating new label: L8
 [IR_DBG] Creating new label: L9
 [IR_DBG] Emitting instruction with opcode 15
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 47
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 46
 [IR_DBG]    Case AST_BINOP
 [IR_DBG]      Operator: '<'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 47
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 46
 [IR_DBG]    Case AST_ID
-[IR_DBG] Creating new name operand: j
+[IR_DBG] Creating new name operand: i
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 47
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 46
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 2
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
@@ -1323,13 +1318,13 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 11
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
 [IR_DBG] Emitting instruction with opcode 17
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 51
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 50
 [IR_DBG]   Case AST_BLOCK
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 48
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 47
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 48
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 47
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 48
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 47
 [IR_DBG]    Case AST_CALL for function 'input'
 [IR_DBG] Creating new temporary: t27
 [IR_DBG] Creating new constant: 0
@@ -1340,15 +1335,15 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 0
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 49
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 48
 [IR_DBG]   Case AST_CALL (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 49
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 48
 [IR_DBG]    Case AST_CALL for function 'output'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ARRAY_ACCESS at line 49
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ARRAY_ACCESS at line 48
 [IR_DBG]    Case AST_ARRAY_ACCESS (Load)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 49
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 48
 [IR_DBG]    Case AST_ID
-[IR_DBG] Creating new name operand: j
+[IR_DBG] Creating new name operand: i
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
 [IR_DBG] Creating new temporary: t28
 [IR_DBG] Creating new name operand: vet
@@ -1364,25 +1359,25 @@ Semantic analysis completed successfully with no errors.
 [IR_DBG] Emitting instruction with opcode 21
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
-[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 50
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 49
 [IR_DBG]   Case AST_ASSIGN (as statement)
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 50
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 49
 [IR_DBG]    Case AST_ASSIGN
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 50
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 49
 [IR_DBG]    Case AST_BINOP
 [IR_DBG]      Operator: '+'
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 50
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 49
 [IR_DBG]    Case AST_ID
-[IR_DBG] Creating new name operand: j
+[IR_DBG] Creating new name operand: i
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
-[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 50
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 49
 [IR_DBG]    Case AST_NUM
 [IR_DBG] Creating new constant: 1
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
 [IR_DBG] Creating new temporary: t31
 [IR_DBG] Emitting instruction with opcode 5
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
-[IR_DBG] Creating new name operand: j
+[IR_DBG] Creating new name operand: i
 [IR_DBG] Emitting instruction with opcode 0
 [IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
 [IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
@@ -1473,19 +1468,19 @@ L7:
   arg 0
   arg 2
   call sort, 3
-  j := 0
+  i := 0
 L8:
-  t26 := j < 2
+  t26 := i < 2
   if_false t26 goto L9
   t27 := call input, 0
   aux := t27
   t28 := &vet
-  t29 := t28 + j
+  t29 := t28 + i
   t30 := *t29
   arg t30
   call output, 1
-  t31 := j + 1
-  j := t31
+  t31 := i + 1
+  i := t31
   goto L8
 L9:
   return _
@@ -1494,9 +1489,8 @@ IR dump has been saved to: docs/generated/intermediate/semantic/ir/generated_IR.
 ======= SYMBOL TABLE =======
 Name            Scope      Kind   Decl Lines           Use Lines            Type  
 --------------------------------------------------------------------------
-aux             main#block5 VAR    39	48	INT
-j               main#block5 VAR    38	46,47,49,50,50	INT
-i               main#block5 VAR    37	40,41,42,43,43	INT
+aux             main#block5 VAR    38	47	INT
+i               main#block5 VAR    37	39,40,41,42,42,45,46,48,49,49	INT
 main            global     FUNC   35		VOID
 t               sort#block3#block4 VAR    26	28,30	INT
 k               sort#block3 VAR    23	27,28,29	INT
@@ -1504,7 +1498,7 @@ i               sort#block3 VAR    23	24,25,27,29,30,31,31	INT
 high            sort       VAR    22	25,27	INT
 low             sort       VAR    22	24	INT
 a               sort       VAR    22	27,28,29,29,30	ARRAY(-1, INT)
-sort            global     FUNC   22	45	VOID
+sort            global     FUNC   22	44	VOID
 k               minloc#block0 VAR    8	9,15,19	INT
 x               minloc#block0 VAR    8	10,13,14	INT
 i               minloc#block0 VAR    8	11,12,13,14,15,17,17	INT
@@ -1512,8 +1506,8 @@ high            minloc     VAR    7	12	INT
 low             minloc     VAR    7	9,10,11	INT
 a               minloc     VAR    7	10,13,14	ARRAY(-1, INT)
 minloc          global     FUNC   7	27	INT
-vet             global     VAR    5	42,45,49	ARRAY(2, INT)
-output          global     FUNC   0	49	VOID
-input           global     FUNC   0	42,48	INT
+vet             global     VAR    5	41,44,48	ARRAY(2, INT)
+output          global     FUNC   0	48	VOID
+input           global     FUNC   0	41,47	INT
 ======= END OF TABLE =======
 Symbol table has been saved to: docs/generated/frontend/symbol_table/symbol_table.txt

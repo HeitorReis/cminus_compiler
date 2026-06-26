@@ -1,9 +1,11 @@
 ======= SYMBOL TABLE =======
 Name            Scope      Kind   Decl Lines           Use Lines            Type  
 --------------------------------------------------------------------------
-x               main#block0#block1 VAR    6	7,8	INT
-x               main#block0 VAR    3	4,10	INT
-main            global     FUNC   1		INT
-output          global     FUNC   0	8,10	VOID
-input           global     FUNC   0		INT
+n               main#block1 VAR    9	10,11	INT
+r               main#block1 VAR    9	11,12	INT
+main            global     FUNC   7		VOID
+n               fact       VAR    1	3,4,4	INT
+fact            global     FUNC   1	4,11	INT
+output          global     FUNC   0	12	VOID
+input           global     FUNC   0	10	INT
 ======= END OF TABLE =======
