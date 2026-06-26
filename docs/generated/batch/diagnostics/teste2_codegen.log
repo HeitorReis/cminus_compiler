@@ -283,7 +283,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r12', 'r11', 'r16', 'r10', 'r18', 'r15', 'r5', 'r7', 'r17', 'r21', 'r13', 'r19', 'r14', 'r20', 'r4', 'r8'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r20', 'r21', 'r14', 'r11', 'r13', 'r10', 'r15', 'r8', 'r16', 'r5', 'r4', 'r12', 'r7', 'r18', 'r19', 'r17'}
 [SPILL] Derramando registrador r21, que contém 't15'.
 [SPILL] -> 't15' é um temporário. Salvando na pilha em [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1

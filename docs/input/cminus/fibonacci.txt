@@ -6,7 +6,9 @@ int fib(int n)
 
 void main(void)
 {
+    int in;
     int r;
-    r = fib(10);
+    in = input();
+    r = fib(in);
     output(r);
 }

@@ -2,76 +2,26 @@
 .global main
 
 	bi: main
-fact:
-	subi: r29 = r29, 1
-	store: [r29] = r28
-	subi: r29 = r29, 1
-	store: [r29] = r31
-	mov: r31 = r29
-	subi: r29 = r29, 5
-	subi: r30 = r31, 1
-	store: [r30] = r1
-	subi: r30 = r31, 1
-	load: r4 = [r30]
-	movi: r5 = 2
-	subs: r0 = r4, r5
-	bigteq: L0
-	movi: r6 = 1
-	mov: r0 = r6
-	bi: fact_epilogue
-L0:
-L1:
-	subi: r30 = r31, 1
-	load: r7 = [r30]
-	subi: r8 = r7, 1
-	subi: r30 = r31, 2
-	store: [r30] = r8
-	subi: r30 = r31, 2
-	load: r9 = [r30]
-	mov: r1 = r9
-	movi: r10 = fact_Lret0
-	mov: r28 = r10
-	bl: fact
-fact_Lret0:
-	mov: r11 = r0
-	subi: r30 = r31, 1
-	load: r12 = [r30]
-	mul: r13 = r12, r11
-	mov: r0 = r13
-	bi: fact_epilogue
-fact_epilogue:
-	mov: r29 = r31
-	load: r31 = [r29]
-	addi: r29 = r29, 1
-	load: r28 = [r29]
-	addi: r29 = r29, 1
-	b: r28
-
 main:
 	movi: r29 = 63
 	mov: r31 = r29
-	subi: r29 = r29, 4
-	in: r4
+	subi: r29 = r29, 1
+	movi: r4 = 2
 	subi: r30 = r31, 1
 	store: [r30] = r4
+	movi: r5 = 1
 	subi: r30 = r31, 1
-	store: [r30] = r4
+	store: [r30] = r5
 	subi: r30 = r31, 1
-	load: r5 = [r30]
-	mov: r1 = r5
-	movi: r6 = main_Lret0
-	mov: r28 = r6
-	bl: fact
-main_Lret0:
-	mov: r7 = r0
-	subi: r30 = r31, 2
-	store: [r30] = r7
-	subi: r30 = r31, 2
-	store: [r30] = r7
-	subi: r30 = r31, 2
-	load: r8 = [r30]
-	mov: r1 = r8
+	load: r6 = [r30]
+	mov: r1 = r6
 	out: r1
+	subi: r30 = r31, 1
+	load: r7 = [r30]
+	mov: r1 = r7
+	out: r1
+	movi: r8 = 0
+	mov: r0 = r8
 	bi: main_epilogue
 main_epilogue:
 	ret:
