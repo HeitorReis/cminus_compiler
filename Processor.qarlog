@@ -1,0 +1,44 @@
+Quartus Prime Archive log --	D:/LocalVSCodes/cminus_compiler/Processor.qarlog
+
+Archive:	D:/LocalVSCodes/cminus_compiler/Processor.qar
+Date:		Thu Jun 25 22:14:10 2026
+Quartus Prime		20.1.1 Build 720 11/11/2020 SJ Lite Edition
+
+	=========== Files Selected: ===========
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Processor.qpf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Processor.qsf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Processor.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Processor_assignment_defaults.qdf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform10.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform11.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform2.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform3.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform4.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform5.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform6.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform7.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform8.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/Waveform9.vwf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/assignment_defaults.qdf
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/integrated.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/ALUControl.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/CPSR_module.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/CPSRegister.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/ControlUnit.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/DataMemory.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/FlagDecoder.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/FlagVerifier.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/InstructionMemory.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/PC_main.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/alu.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/freqDiv.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/output_manager.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/output_module.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/registerBank.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/modules/single_port_rom_init.txt
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/mux_write_in_reg.v
+D:/LocalVSCodes/cminus_compiler/Processor(v2026-1)/waveforms.txt
+	======= Total: 33 files to archive =======
+
+	================ Status: ===============
+All files archived successfully.
