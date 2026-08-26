@@ -26,6 +26,10 @@ The project does not currently have a dedicated `build` target. The practical en
 - `make run_all`
   - Cleans, rebuilds, and runs the configured positive regression suite.
   - The suite uses canonical names for `sort`, `gcd`, `factorial`, and `fibonacci`, plus the remaining numbered fixtures.
+- `make run_selected_10` (aliases: `make run_numbered_tests`, `make run_10`)
+  - Builds if needed and runs only the focused ten-file suite: `01_soma_1_ate_n.txt` through `10_carga_preempcao.txt`.
+  - Saves one final machine-code file per test in `docs/generated/batch/selected_10_machine_code/` and the corresponding compiler/code-generator logs in `docs/generated/batch/selected_10_diagnostics/`.
+  - Runs all ten even if one fails, then returns a non-zero status when any test did not produce machine code.
 - `make run_all complete`
 - `make run_all c`
 - `make run_all COMPLETE=1`
@@ -159,7 +163,7 @@ The checked-in tests exercise the following features:
 - `docs/generated/diagnostics/`
   - Logs, decoded machine-code reports, assembly-to-machine mapping, and machine-runner analysis.
 - `docs/generated/batch/`
-  - `run_all` outputs, split between final machine-code files and diagnostic logs.
+  - Batch outputs, including the existing `run_all` files and the dedicated `selected_10_machine_code/` output from `make run_selected_10`.
 
 `make clean` removes `build/`, `bin/`, `parser.gv`, and `parser.output`, but it does not remove files under `docs/generated/`.
 

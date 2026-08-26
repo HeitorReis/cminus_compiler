@@ -1,0 +1,975 @@
+Initializing symbol table and scope stack...
+Symbol table initialized successfully.
+Parsing 'docs/input/cminus/09_matriz_loops_aninhados.txt'...
+[LEX][1] SKIP_COMMENT
+[LEX][3] INT      -> 'int'
+[LEX][3] ID       -> 'matrix'
+[LEX][3] LBRACK   -> '['
+[LEX][3] NUM      -> '16' (16)
+[LEX][3] RBRACK   -> ']'
+[LEX][3] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e3d615c5770
+[PARSER DBG] var_declaration (vector): name=matrix, size=16[LEX][5] VOID     -> 'void'
+[LEX][5] ID       -> 'main'
+[LEX][5] LPAREN   -> '('
+[LEX][5] VOID     -> 'void'
+[LEX][5] RPAREN   -> ')'
+[LEX][6] LBRACE   -> '{'
+[LEX][7] INT      -> 'int'
+[LEX][7] ID       -> 'row'
+[LEX][7] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e3d615c59b0
+[PARSER DBG] var_declaration: name=row[LEX][8] INT      -> 'int'
+[LEX][8] ID       -> 'column'
+[LEX][8] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e3d615c5ac0
+[PARSER DBG] var_declaration: name=column[LEX][9] INT      -> 'int'
+[LEX][9] ID       -> 'index'
+[LEX][9] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e3d615c5bd0
+[PARSER DBG] var_declaration: name=index[LEX][10] INT      -> 'int'
+[LEX][10] ID       -> 'total'
+[LEX][10] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e3d615c5ce0
+[PARSER DBG] var_declaration: name=total[LEX][11] INT      -> 'int'
+[LEX][11] ID       -> 'diagonal'
+[LEX][11] SEMI     -> ';'
+[AST DBG] newNode kind=AST_VAR_DECL -> 0x5e3d615c5df0
+[PARSER DBG] var_declaration: name=diagonal[LEX][13] ID       -> 'row'
+[LEX][13] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c5e50
+[AST DBG] newIdNode("row") -> 0x5e3d615c5e50
+[LEX][13] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c5eb0
+[AST DBG] newNumNode(0) -> 0x5e3d615c5eb0
+[LEX][13] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c5ef0
+[AST DBG] addChild parent=0x5e3d615c5ef0(AST_ASSIGN, lineno=13) child=0x5e3d615c5e50(AST_ID, lineno=13)
+[AST DBG] addChild parent=0x5e3d615c5ef0(AST_ASSIGN, lineno=13) child=0x5e3d615c5eb0(AST_NUM, lineno=13)
+[PARSER DBG] assignment: var=0x5e3d615c5e50 expr=0x5e3d615c5eb0
+[LEX][14] ID       -> 'column'
+[LEX][14] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c5f30
+[AST DBG] newIdNode("column") -> 0x5e3d615c5f30
+[LEX][14] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c5f90
+[AST DBG] newNumNode(0) -> 0x5e3d615c5f90
+[LEX][14] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c5fd0
+[AST DBG] addChild parent=0x5e3d615c5fd0(AST_ASSIGN, lineno=14) child=0x5e3d615c5f30(AST_ID, lineno=14)
+[AST DBG] addChild parent=0x5e3d615c5fd0(AST_ASSIGN, lineno=14) child=0x5e3d615c5f90(AST_NUM, lineno=14)
+[PARSER DBG] assignment: var=0x5e3d615c5f30 expr=0x5e3d615c5f90
+[LEX][15] ID       -> 'index'
+[LEX][15] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6010
+[AST DBG] newIdNode("index") -> 0x5e3d615c6010
+[LEX][15] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c6070
+[AST DBG] newNumNode(0) -> 0x5e3d615c6070
+[LEX][15] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c60b0
+[AST DBG] addChild parent=0x5e3d615c60b0(AST_ASSIGN, lineno=15) child=0x5e3d615c6010(AST_ID, lineno=15)
+[AST DBG] addChild parent=0x5e3d615c60b0(AST_ASSIGN, lineno=15) child=0x5e3d615c6070(AST_NUM, lineno=15)
+[PARSER DBG] assignment: var=0x5e3d615c6010 expr=0x5e3d615c6070
+[LEX][16] ID       -> 'total'
+[LEX][16] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c60f0
+[AST DBG] newIdNode("total") -> 0x5e3d615c60f0
+[LEX][16] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c6150
+[AST DBG] newNumNode(0) -> 0x5e3d615c6150
+[LEX][16] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c6190
+[AST DBG] addChild parent=0x5e3d615c6190(AST_ASSIGN, lineno=16) child=0x5e3d615c60f0(AST_ID, lineno=16)
+[AST DBG] addChild parent=0x5e3d615c6190(AST_ASSIGN, lineno=16) child=0x5e3d615c6150(AST_NUM, lineno=16)
+[PARSER DBG] assignment: var=0x5e3d615c60f0 expr=0x5e3d615c6150
+[LEX][17] ID       -> 'diagonal'
+[LEX][17] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c61d0
+[AST DBG] newIdNode("diagonal") -> 0x5e3d615c61d0
+[LEX][17] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c6230
+[AST DBG] newNumNode(0) -> 0x5e3d615c6230
+[LEX][17] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c6270
+[AST DBG] addChild parent=0x5e3d615c6270(AST_ASSIGN, lineno=17) child=0x5e3d615c61d0(AST_ID, lineno=17)
+[AST DBG] addChild parent=0x5e3d615c6270(AST_ASSIGN, lineno=17) child=0x5e3d615c6230(AST_NUM, lineno=17)
+[PARSER DBG] assignment: var=0x5e3d615c61d0 expr=0x5e3d615c6230
+[LEX][19] WHILE    -> 'while'
+[LEX][19] LPAREN   -> '('
+[LEX][19] ID       -> 'row'
+[LEX][19] LT       -> '<'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c62b0
+[AST DBG] newIdNode("row") -> 0x5e3d615c62b0
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6310
+[LEX][19] NUM      -> '4' (4)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c6350
+[AST DBG] newNumNode(4) -> 0x5e3d615c6350
+[LEX][19] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c6390
+[AST DBG] addChild parent=0x5e3d615c6390(AST_BINOP, lineno=19) child=0x5e3d615c62b0(AST_ID, lineno=19)
+[AST DBG] addChild parent=0x5e3d615c6390(AST_BINOP, lineno=19) child=0x5e3d615c6310(AST_OP, lineno=19)
+[AST DBG] addChild parent=0x5e3d615c6390(AST_BINOP, lineno=19) child=0x5e3d615c6350(AST_NUM, lineno=19)
+[PARSER DBG] binop: left=0x5e3d615c62b0 op=0x5e3d615c6310 right=0x5e3d615c6350
+[LEX][19] LBRACE   -> '{'
+[LEX][20] ID       -> 'column'
+[LEX][20] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6430
+[AST DBG] newIdNode("column") -> 0x5e3d615c6430
+[LEX][20] NUM      -> '0' (0)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c6490
+[AST DBG] newNumNode(0) -> 0x5e3d615c6490
+[LEX][20] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c64d0
+[AST DBG] addChild parent=0x5e3d615c64d0(AST_ASSIGN, lineno=20) child=0x5e3d615c6430(AST_ID, lineno=20)
+[AST DBG] addChild parent=0x5e3d615c64d0(AST_ASSIGN, lineno=20) child=0x5e3d615c6490(AST_NUM, lineno=20)
+[PARSER DBG] assignment: var=0x5e3d615c6430 expr=0x5e3d615c6490
+[LEX][21] WHILE    -> 'while'
+[LEX][21] LPAREN   -> '('
+[LEX][21] ID       -> 'column'
+[LEX][21] LT       -> '<'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6510
+[AST DBG] newIdNode("column") -> 0x5e3d615c6510
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6570
+[LEX][21] NUM      -> '4' (4)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c65b0
+[AST DBG] newNumNode(4) -> 0x5e3d615c65b0
+[LEX][21] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c65f0
+[AST DBG] addChild parent=0x5e3d615c65f0(AST_BINOP, lineno=21) child=0x5e3d615c6510(AST_ID, lineno=21)
+[AST DBG] addChild parent=0x5e3d615c65f0(AST_BINOP, lineno=21) child=0x5e3d615c6570(AST_OP, lineno=21)
+[AST DBG] addChild parent=0x5e3d615c65f0(AST_BINOP, lineno=21) child=0x5e3d615c65b0(AST_NUM, lineno=21)
+[PARSER DBG] binop: left=0x5e3d615c6510 op=0x5e3d615c6570 right=0x5e3d615c65b0
+[LEX][21] LBRACE   -> '{'
+[LEX][22] ID       -> 'index'
+[LEX][22] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c66b0
+[AST DBG] newIdNode("index") -> 0x5e3d615c66b0
+[LEX][22] ID       -> 'row'
+[LEX][22] TIMES    -> '*'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6710
+[AST DBG] newIdNode("row") -> 0x5e3d615c6710
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6770
+[LEX][22] NUM      -> '4' (4)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c67b0
+[AST DBG] newNumNode(4) -> 0x5e3d615c67b0
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c67f0
+[AST DBG] addChild parent=0x5e3d615c67f0(AST_BINOP, lineno=22) child=0x5e3d615c6710(AST_ID, lineno=22)
+[AST DBG] addChild parent=0x5e3d615c67f0(AST_BINOP, lineno=22) child=0x5e3d615c6770(AST_OP, lineno=22)
+[AST DBG] addChild parent=0x5e3d615c67f0(AST_BINOP, lineno=22) child=0x5e3d615c67b0(AST_NUM, lineno=22)
+[LEX][22] PLUS     -> '+'
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6830
+[LEX][22] ID       -> 'column'
+[LEX][22] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c68b0
+[AST DBG] newIdNode("column") -> 0x5e3d615c68b0
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c6910
+[AST DBG] addChild parent=0x5e3d615c6910(AST_BINOP, lineno=22) child=0x5e3d615c67f0(AST_BINOP, lineno=22)
+[AST DBG] addChild parent=0x5e3d615c6910(AST_BINOP, lineno=22) child=0x5e3d615c6830(AST_OP, lineno=22)
+[AST DBG] addChild parent=0x5e3d615c6910(AST_BINOP, lineno=22) child=0x5e3d615c68b0(AST_ID, lineno=22)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c6950
+[AST DBG] addChild parent=0x5e3d615c6950(AST_ASSIGN, lineno=22) child=0x5e3d615c66b0(AST_ID, lineno=22)
+[AST DBG] addChild parent=0x5e3d615c6950(AST_ASSIGN, lineno=22) child=0x5e3d615c6910(AST_BINOP, lineno=22)
+[PARSER DBG] assignment: var=0x5e3d615c66b0 expr=0x5e3d615c6910
+[LEX][23] ID       -> 'matrix'
+[LEX][23] LBRACK   -> '['
+[LEX][23] ID       -> 'index'
+[LEX][23] RBRACK   -> ']'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c69b0
+[AST DBG] newIdNode("index") -> 0x5e3d615c69b0
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5e3d615c6a10
+[AST DBG] addChild parent=0x5e3d615c6a10(AST_ARRAY_ACCESS, lineno=23) child=0x5e3d615c69b0(AST_ID, lineno=23)
+[LEX][23] ASSIGN   -> '='
+[LEX][23] LPAREN   -> '('
+[LEX][23] ID       -> 'row'
+[LEX][23] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6a50
+[AST DBG] newIdNode("row") -> 0x5e3d615c6a50
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6ab0
+[LEX][23] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c6af0
+[AST DBG] newNumNode(1) -> 0x5e3d615c6af0
+[LEX][23] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c6b30
+[AST DBG] addChild parent=0x5e3d615c6b30(AST_BINOP, lineno=23) child=0x5e3d615c6a50(AST_ID, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c6b30(AST_BINOP, lineno=23) child=0x5e3d615c6ab0(AST_OP, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c6b30(AST_BINOP, lineno=23) child=0x5e3d615c6af0(AST_NUM, lineno=23)
+[LEX][23] TIMES    -> '*'
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6b70
+[LEX][23] LPAREN   -> '('
+[LEX][23] ID       -> 'column'
+[LEX][23] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6bf0
+[AST DBG] newIdNode("column") -> 0x5e3d615c6bf0
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6c50
+[LEX][23] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c6c90
+[AST DBG] newNumNode(1) -> 0x5e3d615c6c90
+[LEX][23] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c6cd0
+[AST DBG] addChild parent=0x5e3d615c6cd0(AST_BINOP, lineno=23) child=0x5e3d615c6bf0(AST_ID, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c6cd0(AST_BINOP, lineno=23) child=0x5e3d615c6c50(AST_OP, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c6cd0(AST_BINOP, lineno=23) child=0x5e3d615c6c90(AST_NUM, lineno=23)
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c6d10
+[AST DBG] addChild parent=0x5e3d615c6d10(AST_BINOP, lineno=23) child=0x5e3d615c6b30(AST_BINOP, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c6d10(AST_BINOP, lineno=23) child=0x5e3d615c6b70(AST_OP, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c6d10(AST_BINOP, lineno=23) child=0x5e3d615c6cd0(AST_BINOP, lineno=23)
+[LEX][23] SEMI     -> ';'
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c6d50
+[AST DBG] addChild parent=0x5e3d615c6d50(AST_ASSIGN, lineno=23) child=0x5e3d615c6a10(AST_ARRAY_ACCESS, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c6d50(AST_ASSIGN, lineno=23) child=0x5e3d615c6d10(AST_BINOP, lineno=23)
+[PARSER DBG] assignment: var=0x5e3d615c6a10 expr=0x5e3d615c6d10
+[LEX][24] ID       -> 'total'
+[LEX][24] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6db0
+[AST DBG] newIdNode("total") -> 0x5e3d615c6db0
+[LEX][24] ID       -> 'total'
+[LEX][24] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6e10
+[AST DBG] newIdNode("total") -> 0x5e3d615c6e10
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c6e70
+[LEX][24] ID       -> 'matrix'
+[LEX][24] LBRACK   -> '['
+[LEX][24] ID       -> 'index'
+[LEX][24] RBRACK   -> ']'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c6ef0
+[AST DBG] newIdNode("index") -> 0x5e3d615c6ef0
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5e3d615c6f50
+[AST DBG] addChild parent=0x5e3d615c6f50(AST_ARRAY_ACCESS, lineno=24) child=0x5e3d615c6ef0(AST_ID, lineno=24)
+[LEX][24] SEMI     -> ';'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c6f90
+[AST DBG] addChild parent=0x5e3d615c6f90(AST_BINOP, lineno=24) child=0x5e3d615c6e10(AST_ID, lineno=24)
+[AST DBG] addChild parent=0x5e3d615c6f90(AST_BINOP, lineno=24) child=0x5e3d615c6e70(AST_OP, lineno=24)
+[AST DBG] addChild parent=0x5e3d615c6f90(AST_BINOP, lineno=24) child=0x5e3d615c6f50(AST_ARRAY_ACCESS, lineno=24)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c6fd0
+[AST DBG] addChild parent=0x5e3d615c6fd0(AST_ASSIGN, lineno=24) child=0x5e3d615c6db0(AST_ID, lineno=24)
+[AST DBG] addChild parent=0x5e3d615c6fd0(AST_ASSIGN, lineno=24) child=0x5e3d615c6f90(AST_BINOP, lineno=24)
+[PARSER DBG] assignment: var=0x5e3d615c6db0 expr=0x5e3d615c6f90
+[LEX][25] IF       -> 'if'
+[LEX][25] LPAREN   -> '('
+[LEX][25] ID       -> 'row'
+[LEX][25] EQ       -> '=='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7010
+[AST DBG] newIdNode("row") -> 0x5e3d615c7010
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c7070
+[LEX][25] ID       -> 'column'
+[LEX][25] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c70d0
+[AST DBG] newIdNode("column") -> 0x5e3d615c70d0
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c7130
+[AST DBG] addChild parent=0x5e3d615c7130(AST_BINOP, lineno=25) child=0x5e3d615c7010(AST_ID, lineno=25)
+[AST DBG] addChild parent=0x5e3d615c7130(AST_BINOP, lineno=25) child=0x5e3d615c7070(AST_OP, lineno=25)
+[AST DBG] addChild parent=0x5e3d615c7130(AST_BINOP, lineno=25) child=0x5e3d615c70d0(AST_ID, lineno=25)
+[PARSER DBG] binop: left=0x5e3d615c7010 op=0x5e3d615c7070 right=0x5e3d615c70d0
+[LEX][25] LBRACE   -> '{'
+[LEX][26] ID       -> 'diagonal'
+[LEX][26] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c71d0
+[AST DBG] newIdNode("diagonal") -> 0x5e3d615c71d0
+[LEX][26] ID       -> 'diagonal'
+[LEX][26] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7230
+[AST DBG] newIdNode("diagonal") -> 0x5e3d615c7230
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c7290
+[LEX][26] ID       -> 'matrix'
+[LEX][26] LBRACK   -> '['
+[LEX][26] ID       -> 'index'
+[LEX][26] RBRACK   -> ']'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7310
+[AST DBG] newIdNode("index") -> 0x5e3d615c7310
+[AST DBG] newNode kind=AST_ARRAY_ACCESS -> 0x5e3d615c7370
+[AST DBG] addChild parent=0x5e3d615c7370(AST_ARRAY_ACCESS, lineno=26) child=0x5e3d615c7310(AST_ID, lineno=26)
+[LEX][26] SEMI     -> ';'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c73b0
+[AST DBG] addChild parent=0x5e3d615c73b0(AST_BINOP, lineno=26) child=0x5e3d615c7230(AST_ID, lineno=26)
+[AST DBG] addChild parent=0x5e3d615c73b0(AST_BINOP, lineno=26) child=0x5e3d615c7290(AST_OP, lineno=26)
+[AST DBG] addChild parent=0x5e3d615c73b0(AST_BINOP, lineno=26) child=0x5e3d615c7370(AST_ARRAY_ACCESS, lineno=26)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c73f0
+[AST DBG] addChild parent=0x5e3d615c73f0(AST_ASSIGN, lineno=26) child=0x5e3d615c71d0(AST_ID, lineno=26)
+[AST DBG] addChild parent=0x5e3d615c73f0(AST_ASSIGN, lineno=26) child=0x5e3d615c73b0(AST_BINOP, lineno=26)
+[PARSER DBG] assignment: var=0x5e3d615c71d0 expr=0x5e3d615c73b0
+[LEX][27] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x5e3d615c7430
+[AST DBG] addChild parent=0x5e3d615c7430(AST_BLOCK, lineno=27) child=0x5e3d615c73f0(AST_ASSIGN, lineno=26)
+[PARSER DBG] compound_stmt: scope=main#block0#block1#block2#block3 decls=(nil) stmts=0x5e3d615c73f0
+[LEX][28] ID       -> 'column'
+[AST DBG] newNode kind=AST_IF -> 0x5e3d615c7470
+[AST DBG] addChild parent=0x5e3d615c7470(AST_IF, lineno=25) child=0x5e3d615c7130(AST_BINOP, lineno=25)
+[AST DBG] addChild parent=0x5e3d615c7470(AST_IF, lineno=25) child=0x5e3d615c7430(AST_BLOCK, lineno=27)
+[LEX][28] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c74b0
+[AST DBG] newIdNode("column") -> 0x5e3d615c74b0
+[LEX][28] ID       -> 'column'
+[LEX][28] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7510
+[AST DBG] newIdNode("column") -> 0x5e3d615c7510
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c7570
+[LEX][28] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c75b0
+[AST DBG] newNumNode(1) -> 0x5e3d615c75b0
+[LEX][28] SEMI     -> ';'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c75f0
+[AST DBG] addChild parent=0x5e3d615c75f0(AST_BINOP, lineno=28) child=0x5e3d615c7510(AST_ID, lineno=28)
+[AST DBG] addChild parent=0x5e3d615c75f0(AST_BINOP, lineno=28) child=0x5e3d615c7570(AST_OP, lineno=28)
+[AST DBG] addChild parent=0x5e3d615c75f0(AST_BINOP, lineno=28) child=0x5e3d615c75b0(AST_NUM, lineno=28)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c7630
+[AST DBG] addChild parent=0x5e3d615c7630(AST_ASSIGN, lineno=28) child=0x5e3d615c74b0(AST_ID, lineno=28)
+[AST DBG] addChild parent=0x5e3d615c7630(AST_ASSIGN, lineno=28) child=0x5e3d615c75f0(AST_BINOP, lineno=28)
+[PARSER DBG] assignment: var=0x5e3d615c74b0 expr=0x5e3d615c75f0
+[LEX][29] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x5e3d615c7670
+[AST DBG] addChild parent=0x5e3d615c7670(AST_BLOCK, lineno=29) child=0x5e3d615c6950(AST_ASSIGN, lineno=22)
+[AST DBG] addChild parent=0x5e3d615c7670(AST_BLOCK, lineno=29) child=0x5e3d615c6d50(AST_ASSIGN, lineno=23)
+[AST DBG] addChild parent=0x5e3d615c7670(AST_BLOCK, lineno=29) child=0x5e3d615c6fd0(AST_ASSIGN, lineno=24)
+[AST DBG] addChild parent=0x5e3d615c7670(AST_BLOCK, lineno=29) child=0x5e3d615c7470(AST_IF, lineno=25)
+[AST DBG] addChild parent=0x5e3d615c7670(AST_BLOCK, lineno=29) child=0x5e3d615c7630(AST_ASSIGN, lineno=28)
+[PARSER DBG] compound_stmt: scope=main#block0#block1#block2 decls=(nil) stmts=0x5e3d615c6950
+[AST DBG] newNode kind=AST_WHILE -> 0x5e3d615c76b0
+[AST DBG] addChild parent=0x5e3d615c76b0(AST_WHILE, lineno=21) child=0x5e3d615c65f0(AST_BINOP, lineno=21)
+[AST DBG] addChild parent=0x5e3d615c76b0(AST_WHILE, lineno=21) child=0x5e3d615c7670(AST_BLOCK, lineno=29)
+[LEX][30] ID       -> 'row'
+[LEX][30] ASSIGN   -> '='
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7710
+[AST DBG] newIdNode("row") -> 0x5e3d615c7710
+[LEX][30] ID       -> 'row'
+[LEX][30] PLUS     -> '+'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7770
+[AST DBG] newIdNode("row") -> 0x5e3d615c7770
+[AST DBG] newNode kind=AST_OP -> 0x5e3d615c77d0
+[LEX][30] NUM      -> '1' (1)
+[AST DBG] newNode kind=AST_NUM -> 0x5e3d615c7810
+[AST DBG] newNumNode(1) -> 0x5e3d615c7810
+[LEX][30] SEMI     -> ';'
+[AST DBG] newNode kind=AST_BINOP -> 0x5e3d615c7850
+[AST DBG] addChild parent=0x5e3d615c7850(AST_BINOP, lineno=30) child=0x5e3d615c7770(AST_ID, lineno=30)
+[AST DBG] addChild parent=0x5e3d615c7850(AST_BINOP, lineno=30) child=0x5e3d615c77d0(AST_OP, lineno=30)
+[AST DBG] addChild parent=0x5e3d615c7850(AST_BINOP, lineno=30) child=0x5e3d615c7810(AST_NUM, lineno=30)
+[AST DBG] newNode kind=AST_ASSIGN -> 0x5e3d615c7890
+[AST DBG] addChild parent=0x5e3d615c7890(AST_ASSIGN, lineno=30) child=0x5e3d615c7710(AST_ID, lineno=30)
+[AST DBG] addChild parent=0x5e3d615c7890(AST_ASSIGN, lineno=30) child=0x5e3d615c7850(AST_BINOP, lineno=30)
+[PARSER DBG] assignment: var=0x5e3d615c7710 expr=0x5e3d615c7850
+[LEX][31] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x5e3d615c78d0
+[AST DBG] addChild parent=0x5e3d615c78d0(AST_BLOCK, lineno=31) child=0x5e3d615c64d0(AST_ASSIGN, lineno=20)
+[AST DBG] addChild parent=0x5e3d615c78d0(AST_BLOCK, lineno=31) child=0x5e3d615c76b0(AST_WHILE, lineno=21)
+[AST DBG] addChild parent=0x5e3d615c78d0(AST_BLOCK, lineno=31) child=0x5e3d615c7890(AST_ASSIGN, lineno=30)
+[PARSER DBG] compound_stmt: scope=main#block0#block1 decls=(nil) stmts=0x5e3d615c64d0
+[AST DBG] newNode kind=AST_WHILE -> 0x5e3d615c7910
+[AST DBG] addChild parent=0x5e3d615c7910(AST_WHILE, lineno=19) child=0x5e3d615c6390(AST_BINOP, lineno=19)
+[AST DBG] addChild parent=0x5e3d615c7910(AST_WHILE, lineno=19) child=0x5e3d615c78d0(AST_BLOCK, lineno=31)
+[LEX][33] ID       -> 'output'
+[LEX][33] LPAREN   -> '('
+[LEX][33] ID       -> 'total'
+[LEX][33] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7970
+[AST DBG] newIdNode("total") -> 0x5e3d615c7970
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x5e3d615c79d0
+[AST DBG] addChild parent=0x5e3d615c79d0(AST_ARG_LIST, lineno=33) child=0x5e3d615c7970(AST_ID, lineno=33)
+[AST DBG] newNode kind=AST_CALL -> 0x5e3d615c7a10
+[AST DBG] addChild parent=0x5e3d615c7a10(AST_CALL, lineno=33) child=0x5e3d615c79d0(AST_ARG_LIST, lineno=33)
+[LEX][33] SEMI     -> ';'
+[LEX][34] ID       -> 'output'
+[LEX][34] LPAREN   -> '('
+[LEX][34] ID       -> 'diagonal'
+[LEX][34] RPAREN   -> ')'
+[AST DBG] newNode kind=AST_ID -> 0x5e3d615c7a70
+[AST DBG] newIdNode("diagonal") -> 0x5e3d615c7a70
+[AST DBG] newNode kind=AST_ARG_LIST -> 0x5e3d615c7ad0
+[AST DBG] addChild parent=0x5e3d615c7ad0(AST_ARG_LIST, lineno=34) child=0x5e3d615c7a70(AST_ID, lineno=34)
+[AST DBG] newNode kind=AST_CALL -> 0x5e3d615c7b10
+[AST DBG] addChild parent=0x5e3d615c7b10(AST_CALL, lineno=34) child=0x5e3d615c7ad0(AST_ARG_LIST, lineno=34)
+[LEX][34] SEMI     -> ';'
+[LEX][35] RETURN   -> 'return'
+[LEX][35] SEMI     -> ';'
+[AST DBG] newNode kind=AST_RETURN -> 0x5e3d615c7b50
+[LEX][36] RBRACE   -> '}'
+[AST DBG] newNode kind=AST_BLOCK -> 0x5e3d615c7b90
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c59b0(AST_VAR_DECL, lineno=7)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c5ef0(AST_ASSIGN, lineno=13)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c5fd0(AST_ASSIGN, lineno=14)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c60b0(AST_ASSIGN, lineno=15)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c6190(AST_ASSIGN, lineno=16)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c6270(AST_ASSIGN, lineno=17)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c7910(AST_WHILE, lineno=19)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c7a10(AST_CALL, lineno=33)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c7b10(AST_CALL, lineno=34)
+[AST DBG] addChild parent=0x5e3d615c7b90(AST_BLOCK, lineno=36) child=0x5e3d615c7b50(AST_RETURN, lineno=35)
+[PARSER DBG] compound_stmt: scope=main#block0 decls=0x5e3d615c59b0 stmts=0x5e3d615c5ef0
+[AST DBG] newNode kind=AST_FUN_DECL -> 0x5e3d615c7bd0
+[AST DBG] addChild parent=0x5e3d615c7bd0(AST_FUN_DECL, lineno=5) child=0x5e3d615c7b90(AST_BLOCK, lineno=36)
+[PARSER DBG] fun_declaration: name=main, params=(nil), body=0x5e3d615c7b90
+[PARSER DBG] declaration_list: added main
+[LEX][37] EOF
+[AST DBG] newNode kind=AST_PROGRAM -> 0x5e3d615c7c10
+[AST DBG] addChild parent=0x5e3d615c7c10(AST_PROGRAM, lineno=3) child=0x5e3d615c5770(AST_VAR_DECL, lineno=3)
+[AST DBG] addChild parent=0x5e3d615c7c10(AST_PROGRAM, lineno=3) child=0x5e3d615c7bd0(AST_FUN_DECL, lineno=5)
+Parse successful.
+
+=== AST ===
+Program (lineno=3)
+  VarDecl(name=matrix, lineno=3)
+  FunDecl(name=main, lineno=5)
+    Block (lineno=36)
+      VarDecl(name=row, lineno=7)
+      VarDecl(name=column, lineno=8)
+      VarDecl(name=index, lineno=9)
+      VarDecl(name=total, lineno=10)
+      VarDecl(name=diagonal, lineno=11)
+      Assign (lineno=13)
+        Id(name=row, lineno=13)
+        Num(value=0, lineno=13)
+      Assign (lineno=14)
+        Id(name=column, lineno=14)
+        Num(value=0, lineno=14)
+      Assign (lineno=15)
+        Id(name=index, lineno=15)
+        Num(value=0, lineno=15)
+      Assign (lineno=16)
+        Id(name=total, lineno=16)
+        Num(value=0, lineno=16)
+      Assign (lineno=17)
+        Id(name=diagonal, lineno=17)
+        Num(value=0, lineno=17)
+      While (lineno=19)
+        BinOp (lineno=19)
+          Id(name=row, lineno=19)
+          Op(op='<', lineno=19)
+          Num(value=4, lineno=19)
+        Block (lineno=31)
+          Assign (lineno=20)
+            Id(name=column, lineno=20)
+            Num(value=0, lineno=20)
+          While (lineno=21)
+            BinOp (lineno=21)
+              Id(name=column, lineno=21)
+              Op(op='<', lineno=21)
+              Num(value=4, lineno=21)
+            Block (lineno=29)
+              Assign (lineno=22)
+                Id(name=index, lineno=22)
+                BinOp (lineno=22)
+                  BinOp (lineno=22)
+                    Id(name=row, lineno=22)
+                    Op(op='*', lineno=22)
+                    Num(value=4, lineno=22)
+                  Op(op='+', lineno=22)
+                  Id(name=column, lineno=22)
+              Assign (lineno=23)
+                ArrayAccess(name=matrix, lineno=23)
+                  Id(name=index, lineno=23)
+                BinOp (lineno=23)
+                  BinOp (lineno=23)
+                    Id(name=row, lineno=23)
+                    Op(op='+', lineno=23)
+                    Num(value=1, lineno=23)
+                  Op(op='*', lineno=23)
+                  BinOp (lineno=23)
+                    Id(name=column, lineno=23)
+                    Op(op='+', lineno=23)
+                    Num(value=1, lineno=23)
+              Assign (lineno=24)
+                Id(name=total, lineno=24)
+                BinOp (lineno=24)
+                  Id(name=total, lineno=24)
+                  Op(op='+', lineno=24)
+                  ArrayAccess(name=matrix, lineno=24)
+                    Id(name=index, lineno=24)
+              If (lineno=25)
+                BinOp (lineno=25)
+                  Id(name=row, lineno=25)
+                  Op(op='==', lineno=25)
+                  Id(name=column, lineno=25)
+                Block (lineno=27)
+                  Assign (lineno=26)
+                    Id(name=diagonal, lineno=26)
+                    BinOp (lineno=26)
+                      Id(name=diagonal, lineno=26)
+                      Op(op='+', lineno=26)
+                      ArrayAccess(name=matrix, lineno=26)
+                        Id(name=index, lineno=26)
+              Assign (lineno=28)
+                Id(name=column, lineno=28)
+                BinOp (lineno=28)
+                  Id(name=column, lineno=28)
+                  Op(op='+', lineno=28)
+                  Num(value=1, lineno=28)
+          Assign (lineno=30)
+            Id(name=row, lineno=30)
+            BinOp (lineno=30)
+              Id(name=row, lineno=30)
+              Op(op='+', lineno=30)
+              Num(value=1, lineno=30)
+      Call(name=output, lineno=33)
+        ArgList (lineno=33)
+          Id(name=total, lineno=33)
+      Call(name=output, lineno=34)
+        ArgList (lineno=34)
+          Id(name=diagonal, lineno=34)
+      Return (lineno=35)
+AST has been saved to: docs/generated/frontend/syntax_tree/ast.txt
+Semantic analysis completed successfully with no errors.
+
+=== IR ===
+
+[IR_DBG] === Starting IR Generation ===
+[IR_DBG] Pass 1: Searching for global variable declarations...
+[IR_DBG]   Found global var declaration for 'matrix'
+[IR_DBG] Creating new constant: 16
+[IR_DBG] Creating new name operand: .space
+[IR_DBG] Creating new name operand: matrix
+[IR_DBG] Emitting instruction with opcode 4
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_PROGRAM at line 3
+[IR_DBG]   Case AST_PROGRAM
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_FUN_DECL at line 5
+[IR_DBG]   Case AST_FUN_DECL for 'main'
+[IR_DBG] Creating new name operand: main
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 36
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 13
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 13
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 13
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new name operand: row
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 14
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 14
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 14
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new name operand: column
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 15
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 15
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 15
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new name operand: index
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 16
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 16
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 16
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new name operand: total
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 17
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 17
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 17
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new name operand: diagonal
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_WHILE at line 19
+[IR_DBG]   Case AST_WHILE
+[IR_DBG] Creating new label: L0
+[IR_DBG] Creating new label: L1
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 19
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '<'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 19
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: row
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 19
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 4
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t0
+[IR_DBG] Emitting instruction with opcode 11
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Emitting instruction with opcode 17
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 31
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 20
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 20
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 20
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new name operand: column
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_WHILE at line 21
+[IR_DBG]   Case AST_WHILE
+[IR_DBG] Creating new label: L2
+[IR_DBG] Creating new label: L3
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 21
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '<'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 21
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: column
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 21
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 4
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t1
+[IR_DBG] Emitting instruction with opcode 11
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Emitting instruction with opcode 17
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 29
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 22
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 22
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 22
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 22
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '*'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 22
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: row
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 22
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 4
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t2
+[IR_DBG] Emitting instruction with opcode 7
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 22
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: column
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t3
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Creating new name operand: index
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 23
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 23
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 23
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '*'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 23
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 23
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: row
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 23
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t4
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 23
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 23
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: column
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 23
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t5
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Creating new temporary: t6
+[IR_DBG] Emitting instruction with opcode 7
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG]      Assigning to Array Access
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 23
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: index
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t7
+[IR_DBG] Creating new name operand: matrix
+[IR_DBG] Emitting instruction with opcode 3
+[IR_DBG] Creating new temporary: t8
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] Emitting instruction with opcode 2
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 24
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 24
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 24
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 24
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: total
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ARRAY_ACCESS at line 24
+[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 24
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: index
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t9
+[IR_DBG] Creating new name operand: matrix
+[IR_DBG] Emitting instruction with opcode 3
+[IR_DBG] Creating new temporary: t10
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] Creating new temporary: t11
+[IR_DBG] Emitting instruction with opcode 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ARRAY_ACCESS
+[IR_DBG] Creating new temporary: t12
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Creating new name operand: total
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_IF at line 25
+[IR_DBG]   Case AST_IF
+[IR_DBG] Creating new label: L4
+[IR_DBG] Creating new label: L5
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 25
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '=='
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 25
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: row
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 25
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: column
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t13
+[IR_DBG] Emitting instruction with opcode 9
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Emitting instruction with opcode 17
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_BLOCK at line 27
+[IR_DBG]   Case AST_BLOCK
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 26
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 26
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 26
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 26
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: diagonal
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ARRAY_ACCESS at line 26
+[IR_DBG]    Case AST_ARRAY_ACCESS (Load)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 26
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: index
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Creating new temporary: t14
+[IR_DBG] Creating new name operand: matrix
+[IR_DBG] Emitting instruction with opcode 3
+[IR_DBG] Creating new temporary: t15
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] Creating new temporary: t16
+[IR_DBG] Emitting instruction with opcode 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ARRAY_ACCESS
+[IR_DBG] Creating new temporary: t17
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Creating new name operand: diagonal
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 16
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_IF
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 28
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 28
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 28
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 28
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: column
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 28
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t18
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Creating new name operand: column
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 16
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_WHILE
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_ASSIGN at line 30
+[IR_DBG]   Case AST_ASSIGN (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ASSIGN at line 30
+[IR_DBG]    Case AST_ASSIGN
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_BINOP at line 30
+[IR_DBG]    Case AST_BINOP
+[IR_DBG]      Operator: '+'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 30
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: row
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_NUM at line 30
+[IR_DBG]    Case AST_NUM
+[IR_DBG] Creating new constant: 1
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_NUM
+[IR_DBG] Creating new temporary: t19
+[IR_DBG] Emitting instruction with opcode 5
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_BINOP
+[IR_DBG] Creating new name operand: row
+[IR_DBG] Emitting instruction with opcode 0
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_ASSIGN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 16
+[IR_DBG] Emitting instruction with opcode 15
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_WHILE
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 33
+[IR_DBG]   Case AST_CALL (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 33
+[IR_DBG]    Case AST_CALL for function 'output'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 33
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: total
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] Creating new constant: 1
+[IR_DBG] Creating new name operand: output
+[IR_DBG] Emitting instruction with opcode 21
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_CALL at line 34
+[IR_DBG]   Case AST_CALL (as statement)
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_CALL at line 34
+[IR_DBG]    Case AST_CALL for function 'output'
+[IR_DBG] >> generate_ir_for_expr: Processing expression kind AST_ID at line 34
+[IR_DBG]    Case AST_ID
+[IR_DBG] Creating new name operand: diagonal
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_ID
+[IR_DBG] Emitting instruction with opcode 20
+[IR_DBG] Creating new constant: 1
+[IR_DBG] Creating new name operand: output
+[IR_DBG] Emitting instruction with opcode 21
+[IR_DBG] << generate_ir_for_expr: Finished processing expression kind AST_CALL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_CALL
+[IR_DBG] > generate_ir_for_node: Processing node kind AST_RETURN at line 35
+[IR_DBG]   Case AST_RETURN
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_RETURN
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_BLOCK
+[IR_DBG] Emitting instruction with opcode 18
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_FUN_DECL
+[IR_DBG] < generate_ir_for_node: Finished processing node kind AST_PROGRAM
+[IR_DBG] === Finished IR Generation ===
+
+--- BEGIN IR DUMP (Terminal) ---
+  matrix := .space , 16
+main:
+  row := 0
+  column := 0
+  index := 0
+  total := 0
+  diagonal := 0
+L0:
+  t0 := row < 4
+  if_false t0 goto L1
+  column := 0
+L2:
+  t1 := column < 4
+  if_false t1 goto L3
+  t2 := row * 4
+  t3 := t2 + column
+  index := t3
+  t4 := row + 1
+  t5 := column + 1
+  t6 := t4 * t5
+  t7 := &matrix
+  t8 := t7 + index
+  *t8 := t6
+  t9 := &matrix
+  t10 := t9 + index
+  t11 := *t10
+  t12 := total + t11
+  total := t12
+  t13 := row == column
+  if_false t13 goto L4
+  t14 := &matrix
+  t15 := t14 + index
+  t16 := *t15
+  t17 := diagonal + t16
+  diagonal := t17
+  goto L5
+L4:
+L5:
+  t18 := column + 1
+  column := t18
+  goto L2
+L3:
+  t19 := row + 1
+  row := t19
+  goto L0
+L1:
+  arg total
+  call output, 1
+  arg diagonal
+  call output, 1
+  return _
+--- END IR DUMP ---
+IR dump has been saved to: docs/generated/intermediate/semantic/ir/generated_IR.txt
+======= SYMBOL TABLE =======
+Name            Scope      Kind   Decl Lines           Use Lines            Type  
+--------------------------------------------------------------------------
+diagonal        main#block0 VAR    11	17,26,26,34	INT
+total           main#block0 VAR    10	16,24,24,33	INT
+index           main#block0 VAR    9	15,22,23,24,26	INT
+column          main#block0 VAR    8	14,20,21,22,23,25,28,28	INT
+row             main#block0 VAR    7	13,19,22,23,25,30,30	INT
+main            global     FUNC   5		VOID
+matrix          global     VAR    3	23,24,26	ARRAY(16, INT)
+output          global     FUNC   0	33,34	VOID
+input           global     FUNC   0		INT
+======= END OF TABLE =======
+Symbol table has been saved to: docs/generated/frontend/symbol_table/symbol_table.txt

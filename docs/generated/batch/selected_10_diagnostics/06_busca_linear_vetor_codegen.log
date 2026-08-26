@@ -1,0 +1,864 @@
+
+
+=== INICIANDO GERAÇÃO DE ASSEMBLY ===
+
+--- Passagem 1A: Coletando definições de funções ---
+[Passagem 1A] Função encontrada: 'main'
+[ALLOC_INIT] Inicializando alocador para a função 'main'
+[ALLOC_INIT] Pool de registradores definido: ['r4', 'r5', 'r6', 'r7', 'r8', 'r9', 'r10', 'r11', 'r12', 'r13', 'r14', 'r15', 'r16', 'r17', 'r18', 'r19', 'r20', 'r21', 'r22', 'r23', 'r24', 'r25', 'r26']
+[ALLOC_INIT] Registrador de spill reservado: r30
+[ALLOC_INIT] Estado inicial: 23 registradores livres.
+[FUNC_CTX] Contexto para a função 'main' criado.
+
+--- Passagem 1B: Construindo a Tabela de Símbolos Globais ---
+[Passagem 1B] Declaração de Vetor Global encontrada: 'values' de tamanho 8
+[SymbolTable] Adding symbol: <Symbol(name='values', type=ARRAY(size=8, base_type=INT), scope='global', addr=64)>
+--- Fim da Passagem 1: 1 símbolos globais encontrados. ---
+
+--- Passagem 2: Traduzindo o IR para cada função ---
+
+[Processando Função] -> 'main'
+-> IR isolado para 'main' contém 48 instruções.
+[DEBUG] Função 'main': all_vars=['target', 'i', 'position', 'values'], defined_vars={'i', 'target', 'position'}, params=[]
+--> Parâmetros para 'main': []
+--> Variáveis Locais para 'main': ['target', 'i', 'position']
+--> Criando o layout da pilha para 'main'...
+    -> Mapeando 'target' para o offset [fp, #-1] (size=1)
+    -> Mapeando 'i' para o offset [fp, #-2] (size=1)
+    -> Mapeando 'position' para o offset [fp, #-3] (size=1)
+--> Tamanho total do frame para 'main': 27 palavras.
+
+--- [TRANSLATE] Processando IR: t0 := call input, 0 ---
+[TRANSLATE] -> Detalhes: Destino='t0', Expressão='call input, 0'
+[TRANSLATE] -> Caminho: Chamada de Função
+[SPILL_CALL] Preparando spill completo antes de chamada.
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[GET_TEMP] Solicitando registrador para o temporário 't0'.
+[GET_FREE] -> Encontrado registrador livre: r4. Restantes: 22.
+[ASSIGN_REG] Mapeando 't0' para r4.
+[GET_TEMP] -> 't0' alocado no registrador r4.
+[ADD_INSTR] Adicionando instrução para 'main': in: r4
+
+--- [TRANSLATE] Processando IR: target := t0 ---
+[TRANSLATE] -> Detalhes: Destino='target', Expressão='t0'
+[TRANSLATE] -> Caminho: Atribuição Simples
+[ENSURE] Tentando garantir 't0' em um registrador.
+[ENSURE] -> Sucesso! 't0' já está em r4.
+[TRANSLATE_ASSIGN] -> Armazenando 'target' na sua posição da pilha.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r4
+[UPDATE_MAP] Mapeando 'target' para o registrador r4 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 'target' para r4.
+[ASSIGN_REG] -> Registrador r4 já continha 't0'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r4 de 't0'.
+[UNASSIGN_REG] -> Estado atual: 23 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: i := 0 ---
+[TRANSLATE] -> Detalhes: Destino='i', Expressão='0'
+[TRANSLATE] -> Caminho: Atribuição Simples
+[ENSURE] Tentando garantir '0' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r5. Restantes: 22.
+[ENSURE] -> Alocando r5 para a constante '0'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r5 = 0
+[TRANSLATE_ASSIGN] -> Armazenando 'i' na sua posição da pilha.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r5
+[UPDATE_MAP] Mapeando 'i' para o registrador r5 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 'i' para r5.
+
+--- [TRANSLATE] Processando IR: t1 := 0 - 1 ---
+[TRANSLATE] -> Detalhes: Destino='t1', Expressão='0 - 1'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir '0' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r6. Restantes: 21.
+[ENSURE] -> Alocando r6 para a constante '0'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r6 = 0
+[TRANSLATE] -> Operando 2 é um imediato: 1
+[GET_TEMP] Solicitando registrador para o temporário 't1'.
+[GET_FREE] -> Encontrado registrador livre: r7. Restantes: 20.
+[ASSIGN_REG] Mapeando 't1' para r7.
+[GET_TEMP] -> 't1' alocado no registrador r7.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r7 = r6, 1
+
+--- [TRANSLATE] Processando IR: position := t1 ---
+[TRANSLATE] -> Detalhes: Destino='position', Expressão='t1'
+[TRANSLATE] -> Caminho: Atribuição Simples
+[ENSURE] Tentando garantir 't1' em um registrador.
+[ENSURE] -> Sucesso! 't1' já está em r7.
+[TRANSLATE_ASSIGN] -> Armazenando 'position' na sua posição da pilha.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r7
+[UPDATE_MAP] Mapeando 'position' para o registrador r7 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 'position' para r7.
+[ASSIGN_REG] -> Registrador r7 já continha 't1'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r7 de 't1'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5'}
+
+--- [TRANSLATE] Processando IR: t2 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t2', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't2'.
+[GET_FREE] -> Encontrado registrador livre: r8. Restantes: 20.
+[ASSIGN_REG] Mapeando 't2' para r8.
+[GET_TEMP] -> 't2' alocado no registrador r8.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r8 = 64
+
+--- [TRANSLATE] Processando IR: t3 := t2 + 0 ---
+[TRANSLATE] -> Detalhes: Destino='t3', Expressão='t2 + 0'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't2' em um registrador.
+[ENSURE] -> Sucesso! 't2' já está em r8.
+[TRANSLATE] -> Operando 2 é um imediato: 0
+[GET_TEMP] Solicitando registrador para o temporário 't3'.
+[GET_FREE] -> Encontrado registrador livre: r9. Restantes: 19.
+[ASSIGN_REG] Mapeando 't3' para r9.
+[GET_TEMP] -> 't3' alocado no registrador r9.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r9 = r8, 0
+[FREE_TEMP] Liberando registrador r8 que continha o temporário 't2'.
+[UNASSIGN_REG] Desmapeado r8 de 't2'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't3': 'r9'}
+
+--- [TRANSLATE] Processando IR: *t3 := 4 ---
+[TRANSLATE] -> Detalhes: Destino='*t3', Expressão='4'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '4' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r10. Restantes: 19.
+[ENSURE] -> Alocando r10 para a constante '4'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r10 = 4
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't3' em um registrador.
+[ENSURE] -> Sucesso! 't3' já está em r9.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r9] = r10
+[UNASSIGN_REG] r10 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't3': 'r9'}
+[UNASSIGN_REG] Desmapeado r9 de 't3'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7'}
+
+--- [TRANSLATE] Processando IR: t4 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t4', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't4'.
+[GET_FREE] -> Encontrado registrador livre: r11. Restantes: 20.
+[ASSIGN_REG] Mapeando 't4' para r11.
+[GET_TEMP] -> 't4' alocado no registrador r11.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r11 = 64
+
+--- [TRANSLATE] Processando IR: t5 := t4 + 1 ---
+[TRANSLATE] -> Detalhes: Destino='t5', Expressão='t4 + 1'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't4' em um registrador.
+[ENSURE] -> Sucesso! 't4' já está em r11.
+[TRANSLATE] -> Operando 2 é um imediato: 1
+[GET_TEMP] Solicitando registrador para o temporário 't5'.
+[GET_FREE] -> Encontrado registrador livre: r12. Restantes: 19.
+[ASSIGN_REG] Mapeando 't5' para r12.
+[GET_TEMP] -> 't5' alocado no registrador r12.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r12 = r11, 1
+[FREE_TEMP] Liberando registrador r11 que continha o temporário 't4'.
+[UNASSIGN_REG] Desmapeado r11 de 't4'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't5': 'r12'}
+
+--- [TRANSLATE] Processando IR: *t5 := 9 ---
+[TRANSLATE] -> Detalhes: Destino='*t5', Expressão='9'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '9' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r13. Restantes: 19.
+[ENSURE] -> Alocando r13 para a constante '9'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r13 = 9
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't5' em um registrador.
+[ENSURE] -> Sucesso! 't5' já está em r12.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r12] = r13
+[UNASSIGN_REG] r13 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't5': 'r12'}
+[UNASSIGN_REG] Desmapeado r12 de 't5'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7'}
+
+--- [TRANSLATE] Processando IR: t6 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t6', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't6'.
+[GET_FREE] -> Encontrado registrador livre: r14. Restantes: 20.
+[ASSIGN_REG] Mapeando 't6' para r14.
+[GET_TEMP] -> 't6' alocado no registrador r14.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r14 = 64
+
+--- [TRANSLATE] Processando IR: t7 := t6 + 2 ---
+[TRANSLATE] -> Detalhes: Destino='t7', Expressão='t6 + 2'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't6' em um registrador.
+[ENSURE] -> Sucesso! 't6' já está em r14.
+[TRANSLATE] -> Operando 2 é um imediato: 2
+[GET_TEMP] Solicitando registrador para o temporário 't7'.
+[GET_FREE] -> Encontrado registrador livre: r15. Restantes: 19.
+[ASSIGN_REG] Mapeando 't7' para r15.
+[GET_TEMP] -> 't7' alocado no registrador r15.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r15 = r14, 2
+[FREE_TEMP] Liberando registrador r14 que continha o temporário 't6'.
+[UNASSIGN_REG] Desmapeado r14 de 't6'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't7': 'r15'}
+
+--- [TRANSLATE] Processando IR: *t7 := 15 ---
+[TRANSLATE] -> Detalhes: Destino='*t7', Expressão='15'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '15' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r16. Restantes: 19.
+[ENSURE] -> Alocando r16 para a constante '15'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r16 = 15
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't7' em um registrador.
+[ENSURE] -> Sucesso! 't7' já está em r15.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r15] = r16
+[UNASSIGN_REG] r16 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't7': 'r15'}
+[UNASSIGN_REG] Desmapeado r15 de 't7'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7'}
+
+--- [TRANSLATE] Processando IR: t8 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t8', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't8'.
+[GET_FREE] -> Encontrado registrador livre: r17. Restantes: 20.
+[ASSIGN_REG] Mapeando 't8' para r17.
+[GET_TEMP] -> 't8' alocado no registrador r17.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r17 = 64
+
+--- [TRANSLATE] Processando IR: t9 := t8 + 3 ---
+[TRANSLATE] -> Detalhes: Destino='t9', Expressão='t8 + 3'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't8' em um registrador.
+[ENSURE] -> Sucesso! 't8' já está em r17.
+[TRANSLATE] -> Operando 2 é um imediato: 3
+[GET_TEMP] Solicitando registrador para o temporário 't9'.
+[GET_FREE] -> Encontrado registrador livre: r18. Restantes: 19.
+[ASSIGN_REG] Mapeando 't9' para r18.
+[GET_TEMP] -> 't9' alocado no registrador r18.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r18 = r17, 3
+[FREE_TEMP] Liberando registrador r17 que continha o temporário 't8'.
+[UNASSIGN_REG] Desmapeado r17 de 't8'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't9': 'r18'}
+
+--- [TRANSLATE] Processando IR: *t9 := 2 ---
+[TRANSLATE] -> Detalhes: Destino='*t9', Expressão='2'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '2' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r19. Restantes: 19.
+[ENSURE] -> Alocando r19 para a constante '2'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r19 = 2
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't9' em um registrador.
+[ENSURE] -> Sucesso! 't9' já está em r18.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r18] = r19
+[UNASSIGN_REG] r19 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't9': 'r18'}
+[UNASSIGN_REG] Desmapeado r18 de 't9'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7'}
+
+--- [TRANSLATE] Processando IR: t10 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t10', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't10'.
+[GET_FREE] -> Encontrado registrador livre: r20. Restantes: 20.
+[ASSIGN_REG] Mapeando 't10' para r20.
+[GET_TEMP] -> 't10' alocado no registrador r20.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r20 = 64
+
+--- [TRANSLATE] Processando IR: t11 := t10 + 4 ---
+[TRANSLATE] -> Detalhes: Destino='t11', Expressão='t10 + 4'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't10' em um registrador.
+[ENSURE] -> Sucesso! 't10' já está em r20.
+[TRANSLATE] -> Operando 2 é um imediato: 4
+[GET_TEMP] Solicitando registrador para o temporário 't11'.
+[GET_FREE] -> Encontrado registrador livre: r21. Restantes: 19.
+[ASSIGN_REG] Mapeando 't11' para r21.
+[GET_TEMP] -> 't11' alocado no registrador r21.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r21 = r20, 4
+[FREE_TEMP] Liberando registrador r20 que continha o temporário 't10'.
+[UNASSIGN_REG] Desmapeado r20 de 't10'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't11': 'r21'}
+
+--- [TRANSLATE] Processando IR: *t11 := 15 ---
+[TRANSLATE] -> Detalhes: Destino='*t11', Expressão='15'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '15' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r22. Restantes: 19.
+[ENSURE] -> Alocando r22 para a constante '15'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r22 = 15
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't11' em um registrador.
+[ENSURE] -> Sucesso! 't11' já está em r21.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r21] = r22
+[UNASSIGN_REG] r22 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't11': 'r21'}
+[UNASSIGN_REG] Desmapeado r21 de 't11'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7'}
+
+--- [TRANSLATE] Processando IR: t12 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t12', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't12'.
+[GET_FREE] -> Encontrado registrador livre: r23. Restantes: 20.
+[ASSIGN_REG] Mapeando 't12' para r23.
+[GET_TEMP] -> 't12' alocado no registrador r23.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r23 = 64
+
+--- [TRANSLATE] Processando IR: t13 := t12 + 5 ---
+[TRANSLATE] -> Detalhes: Destino='t13', Expressão='t12 + 5'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't12' em um registrador.
+[ENSURE] -> Sucesso! 't12' já está em r23.
+[TRANSLATE] -> Operando 2 é um imediato: 5
+[GET_TEMP] Solicitando registrador para o temporário 't13'.
+[GET_FREE] -> Encontrado registrador livre: r24. Restantes: 19.
+[ASSIGN_REG] Mapeando 't13' para r24.
+[GET_TEMP] -> 't13' alocado no registrador r24.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r24 = r23, 5
+[FREE_TEMP] Liberando registrador r23 que continha o temporário 't12'.
+[UNASSIGN_REG] Desmapeado r23 de 't12'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't13': 'r24'}
+
+--- [TRANSLATE] Processando IR: *t13 := 7 ---
+[TRANSLATE] -> Detalhes: Destino='*t13', Expressão='7'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '7' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r25. Restantes: 19.
+[ENSURE] -> Alocando r25 para a constante '7'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r25 = 7
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't13' em um registrador.
+[ENSURE] -> Sucesso! 't13' já está em r24.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r24] = r25
+[UNASSIGN_REG] r25 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7', 't13': 'r24'}
+[UNASSIGN_REG] Desmapeado r24 de 't13'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'target': 'r4', 'i': 'r5', 'position': 'r7'}
+
+--- [TRANSLATE] Processando IR: t14 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t14', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't14'.
+[GET_FREE] -> Encontrado registrador livre: r26. Restantes: 20.
+[ASSIGN_REG] Mapeando 't14' para r26.
+[GET_TEMP] -> 't14' alocado no registrador r26.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r26 = 64
+
+--- [TRANSLATE] Processando IR: t15 := t14 + 6 ---
+[TRANSLATE] -> Detalhes: Destino='t15', Expressão='t14 + 6'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't14' em um registrador.
+[ENSURE] -> Sucesso! 't14' já está em r26.
+[TRANSLATE] -> Operando 2 é um imediato: 6
+[GET_TEMP] Solicitando registrador para o temporário 't15'.
+[GET_FREE] -> Encontrado registrador livre: r4. Restantes: 19.
+[ASSIGN_REG] Mapeando 't15' para r4.
+[ASSIGN_REG] -> Registrador r4 já continha 'target'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r4 de 'target'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'i': 'r5', 'position': 'r7', 't14': 'r26'}
+[GET_TEMP] -> 't15' alocado no registrador r4.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r4 = r26, 6
+[FREE_TEMP] Liberando registrador r26 que continha o temporário 't14'.
+[UNASSIGN_REG] Desmapeado r26 de 't14'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'i': 'r5', 'position': 'r7', 't15': 'r4'}
+
+--- [TRANSLATE] Processando IR: *t15 := 1 ---
+[TRANSLATE] -> Detalhes: Destino='*t15', Expressão='1'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '1' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r7. Restantes: 20.
+[ENSURE] -> Alocando r7 para a constante '1'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r7 = 1
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't15' em um registrador.
+[ENSURE] -> Sucesso! 't15' já está em r4.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r4] = r7
+[UNASSIGN_REG] Desmapeado r7 de 'position'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'i': 'r5', 't15': 'r4'}
+[UNASSIGN_REG] Desmapeado r4 de 't15'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'i': 'r5'}
+
+--- [TRANSLATE] Processando IR: t16 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t16', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't16'.
+[GET_FREE] -> Encontrado registrador livre: r8. Restantes: 20.
+[ASSIGN_REG] Mapeando 't16' para r8.
+[GET_TEMP] -> 't16' alocado no registrador r8.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r8 = 64
+
+--- [TRANSLATE] Processando IR: t17 := t16 + 7 ---
+[TRANSLATE] -> Detalhes: Destino='t17', Expressão='t16 + 7'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't16' em um registrador.
+[ENSURE] -> Sucesso! 't16' já está em r8.
+[TRANSLATE] -> Operando 2 é um imediato: 7
+[GET_TEMP] Solicitando registrador para o temporário 't17'.
+[GET_FREE] -> Encontrado registrador livre: r10. Restantes: 19.
+[ASSIGN_REG] Mapeando 't17' para r10.
+[GET_TEMP] -> 't17' alocado no registrador r10.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r10 = r8, 7
+[FREE_TEMP] Liberando registrador r8 que continha o temporário 't16'.
+[UNASSIGN_REG] Desmapeado r8 de 't16'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'i': 'r5', 't17': 'r10'}
+
+--- [TRANSLATE] Processando IR: *t17 := 8 ---
+[TRANSLATE] -> Detalhes: Destino='*t17', Expressão='8'
+[TRANSLATE] -> Caminho: Armazenar em Ponteiro (*)
+[ENSURE] Tentando garantir '8' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r9. Restantes: 19.
+[ENSURE] -> Alocando r9 para a constante '8'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r9 = 8
+[TRANSLATE] -> Endereço de destino é uma variável temporária. Usando registrador temporário.
+[ENSURE] Tentando garantir 't17' em um registrador.
+[ENSURE] -> Sucesso! 't17' já está em r10.
+[ADD_INSTR] Adicionando instrução para 'main': store: [r10] = r9
+[UNASSIGN_REG] r9 já estava desmapeado.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'i': 'r5', 't17': 'r10'}
+[UNASSIGN_REG] Desmapeado r10 de 't17'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'i': 'r5'}
+
+--- [TRANSLATE] Processando IR: L0: ---
+[TRANSLATE] -> Rótulo detectado: L0:
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r18', 'r24', 'r9', 'r26', 'r20', 'r12', 'r14', 'r17', 'r10', 'r7', 'r11', 'r21', 'r4', 'r15', 'r23'}
+[UNASSIGN_REG] Desmapeado r5 de 'i'.
+[UNASSIGN_REG] -> Estado atual: 22 registradores livres. Mapeamentos: {}
+[ADD_INSTR] Adicionando instrução para 'main': L0:
+
+--- [TRANSLATE] Processando IR: t18 := i < 8 ---
+[TRANSLATE] -> Detalhes: Destino='t18', Expressão='i < 8'
+[TRANSLATE] -> Caminho: Comparação (condicional)
+[ENSURE] Tentando garantir 'i' em um registrador.
+[ENSURE] -> 'i' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r11. Restantes: 21.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'main': load: r11 = [r30]
+[ASSIGN_REG] Mapeando 'i' para r11.
+[ENSURE] Tentando garantir '8' em um registrador.
+[GET_FREE] -> Encontrado registrador livre: r13. Restantes: 20.
+[ENSURE] -> Alocando r13 para a constante '8'.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r13 = 8
+[ADD_INSTR] Adicionando instrução para 'main': subs: r0 = r11, r13
+
+--- [TRANSLATE] Processando IR: if_false t18 goto L1 ---
+[TRANSLATE] -> Caminho: Desvio Condicional (if_false)
+[ADD_INSTR] Adicionando instrução para 'main': bigteq: L1
+
+--- [TRANSLATE] Processando IR: t19 := &values ---
+[TRANSLATE] -> Detalhes: Destino='t19', Expressão='&values'
+[GET_TEMP] Solicitando registrador para o temporário 't19'.
+[GET_FREE] -> Encontrado registrador livre: r12. Restantes: 19.
+[ASSIGN_REG] Mapeando 't19' para r12.
+[GET_TEMP] -> 't19' alocado no registrador r12.
+[ADD_INSTR] Adicionando instrução para 'main': movi: r12 = 64
+
+--- [TRANSLATE] Processando IR: t20 := t19 + i ---
+[TRANSLATE] -> Detalhes: Destino='t20', Expressão='t19 + i'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 't19' em um registrador.
+[ENSURE] -> Sucesso! 't19' já está em r12.
+[ENSURE] Tentando garantir 'i' em um registrador.
+[ENSURE] -> Sucesso! 'i' já está em r11.
+[GET_TEMP] Solicitando registrador para o temporário 't20'.
+[GET_FREE] -> Encontrado registrador livre: r14. Restantes: 18.
+[ASSIGN_REG] Mapeando 't20' para r14.
+[GET_TEMP] -> 't20' alocado no registrador r14.
+[ADD_INSTR] Adicionando instrução para 'main': add: r14 = r12, r11
+[FREE_TEMP] Liberando registrador r12 que continha o temporário 't19'.
+[UNASSIGN_REG] Desmapeado r12 de 't19'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {'i': 'r11', 't20': 'r14'}
+
+--- [TRANSLATE] Processando IR: t21 := *t20 ---
+[TRANSLATE] -> Detalhes: Destino='t21', Expressão='*t20'
+[TRANSLATE] -> Caminho: Carregar de Ponteiro (*)
+[TRANSLATE] -> Ponteiro é uma temporária ('t20'). Usando seu valor como endereço.
+[ENSURE] Tentando garantir 't20' em um registrador.
+[ENSURE] -> Sucesso! 't20' já está em r14.
+[GET_TEMP] Solicitando registrador para o temporário 't21'.
+[GET_FREE] -> Encontrado registrador livre: r16. Restantes: 18.
+[ASSIGN_REG] Mapeando 't21' para r16.
+[GET_TEMP] -> 't21' alocado no registrador r16.
+[ADD_INSTR] Adicionando instrução para 'main': load: r16 = [r14]
+[FREE_TEMP] Liberando registrador r14 que continha o temporário 't20'.
+[UNASSIGN_REG] Desmapeado r14 de 't20'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {'i': 'r11', 't21': 'r16'}
+
+--- [TRANSLATE] Processando IR: t22 := t21 == target ---
+[TRANSLATE] -> Detalhes: Destino='t22', Expressão='t21 == target'
+[TRANSLATE] -> Caminho: Comparação (condicional)
+[ENSURE] Tentando garantir 't21' em um registrador.
+[ENSURE] -> Sucesso! 't21' já está em r16.
+[ENSURE] Tentando garantir 'target' em um registrador.
+[ENSURE] -> 'target' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r15. Restantes: 18.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'main': load: r15 = [r30]
+[ASSIGN_REG] Mapeando 'target' para r15.
+[ADD_INSTR] Adicionando instrução para 'main': subs: r0 = r16, r15
+
+--- [TRANSLATE] Processando IR: if_false t22 goto L2 ---
+[TRANSLATE] -> Caminho: Desvio Condicional (if_false)
+[ADD_INSTR] Adicionando instrução para 'main': bineq: L2
+
+--- [TRANSLATE] Processando IR: position := i ---
+[TRANSLATE] -> Detalhes: Destino='position', Expressão='i'
+[TRANSLATE] -> Caminho: Atribuição Simples
+[ENSURE] Tentando garantir 'i' em um registrador.
+[ENSURE] -> Sucesso! 'i' já está em r11.
+[TRANSLATE_ASSIGN] -> Armazenando 'position' na sua posição da pilha.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r11
+[UPDATE_MAP] Mapeando 'position' para o registrador r11 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 'position' para r11.
+[ASSIGN_REG] -> Registrador r11 já continha 'i'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r11 de 'i'.
+[UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {'t21': 'r16', 'target': 'r15'}
+
+--- [TRANSLATE] Processando IR: goto L3 ---
+[TRANSLATE] -> Desvio incondicional detectado: L3
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r8', 'r18', 'r24', 'r9', 'r16', 'r26', 'r20', 'r12', 'r14', 'r17', 'r10', 'r7', 'r11', 'r21', 'r4', 'r15', 'r23'}
+[SPILL_ALL] -> Salvando variável local 'position' do registrador r11 na pilha [fp, #-3].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r11
+[SPILL_ALL] -> Salvando variável local 'target' do registrador r15 na pilha [fp, #-1].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r15
+[ADD_INSTR] Adicionando instrução para 'main': bi: L3
+[UNASSIGN_REG] Desmapeado r16 de 't21'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'target': 'r15', 'position': 'r11'}
+[UNASSIGN_REG] Desmapeado r15 de 'target'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'position': 'r11'}
+[UNASSIGN_REG] Desmapeado r11 de 'position'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: L2: ---
+[TRANSLATE] -> Rótulo detectado: L2:
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'main': L2:
+
+--- [TRANSLATE] Processando IR: L3: ---
+[TRANSLATE] -> Rótulo detectado: L3:
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'main': L3:
+
+--- [TRANSLATE] Processando IR: t23 := i + 1 ---
+[TRANSLATE] -> Detalhes: Destino='t23', Expressão='i + 1'
+[TRANSLATE] -> Caminho: Operação Aritmética
+[ENSURE] Tentando garantir 'i' em um registrador.
+[ENSURE] -> 'i' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r17. Restantes: 20.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'main': load: r17 = [r30]
+[ASSIGN_REG] Mapeando 'i' para r17.
+[TRANSLATE] -> Operando 2 é um imediato: 1
+[GET_TEMP] Solicitando registrador para o temporário 't23'.
+[GET_FREE] -> Encontrado registrador livre: r19. Restantes: 19.
+[ASSIGN_REG] Mapeando 't23' para r19.
+[GET_TEMP] -> 't23' alocado no registrador r19.
+[ADD_INSTR] Adicionando instrução para 'main': addi: r19 = r17, 1
+
+--- [TRANSLATE] Processando IR: i := t23 ---
+[TRANSLATE] -> Detalhes: Destino='i', Expressão='t23'
+[TRANSLATE] -> Caminho: Atribuição Simples
+[ENSURE] Tentando garantir 't23' em um registrador.
+[ENSURE] -> Sucesso! 't23' já está em r19.
+[TRANSLATE_ASSIGN] -> Armazenando 'i' na sua posição da pilha.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r19
+[UPDATE_MAP] Mapeando 'i' para o registrador r19 (que contém o valor de origem).
+[ASSIGN_REG] Mapeando 'i' para r19.
+[ASSIGN_REG] -> Variável 'i' já estava em r17. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r17 de 'i'.
+[UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'t23': 'r19'}
+[ASSIGN_REG] -> Registrador r19 já continha 't23'. Liberando o mapeamento antigo.
+[UNASSIGN_REG] Desmapeado r19 de 't23'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: goto L0 ---
+[TRANSLATE] -> Desvio incondicional detectado: L0
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19'}
+[SPILL_ALL] -> Salvando variável local 'i' do registrador r19 na pilha [fp, #-2].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r19
+[ADD_INSTR] Adicionando instrução para 'main': bi: L0
+[UNASSIGN_REG] Desmapeado r19 de 'i'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: L1: ---
+[TRANSLATE] -> Rótulo detectado: L1:
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[ADD_INSTR] Adicionando instrução para 'main': L1:
+
+--- [TRANSLATE] Processando IR: arg position ---
+[TRANSLATE] -> Caminho: Enfileirando argumento 1
+
+--- [TRANSLATE] Processando IR: call output, 1 ---
+[TRANSLATE] -> Caminho: Chamada de Procedimento
+[SPILL_CALL] Preparando spill completo antes de chamada.
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[ENSURE] Tentando garantir 'position' em um registrador.
+[ENSURE] -> 'position' é uma variável da pilha. Carregando...
+[GET_FREE] -> Encontrado registrador livre: r18. Restantes: 20.
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'main': load: r18 = [r30]
+[ASSIGN_REG] Mapeando 'position' para r18.
+[ADD_INSTR] Adicionando instrução para 'main': mov: r1 = r18
+[ADD_INSTR] Adicionando instrução para 'main': out: r1
+[UNASSIGN_REG] Desmapeado r18 de 'position'.
+[UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {}
+
+--- [TRANSLATE] Processando IR: return _ ---
+[TRANSLATE] -> Caminho: Retorno de Função
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+[TRANSLATE] -> Pular para a seção de epílogo.
+[ADD_INSTR] Adicionando instrução para 'main': bi: main_epilogue
+-> Finalizando a função 'main', fazendo spill de todos os registradores sujos.
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: set()
+--- Fim da Passagem 2 ---
+
+--- Montagem Final: Construindo o arquivo assembly completo ---
+[Montagem] Processando função 'main' com 78 instruções.
+[Montagem] Adicionando a seção .data.
+[Montagem] -> Variáveis a serem declaradas: ['values']
+=== GERAÇÃO DE ASSEMBLY CONCLUÍDA ===
+--- ASSEMBLY CODE READY FOR YOUR ASSEMBLER ---
+.text
+.global main
+
+	bi: main
+main:
+	movi: r29 = 63
+	mov: r31 = r29
+	subi: r29 = r29, 27
+	in: r4
+	subi: r30 = r31, 1
+	store: [r30] = r4
+	movi: r5 = 0
+	subi: r30 = r31, 2
+	store: [r30] = r5
+	movi: r6 = 0
+	subi: r7 = r6, 1
+	subi: r30 = r31, 3
+	store: [r30] = r7
+	movi: r8 = 64
+	addi: r9 = r8, 0
+	movi: r10 = 4
+	store: [r9] = r10
+	movi: r11 = 64
+	addi: r12 = r11, 1
+	movi: r13 = 9
+	store: [r12] = r13
+	movi: r14 = 64
+	addi: r15 = r14, 2
+	movi: r16 = 15
+	store: [r15] = r16
+	movi: r17 = 64
+	addi: r18 = r17, 3
+	movi: r19 = 2
+	store: [r18] = r19
+	movi: r20 = 64
+	addi: r21 = r20, 4
+	movi: r22 = 15
+	store: [r21] = r22
+	movi: r23 = 64
+	addi: r24 = r23, 5
+	movi: r25 = 7
+	store: [r24] = r25
+	movi: r26 = 64
+	addi: r4 = r26, 6
+	movi: r7 = 1
+	store: [r4] = r7
+	movi: r8 = 64
+	addi: r10 = r8, 7
+	movi: r9 = 8
+	store: [r10] = r9
+L0:
+	subi: r30 = r31, 2
+	load: r11 = [r30]
+	movi: r13 = 8
+	subs: r0 = r11, r13
+	bigteq: L1
+	movi: r12 = 64
+	add: r14 = r12, r11
+	load: r16 = [r14]
+	subi: r30 = r31, 1
+	load: r15 = [r30]
+	subs: r0 = r16, r15
+	bineq: L2
+	subi: r30 = r31, 3
+	store: [r30] = r11
+	subi: r30 = r31, 3
+	store: [r30] = r11
+	subi: r30 = r31, 1
+	store: [r30] = r15
+	bi: L3
+L2:
+L3:
+	subi: r30 = r31, 2
+	load: r17 = [r30]
+	addi: r19 = r17, 1
+	subi: r30 = r31, 2
+	store: [r30] = r19
+	subi: r30 = r31, 2
+	store: [r30] = r19
+	bi: L0
+L1:
+	subi: r30 = r31, 3
+	load: r18 = [r30]
+	mov: r1 = r18
+	out: r1
+	bi: main_epilogue
+main_epilogue:
+	ret:
+
+.data
+stack_space: .space 64
+var_values: .space 8
+---------------------------------------------
+--- DEBUG OUTPUT ---
+00001110000000000000000000000001 -> bi: main
+00000010100011101000000000111111 -> movi: r29 = 63
+00000000100011111000001110100000 -> mov: r31 = r29
+00000010000111101111010000011011 -> subi: r29 = r29, 27
+00000000100100100000000000000000 -> in: r4
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000000000001001111000000 -> store: [r30] = r4
+00000010100000101000000000000000 -> movi: r5 = 0
+00000010000111110111110000000010 -> subi: r30 = r31, 2
+00000100000000000001011111000000 -> store: [r30] = r5
+00000010100000110000000000000000 -> movi: r6 = 0
+00000010000100111001100000000001 -> subi: r7 = r6, 1
+00000010000111110111110000000011 -> subi: r30 = r31, 3
+00000100000000000001111111000000 -> store: [r30] = r7
+00000010100001000000000001000000 -> movi: r8 = 64
+00000010000001001010000000000000 -> addi: r9 = r8, 0
+00000010100001010000000000000100 -> movi: r10 = 4
+00000100000000000010100100100000 -> store: [r9] = r10
+00000010100001011000000001000000 -> movi: r11 = 64
+00000010000001100010110000000001 -> addi: r12 = r11, 1
+00000010100001101000000000001001 -> movi: r13 = 9
+00000100000000000011010110000000 -> store: [r12] = r13
+00000010100001110000000001000000 -> movi: r14 = 64
+00000010000001111011100000000010 -> addi: r15 = r14, 2
+00000010100010000000000000001111 -> movi: r16 = 15
+00000100000000000100000111100000 -> store: [r15] = r16
+00000010100010001000000001000000 -> movi: r17 = 64
+00000010000010010100010000000011 -> addi: r18 = r17, 3
+00000010100010011000000000000010 -> movi: r19 = 2
+00000100000000000100111001000000 -> store: [r18] = r19
+00000010100010100000000001000000 -> movi: r20 = 64
+00000010000010101101000000000100 -> addi: r21 = r20, 4
+00000010100010110000000000001111 -> movi: r22 = 15
+00000100000000000101101010100000 -> store: [r21] = r22
+00000010100010111000000001000000 -> movi: r23 = 64
+00000010000011000101110000000101 -> addi: r24 = r23, 5
+00000010100011001000000000000111 -> movi: r25 = 7
+00000100000000000110011100000000 -> store: [r24] = r25
+00000010100011010000000001000000 -> movi: r26 = 64
+00000010000000100110100000000110 -> addi: r4 = r26, 6
+00000010100000111000000000000001 -> movi: r7 = 1
+00000100000000000001110010000000 -> store: [r4] = r7
+00000010100001000000000001000000 -> movi: r8 = 64
+00000010000001010010000000000111 -> addi: r10 = r8, 7
+00000010100001001000000000001000 -> movi: r9 = 8
+00000100000000000010010101000000 -> store: [r10] = r9
+00000010000111110111110000000010 -> subi: r30 = r31, 2
+00000100000101011000001111000000 -> load: r11 = [r30]
+00000010100001101000000000001000 -> movi: r13 = 8
+00000001000100000010110110100000 -> subs: r0 = r11, r13
+01001110000000000000000000010111 -> bigteq: L1
+00000010100001100000000001000000 -> movi: r12 = 64
+00000000000001110011000101100000 -> add: r14 = r12, r11
+00000100000110000000000111000000 -> load: r16 = [r14]
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000101111000001111000000 -> load: r15 = [r30]
+00000001000100000100000111100000 -> subs: r0 = r16, r15
+00101110000000000000000000001000 -> bineq: L2
+00000010000111110111110000000011 -> subi: r30 = r31, 3
+00000100000000000010111111000000 -> store: [r30] = r11
+00000010000111110111110000000011 -> subi: r30 = r31, 3
+00000100000000000010111111000000 -> store: [r30] = r11
+00000010000111110111110000000001 -> subi: r30 = r31, 1
+00000100000000000011111111000000 -> store: [r30] = r15
+00001110000000000000000000000001 -> bi: L3
+00000010000111110111110000000010 -> subi: r30 = r31, 2
+00000100000110001000001111000000 -> load: r17 = [r30]
+00000010000010011100010000000001 -> addi: r19 = r17, 1
+00000010000111110111110000000010 -> subi: r30 = r31, 2
+00000100000000000100111111000000 -> store: [r30] = r19
+00000010000111110111110000000010 -> subi: r30 = r31, 2
+00000100000000000100111111000000 -> store: [r30] = r19
+00001110000000000000001111100110 -> bi: L0
+00000010000111110111110000000011 -> subi: r30 = r31, 3
+00000100000110010000001111000000 -> load: r18 = [r30]
+00000000100000001000001001000000 -> mov: r1 = r18
+00000000101000000000000000100000 -> out: r1
+00001110000000000000000000000001 -> bi: main_epilogue
+00001110000000000000000000000000 -> ret -> bi 0
+00000000000000000000000000000000 -> data stack_space[0] .space
+00000000000000000000000000000000 -> data stack_space[1] .space
+00000000000000000000000000000000 -> data stack_space[2] .space
+00000000000000000000000000000000 -> data stack_space[3] .space
+00000000000000000000000000000000 -> data stack_space[4] .space
+00000000000000000000000000000000 -> data stack_space[5] .space
+00000000000000000000000000000000 -> data stack_space[6] .space
+00000000000000000000000000000000 -> data stack_space[7] .space
+00000000000000000000000000000000 -> data stack_space[8] .space
+00000000000000000000000000000000 -> data stack_space[9] .space
+00000000000000000000000000000000 -> data stack_space[10] .space
+00000000000000000000000000000000 -> data stack_space[11] .space
+00000000000000000000000000000000 -> data stack_space[12] .space
+00000000000000000000000000000000 -> data stack_space[13] .space
+00000000000000000000000000000000 -> data stack_space[14] .space
+00000000000000000000000000000000 -> data stack_space[15] .space
+00000000000000000000000000000000 -> data stack_space[16] .space
+00000000000000000000000000000000 -> data stack_space[17] .space
+00000000000000000000000000000000 -> data stack_space[18] .space
+00000000000000000000000000000000 -> data stack_space[19] .space
+00000000000000000000000000000000 -> data stack_space[20] .space
+00000000000000000000000000000000 -> data stack_space[21] .space
+00000000000000000000000000000000 -> data stack_space[22] .space
+00000000000000000000000000000000 -> data stack_space[23] .space
+00000000000000000000000000000000 -> data stack_space[24] .space
+00000000000000000000000000000000 -> data stack_space[25] .space
+00000000000000000000000000000000 -> data stack_space[26] .space
+00000000000000000000000000000000 -> data stack_space[27] .space
+00000000000000000000000000000000 -> data stack_space[28] .space
+00000000000000000000000000000000 -> data stack_space[29] .space
+00000000000000000000000000000000 -> data stack_space[30] .space
+00000000000000000000000000000000 -> data stack_space[31] .space
+00000000000000000000000000000000 -> data stack_space[32] .space
+00000000000000000000000000000000 -> data stack_space[33] .space
+00000000000000000000000000000000 -> data stack_space[34] .space
+00000000000000000000000000000000 -> data stack_space[35] .space
+00000000000000000000000000000000 -> data stack_space[36] .space
+00000000000000000000000000000000 -> data stack_space[37] .space
+00000000000000000000000000000000 -> data stack_space[38] .space
+00000000000000000000000000000000 -> data stack_space[39] .space
+00000000000000000000000000000000 -> data stack_space[40] .space
+00000000000000000000000000000000 -> data stack_space[41] .space
+00000000000000000000000000000000 -> data stack_space[42] .space
+00000000000000000000000000000000 -> data stack_space[43] .space
+00000000000000000000000000000000 -> data stack_space[44] .space
+00000000000000000000000000000000 -> data stack_space[45] .space
+00000000000000000000000000000000 -> data stack_space[46] .space
+00000000000000000000000000000000 -> data stack_space[47] .space
+00000000000000000000000000000000 -> data stack_space[48] .space
+00000000000000000000000000000000 -> data stack_space[49] .space
+00000000000000000000000000000000 -> data stack_space[50] .space
+00000000000000000000000000000000 -> data stack_space[51] .space
+00000000000000000000000000000000 -> data stack_space[52] .space
+00000000000000000000000000000000 -> data stack_space[53] .space
+00000000000000000000000000000000 -> data stack_space[54] .space
+00000000000000000000000000000000 -> data stack_space[55] .space
+00000000000000000000000000000000 -> data stack_space[56] .space
+00000000000000000000000000000000 -> data stack_space[57] .space
+00000000000000000000000000000000 -> data stack_space[58] .space
+00000000000000000000000000000000 -> data stack_space[59] .space
+00000000000000000000000000000000 -> data stack_space[60] .space
+00000000000000000000000000000000 -> data stack_space[61] .space
+00000000000000000000000000000000 -> data stack_space[62] .space
+00000000000000000000000000000000 -> data stack_space[63] .space
+00000000000000000000000000000000 -> data var_values[0] .space
+00000000000000000000000000000000 -> data var_values[1] .space
+00000000000000000000000000000000 -> data var_values[2] .space
+00000000000000000000000000000000 -> data var_values[3] .space
+00000000000000000000000000000000 -> data var_values[4] .space
+00000000000000000000000000000000 -> data var_values[5] .space
+00000000000000000000000000000000 -> data var_values[6] .space
+00000000000000000000000000000000 -> data var_values[7] .space
+Mapeamento assembly->máquina salvo em: docs/generated/diagnostics/assembler/assembly_to_machine.txt
+
+Código de máquina gerado com sucesso em: docs/generated/final/assembler/machine_code/generated_machine_code.txt
+--- MACHINE CODE DECODED ---

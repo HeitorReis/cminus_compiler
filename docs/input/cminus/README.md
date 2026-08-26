@@ -55,6 +55,20 @@ These invalid files are exercised by `make test_analysis` through `tools/run_ana
 
 ## Commands
 
+Run the focused ten-test suite added in the numbered files:
+
+```sh
+make run_selected_10
+```
+
+This runs only `01_soma_1_ate_n.txt` through `10_carga_preempcao.txt` and saves their machine-code files in:
+
+```text
+docs/generated/batch/selected_10_machine_code/
+```
+
+Use `make run_numbered_tests` or `make run_10` as aliases. Per-test compiler and code-generator logs are saved in `docs/generated/batch/selected_10_diagnostics/`.
+
 Run one mapped sample:
 
 ```sh

@@ -1,9 +1,14 @@
 ======= SYMBOL TABLE =======
 Name            Scope      Kind   Decl Lines           Use Lines            Type  
 --------------------------------------------------------------------------
-x               main#block0#block1 VAR    6	7,8	INT
-x               main#block0 VAR    3	4,10	INT
-main            global     FUNC   1		INT
-output          global     FUNC   0	8,10	VOID
+total           main#block0 VAR    12	19,33,33,41	INT
+index           main#block0 VAR    11	18,32,33	INT
+k               main#block0 VAR    10	17,30,31,32,34,34	INT
+j               main#block0 VAR    9	16,28,29,33,36,36	INT
+i               main#block0 VAR    8	15,22,23,24,24,25,25	INT
+round           main#block0 VAR    7	14,21,24,33,38,38	INT
+main            global     FUNC   5		VOID
+workload        global     VAR    3	24,33	ARRAY(8, INT)
+output          global     FUNC   0	41	VOID
 input           global     FUNC   0		INT
 ======= END OF TABLE =======

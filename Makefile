@@ -11,6 +11,8 @@ MACHINE_RUNNER_DIR := $(GENERATED_DIR)/diagnostics/machine_runner
 FINAL_MACHINE_CODE := $(GENERATED_DIR)/final/assembler/machine_code/generated_machine_code.txt
 ALL_OUTPUT_DIR := $(GENERATED_DIR)/batch/final_machine_code
 ALL_LOG_DIR := $(GENERATED_DIR)/batch/diagnostics
+SELECTED_TEN_OUTPUT_DIR := $(GENERATED_DIR)/batch/selected_10_machine_code
+SELECTED_TEN_LOG_DIR := $(GENERATED_DIR)/batch/selected_10_diagnostics
 RUN_ALL_COMPLETE := $(strip $(filter 1 true yes on,$(COMPLETE)) $(filter complete c --complete -c,$(MAKECMDGOALS)))
 RUN_TRACE := $(strip $(filter 1 true yes on,$(TRACE)) $(filter trace --trace,$(MAKECMDGOALS)))
 RUN_MACHINE_ARGS ?= --max-cycles 500 --default-input 0
@@ -18,7 +20,8 @@ RUN_MACHINE_ARGS ?= --max-cycles 500 --default-input 0
 # === Files ===
 LEX_FILE := $(PARSER_DIR)/lexer.l
 YACC_FILE := $(PARSER_DIR)/parser.y
-EXEC := $(BIN_DIR)/c-c  # renaming executable to "c-c" as per the linking command
+# The front-end executable is named c-c to match the linker output.
+EXEC := $(BIN_DIR)/c-c
 
 # === Intermediate files ===
 YACC_C := $(BUILD_DIR)/parser.tab.c
@@ -61,15 +64,28 @@ RUN_ALL_TEST_FILES := \
 	$(DOCS_DIR)/teste9.txt \
 	$(DOCS_DIR)/teste10.txt \
 	$(DOCS_DIR)/teste11.txt
+
+# The ten numbered programs added as the focused test suite.
+SELECTED_TEN_TEST_FILES := \
+	$(DOCS_DIR)/01_soma_1_ate_n.txt \
+	$(DOCS_DIR)/02_fatorial.txt \
+	$(DOCS_DIR)/03_fibonacci.txt \
+	$(DOCS_DIR)/04_numero_primo.txt \
+	$(DOCS_DIR)/05_maior_elemento_vetor.txt \
+	$(DOCS_DIR)/06_busca_linear_vetor.txt \
+	$(DOCS_DIR)/07_bubble_sort.txt \
+	$(DOCS_DIR)/08_mdc.txt \
+	$(DOCS_DIR)/09_matriz_loops_aninhados.txt \
+	$(DOCS_DIR)/10_carga_preempcao.txt
 			
 # === Rules ===
 
-.PHONY: all run run_all complete c --complete -c trace --trace test_analysis generate_analysis_vpp generate_sysml_vpp clean
+.PHONY: all run run_all run_selected_10 run_numbered_tests run_10 complete c --complete -c trace --trace test_analysis generate_analysis_vpp generate_sysml_vpp clean
 
 all: clean run
 
 # Create necessary directories
-$(BUILD_DIR) $(BIN_DIR) $(GENERATED_DIR) $(FRONTEND_LOG_DIR) $(CODEGEN_LOG_DIR) $(MACHINE_RUNNER_DIR) $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR):
+$(BUILD_DIR) $(BIN_DIR) $(GENERATED_DIR) $(FRONTEND_LOG_DIR) $(CODEGEN_LOG_DIR) $(MACHINE_RUNNER_DIR) $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR) $(SELECTED_TEN_OUTPUT_DIR) $(SELECTED_TEN_LOG_DIR):
 	mkdir -p $@
 
 # Generate parser using bison with flags -d -v -g
@@ -155,6 +171,43 @@ run_all: clean $(EXEC) | $(ALL_OUTPUT_DIR) $(ALL_LOG_DIR)
 			fi; \
 		fi; \
 	done
+
+# Build if needed, then compile only the selected numbered ten-test suite.
+# Each final machine-code file is kept independently under SELECTED_TEN_OUTPUT_DIR.
+run_selected_10: $(EXEC) | $(SELECTED_TEN_OUTPUT_DIR) $(SELECTED_TEN_LOG_DIR)
+	@failures=0; \
+	for test_file in $(SELECTED_TEN_TEST_FILES); do \
+		base=$$(basename "$$test_file" .txt); \
+		machine_code_file="$(SELECTED_TEN_OUTPUT_DIR)/$${base}_machine_code.txt"; \
+		compiler_log="$(SELECTED_TEN_LOG_DIR)/$${base}_compiler.log"; \
+		codegen_log="$(SELECTED_TEN_LOG_DIR)/$${base}_codegen.log"; \
+		echo "Running $$test_file"; \
+		rm -f "$$machine_code_file" "$(FINAL_MACHINE_CODE)"; \
+		if "$(EXEC)" "$$test_file" > "$$compiler_log" 2>&1; then \
+			if python3 -u codegen/main.py > "$$codegen_log" 2>&1; then \
+				if [ -s "$(FINAL_MACHINE_CODE)" ]; then \
+					cp "$(FINAL_MACHINE_CODE)" "$$machine_code_file"; \
+				else \
+					echo "No machine code was generated for $$test_file" >> "$$codegen_log"; \
+					failures=$$((failures + 1)); \
+				fi; \
+			else \
+				failures=$$((failures + 1)); \
+			fi; \
+		else \
+			printf 'Skipped backend because front-end compilation failed.\n' > "$$codegen_log"; \
+			failures=$$((failures + 1)); \
+		fi; \
+	done; \
+	if [ "$$failures" -ne 0 ]; then \
+		echo "$$failures selected test(s) failed; see $(SELECTED_TEN_LOG_DIR)."; \
+		exit 1; \
+	fi; \
+	echo "Generated machine code for 10 selected tests in $(SELECTED_TEN_OUTPUT_DIR)."
+
+run_numbered_tests: run_selected_10
+
+run_10: run_selected_10
 
 complete c --complete -c:
 	@:
