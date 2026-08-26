@@ -1,0 +1,32 @@
+/* Entrada: valor procurado. Saida: indice no vetor, ou -1 se ausente. */
+
+int values[8];
+
+void main(void)
+{
+    int target;
+    int i;
+    int position;
+
+    target = input();
+    i = 0;
+    position = 0 - 1;
+    values[0] = 4;
+    values[1] = 9;
+    values[2] = 15;
+    values[3] = 2;
+    values[4] = 15;
+    values[5] = 7;
+    values[6] = 1;
+    values[7] = 8;
+
+    while (i < 8) {
+        if (values[i] == target) {
+            position = i;
+        }
+        i = i + 1;
+    }
+
+    output(position);
+    return;
+}

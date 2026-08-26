@@ -1,0 +1,41 @@
+/* Saida: os seis elementos do vetor em ordem crescente. */
+
+int values[6];
+
+void main(void)
+{
+    int i;
+    int j;
+    int temporary;
+
+    i = 0;
+    j = 0;
+    temporary = 0;
+    values[0] = 9;
+    values[1] = 1;
+    values[2] = 8;
+    values[3] = 2;
+    values[4] = 7;
+    values[5] = 3;
+
+    i = 0;
+    while (i < 6) {
+        j = 0;
+        while (j < 5 - i) {
+            if (values[j] > values[j + 1]) {
+                temporary = values[j];
+                values[j] = values[j + 1];
+                values[j + 1] = temporary;
+            }
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+
+    i = 0;
+    while (i < 6) {
+        output(values[i]);
+        i = i + 1;
+    }
+    return;
+}

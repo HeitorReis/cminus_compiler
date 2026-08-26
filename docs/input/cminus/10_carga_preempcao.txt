@@ -1,0 +1,43 @@
+/* Saida: checksum de carga finita com tres niveis de laco. */
+
+int workload[8];
+
+void main(void)
+{
+    int round;
+    int i;
+    int j;
+    int k;
+    int index;
+    int total;
+
+    round = 0;
+    i = 0;
+    j = 0;
+    k = 0;
+    index = 0;
+    total = 0;
+
+    while (round < 6) {
+        i = 0;
+        while (i < 8) {
+            workload[i] = i + round + 1;
+            i = i + 1;
+        }
+
+        j = 0;
+        while (j < 8) {
+            k = 0;
+            while (k < 8) {
+                index = k;
+                total = total + workload[index] + j + round;
+                k = k + 1;
+            }
+            j = j + 1;
+        }
+        round = round + 1;
+    }
+
+    output(total);
+    return;
+}

@@ -1,0 +1,20 @@
+/* Entrada: N. Saida: 1 + 2 + ... + N. */
+
+void main(void)
+{
+    int n;
+    int i;
+    int sum;
+
+    n = input();
+    i = 1;
+    sum = 0;
+
+    while (i <= n) {
+        sum = sum + i;
+        i = i + 1;
+    }
+
+    output(sum);
+    return;
+}

@@ -1,0 +1,36 @@
+/* Saida: soma total e soma diagonal de uma matriz 4 por 4 achatada. */
+
+int matrix[16];
+
+void main(void)
+{
+    int row;
+    int column;
+    int index;
+    int total;
+    int diagonal;
+
+    row = 0;
+    column = 0;
+    index = 0;
+    total = 0;
+    diagonal = 0;
+
+    while (row < 4) {
+        column = 0;
+        while (column < 4) {
+            index = row * 4 + column;
+            matrix[index] = (row + 1) * (column + 1);
+            total = total + matrix[index];
+            if (row == column) {
+                diagonal = diagonal + matrix[index];
+            }
+            column = column + 1;
+        }
+        row = row + 1;
+    }
+
+    output(total);
+    output(diagonal);
+    return;
+}

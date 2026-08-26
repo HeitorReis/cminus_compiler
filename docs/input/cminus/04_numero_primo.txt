@@ -1,0 +1,32 @@
+/* Entrada: N. Saida: 1 se N for primo; 0 caso contrario. */
+
+void main(void)
+{
+    int n;
+    int divisor;
+    int quotient;
+    int remainder;
+    int is_prime;
+
+    n = input();
+    divisor = 2;
+    quotient = 0;
+    remainder = 0;
+    is_prime = 1;
+
+    if (n < 2) {
+        is_prime = 0;
+    }
+
+    while (divisor < n) {
+        quotient = n / divisor;
+        remainder = n - quotient * divisor;
+        if (remainder == 0) {
+            is_prime = 0;
+        }
+        divisor = divisor + 1;
+    }
+
+    output(is_prime);
+    return;
+}
