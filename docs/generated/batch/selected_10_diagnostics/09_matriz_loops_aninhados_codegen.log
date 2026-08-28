@@ -19,7 +19,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 49 instruções.
-[DEBUG] Função 'main': all_vars=['row', 'column', 'index', 'total', 'diagonal', 'matrix'], defined_vars={'column', 'row', 'diagonal', 'index', 'total'}, params=[]
+[DEBUG] Função 'main': all_vars=['row', 'column', 'index', 'total', 'diagonal', 'matrix'], defined_vars={'index', 'row', 'column', 'diagonal', 'total'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['row', 'column', 'index', 'total', 'diagonal']
 --> Criando o layout da pilha para 'main'...
@@ -464,16 +464,16 @@
 
 --- [TRANSLATE] Processando IR: goto L5 ---
 [TRANSLATE] -> Desvio incondicional detectado: L5
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r26', 'r8', 'r21', 'r17', 'r18', 'r20', 'r15', 'r5', 'r6', 'r19', 'r22', 'r24', 'r23', 'r16', 'r4'}
-[SPILL_ALL] -> Salvando variável local 'total' do registrador r26 na pilha [fp, #-4].
-[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 4
-[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r26
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r20', 'r17', 'r5', 'r8', 'r16', 'r23', 'r22', 'r21', 'r15', 'r26', 'r4', 'r24', 'r19', 'r18', 'r6'}
 [SPILL_ALL] -> Salvando variável local 'diagonal' do registrador r8 na pilha [fp, #-5].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 5
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r8
 [SPILL_ALL] -> Salvando variável local 'index' do registrador r16 na pilha [fp, #-3].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r16
+[SPILL_ALL] -> Salvando variável local 'total' do registrador r26 na pilha [fp, #-4].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 4
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r26
 [ADD_INSTR] Adicionando instrução para 'main': bi: L5
 [UNASSIGN_REG] Desmapeado r12 de 'column'.
 [UNASSIGN_REG] -> Estado atual: 20 registradores livres. Mapeamentos: {'row': 'r14', 'index': 'r16', 'total': 'r26', 'diagonal': 'r8'}
@@ -711,12 +711,12 @@ L2:
 	add: r8 = r7, r6
 	subi: r30 = r31, 5
 	store: [r30] = r8
-	subi: r30 = r31, 4
-	store: [r30] = r26
 	subi: r30 = r31, 5
 	store: [r30] = r8
 	subi: r30 = r31, 3
 	store: [r30] = r16
+	subi: r30 = r31, 4
+	store: [r30] = r26
 	bi: L5
 L4:
 L5:
@@ -817,12 +817,12 @@ var_matrix: .space 16
 00000000000001000001110011000000 -> add: r8 = r7, r6
 00000010000111110111110000000101 -> subi: r30 = r31, 5
 00000100000000000010001111000000 -> store: [r30] = r8
-00000010000111110111110000000100 -> subi: r30 = r31, 4
-00000100000000000110101111000000 -> store: [r30] = r26
 00000010000111110111110000000101 -> subi: r30 = r31, 5
 00000100000000000010001111000000 -> store: [r30] = r8
 00000010000111110111110000000011 -> subi: r30 = r31, 3
 00000100000000000100001111000000 -> store: [r30] = r16
+00000010000111110111110000000100 -> subi: r30 = r31, 4
+00000100000000000110101111000000 -> store: [r30] = r26
 00001110000000000000000000000001 -> bi: L5
 00000010000111110111110000000010 -> subi: r30 = r31, 2
 00000100000101001000001111000000 -> load: r9 = [r30]

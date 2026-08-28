@@ -69,6 +69,30 @@ docs/generated/batch/selected_10_machine_code/
 
 Use `make run_numbered_tests` or `make run_10` as aliases. Per-test compiler and code-generator logs are saved in `docs/generated/batch/selected_10_diagnostics/`.
 
+Run the fixed FPGA diagnostic vectors and compare the expected output with the Python processor model:
+
+```sh
+make run_selected_10_diagnostics
+```
+
+The reports are written to `docs/generated/batch/selected_10_fpga_diagnostics/`. For each input value, set `SW[7:0]` and release the blocked `input()` with the `SW[15]` transition from `1` to `0`. `HEX6`/`HEX7` show only the last output's two least-significant decimal digits, so record every `output()` for tests with multiple values.
+
+Generate a Quartus ROM image for each of the ten selected tests:
+
+```sh
+make generate_mif
+```
+
+This creates `program1.mif` through `program10.mif` inside `processor/Processor/modules/`. First refresh the selected suite if needed, then choose which one will be used by the FPGA:
+
+```sh
+make run_selected_10
+make generate_mif
+make select_mif ROM_PROGRAM=1
+```
+
+`ROM_PROGRAM=1` maps to `01_soma_1_ate_n`, and so on through `ROM_PROGRAM=10` for `10_carga_preempcao`. The selected file is copied to `program.mif`, which has exactly 1024 32-bit words and pads unused addresses with zero.
+
 Run one mapped sample:
 
 ```sh

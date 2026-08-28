@@ -19,7 +19,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 53 instruções.
-[DEBUG] Função 'main': all_vars=['round', 'i', 'j', 'k', 'index', 'total', 'workload'], defined_vars={'i', 'total', 'k', 'j', 'index', 'round'}, params=[]
+[DEBUG] Função 'main': all_vars=['round', 'i', 'j', 'k', 'index', 'total', 'workload'], defined_vars={'k', 'round', 'index', 'total', 'j', 'i'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['round', 'i', 'j', 'k', 'index', 'total']
 --> Criando o layout da pilha para 'main'...
@@ -287,7 +287,7 @@
 
 --- [TRANSLATE] Processando IR: goto L2 ---
 [TRANSLATE] -> Desvio incondicional detectado: L2
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r16', 'r19', 'r17', 'r20', 'r18'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r18', 'r17', 'r20', 'r16'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r20 na pilha [fp, #-2].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r20
@@ -547,13 +547,13 @@
 
 --- [TRANSLATE] Processando IR: goto L6 ---
 [TRANSLATE] -> Desvio incondicional detectado: L6
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r4', 'r16', 'r8', 'r10', 'r17', 'r6', 'r5'}
-[SPILL_ALL] -> Salvando variável local 'total' do registrador r16 na pilha [fp, #-6].
-[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 6
-[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r16
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r6', 'r17', 'r4', 'r8', 'r5', 'r16', 'r10'}
 [SPILL_ALL] -> Salvando variável local 'k' do registrador r17 na pilha [fp, #-4].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 4
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r17
+[SPILL_ALL] -> Salvando variável local 'total' do registrador r16 na pilha [fp, #-6].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 6
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r16
 [ADD_INSTR] Adicionando instrução para 'main': bi: L6
 [UNASSIGN_REG] Desmapeado r25 de 'index'.
 [UNASSIGN_REG] -> Estado atual: 17 registradores livres. Mapeamentos: {'j': 'r9', 'round': 'r12', 'total': 'r16', 'k': 'r17'}
@@ -794,10 +794,10 @@ L6:
 	addi: r17 = r18, 1
 	subi: r30 = r31, 4
 	store: [r30] = r17
-	subi: r30 = r31, 6
-	store: [r30] = r16
 	subi: r30 = r31, 4
 	store: [r30] = r17
+	subi: r30 = r31, 6
+	store: [r30] = r16
 	bi: L6
 L7:
 	subi: r30 = r31, 3
@@ -916,10 +916,10 @@ var_workload: .space 8
 00000010000010001100100000000001 -> addi: r17 = r18, 1
 00000010000111110111110000000100 -> subi: r30 = r31, 4
 00000100000000000100011111000000 -> store: [r30] = r17
-00000010000111110111110000000110 -> subi: r30 = r31, 6
-00000100000000000100001111000000 -> store: [r30] = r16
 00000010000111110111110000000100 -> subi: r30 = r31, 4
 00000100000000000100011111000000 -> store: [r30] = r17
+00000010000111110111110000000110 -> subi: r30 = r31, 6
+00000100000000000100001111000000 -> store: [r30] = r16
 00001110000000000000001111100010 -> bi: L6
 00000010000111110111110000000011 -> subi: r30 = r31, 3
 00000100000110011000001111000000 -> load: r19 = [r30]

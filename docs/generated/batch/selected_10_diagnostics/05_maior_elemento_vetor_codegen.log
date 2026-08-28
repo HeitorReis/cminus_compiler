@@ -19,7 +19,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 53 instruções.
-[DEBUG] Função 'main': all_vars=['i', 'largest', 'numbers'], defined_vars={'i', 'largest'}, params=[]
+[DEBUG] Função 'main': all_vars=['i', 'largest', 'numbers'], defined_vars={'largest', 'i'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['i', 'largest']
 --> Criando o layout da pilha para 'main'...
@@ -438,7 +438,7 @@
 
 --- [TRANSLATE] Processando IR: L0: ---
 [TRANSLATE] -> Rótulo detectado: L0:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r12', 'r15', 'r16', 'r22', 'r24', 'r18', 'r8', 'r10', 'r6', 'r7', 'r9', 'r11', 'r13', 'r21', 'r19', 'r25'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r12', 'r19', 'r21', 'r8', 'r6', 'r25', 'r24', 'r16', 'r22', 'r15', 'r11', 'r18', 'r9', 'r7', 'r13', 'r10'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r12 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r12
@@ -584,7 +584,7 @@
 
 --- [TRANSLATE] Processando IR: goto L3 ---
 [TRANSLATE] -> Desvio incondicional detectado: L3
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r20', 'r15', 'r16', 'r22', 'r24', 'r18', 'r8', 'r17', 'r6', 'r7', 'r9', 'r11', 'r13', 'r21', 'r19', 'r25'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r21', 'r8', 'r6', 'r25', 'r24', 'r16', 'r22', 'r17', 'r15', 'r11', 'r18', 'r9', 'r20', 'r7', 'r13'}
 [SPILL_ALL] -> Salvando variável local 'largest' do registrador r21 na pilha [fp, #-2].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 2
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r21

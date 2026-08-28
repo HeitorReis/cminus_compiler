@@ -17,7 +17,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 16 instruções.
-[DEBUG] Função 'main': all_vars=['n', 'i', 'sum'], defined_vars={'sum', 'i', 'n'}, params=[]
+[DEBUG] Função 'main': all_vars=['n', 'i', 'sum'], defined_vars={'i', 'sum', 'n'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['n', 'i', 'sum']
 --> Criando o layout da pilha para 'main'...

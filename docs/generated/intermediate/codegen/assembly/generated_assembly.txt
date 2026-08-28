@@ -92,10 +92,10 @@ L6:
 	addi: r17 = r18, 1
 	subi: r30 = r31, 4
 	store: [r30] = r17
-	subi: r30 = r31, 6
-	store: [r30] = r16
 	subi: r30 = r31, 4
 	store: [r30] = r17
+	subi: r30 = r31, 6
+	store: [r30] = r16
 	bi: L6
 L7:
 	subi: r30 = r31, 3

@@ -1,0 +1,181 @@
+{
+  "passed": 10,
+  "total": 10,
+  "results": [
+    {
+      "test": "01_soma_1_ate_n",
+      "status": "PASS",
+      "input_values": [
+        10
+      ],
+      "expected_output": [
+        55
+      ],
+      "model_output": [
+        55
+      ],
+      "fpga_hex6_hex7_after_last_output": "55",
+      "cycles": 218,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/01_soma_1_ate_n_fpga_diagnostic.txt"
+    },
+    {
+      "test": "02_fatorial",
+      "status": "PASS",
+      "input_values": [
+        5
+      ],
+      "expected_output": [
+        120
+      ],
+      "model_output": [
+        120
+      ],
+      "fpga_hex6_hex7_after_last_output": "20",
+      "cycles": 123,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/02_fatorial_fpga_diagnostic.txt"
+    },
+    {
+      "test": "03_fibonacci",
+      "status": "PASS",
+      "input_values": [
+        10
+      ],
+      "expected_output": [
+        55
+      ],
+      "model_output": [
+        55
+      ],
+      "fpga_hex6_hex7_after_last_output": "55",
+      "cycles": 284,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/03_fibonacci_fpga_diagnostic.txt"
+    },
+    {
+      "test": "04_numero_primo",
+      "status": "PASS",
+      "input_values": [
+        29
+      ],
+      "expected_output": [
+        1
+      ],
+      "model_output": [
+        1
+      ],
+      "fpga_hex6_hex7_after_last_output": "01",
+      "cycles": 683,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/04_numero_primo_fpga_diagnostic.txt"
+    },
+    {
+      "test": "05_maior_elemento_vetor",
+      "status": "PASS",
+      "input_values": [],
+      "expected_output": [
+        25
+      ],
+      "model_output": [
+        25
+      ],
+      "fpga_hex6_hex7_after_last_output": "25",
+      "cycles": 221,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/05_maior_elemento_vetor_fpga_diagnostic.txt"
+    },
+    {
+      "test": "06_busca_linear_vetor",
+      "status": "PASS",
+      "input_values": [
+        15
+      ],
+      "expected_output": [
+        4
+      ],
+      "model_output": [
+        4
+      ],
+      "fpga_hex6_hex7_after_last_output": "04",
+      "cycles": 232,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/06_busca_linear_vetor_fpga_diagnostic.txt"
+    },
+    {
+      "test": "07_bubble_sort",
+      "status": "PASS",
+      "input_values": [],
+      "expected_output": [
+        1,
+        2,
+        3,
+        7,
+        8,
+        9
+      ],
+      "model_output": [
+        1,
+        2,
+        3,
+        7,
+        8,
+        9
+      ],
+      "fpga_hex6_hex7_after_last_output": "09",
+      "cycles": 895,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/07_bubble_sort_fpga_diagnostic.txt"
+    },
+    {
+      "test": "08_mdc",
+      "status": "PASS",
+      "input_values": [
+        48,
+        18
+      ],
+      "expected_output": [
+        6
+      ],
+      "model_output": [
+        6
+      ],
+      "fpga_hex6_hex7_after_last_output": "06",
+      "cycles": 102,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/08_mdc_fpga_diagnostic.txt"
+    },
+    {
+      "test": "09_matriz_loops_aninhados",
+      "status": "PASS",
+      "input_values": [],
+      "expected_output": [
+        100,
+        30
+      ],
+      "model_output": [
+        100,
+        30
+      ],
+      "fpga_hex6_hex7_after_last_output": "30",
+      "cycles": 738,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/09_matriz_loops_aninhados_fpga_diagnostic.txt"
+    },
+    {
+      "test": "10_carga_preempcao",
+      "status": "PASS",
+      "input_values": [],
+      "expected_output": [
+        4992
+      ],
+      "model_output": [
+        4992
+      ],
+      "fpga_hex6_hex7_after_last_output": "92",
+      "cycles": 13983,
+      "termination_reason": "ret",
+      "report": "docs/generated/batch/selected_10_fpga_diagnostics/10_carga_preempcao_fpga_diagnostic.txt"
+    }
+  ]
+}

@@ -17,7 +17,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 20 instruções.
-[DEBUG] Função 'main': all_vars=['n', 'i', 'previous', 'current', 'next'], defined_vars={'next', 'current', 'n', 'i', 'previous'}, params=[]
+[DEBUG] Função 'main': all_vars=['n', 'i', 'previous', 'current', 'next'], defined_vars={'current', 'next', 'previous', 'n', 'i'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['n', 'i', 'previous', 'current', 'next']
 --> Criando o layout da pilha para 'main'...

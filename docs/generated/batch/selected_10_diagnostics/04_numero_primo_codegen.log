@@ -17,7 +17,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 33 instruções.
-[DEBUG] Função 'main': all_vars=['n', 'divisor', 'quotient', 'remainder', 'is_prime'], defined_vars={'n', 'is_prime', 'remainder', 'divisor', 'quotient'}, params=[]
+[DEBUG] Função 'main': all_vars=['n', 'divisor', 'quotient', 'remainder', 'is_prime'], defined_vars={'quotient', 'n', 'is_prime', 'remainder', 'divisor'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['n', 'divisor', 'quotient', 'remainder', 'is_prime']
 --> Criando o layout da pilha para 'main'...
@@ -290,13 +290,13 @@
 
 --- [TRANSLATE] Processando IR: goto L5 ---
 [TRANSLATE] -> Desvio incondicional detectado: L5
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r14', 'r13', 'r15'}
-[SPILL_ALL] -> Salvando variável local 'quotient' do registrador r13 na pilha [fp, #-3].
-[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
-[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r13
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r15', 'r14', 'r13'}
 [SPILL_ALL] -> Salvando variável local 'remainder' do registrador r15 na pilha [fp, #-4].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 4
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r15
+[SPILL_ALL] -> Salvando variável local 'quotient' do registrador r13 na pilha [fp, #-3].
+[ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 3
+[ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r13
 [ADD_INSTR] Adicionando instrução para 'main': bi: L5
 [UNASSIGN_REG] Desmapeado r11 de 'divisor'.
 [UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {'n': 'r12', 'quotient': 'r13', 'remainder': 'r15', 'is_prime': 'r17'}
@@ -454,10 +454,10 @@ L2:
 	movi: r17 = 0
 	subi: r30 = r31, 5
 	store: [r30] = r17
-	subi: r30 = r31, 3
-	store: [r30] = r13
 	subi: r30 = r31, 4
 	store: [r30] = r15
+	subi: r30 = r31, 3
+	store: [r30] = r13
 	bi: L5
 L4:
 L5:
@@ -529,10 +529,10 @@ stack_space: .space 64
 00000010100010001000000000000000 -> movi: r17 = 0
 00000010000111110111110000000101 -> subi: r30 = r31, 5
 00000100000000000100011111000000 -> store: [r30] = r17
-00000010000111110111110000000011 -> subi: r30 = r31, 3
-00000100000000000011011111000000 -> store: [r30] = r13
 00000010000111110111110000000100 -> subi: r30 = r31, 4
 00000100000000000011111111000000 -> store: [r30] = r15
+00000010000111110111110000000011 -> subi: r30 = r31, 3
+00000100000000000011011111000000 -> store: [r30] = r13
 00001110000000000000000000000001 -> bi: L5
 00000010000111110111110000000010 -> subi: r30 = r31, 2
 00000100000110010000001111000000 -> load: r18 = [r30]

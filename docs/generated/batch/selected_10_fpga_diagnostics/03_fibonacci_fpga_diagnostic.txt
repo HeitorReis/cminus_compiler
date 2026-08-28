@@ -1,0 +1,73 @@
+=== PRESET FPGA DIAGNOSTIC ===
+test=03_fibonacci
+status=PASS
+input_values=[10]
+expected_output=[55]
+model_output=[55]
+fpga_hex6_hex7_after_last_output=55
+cycles=284
+termination_reason=ret
+fpga_input_note=For each input value, set SW[7:0], then release the halted IN instruction with SW[15] transition 1->0.
+fpga_output_note=HEX6-HEX7 show the last output's two least-significant decimal digits; capture each OUT for multi-output tests.
+=== MACHINE CODE ANALYSIS ===
+machine_code=docs/generated/batch/selected_10_machine_code/03_fibonacci_machine_code.txt
+machine_words=116
+assembly_listing=docs/generated/batch/selected_10_assembly/03_fibonacci_assembly_to_machine.txt
+
+summary:
+  cycles=284
+  termination_reason=ret
+  final_pc=51
+  halted_temporarily=0
+  output_count=1
+  last_pc_before=51
+  last_instruction_word=00001110000000000000000000000000
+  last_decoded_instruction=b i do 0
+  last_assembly_instruction=ret -> bi 0
+
+final_state:
+  cycles=284
+  pc=51
+  link_register=0
+  halted_temporarily=0
+  output_value=[55]
+  flags=Z1 N0
+registers:
+  r0=55
+  r1=55
+  r2=0
+  r3=0
+  r4=10
+  r5=0
+  r6=0
+  r7=1
+  r8=0
+  r9=10
+  r10=10
+  r11=34
+  r12=55
+  r13=89
+  r14=10
+  r15=55
+  r16=0
+  r17=0
+  r18=0
+  r19=0
+  r20=0
+  r21=0
+  r22=0
+  r23=0
+  r24=0
+  r25=0
+  r26=0
+  r27=0
+  r28=0
+  r29=54
+  r30=60
+  r31=63
+data_memory_non_zero:
+  mem[58]=89
+  mem[59]=89
+  mem[60]=55
+  mem[61]=10
+  mem[62]=10

@@ -19,7 +19,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 79 instruções.
-[DEBUG] Função 'main': all_vars=['i', 'j', 'temporary', 'values'], defined_vars={'temporary', 'i', 'j'}, params=[]
+[DEBUG] Função 'main': all_vars=['i', 'j', 'temporary', 'values'], defined_vars={'temporary', 'j', 'i'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['i', 'j', 'temporary']
 --> Criando o layout da pilha para 'main'...
@@ -319,7 +319,7 @@
 
 --- [TRANSLATE] Processando IR: L0: ---
 [TRANSLATE] -> Rótulo detectado: L0:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r10', 'r23', 'r14', 'r16', 'r17', 'r7', 'r22', 'r20', 'r13', 'r8', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r8', 'r16', 'r11', 'r17', 'r10', 'r23', 'r13', 'r20', 'r14', 'r22', 'r7'}
 [UNASSIGN_REG] Desmapeado r5 de 'j'.
 [UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'temporary': 'r6', 'i': 'r25'}
 [UNASSIGN_REG] Desmapeado r6 de 'temporary'.
@@ -362,7 +362,7 @@
 
 --- [TRANSLATE] Processando IR: L2: ---
 [TRANSLATE] -> Rótulo detectado: L2:
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r10', 'r23', 'r14', 'r16', 'r17', 'r7', 'r22', 'r20', 'r13', 'r8', 'r11'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r8', 'r16', 'r11', 'r17', 'r10', 'r23', 'r13', 'r20', 'r14', 'r22', 'r7'}
 [UNASSIGN_REG] Desmapeado r26 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 21 registradores livres. Mapeamentos: {'j': 'r9'}
 [UNASSIGN_REG] Desmapeado r9 de 'j'.
@@ -711,7 +711,7 @@
 
 --- [TRANSLATE] Processando IR: goto L5 ---
 [TRANSLATE] -> Desvio incondicional detectado: L5
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r5', 'r6', 'r24', 'r26', 'r25', 'r10', 'r14', 'r12', 'r16', 'r9', 'r23', 'r8', 'r19', 'r21', 'r4', 'r20', 'r13', 'r11', 'r15', 'r17', 'r7', 'r22', 'r18'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r19', 'r9', 'r17', 'r10', 'r5', 'r13', 'r21', 'r4', 'r18', 'r14', 'r7', 'r26', 'r16', 'r6', 'r15', 'r20', 'r8', 'r24', 'r11', 'r25', 'r23', 'r22', 'r12'}
 [SPILL_ALL] -> Salvando variável local 'i' do registrador r10 na pilha [fp, #-1].
 [ADD_INSTR] Adicionando instrução para 'main': subi: r30 = r31, 1
 [ADD_INSTR] Adicionando instrução para 'main': store: [r30] = r10
@@ -920,7 +920,7 @@
 --- [TRANSLATE] Processando IR: call output, 1 ---
 [TRANSLATE] -> Caminho: Chamada de Procedimento
 [SPILL_CALL] Preparando spill completo antes de chamada.
-[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r4', 'r23', 'r24'}
+[SPILL_ALL] Verificando registradores sujos para salvar. Sujos: {'r24', 'r4', 'r23'}
 [UNASSIGN_REG] Desmapeado r20 de 'i'.
 [UNASSIGN_REG] -> Estado atual: 19 registradores livres. Mapeamentos: {'t40': 'r4'}
 [SPILL] Derramando registrador r4, que contém 't40'.

@@ -1,0 +1,89 @@
+=== PRESET FPGA DIAGNOSTIC ===
+test=09_matriz_loops_aninhados
+status=PASS
+input_values=[]
+expected_output=[100, 30]
+model_output=[100, 30]
+fpga_hex6_hex7_after_last_output=30
+cycles=738
+termination_reason=ret
+fpga_input_note=For each input value, set SW[7:0], then release the halted IN instruction with SW[15] transition 1->0.
+fpga_output_note=HEX6-HEX7 show the last output's two least-significant decimal digits; capture each OUT for multi-output tests.
+=== MACHINE CODE ANALYSIS ===
+machine_code=docs/generated/batch/selected_10_machine_code/09_matriz_loops_aninhados_machine_code.txt
+machine_words=175
+assembly_listing=docs/generated/batch/selected_10_assembly/09_matriz_loops_aninhados_assembly_to_machine.txt
+
+summary:
+  cycles=738
+  termination_reason=ret
+  final_pc=94
+  halted_temporarily=0
+  output_count=2
+  last_pc_before=94
+  last_instruction_word=00001110000000000000000000000000
+  last_decoded_instruction=b i do 0
+  last_assembly_instruction=ret -> bi 0
+
+final_state:
+  cycles=738
+  pc=94
+  link_register=0
+  halted_temporarily=0
+  output_value=[100, 30]
+  flags=Z1 N0
+registers:
+  r0=30
+  r1=30
+  r2=0
+  r3=0
+  r4=64
+  r5=79
+  r6=16
+  r7=14
+  r8=30
+  r9=4
+  r10=4
+  r11=4
+  r12=4
+  r13=4
+  r14=3
+  r15=3
+  r16=4
+  r17=100
+  r18=30
+  r19=16
+  r20=64
+  r21=79
+  r22=64
+  r23=79
+  r24=16
+  r25=84
+  r26=100
+  r27=0
+  r28=0
+  r29=38
+  r30=58
+  r31=63
+data_memory_non_zero:
+  mem[0]=1
+  mem[1]=2
+  mem[2]=3
+  mem[3]=4
+  mem[4]=2
+  mem[5]=4
+  mem[6]=6
+  mem[7]=8
+  mem[8]=3
+  mem[9]=6
+  mem[10]=9
+  mem[11]=12
+  mem[12]=4
+  mem[13]=8
+  mem[14]=12
+  mem[15]=16
+  mem[58]=30
+  mem[59]=100
+  mem[60]=15
+  mem[61]=4
+  mem[62]=4

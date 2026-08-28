@@ -30,6 +30,16 @@ The project does not currently have a dedicated `build` target. The practical en
   - Builds if needed and runs only the focused ten-file suite: `01_soma_1_ate_n.txt` through `10_carga_preempcao.txt`.
   - Saves one final machine-code file per test in `docs/generated/batch/selected_10_machine_code/` and the corresponding compiler/code-generator logs in `docs/generated/batch/selected_10_diagnostics/`.
   - Runs all ten even if one fails, then returns a non-zero status when any test did not produce machine code.
+  - This command also works from `processor/`; its Makefile forwards the request to the repository root.
+- `make run_selected_10_diagnostics` (alias: `make fpga_diagnostics`)
+  - Rebuilds the selected ten programs, executes each one in the Python processor model with fixed FPGA input vectors, and compares its output with the preset expected result.
+  - Writes one text and one JSON diagnostic report per program plus `summary.json` to `docs/generated/batch/selected_10_fpga_diagnostics/`.
+  - The reports state the input sequence, expected output sequence, model output, and the two decimal digits visible on `HEX6`/`HEX7` after the final `out`.
+- `make generate_mif`
+  - Converts the ten selected machine-code files into `processor/Processor/modules/program1.mif` through `program10.mif`; each is a 1024 × 32-bit ROM image.
+- `make select_mif ROM_PROGRAM=<1-10>`
+  - Copies the chosen `programN.mif` to `processor/Processor/modules/program.mif`, which is the MIF consumed by Quartus. Example: `make select_mif ROM_PROGRAM=1` selects the sum-from-1-to-N program.
+  - After changing the ROM implementation to MIF for the first time, run one complete Quartus compilation. Later program-only changes can use `quartus_cdb --update_mif Processor --rev=Processor` followed by `quartus_asm Processor --rev=Processor` from `processor/Processor/`.
 - `make run_all complete`
 - `make run_all c`
 - `make run_all COMPLETE=1`

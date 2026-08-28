@@ -71,3 +71,8 @@ docs/processor_branch_audit.md
 entrega1
 /scientific-report
 /scientific-report/*
+/processor
+# Keep Quartus artifacts ignored while versioning the compiler-test forwarder.
+!/processor/
+/processor/*
+!/processor/Makefile

@@ -17,7 +17,7 @@
 
 [Processando Função] -> 'main'
 -> IR isolado para 'main' contém 16 instruções.
-[DEBUG] Função 'main': all_vars=['n', 'i', 'result'], defined_vars={'i', 'n', 'result'}, params=[]
+[DEBUG] Função 'main': all_vars=['n', 'i', 'result'], defined_vars={'n', 'i', 'result'}, params=[]
 --> Parâmetros para 'main': []
 --> Variáveis Locais para 'main': ['n', 'i', 'result']
 --> Criando o layout da pilha para 'main'...
