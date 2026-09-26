@@ -1,0 +1,4 @@
+interface:
+  display_name: "Home FPGA Testing"
+  short_description: "Configure the RZ301 home FPGA project"
+  default_prompt: "Use $home-testing-fpga to adapt and validate the home Quartus project for the RZ301 EP4CE6 board."

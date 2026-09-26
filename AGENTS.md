@@ -39,6 +39,9 @@ Ao pesquisar o repositório, exclua `reference/` por padrão.
 - Para alterar, depurar, revisar ou validar compilador, assembly, código de
   máquina ou integração com o processador, use a skill
   `$cminus-compiler-development`.
+- Para adaptar, atribuir pinos ou validar o projeto Quartus doméstico em
+  `processor/Processor_home_testing/`, use a skill `$home-testing-fpga`; não
+  reutilize automaticamente as restrições da DE2-115 universitária.
 - Para registrar trabalho de longo prazo, retomar uma tarefa, consultar backlog
   ou encerrar uma tarefa persistente, use `$project-task-memory`.
 - Não leia `.agents/tasks/` em trabalhos comuns. Consulte o índice somente ao

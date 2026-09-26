@@ -75,4 +75,22 @@ entrega1
 !/processor/
 /processor/*
 !/processor/Makefile
+!/processor/Processor_home_testing/
+/processor/Processor_home_testing/*
+!/processor/Processor_home_testing/Processor_home_testing.qpf
+!/processor/Processor_home_testing/Processor.qsf
+!/processor/Processor_home_testing/Processor.sdc
+!/processor/Processor_home_testing/Processor.v
+!/processor/Processor_home_testing/integrated.v
+!/processor/Processor_home_testing/mux_write_in_reg.v
+!/processor/Processor_home_testing/modules/
+/processor/Processor_home_testing/modules/*
+!/processor/Processor_home_testing/modules/*.v
+!/processor/Processor_home_testing/modules/*.mif
+!/processor/Processor_home_testing/tests/
+/processor/Processor_home_testing/tests/*
+!/processor/Processor_home_testing/tests/*.v
 /reference
+
+.agents\skills\home-testing-fpga\RZ301 EP4CE6 development board
+/.agents/skills/home-testing-fpga/RZ301 EP4CE6 development board
