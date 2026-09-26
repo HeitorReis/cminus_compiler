@@ -53,14 +53,13 @@ dkms.conf
 .qodo
 parser.output
 parser.gv
-/build
-bin/c-c
+/compiler/build/
+/compiler/bin/c-c
 entrega1.zip
-/codegen/__pycache__
+/compiler/codegen/__pycache__/
 *.pyc
 
 Processor(v2026-1)
-tools
 docs/generate_directory_schema.py
 docs/processor_branch_audit.md
 /vpp
@@ -76,3 +75,4 @@ entrega1
 !/processor/
 /processor/*
 !/processor/Makefile
+/reference

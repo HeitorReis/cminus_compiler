@@ -1,0 +1,119 @@
+=== MACHINE CODE ANALYSIS ===
+machine_code=/mnt/d/LocalVSCodes/cminus_compiler/compiler/docs/generated/final/assembler/machine_code/generated_machine_code.txt
+machine_words=143
+assembly_listing=/mnt/d/LocalVSCodes/cminus_compiler/compiler/docs/generated/diagnostics/assembler/assembly_to_machine.txt
+
+summary:
+  cycles=59
+  termination_reason=ret
+  final_pc=78
+  halted_temporarily=0
+  output_count=1
+  last_pc_before=78
+  last_instruction_word=00001110000000000000000000000000
+  last_decoded_instruction=b i do 0
+  last_assembly_instruction=ret -> bi 0
+
+final_state:
+  cycles=59
+  pc=78
+  link_register=70
+  halted_temporarily=0
+  output_value=[0]
+  flags=Z1 N0
+registers:
+  r0=0
+  r1=0
+  r2=0
+  r3=0
+  r4=0
+  r5=0
+  r6=0
+  r7=0
+  r8=70
+  r9=0
+  r10=0
+  r11=0
+  r12=0
+  r13=0
+  r14=0
+  r15=0
+  r16=0
+  r17=0
+  r18=0
+  r19=0
+  r20=0
+  r21=0
+  r22=0
+  r23=0
+  r24=0
+  r25=0
+  r26=0
+  r27=0
+  r28=70
+  r29=58
+  r30=60
+  r31=63
+data_memory_non_zero:
+  mem[56]=63
+  mem[57]=70
+trace:
+  cycle=0 pc_before=0 instr=00001110000000000000000000110000 decoded="b i do 48" pc_after=48 link=0 halt=0 output_value=[] asm="bi: main"
+  cycle=1 pc_before=48 instr=00000010100011101000000000111111 decoded="mov i do r29 = r0, 63" pc_after=49 link=0 halt=0 output_value=[] asm="movi: r29 = 63"
+  cycle=2 pc_before=49 instr=00000000100011111000001110100000 decoded="mov na do r31 = r0, r29" pc_after=50 link=0 halt=0 output_value=[] asm="mov: r31 = r29"
+  cycle=3 pc_before=50 instr=00000010000111101111010000000101 decoded="sub i do r29 = r29, 5" pc_after=51 link=0 halt=0 output_value=[] asm="subi: r29 = r29, 5"
+  cycle=4 pc_before=51 instr=00000000100100100000000000000000 decoded="in na do r4 = r0, r0" pc_after=51 link=0 halt=1 output_value=[] asm="in: r4"
+  cycle=5 pc_before=51 instr=00000000100100100000000000000000 decoded="in na do r4 = r0, r0" pc_after=52 link=0 halt=0 output_value=[] asm="in: r4"
+  cycle=6 pc_before=52 instr=00000010000111110111110000000001 decoded="sub i do r30 = r31, 1" pc_after=53 link=0 halt=0 output_value=[] asm="subi: r30 = r31, 1"
+  cycle=7 pc_before=53 instr=00000100000000000001001111000000 decoded="store na do r0 = r4, r30" pc_after=54 link=0 halt=0 output_value=[] asm="store: [r30] = r4"
+  cycle=8 pc_before=54 instr=00000010000111110111110000000001 decoded="sub i do r30 = r31, 1" pc_after=55 link=0 halt=0 output_value=[] asm="subi: r30 = r31, 1"
+  cycle=9 pc_before=55 instr=00000100000000000001001111000000 decoded="store na do r0 = r4, r30" pc_after=56 link=0 halt=0 output_value=[] asm="store: [r30] = r4"
+  cycle=10 pc_before=56 instr=00000000100100101000000000000000 decoded="in na do r5 = r0, r0" pc_after=56 link=0 halt=1 output_value=[] asm="in: r5"
+  cycle=11 pc_before=56 instr=00000000100100101000000000000000 decoded="in na do r5 = r0, r0" pc_after=57 link=0 halt=0 output_value=[] asm="in: r5"
+  cycle=12 pc_before=57 instr=00000010000111110111110000000010 decoded="sub i do r30 = r31, 2" pc_after=58 link=0 halt=0 output_value=[] asm="subi: r30 = r31, 2"
+  cycle=13 pc_before=58 instr=00000100000000000001011111000000 decoded="store na do r0 = r5, r30" pc_after=59 link=0 halt=0 output_value=[] asm="store: [r30] = r5"
+  cycle=14 pc_before=59 instr=00000010000111110111110000000010 decoded="sub i do r30 = r31, 2" pc_after=60 link=0 halt=0 output_value=[] asm="subi: r30 = r31, 2"
+  cycle=15 pc_before=60 instr=00000100000000000001011111000000 decoded="store na do r0 = r5, r30" pc_after=61 link=0 halt=0 output_value=[] asm="store: [r30] = r5"
+  cycle=16 pc_before=61 instr=00000010000111110111110000000001 decoded="sub i do r30 = r31, 1" pc_after=62 link=0 halt=0 output_value=[] asm="subi: r30 = r31, 1"
+  cycle=17 pc_before=62 instr=00000100000100110000001111000000 decoded="load na do r6 = r0, r30" pc_after=63 link=0 halt=0 output_value=[] asm="load: r6 = [r30]"
+  cycle=18 pc_before=63 instr=00000000100000001000000011000000 decoded="mov na do r1 = r0, r6" pc_after=64 link=0 halt=0 output_value=[] asm="mov: r1 = r6"
+  cycle=19 pc_before=64 instr=00000010000111110111110000000010 decoded="sub i do r30 = r31, 2" pc_after=65 link=0 halt=0 output_value=[] asm="subi: r30 = r31, 2"
+  cycle=20 pc_before=65 instr=00000100000100111000001111000000 decoded="load na do r7 = r0, r30" pc_after=66 link=0 halt=0 output_value=[] asm="load: r7 = [r30]"
+  cycle=21 pc_before=66 instr=00000000100000010000000011100000 decoded="mov na do r2 = r0, r7" pc_after=67 link=0 halt=0 output_value=[] asm="mov: r2 = r7"
+  cycle=22 pc_before=67 instr=00000010100001000000000001000110 decoded="mov i do r8 = r0, 70" pc_after=68 link=0 halt=0 output_value=[] asm="movi: r8 = main_Lret0"
+  cycle=23 pc_before=68 instr=00000000100011100000000100000000 decoded="mov na do r28 = r0, r8" pc_after=69 link=0 halt=0 output_value=[] asm="mov: r28 = r8"
+  cycle=24 pc_before=69 instr=00001110100000000000001110111100 decoded="bl i do -68" pc_after=1 link=70 halt=0 output_value=[] asm="bl: gcd"
+  cycle=25 pc_before=1 instr=00000010000111101111010000000001 decoded="sub i do r29 = r29, 1" pc_after=2 link=70 halt=0 output_value=[] asm="subi: r29 = r29, 1"
+  cycle=26 pc_before=2 instr=00000100000000000111001110100000 decoded="store na do r0 = r28, r29" pc_after=3 link=70 halt=0 output_value=[] asm="store: [r29] = r28"
+  cycle=27 pc_before=3 instr=00000010000111101111010000000001 decoded="sub i do r29 = r29, 1" pc_after=4 link=70 halt=0 output_value=[] asm="subi: r29 = r29, 1"
+  cycle=28 pc_before=4 instr=00000100000000000111111110100000 decoded="store na do r0 = r31, r29" pc_after=5 link=70 halt=0 output_value=[] asm="store: [r29] = r31"
+  cycle=29 pc_before=5 instr=00000000100011111000001110100000 decoded="mov na do r31 = r0, r29" pc_after=6 link=70 halt=0 output_value=[] asm="mov: r31 = r29"
+  cycle=30 pc_before=6 instr=00000010000111101111010000000111 decoded="sub i do r29 = r29, 7" pc_after=7 link=70 halt=0 output_value=[] asm="subi: r29 = r29, 7"
+  cycle=31 pc_before=7 instr=00000010000111110111110000000001 decoded="sub i do r30 = r31, 1" pc_after=8 link=70 halt=0 output_value=[] asm="subi: r30 = r31, 1"
+  cycle=32 pc_before=8 instr=00000100000000000000011111000000 decoded="store na do r0 = r1, r30" pc_after=9 link=70 halt=0 output_value=[] asm="store: [r30] = r1"
+  cycle=33 pc_before=9 instr=00000010000111110111110000000010 decoded="sub i do r30 = r31, 2" pc_after=10 link=70 halt=0 output_value=[] asm="subi: r30 = r31, 2"
+  cycle=34 pc_before=10 instr=00000100000000000000101111000000 decoded="store na do r0 = r2, r30" pc_after=11 link=70 halt=0 output_value=[] asm="store: [r30] = r2"
+  cycle=35 pc_before=11 instr=00000010000111110111110000000010 decoded="sub i do r30 = r31, 2" pc_after=12 link=70 halt=0 output_value=[] asm="subi: r30 = r31, 2"
+  cycle=36 pc_before=12 instr=00000100000100100000001111000000 decoded="load na do r4 = r0, r30" pc_after=13 link=70 halt=0 output_value=[] asm="load: r4 = [r30]"
+  cycle=37 pc_before=13 instr=00000010100000101000000000000000 decoded="mov i do r5 = r0, 0" pc_after=14 link=70 halt=0 output_value=[] asm="movi: r5 = 0"
+  cycle=38 pc_before=14 instr=00000001000100000001000010100000 decoded="sub s do r0 = r4, r5" pc_after=15 link=70 halt=0 output_value=[] asm="subs: r0 = r4, r5"
+  cycle=39 pc_before=15 instr=00101110000000000000000000000101 decoded="b i neq 5" pc_after=16 link=70 halt=0 output_value=[] asm="bineq: L0"
+  cycle=40 pc_before=16 instr=00000010000111110111110000000001 decoded="sub i do r30 = r31, 1" pc_after=17 link=70 halt=0 output_value=[] asm="subi: r30 = r31, 1"
+  cycle=41 pc_before=17 instr=00000100000100110000001111000000 decoded="load na do r6 = r0, r30" pc_after=18 link=70 halt=0 output_value=[] asm="load: r6 = [r30]"
+  cycle=42 pc_before=18 instr=00000000100000000000000011000000 decoded="mov na do r0 = r0, r6" pc_after=19 link=70 halt=0 output_value=[] asm="mov: r0 = r6"
+  cycle=43 pc_before=19 instr=00001110000000000000000000010111 decoded="b i do 23" pc_after=42 link=70 halt=0 output_value=[] asm="bi: gcd_epilogue"
+  cycle=44 pc_before=42 instr=00000000100011101000001111100000 decoded="mov na do r29 = r0, r31" pc_after=43 link=70 halt=0 output_value=[] asm="mov: r29 = r31"
+  cycle=45 pc_before=43 instr=00000100000111111000001110100000 decoded="load na do r31 = r0, r29" pc_after=44 link=70 halt=0 output_value=[] asm="load: r31 = [r29]"
+  cycle=46 pc_before=44 instr=00000010000011101111010000000001 decoded="add i do r29 = r29, 1" pc_after=45 link=70 halt=0 output_value=[] asm="addi: r29 = r29, 1"
+  cycle=47 pc_before=45 instr=00000100000111100000001110100000 decoded="load na do r28 = r0, r29" pc_after=46 link=70 halt=0 output_value=[] asm="load: r28 = [r29]"
+  cycle=48 pc_before=46 instr=00000010000011101111010000000001 decoded="add i do r29 = r29, 1" pc_after=47 link=70 halt=0 output_value=[] asm="addi: r29 = r29, 1"
+  cycle=49 pc_before=47 instr=00001100000000000000001110000000 decoded="b do r28" pc_after=70 link=70 halt=0 output_value=[] asm="b: r28"
+  cycle=50 pc_before=70 instr=00000000100001001000000000000000 decoded="mov na do r9 = r0, r0" pc_after=71 link=70 halt=0 output_value=[] asm="mov: r9 = r0"
+  cycle=51 pc_before=71 instr=00000010000111110111110000000011 decoded="sub i do r30 = r31, 3" pc_after=72 link=70 halt=0 output_value=[] asm="subi: r30 = r31, 3"
+  cycle=52 pc_before=72 instr=00000100000000000010011111000000 decoded="store na do r0 = r9, r30" pc_after=73 link=70 halt=0 output_value=[] asm="store: [r30] = r9"
+  cycle=53 pc_before=73 instr=00000010000111110111110000000011 decoded="sub i do r30 = r31, 3" pc_after=74 link=70 halt=0 output_value=[] asm="subi: r30 = r31, 3"
+  cycle=54 pc_before=74 instr=00000100000101010000001111000000 decoded="load na do r10 = r0, r30" pc_after=75 link=70 halt=0 output_value=[] asm="load: r10 = [r30]"
+  cycle=55 pc_before=75 instr=00000000100000001000000101000000 decoded="mov na do r1 = r0, r10" pc_after=76 link=70 halt=0 output_value=[] asm="mov: r1 = r10"
+  cycle=56 pc_before=76 instr=00000000101000000000000000100000 decoded="out na do r0 = r0, r1" pc_after=77 link=70 halt=0 output_value=[0] asm="out: r1"
+  cycle=57 pc_before=77 instr=00001110000000000000000000000001 decoded="b i do 1" pc_after=78 link=70 halt=0 output_value=[0] asm="bi: main_epilogue"
+  cycle=58 pc_before=78 instr=00001110000000000000000000000000 decoded="b i do 0" pc_after=78 link=70 halt=0 output_value=[0] asm="ret -> bi 0"

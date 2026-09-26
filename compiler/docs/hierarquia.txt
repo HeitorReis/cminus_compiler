@@ -1,0 +1,14 @@
+docs/input/cminus/: arquivos de entrada/testes.
+docs/documentation/: documentação técnica corrente.
+docs/documentation/compiler_modules.md: documentação técnica modular do compilador, com funções, classes, matrizes de fluxo, convenção de registradores e relação com o Processor(v2026-1).
+docs/documentation/processor_branch_audit.md: auditoria da lógica atual de branch, branch-and-link e retorno por link dedicado do Processor(v2026-1).
+docs/generated/frontend/syntax_tree/ast.txt: árvore sintática.
+docs/generated/frontend/symbol_table/symbol_table.txt: tabela de símbolos.
+docs/generated/intermediate/semantic/ir/generated_IR.txt: IR intermediário.
+docs/generated/intermediate/codegen/assembly/generated_assembly.txt: assembly intermediário usado pelo assembler.
+docs/generated/final/assembler/machine_code/generated_machine_code.txt: saída final de máquina.
+docs/generated/diagnostics/: logs e arquivos de debug.
+docs/generated/batch/: saídas do run_all, separando códigos finais e logs.
+reports/SO/main.tex: relatório técnico consolidado no formato ABNT sobre o compilador C-, o processador atual e as lacunas para o próximo Laboratório de Sistemas Operacionais.
+reports/SO/COMPARACAO.md: matriz de rastreabilidade entre os relatórios históricos e a implementação corrente.
+../processor/Processor/: projeto Quartus/Verilog do processador alvo usado pelo compilador e pelo simulador de código de máquina.

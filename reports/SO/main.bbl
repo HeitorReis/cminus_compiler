@@ -1,0 +1,39 @@
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\setlength{\labelsep}{0pt}\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{v-1.9.7 }
+
+\bibitem[ARM 2001]{ARMtechnical}
+\abntrefinfo{ARM}{ARM}{2001}
+{ARM. \emph{ARM7TDMI-S Technical Reference Manual}.
+[S.l.], 2001.}
+
+\bibitem[Harris e Harris 2016]{compArchi}
+\abntrefinfo{Harris e Harris}{HARRIS; HARRIS}{2016}
+{HARRIS, S.~L.; HARRIS, D.~M. \emph{Digital Design and Computer Architecture}.
+  1. ed. Burlington: Elsevier, 2016.}
+
+\bibitem[Louden e Silva 2004]{compiladoresLouden}
+\abntrefinfo{Louden e Silva}{LOUDEN; SILVA}{2004}
+{LOUDEN, K.~C.; SILVA, F. S.~C. da. \emph{Compiladores: princ{\'i}pios e
+  pr{\'a}ticas}. S{\~a}o Paulo: Cengage Learning, 2004.}
+
+\bibitem[Patterson e Hennessy 2014]{compOrgDes}
+\abntrefinfo{Patterson e Hennessy}{PATTERSON; HENNESSY}{2014}
+{PATTERSON, D.~A.; HENNESSY, J.~L. \emph{Computer Organization and Design: The
+  Hardware/Software Interface}. [S.l.]: Morgan Kaufmann, 2014.}
+
+\bibitem[Patterson e Hennessy 2017]{patterson2017}
+\abntrefinfo{Patterson e Hennessy}{PATTERSON; HENNESSY}{2017}
+{PATTERSON, D.~A.; HENNESSY, J.~L. \emph{Organiza{\c c}{\~a}o e Projeto de
+  Computadores}: A interface hardware/software. 5. ed. Rio de Janeiro: GEN LTC,
+  2017.}
+
+\bibitem[Terasic Technologies Inc. 2012]{DE2-115}
+\abntrefinfo{Terasic}{TERASIC}{2012}
+{TERASIC TECHNOLOGIES INC. \emph{DE2-115 User Manual}.
+[S.l.], 2012.}
+
+\end{thebibliography}

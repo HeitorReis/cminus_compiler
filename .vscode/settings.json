@@ -6,5 +6,7 @@
         "stdio.h": "c",
         "stdlib.h": "c"
     },
+    "makefile.makeDirectory": "${workspaceFolder}/compiler",
+    "makefile.makefilePath": "${workspaceFolder}/compiler/Makefile",
     "makefile.configureOnOpen": true
 }
